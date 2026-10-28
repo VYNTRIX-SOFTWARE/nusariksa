@@ -2,12 +2,12 @@
 
 ## Fondasi repositori
 
-API pemeriksaan hidup, pengujian HTTP, pemeriksaan sintaks, CI, dan dokumentasi minimal. PostgreSQL telah disiapkan untuk migrasi dan pemeriksaan koneksi. Belum ada autentikasi atau penyimpanan dokumen.
+API pemeriksaan hidup, pengujian HTTP, pemeriksaan sintaks, CI, dan dokumentasi minimal. PostgreSQL telah disiapkan untuk migrasi dan pemeriksaan koneksi. Skema akun dan sesi telah disiapkan; autentikasi serta penyimpanan dokumen belum diimplementasikan.
 
 ## Tahap selanjutnya
 
-1. Melengkapi model data serta validasi API.
-2. Autentikasi, sesi, dan kontrol akses dengan pengujian negatif.
+1. Implementasikan autentikasi dengan Argon2id, kontrol sesi, dan pengujian negatif.
+2. Tambahkan otorisasi per peran dan alur persetujuan dengan pengujian akses.
 3. Penyimpanan bukti terenkripsi serta pengelolaan kunci.
 4. Pemetaan regulasi berversi setelah penelaahan ketentuan resmi.
 
