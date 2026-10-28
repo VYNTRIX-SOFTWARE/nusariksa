@@ -2,7 +2,7 @@
 
 ## Fondasi repositori
 
-API pemeriksaan hidup, pengujian HTTP, pemeriksaan sintaks, CI, dan dokumentasi minimal. PostgreSQL telah disiapkan untuk migrasi dan pemeriksaan koneksi. Skema akun dan sesi telah disiapkan; autentikasi serta penyimpanan dokumen belum diimplementasikan.
+API pemeriksaan hidup, pengujian HTTP, pemeriksaan sintaks, CI, dan dokumentasi minimal. PostgreSQL telah disiapkan untuk migrasi dan pemeriksaan koneksi. Skema akun dan layanan token sesi telah disiapkan; endpoint login, autentikasi password, dan penyimpanan dokumen belum diimplementasikan.
 
 ## Tahap selanjutnya
 
