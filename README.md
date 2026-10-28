@@ -20,12 +20,24 @@ npm run check
 npm start
 ```
 
-Akses `http://127.0.0.1:3000/health` untuk memeriksa server pengembangan. Server ini hanya berjalan pada loopback, tanpa login maupun basis data; jangan membukanya ke internet.
+Akses `http://127.0.0.1:3000/health` untuk pemeriksaan proses. Endpoint `/ready` mengembalikan HTTP 200 hanya ketika koneksi PostgreSQL tersedia, atau HTTP 503 jika belum tersedia. Server hanya mendengarkan pada `127.0.0.1`; jangan membukanya ke internet.
+
+## PostgreSQL untuk pengembangan
+
+Siapkan PostgreSQL 17 dan database kosong milik pengembang. Atur variabel `DATABASE_URL` pada terminal atau pengelola secret lokal. Contoh formatnya:
+
+```text
+postgresql://<user>:<password>@127.0.0.1:5432/<database>
+```
+
+Jalankan `npm run db:migrate` untuk menerapkan migrasi yang belum dijalankan. Migrasi yang sudah diterapkan tidak boleh diedit. Pengujian integrasi database hanya dijalankan saat `DATABASE_URL` tersedia. CI menyediakan PostgreSQL sementara untuk keperluan tersebut.
+
+Jangan gunakan kredensial produksi atau membuka koneksi database ke jaringan publik. TLS untuk database jarak jauh dan pengelolaan secret produksi belum disiapkan.
 
 ## Keputusan awal
 
 - JavaScript ES Modules untuk kode dan pengujian.
-- Antarmuka Vue 3 dan PostgreSQL belum diimplementasikan.
+- Antarmuka Vue 3 belum diimplementasikan. PostgreSQL baru digunakan untuk migrasi awal dan pemeriksaan koneksi.
 - Instalasi satu lembaga menjadi target awal.
 - Dokumentasi dan pesan commit menggunakan Bahasa Indonesia. Perintah, nama fungsi, serta endpoint API mengikuti istilah teknis berbahasa Inggris.
 

@@ -14,6 +14,25 @@ jobs:
     name: Periksa kode dan pengujian
     runs-on: ubuntu-latest
     timeout-minutes: 10
+
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: nusariksa
+          POSTGRES_PASSWORD: temporary-test-password
+          POSTGRES_DB: nusariksa_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U nusariksa -d nusariksa_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgresql://nusariksa:temporary-test-password@127.0.0.1:5432/nusariksa_test
+
     steps:
       - name: Ambil kode
         uses: actions/checkout@v4
@@ -24,5 +43,7 @@ jobs:
           cache: npm
       - name: Pasang dependensi
         run: npm ci --ignore-scripts
+      - name: Jalankan migrasi database
+        run: npm run db:migrate
       - name: Jalankan pemeriksaan
         run: npm run check
