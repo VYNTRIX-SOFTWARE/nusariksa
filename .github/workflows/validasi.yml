@@ -1,0 +1,28 @@
+name: Validasi
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  periksa:
+    name: Periksa kode dan pengujian
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Ambil kode
+        uses: actions/checkout@v4
+      - name: Siapkan Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Pasang dependensi
+        run: npm ci --ignore-scripts
+      - name: Jalankan pemeriksaan
+        run: npm run cek
