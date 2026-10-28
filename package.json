@@ -1,0 +1,17 @@
+{
+  "name": "nusariksa",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Fondasi awal NusaRiksa, belum untuk produksi",
+  "engines": {
+    "node": ">=24 <27"
+  },
+  "scripts": {
+    "mulai:api": "node apps/api/src/server.js",
+    "cek:sintaks": "node scripts/periksa-sintaks.js",
+    "test": "node --test",
+    "cek": "npm run cek:sintaks && npm test"
+  },
+  "license": "AGPL-3.0-only"
+}
