@@ -44,7 +44,7 @@ test('token sesi hanya disimpan sebagai hash dan dapat dicabut', {
       assert.ok(await findSession(client, second.token));
 
       await client.query(
-        "UPDATE sessions SET expires_at = now() - interval '1 second' WHERE user_id = $1",
+        "UPDATE sessions SET created_at = now() - interval '2 hours', expires_at = now() - interval '1 second' WHERE user_id = $1",
         [userId],
       );
       assert.equal(await findSession(client, second.token), null);
