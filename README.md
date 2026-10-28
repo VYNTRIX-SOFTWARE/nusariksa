@@ -16,20 +16,20 @@ Prasyarat: Node.js 24 dan npm.
 
 ```sh
 npm ci
-npm run cek
-npm run mulai:api
+npm run check
+npm start
 ```
 
-Akses `http://127.0.0.1:3000/kesehatan` untuk memeriksa server pengembangan. Server ini hanya berjalan pada loopback, tanpa login maupun basis data; jangan membukanya ke internet.
+Akses `http://127.0.0.1:3000/health` untuk memeriksa server pengembangan. Server ini hanya berjalan pada loopback, tanpa login maupun basis data; jangan membukanya ke internet.
 
 ## Keputusan awal
 
 - JavaScript ES Modules untuk kode dan pengujian.
 - Antarmuka Vue 3 dan PostgreSQL belum diimplementasikan.
 - Instalasi satu lembaga menjadi target awal.
-- Dokumentasi, pesan commit, dan PR menggunakan Bahasa Indonesia.
+- Dokumentasi dan pesan commit menggunakan Bahasa Indonesia. Perintah, nama fungsi, serta endpoint API mengikuti istilah teknis berbahasa Inggris.
 
-Baca [panduan kontribusi](CONTRIBUTING.md), [kebijakan keamanan](SECURITY.md), dan [rencana awal](docs/RENCANA.md).
+Baca [panduan kontribusi](CONTRIBUTING.md), [kebijakan keamanan](SECURITY.md), dan [rencana awal](docs/ROADMAP.md).
 
 ## Lisensi
 

@@ -1,20 +1,20 @@
-import { createServer } from 'node:http';
+import { createServer as createHttpServer } from 'node:http';
 import { pathToFileURL } from 'node:url';
 
-export function buatServer() {
-  return createServer((permintaan, respons) => {
-    respons.setHeader('Content-Type', 'application/json; charset=utf-8');
-    respons.setHeader('Cache-Control', 'no-store');
-    respons.setHeader('X-Content-Type-Options', 'nosniff');
+export function createServer() {
+  return createHttpServer((request, response) => {
+    response.setHeader('Content-Type', 'application/json; charset=utf-8');
+    response.setHeader('Cache-Control', 'no-store');
+    response.setHeader('X-Content-Type-Options', 'nosniff');
 
-    if (permintaan.method === 'GET' && permintaan.url === '/kesehatan') {
-      respons.writeHead(200);
-      respons.end(JSON.stringify({ status: 'berjalan' }));
+    if (request.method === 'GET' && request.url === '/health') {
+      response.writeHead(200);
+      response.end(JSON.stringify({ status: 'ok' }));
       return;
     }
 
-    respons.writeHead(404);
-    respons.end(JSON.stringify({ kesalahan: 'Rute tidak ditemukan' }));
+    response.writeHead(404);
+    response.end(JSON.stringify({ error: 'Not found' }));
   });
 }
 
@@ -24,7 +24,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     console.error('PORT harus berupa bilangan bulat antara 1 dan 65535.');
     process.exitCode = 1;
   } else {
-    const server = buatServer();
+    const server = createServer();
     server.listen(port, '127.0.0.1', () => {
       console.log(`API pengembangan tersedia di http://127.0.0.1:${port}`);
     });

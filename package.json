@@ -8,10 +8,10 @@
     "node": ">=24 <27"
   },
   "scripts": {
-    "mulai:api": "node apps/api/src/server.js",
-    "cek:sintaks": "node scripts/periksa-sintaks.js",
+    "start": "node apps/api/src/server.js",
+    "check:syntax": "node scripts/check-syntax.js",
     "test": "node --test",
-    "cek": "npm run cek:sintaks && npm test"
+    "check": "npm run check:syntax && npm test"
   },
   "license": "AGPL-3.0-only"
 }

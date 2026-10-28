@@ -1,4 +1,4 @@
-name: Validasi
+name: CI
 
 on:
   push:
@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 jobs:
-  periksa:
+  check:
     name: Periksa kode dan pengujian
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -25,4 +25,4 @@ jobs:
       - name: Pasang dependensi
         run: npm ci --ignore-scripts
       - name: Jalankan pemeriksaan
-        run: npm run cek
+        run: npm run check
