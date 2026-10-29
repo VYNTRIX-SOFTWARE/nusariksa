@@ -1,12 +1,22 @@
 import { createServer as createHttpServer } from 'node:http';
 import { pathToFileURL } from 'node:url';
+import { createAuthHandler } from './auth-http.js';
 import { checkDatabase, createPool } from './database.js';
+import { createLoginLimiter } from './login-limiter.js';
 
-export function createServer({ checkReadiness = async () => false } = {}) {
+export function createServer({
+  checkReadiness = async () => false,
+  authDb = null,
+  appOrigin = null,
+  loginLimiter = createLoginLimiter(),
+} = {}) {
+  const handleAuth = createAuthHandler({ db: authDb, appOrigin, limiter: loginLimiter });
   return createHttpServer(async (request, response) => {
     response.setHeader('Content-Type', 'application/json; charset=utf-8');
     response.setHeader('Cache-Control', 'no-store');
     response.setHeader('X-Content-Type-Options', 'nosniff');
+    response.setHeader('Referrer-Policy', 'no-referrer');
+    response.setHeader('X-Frame-Options', 'DENY');
 
     if (request.method === 'GET' && request.url === '/health') {
       response.writeHead(200);
@@ -26,6 +36,21 @@ export function createServer({ checkReadiness = async () => false } = {}) {
       return;
     }
 
+    if (request.url === '/auth/login' || request.url === '/auth/logout'
+      || request.url === '/auth/session') {
+      try {
+        await handleAuth(request, response);
+      } catch {
+        if (!response.headersSent) {
+          response.writeHead(503);
+          response.end(JSON.stringify({ error: 'Unavailable' }));
+        } else {
+          response.destroy();
+        }
+      }
+      return;
+    }
+
     response.writeHead(404);
     response.end(JSON.stringify({ error: 'Not found' }));
   });
@@ -38,10 +63,14 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     process.exitCode = 1;
   } else {
     const pool = createPool();
-    const server = createServer({ checkReadiness: () => checkDatabase(pool) });
+    const server = createServer({
+      checkReadiness: () => checkDatabase(pool),
+      authDb: pool,
+      appOrigin: process.env.APP_ORIGIN,
+    });
     server.on('close', () => { if (pool) void pool.end(); });
     server.listen(port, '127.0.0.1', () => {
-      console.log(`API pengembangan tersedia di http://127.0.0.1:${port}`);
+      console.log('API pengembangan tersedia di http://127.0.0.1:' + port);
     });
   }
 }

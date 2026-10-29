@@ -2,11 +2,11 @@
 
 ## Fondasi repositori
 
-API pemeriksaan hidup, pengujian HTTP, pemeriksaan sintaks, CI, dan dokumentasi minimal. PostgreSQL telah disiapkan untuk migrasi dan pemeriksaan koneksi. Skema akun dan layanan token sesi telah disiapkan; hash password Argon2id dan verifikasi kredensial internal sudah tersedia. Endpoint login dan penyimpanan dokumen belum diimplementasikan.
+API pemeriksaan hidup, pengujian HTTP, pemeriksaan sintaks, CI, dan dokumentasi minimal. PostgreSQL telah disiapkan untuk migrasi dan pemeriksaan koneksi. Skema akun dan layanan token sesi telah disiapkan; hash password Argon2id dan verifikasi kredensial internal sudah tersedia. Endpoint login, pemeriksaan sesi, dan logout awal tersedia untuk pengembangan; penyimpanan dokumen belum diimplementasikan.
 
 ## Tahap selanjutnya
 
-1. Tambahkan endpoint login dengan pembatasan percobaan, cookie aman, dan pengujian negatif.
+1. Perkuat autentikasi: rate limit lintas proses, TLS/reverse proxy, MFA, dan proteksi CSRF untuk operasi yang mengubah data.
 2. Tambahkan otorisasi per peran dan alur persetujuan dengan pengujian akses.
 3. Penyimpanan bukti terenkripsi serta pengelolaan kunci.
 4. Pemetaan regulasi berversi setelah penelaahan ketentuan resmi.
