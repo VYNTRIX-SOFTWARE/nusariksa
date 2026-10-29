@@ -12,7 +12,7 @@ Proyek ini tidak berafiliasi dengan Otoritas Jasa Keuangan dan tidak menggantika
 
 ## Menjalankan fondasi
 
-Prasyarat: Node.js 24 dan npm.
+Prasyarat: Node.js 24.7 atau lebih baru dan npm.
 
 ```sh
 npm ci
@@ -33,6 +33,14 @@ postgresql://<user>:<password>@127.0.0.1:5432/<database>
 Jalankan `npm run db:migrate` untuk menerapkan migrasi yang belum dijalankan. Migrasi yang sudah diterapkan tidak boleh diedit. Pengujian integrasi database hanya dijalankan saat `DATABASE_URL` tersedia. CI menyediakan PostgreSQL sementara untuk keperluan tersebut.
 
 Jangan gunakan kredensial produksi atau membuka koneksi database ke jaringan publik. TLS untuk database jarak jauh dan pengelolaan secret produksi belum disiapkan.
+
+## Endpoint autentikasi pengembangan
+
+Dengan `DATABASE_URL` dan `APP_ORIGIN` terpasang, API menyediakan `POST /auth/login`, `GET /auth/session`, dan `POST /auth/logout`. Contoh untuk pengujian lokal: `APP_ORIGIN=http://127.0.0.1:3000` (samakan dengan `PORT`). Permintaan login/logout harus mengirim header `Origin` yang sama persis; login menggunakan JSON berisi `email` dan `password`.
+
+Cookie sesi menggunakan awalan `__Host-`, `Secure`, `HttpOnly`, dan `SameSite=Strict`. Browser perlu HTTPS agar cookie Secure berfungsi sebagaimana mestinya; API lokal berbasis HTTP hanya untuk pengujian, bukan deployment browser siap pakai. Belum ada halaman login maupun alur membuat akun awal.
+
+Pembatasan percobaan login masih tersimpan dalam memori proses dan tidak dibagikan lintas server maupun bertahan setelah restart. Belum ada dukungan reverse proxy tepercaya, MFA, rotasi sesi, atau perlindungan penuh untuk operasi perubahan data. Jangan gunakan API ini untuk produksi.
 
 ## Keputusan awal
 
