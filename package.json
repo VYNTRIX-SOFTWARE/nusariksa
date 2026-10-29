@@ -5,7 +5,7 @@
   "type": "module",
   "description": "Fondasi awal NusaRiksa, belum untuk produksi",
   "engines": {
-    "node": ">=24 <27"
+    "node": ">=24.7.0 <27"
   },
   "scripts": {
     "start": "node apps/api/src/server.js",
