@@ -1,56 +1,73 @@
 # NusaRiksa
 
-NusaRiksa adalah proyek sumber terbuka untuk membantu BPR dan BPR Syariah mengelola tata kelola, risiko, dan kepatuhan teknologi informasi. Proyek ini diprakarsai oleh VYNTRIX dan terbuka bagi kontributor.
+NusaRiksa adalah proyek sumber terbuka dari VYNTRIX untuk membantu Bank Perekonomian Rakyat (BPR) dan BPR Syariah (BPRS) mengelola tata kelola, risiko, dan kepatuhan teknologi informasi. Aplikasi ini dirancang untuk dapat dijalankan sendiri oleh masing-masing lembaga.
 
-**Status: pengembangan awal. Belum layak untuk produksi atau penggunaan data perbankan asli.**
+Proyek masih dalam tahap pengembangan awal. **Belum siap digunakan untuk operasional bank atau menyimpan data asli.**
 
-## Ruang lingkup
+## Kondisi saat ini
 
-Pengembangan direncanakan mencakup pemetaan ketentuan POJK 34/2025 dan aturan pelaksananya, asesmen keamanan siber, pengelolaan bukti pendukung, alur persetujuan, dan penyusunan laporan. Belum ada fitur kepatuhan yang selesai.
+Fondasi backend sudah menggunakan Node.js dan PostgreSQL. Bagian yang telah dikerjakan meliputi migrasi database, tabel lembaga dan akun, autentikasi password Argon2id, sesi pengguna, serta pengujian otomatis melalui GitHub Actions.
 
-Proyek ini tidak berafiliasi dengan Otoritas Jasa Keuangan dan tidak menggantikan penilaian regulator atau penanggung jawab kepatuhan bank.
+Antarmuka pengguna, pembuatan akun awal, pengaturan hak akses, MFA, pengelolaan dokumen bukti, asesmen, dan laporan kepatuhan belum tersedia. Pemetaan POJK 34 Tahun 2025 beserta ketentuan pelaksananya juga belum diimplementasikan.
 
-## Menjalankan fondasi
+## Menjalankan secara lokal
 
-Prasyarat: Node.js 24.7 atau lebih baru dan npm.
+Lingkungan pengembangan menggunakan Node.js 24.7.0 atau lebih baru (di bawah versi 27), npm, dan PostgreSQL 17. Database kosong serta pengguna PostgreSQL dibuat terlebih dahulu; migrasi NusaRiksa tidak membuat database secara otomatis.
+
+Instalasi dependensi:
 
 ```sh
 npm ci
+```
+
+Contoh pengaturan koneksi di Windows PowerShell:
+
+```powershell
+$env:DATABASE_URL = 'postgresql://user:password@127.0.0.1:5432/nusariksa_dev'
+$env:APP_ORIGIN = 'http://127.0.0.1:3000'
+```
+
+Untuk Linux atau macOS:
+
+```sh
+export DATABASE_URL='postgresql://user:password@127.0.0.1:5432/nusariksa_dev'
+export APP_ORIGIN='http://127.0.0.1:3000'
+```
+
+Nilai `user`, `password`, dan nama database disesuaikan dengan PostgreSQL lokal. Setelah itu:
+
+```sh
+npm run db:migrate
 npm run check
 npm start
 ```
 
-Akses `http://127.0.0.1:3000/health` untuk pemeriksaan proses. Endpoint `/ready` mengembalikan HTTP 200 hanya ketika koneksi PostgreSQL tersedia, atau HTTP 503 jika belum tersedia. Server hanya mendengarkan pada `127.0.0.1`; jangan membukanya ke internet.
+Server berjalan di `http://127.0.0.1:3000` secara default. Port dapat diubah melalui variabel `PORT`; `APP_ORIGIN` perlu mengikuti alamat dan port yang digunakan.
 
-## PostgreSQL untuk pengembangan
+`npm run check` menjalankan pemeriksaan sintaks dan pengujian. Pengujian yang memerlukan PostgreSQL dilewati apabila `DATABASE_URL` tidak tersedia.
 
-Siapkan PostgreSQL 17 dan database kosong milik pengembang. Atur variabel `DATABASE_URL` pada terminal atau pengelola secret lokal. Contoh formatnya:
+## API yang tersedia
 
-```text
-postgresql://<user>:<password>@127.0.0.1:5432/<database>
-```
+| Metode | Endpoint | Fungsi |
+| --- | --- | --- |
+| `GET` | `/health` | Memeriksa apakah proses API berjalan |
+| `GET` | `/ready` | Memeriksa koneksi PostgreSQL; mengembalikan 503 jika tidak siap |
+| `POST` | `/auth/login` | Memeriksa email dan password, lalu membuat sesi |
+| `GET` | `/auth/session` | Memeriksa sesi dari cookie |
+| `POST` | `/auth/logout` | Mencabut sesi pengguna |
 
-Jalankan `npm run db:migrate` untuk menerapkan migrasi yang belum dijalankan. Migrasi yang sudah diterapkan tidak boleh diedit. Pengujian integrasi database hanya dijalankan saat `DATABASE_URL` tersedia. CI menyediakan PostgreSQL sementara untuk keperluan tersebut.
+Endpoint login menerima JSON berisi `email` dan `password`. Akun harus sudah ada dalam database, berstatus `active`, dan memiliki hash password Argon2id. Belum tersedia proses resmi untuk membuat akun pertama.
 
-Jangan gunakan kredensial produksi atau membuka koneksi database ke jaringan publik. TLS untuk database jarak jauh dan pengelolaan secret produksi belum disiapkan.
+Login dan logout memerlukan header `Origin` yang sesuai dengan `APP_ORIGIN`. Sesi memakai cookie `Secure`, `HttpOnly`, dan `SameSite=Strict`. Penggunaan cookie di browser memerlukan pengaturan HTTPS yang sesuai; server HTTP lokal ini hanya untuk pengembangan.
 
-## Endpoint autentikasi pengembangan
+Pembatasan percobaan login masih disimpan dalam memori satu proses dan akan hilang setelah restart. MFA, pengaturan reverse proxy tepercaya, dan pengamanan untuk deployment produksi belum selesai.
 
-Dengan `DATABASE_URL` dan `APP_ORIGIN` terpasang, API menyediakan `POST /auth/login`, `GET /auth/session`, dan `POST /auth/logout`. Contoh untuk pengujian lokal: `APP_ORIGIN=http://127.0.0.1:3000` (samakan dengan `PORT`). Permintaan login/logout harus mengirim header `Origin` yang sama persis; login menggunakan JSON berisi `email` dan `password`.
+## Pengembangan dan lisensi
 
-Cookie sesi menggunakan awalan `__Host-`, `Secure`, `HttpOnly`, dan `SameSite=Strict`. Browser perlu HTTPS agar cookie Secure berfungsi sebagaimana mestinya; API lokal berbasis HTTP hanya untuk pengujian, bukan deployment browser siap pakai. Belum ada halaman login maupun alur membuat akun awal.
+Arah pengembangan mencakup pengelolaan akses, pencatatan risiko, bukti pendukung, serta pemetaan ketentuan TI untuk BPR dan BPRS. Perkembangannya dicatat dalam [rencana pengembangan](docs/ROADMAP.md).
 
-Pembatasan percobaan login masih tersimpan dalam memori proses dan tidak dibagikan lintas server maupun bertahan setelah restart. Belum ada dukungan reverse proxy tepercaya, MFA, rotasi sesi, atau perlindungan penuh untuk operasi perubahan data. Jangan gunakan API ini untuk produksi.
+Kontribusi dapat dimulai dari [panduan kontribusi](CONTRIBUTING.md). Temuan keamanan dilaporkan melalui jalur yang dijelaskan dalam [kebijakan keamanan](SECURITY.md).
 
-## Keputusan awal
+NusaRiksa menggunakan lisensi [GNU AGPL-3.0-only](LICENSE). Penggunaan komersial diperbolehkan sesuai ketentuan lisensinya. Informasi hak cipta tersedia di [NOTICE.md](NOTICE.md).
 
-- JavaScript ES Modules untuk kode dan pengujian.
-- Antarmuka Vue 3 belum diimplementasikan. PostgreSQL baru digunakan untuk migrasi awal dan pemeriksaan koneksi.
-- Instalasi satu lembaga menjadi target awal.
-- Dokumentasi dan pesan commit menggunakan Bahasa Indonesia. Perintah, nama fungsi, serta endpoint API mengikuti istilah teknis berbahasa Inggris.
-
-Baca [panduan kontribusi](CONTRIBUTING.md), [kebijakan keamanan](SECURITY.md), dan [rencana awal](docs/ROADMAP.md).
-
-## Lisensi
-
-Kode tersedia berdasarkan GNU AGPL versi 3 saja (`AGPL-3.0-only`). Penggunaan komersial diperbolehkan sesuai [ketentuan lisensi](LICENSE). Lihat [pemberitahuan hak cipta](NOTICE.md).
+NusaRiksa bukan produk resmi atau layanan yang disahkan oleh Otoritas Jasa Keuangan. Penggunaan aplikasi tidak menggantikan tanggung jawab bank dalam memenuhi ketentuan yang berlaku.
