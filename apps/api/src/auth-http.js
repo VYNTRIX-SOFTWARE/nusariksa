@@ -11,7 +11,7 @@ function respond(response, status, body) {
   response.end(JSON.stringify(body));
 }
 
-function tokenFromCookies(header) {
+export function tokenFromCookies(header) {
   if (typeof header !== 'string') return null;
   const candidates = header.split(';')
     .map((part) => part.trim())
@@ -20,7 +20,7 @@ function tokenFromCookies(header) {
   return candidates[0].slice(COOKIE_NAME.length + 1);
 }
 
-function originAccepted(request, appOrigin) {
+export function originAccepted(request, appOrigin) {
   return typeof appOrigin === 'string'
     && request.headers.origin === appOrigin
     && request.headers['sec-fetch-site'] !== 'cross-site';

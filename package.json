@@ -12,7 +12,8 @@
     "check:syntax": "node scripts/check-syntax.js",
     "test": "node --test",
     "check": "npm run check:syntax && npm test",
-    "db:migrate": "node scripts/migrate.js"
+    "db:migrate": "node scripts/migrate.js",
+    "admin:bootstrap": "node scripts/bootstrap-admin.js"
   },
   "license": "AGPL-3.0-only",
   "dependencies": {
