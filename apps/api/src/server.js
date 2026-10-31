@@ -4,6 +4,7 @@ import { createAuthHandler } from './auth-http.js';
 import { checkDatabase, createPool } from './database.js';
 import { createLoginLimiter } from './login-limiter.js';
 import { createRolesHandler } from './roles-http.js';
+import { createUserAccountsHandler } from './users-http.js';
 
 export function createServer({
   checkReadiness = async () => false,
@@ -11,9 +12,16 @@ export function createServer({
   appOrigin = null,
   loginLimiter = createLoginLimiter(),
   changeRole,
+  createUser,
+  activateUser,
+  disableUser,
+  listUsers,
 } = {}) {
   const handleAuth = createAuthHandler({ db: authDb, appOrigin, limiter: loginLimiter });
   const handleRoles = createRolesHandler({ db: authDb, appOrigin, changeRole });
+  const handleAccounts = createUserAccountsHandler({
+    db: authDb, appOrigin, createUser, activateUser, disableUser, listUsers,
+  });
   return createHttpServer(async (request, response) => {
     response.setHeader('Content-Type', 'application/json; charset=utf-8');
     response.setHeader('Cache-Control', 'no-store');
@@ -54,9 +62,11 @@ export function createServer({
       return;
     }
 
-    if (request.url?.startsWith('/users/')) {
+    if (request.url === '/users' || request.url === '/auth/activate'
+      || request.url?.startsWith('/users/')) {
       try {
-        await handleRoles(request, response);
+        if (request.url?.endsWith('/roles')) await handleRoles(request, response);
+        else await handleAccounts(request, response);
       } catch {
         if (!response.headersSent) {
           response.writeHead(503);
