@@ -3,14 +3,17 @@ import { pathToFileURL } from 'node:url';
 import { createAuthHandler } from './auth-http.js';
 import { checkDatabase, createPool } from './database.js';
 import { createLoginLimiter } from './login-limiter.js';
+import { createRolesHandler } from './roles-http.js';
 
 export function createServer({
   checkReadiness = async () => false,
   authDb = null,
   appOrigin = null,
   loginLimiter = createLoginLimiter(),
+  changeRole,
 } = {}) {
   const handleAuth = createAuthHandler({ db: authDb, appOrigin, limiter: loginLimiter });
+  const handleRoles = createRolesHandler({ db: authDb, appOrigin, changeRole });
   return createHttpServer(async (request, response) => {
     response.setHeader('Content-Type', 'application/json; charset=utf-8');
     response.setHeader('Cache-Control', 'no-store');
@@ -40,6 +43,20 @@ export function createServer({
       || request.url === '/auth/session' || request.url === '/auth/permissions') {
       try {
         await handleAuth(request, response);
+      } catch {
+        if (!response.headersSent) {
+          response.writeHead(503);
+          response.end(JSON.stringify({ error: 'Unavailable' }));
+        } else {
+          response.destroy();
+        }
+      }
+      return;
+    }
+
+    if (request.url?.startsWith('/users/')) {
+      try {
+        await handleRoles(request, response);
       } catch {
         if (!response.headersSent) {
           response.writeHead(503);

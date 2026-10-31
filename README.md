@@ -56,14 +56,15 @@ Server berjalan di `http://127.0.0.1:3000` secara default. Port dapat diubah mel
 | `GET` | `/auth/session` | Memeriksa sesi dari cookie |
 | `POST` | `/auth/logout` | Mencabut sesi pengguna |
 | `GET` | `/auth/permissions` | Menampilkan izin akun yang sedang login |
+| `PATCH` | `/users/:userId/roles` | Memberi atau mencabut peran pengguna lain (admin) |
 
-Endpoint login menerima JSON berisi `email` dan `password`. Akun harus sudah ada dalam database, berstatus `active`, dan memiliki hash password Argon2id. Belum tersedia proses resmi untuk membuat akun pertama.
+Endpoint login menerima JSON berisi `email` dan `password`. Akun harus sudah ada dalam database, berstatus `active`, dan memiliki hash password Argon2id. Admin pertama dibuat melalui perintah lokal `npm run admin:bootstrap -- --name "Nama Bank" --kind BPR --email admin@example.test` setelah `DATABASE_URL` disetel. Proses meminta password secara interaktif tanpa menampilkannya. Perintah ini hanya dapat dipakai pada database yang belum memiliki lembaga maupun akun.
 
 Login dan logout memerlukan header `Origin` yang sesuai dengan `APP_ORIGIN`. Sesi memakai cookie `Secure`, `HttpOnly`, dan `SameSite=Strict`. Penggunaan cookie di browser memerlukan pengaturan HTTPS yang sesuai; server HTTP lokal ini hanya untuk pengembangan.
 
 Pembatasan percobaan login masih disimpan dalam memori satu proses dan akan hilang setelah restart. MFA, pengaturan reverse proxy tepercaya, dan pengamanan untuk deployment produksi belum selesai.
 
-Peran disimpan di tabel `user_roles`. Perubahan peran melalui layanan internal dicatat di `role_change_events` dalam transaksi yang sama. Catatan tersebut menolak pengubahan dan penghapusan biasa di tingkat database, tetapi bukan bukti anti-manipulasi terhadap administrator database. API pemberian/pencabutan peran belum tersedia, begitu pula proses penetapan admin pertama. Modul kerja belum memakai aturan izin ini.
+Peran disimpan di tabel `user_roles`. Perubahan peran melalui layanan internal dicatat di `role_change_events` dalam transaksi yang sama. Catatan tersebut menolak pengubahan dan penghapusan biasa di tingkat database, tetapi bukan bukti anti-manipulasi terhadap administrator database. Admin aktif dapat memberi atau mencabut peran pengguna lain melalui `PATCH /users/:userId/roles` dengan JSON `{"role":"AUDITOR","action":"GRANT"}` atau `"REVOKE"`. Endpoint membutuhkan sesi dan header `Origin` yang cocok; perubahan peran serta catatan audit disimpan dalam transaksi yang sama. Belum tersedia API pembuatan pengguna tambahan. Modul kerja belum memakai aturan izin ini.
 
 ## Pengembangan dan lisensi
 
