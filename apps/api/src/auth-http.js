@@ -1,4 +1,5 @@
 import { authenticateUser } from './authentication.js';
+import { getUserPermissions } from './authorization.js';
 import { createSession, findSession, revokeSession } from './sessions.js';
 
 const COOKIE_NAME = '__Host-nusariksa_session';
@@ -74,6 +75,18 @@ export function createAuthHandler({ db, appOrigin, limiter }) {
         return;
       }
       respond(response, 200, { authenticated: true, userId: session.userId });
+      return;
+    }
+
+    if (request.method === 'GET' && request.url === '/auth/permissions') {
+      const token = tokenFromCookies(request.headers.cookie);
+      const session = token ? await findSession(db, token) : null;
+      if (!session) {
+        respond(response, 401, { error: 'Unauthorized' });
+        return;
+      }
+      const permissions = await getUserPermissions(db, session.userId);
+      respond(response, 200, { permissions });
       return;
     }
 

@@ -37,7 +37,7 @@ export function createServer({
     }
 
     if (request.url === '/auth/login' || request.url === '/auth/logout'
-      || request.url === '/auth/session') {
+      || request.url === '/auth/session' || request.url === '/auth/permissions') {
       try {
         await handleAuth(request, response);
       } catch {

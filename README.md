@@ -55,12 +55,15 @@ Server berjalan di `http://127.0.0.1:3000` secara default. Port dapat diubah mel
 | `POST` | `/auth/login` | Memeriksa email dan password, lalu membuat sesi |
 | `GET` | `/auth/session` | Memeriksa sesi dari cookie |
 | `POST` | `/auth/logout` | Mencabut sesi pengguna |
+| `GET` | `/auth/permissions` | Menampilkan izin akun yang sedang login |
 
 Endpoint login menerima JSON berisi `email` dan `password`. Akun harus sudah ada dalam database, berstatus `active`, dan memiliki hash password Argon2id. Belum tersedia proses resmi untuk membuat akun pertama.
 
 Login dan logout memerlukan header `Origin` yang sesuai dengan `APP_ORIGIN`. Sesi memakai cookie `Secure`, `HttpOnly`, dan `SameSite=Strict`. Penggunaan cookie di browser memerlukan pengaturan HTTPS yang sesuai; server HTTP lokal ini hanya untuk pengembangan.
 
 Pembatasan percobaan login masih disimpan dalam memori satu proses dan akan hilang setelah restart. MFA, pengaturan reverse proxy tepercaya, dan pengamanan untuk deployment produksi belum selesai.
+
+Peran pengguna disimpan di tabel `user_roles`. Enam peran awal tersedia untuk pengujian hak akses, tetapi belum ada API untuk memberi atau mencabut peran. Modul kerja belum menggunakan aturan izin ini; endpoint `/auth/permissions` hanya menampilkan izin dari sesi aktif.
 
 ## Pengembangan dan lisensi
 

@@ -15,10 +15,11 @@ test('migrasi dapat dijalankan ulang tanpa mengubah riwayat', {
     const migrations = await pool.query(
       'SELECT id, checksum FROM schema_migrations ORDER BY id',
     );
-    assert.equal(migrations.rowCount, 2);
+    assert.equal(migrations.rowCount, 3);
     assert.deepEqual(migrations.rows.map((row) => row.id), [
       '0001_create_institutions.sql',
       '0002_create_identity_tables.sql',
+      '0003_create_user_roles.sql',
     ]);
     assert.match(migrations.rows[0].checksum.trim(), /^[a-f0-9]{64}$/);
 
