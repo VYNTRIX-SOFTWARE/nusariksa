@@ -63,7 +63,7 @@ Login dan logout memerlukan header `Origin` yang sesuai dengan `APP_ORIGIN`. Ses
 
 Pembatasan percobaan login masih disimpan dalam memori satu proses dan akan hilang setelah restart. MFA, pengaturan reverse proxy tepercaya, dan pengamanan untuk deployment produksi belum selesai.
 
-Peran pengguna disimpan di tabel `user_roles`. Enam peran awal tersedia untuk pengujian hak akses, tetapi belum ada API untuk memberi atau mencabut peran. Modul kerja belum menggunakan aturan izin ini; endpoint `/auth/permissions` hanya menampilkan izin dari sesi aktif.
+Peran disimpan di tabel `user_roles`. Perubahan peran melalui layanan internal dicatat di `role_change_events` dalam transaksi yang sama. Catatan tersebut menolak pengubahan dan penghapusan biasa di tingkat database, tetapi bukan bukti anti-manipulasi terhadap administrator database. API pemberian/pencabutan peran belum tersedia, begitu pula proses penetapan admin pertama. Modul kerja belum memakai aturan izin ini.
 
 ## Pengembangan dan lisensi
 
