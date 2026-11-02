@@ -88,7 +88,8 @@ export async function writeAssessmentResultInTransaction(db, {
   if (assessment.owner_user_id !== actorId) {
     throw new AssessmentResultError(403, 'Only the owner can enter results');
   }
-  if (assessment.status !== 'in_progress' || !assessment.catalog_version_id) {
+  if (!['in_progress', 'changes_requested'].includes(assessment.status)
+    || !assessment.catalog_version_id) {
     throw new AssessmentResultError(409, 'Assessment must be started with a catalog');
   }
 
