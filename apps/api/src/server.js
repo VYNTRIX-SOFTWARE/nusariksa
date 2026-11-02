@@ -1,6 +1,7 @@
 import { createServer as createHttpServer } from 'node:http';
 import { pathToFileURL } from 'node:url';
 import { createAuthHandler } from './auth-http.js';
+import { createAssessmentsHandler } from './assessments-http.js';
 import { checkDatabase, createPool } from './database.js';
 import { createLoginLimiter } from './login-limiter.js';
 import { createRolesHandler } from './roles-http.js';
@@ -16,8 +17,16 @@ export function createServer({
   activateUser,
   disableUser,
   listUsers,
+  createAssessment,
+  listAssessments,
+  getAssessment,
+  startAssessment,
 } = {}) {
   const handleAuth = createAuthHandler({ db: authDb, appOrigin, limiter: loginLimiter });
+  const handleAssessments = createAssessmentsHandler({
+    db: authDb, appOrigin, create: createAssessment, list: listAssessments,
+    get: getAssessment, start: startAssessment,
+  });
   const handleRoles = createRolesHandler({ db: authDb, appOrigin, changeRole });
   const handleAccounts = createUserAccountsHandler({
     db: authDb, appOrigin, createUser, activateUser, disableUser, listUsers,
@@ -67,6 +76,20 @@ export function createServer({
       try {
         if (request.url?.endsWith('/roles')) await handleRoles(request, response);
         else await handleAccounts(request, response);
+      } catch {
+        if (!response.headersSent) {
+          response.writeHead(503);
+          response.end(JSON.stringify({ error: 'Unavailable' }));
+        } else {
+          response.destroy();
+        }
+      }
+      return;
+    }
+
+    if (request.url === '/assessments' || request.url?.startsWith('/assessments/')) {
+      try {
+        await handleAssessments(request, response);
       } catch {
         if (!response.headersSent) {
           response.writeHead(503);
