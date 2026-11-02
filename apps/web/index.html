@@ -86,6 +86,10 @@
         <button type="button" class="nav-link" data-page="assessments" id="assessment-menu" title="Daftar asesmen" hidden>
           <svg class="icon nav-icon"><use href="#i-clipboard"></use></svg><span class="nav-label">Daftar Asesmen</span>
         </button>
+        <div class="sidebar-section-label sidebar-gap" id="review-menu-group" hidden>PEMERIKSAAN</div>
+        <button type="button" class="nav-link" data-page="reviews" id="review-menu" title="Review & Persetujuan" hidden>
+          <svg class="icon nav-icon"><use href="#i-clipboard"></use></svg><span class="nav-label">Review & Persetujuan</span>
+        </button>
       </nav>
       <div class="sidebar-bottom">
         <div class="environment-note"><span class="environment-dot"></span><span class="sidebar-foot-text">Tahap pengembangan</span></div>
@@ -179,6 +183,28 @@
           </section>
         </section>
 
+
+        <section id="page-reviews" class="page" aria-labelledby="reviews-title" hidden>
+          <div class="page-intro"><div>
+            <p class="eyebrow">PEMERIKSAAN / ANTREAN</p>
+            <h1 id="reviews-title">Review & Persetujuan</h1>
+            <p class="supporting-copy">Asesmen yang menunggu pemeriksaan oleh pengguna selain pemilik.</p>
+          </div>
+          <button id="review-queue-reload" type="button" class="button button-outline">Muat ulang</button></div>
+          <p class="scope-note">Antrean berdasarkan status <code>submitted</code> pada maksimal 50 asesmen terbaru dari server. Belum ada penugasan reviewer atau pagination.</p>
+          <section class="panel-card table-panel">
+            <div class="panel-heading"><div><h2>Menunggu keputusan</h2>
+              <p class="panel-caption">Klik Buka pemeriksaan untuk memeriksa kontrol satu per satu sebelum memutuskan.</p></div>
+              <span id="review-queue-count" class="small-caption">—</span></div>
+            <div class="table-scroll" tabindex="0" aria-label="Antrean asesmen yang perlu review">
+              <table class="data-table">
+                <thead><tr><th scope="col">Asesmen</th><th scope="col">Periode</th><th scope="col">Status</th><th scope="col">Tindakan</th></tr></thead>
+                <tbody id="review-queue-table"><tr><td class="table-empty" colspan="4">Memuat antrean…</td></tr></tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+
         <section id="page-workspace" class="page" aria-labelledby="workspace-title" hidden>
           <div class="page-intro">
             <div>
@@ -209,6 +235,34 @@
               </div>
               <button id="workspace-start" type="button" class="button button-primary workspace-primary" hidden>Mulai asesmen</button>
             </div>
+
+            <section id="workspace-review-panel" class="review-panel" aria-labelledby="workspace-review-heading">
+              <div class="review-panel-heading">
+                <div><p class="eyebrow">MAKER–CHECKER</p><h2 id="workspace-review-heading">Pengajuan & Pemeriksaan</h2></div>
+                <span id="workspace-review-cycle" class="workspace-revision">Siklus —</span>
+              </div>
+              <p id="workspace-review-description" class="review-description">Status dan keputusan pemeriksaan dibaca dari server.</p>
+              <div id="workspace-submit-area" class="review-action-area" hidden>
+                <p id="workspace-submit-hint" class="workspace-help">Seluruh kontrol harus dinilai sebelum pengajuan.</p>
+                <button id="workspace-submit-review" type="button" class="button button-primary workspace-primary">Ajukan untuk pemeriksaan</button>
+              </div>
+              <form id="workspace-review-form" class="review-action-area" hidden>
+                <label for="workspace-review-decision">Keputusan pemeriksa</label>
+                <select id="workspace-review-decision" required>
+                  <option value="">Pilih keputusan</option>
+                  <option value="approve">Setujui asesmen</option>
+                  <option value="request_changes">Kembalikan untuk perbaikan</option>
+                </select>
+                <label for="workspace-review-note">Catatan keputusan</label>
+                <textarea id="workspace-review-note" maxlength="2000" rows="3" placeholder="Alasan pengembalian wajib minimal 10 karakter."></textarea>
+                <p class="workspace-help">Keputusan hanya dapat diberikan oleh reviewer yang berbeda dari pemilik asesmen.</p>
+                <button id="workspace-review-save" type="submit" class="button button-primary workspace-primary">Simpan keputusan</button>
+              </form>
+              <div class="review-history-header"><h3>Riwayat pengajuan dan keputusan</h3>
+                <button id="workspace-review-history-reload" type="button" class="button button-link">Muat riwayat</button></div>
+              <div id="workspace-review-history" class="review-history" aria-live="polite"><p class="empty-note">Belum ada riwayat.</p></div>
+            </section>
+
             <div class="workspace-grid">
               <aside class="workspace-list-panel" aria-label="Daftar kontrol">
                 <div class="workspace-list-head"><h2>Daftar kontrol</h2><span id="workspace-control-count">0 kontrol</span></div>

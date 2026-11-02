@@ -10,6 +10,7 @@ const ASSETS = new Map([
   ['/assets/assessment-model.js', { file: 'assets/assessment-model.js', type: 'text/javascript; charset=utf-8' }],
   ['/assets/assessment-workspace-model.js', { file: 'assets/assessment-workspace-model.js', type: 'text/javascript; charset=utf-8' }],
   ['/assets/assessment-workspace.js', { file: 'assets/assessment-workspace.js', type: 'text/javascript; charset=utf-8' }],
+  ['/assets/assessment-review-model.js', { file: 'assets/assessment-review-model.js', type: 'text/javascript; charset=utf-8' }],
 ]);
 
 const CSP = [
