@@ -4,8 +4,8 @@ Implementasi ini mengikuti NUSARIKSA UI/UX Design Standard v1 yang disediakan pe
 
 ## Status modul
 
-- EXISTING UI: login, logout, sesi, Dashboard, filter tahun/status, detail baca-saja, Daftar Asesmen.
-- EXISTING API, UI belum tersedia: pembuatan asesmen, katalog kontrol, hasil penilaian, maker–checker, laporan internal.
+- EXISTING UI: login, logout, sesi, Dashboard, filter tahun/status, Daftar Asesmen, Assessment Workspace (membuat, memasang katalog, memulai, mengisi hasil, membaca revisi).
+- EXISTING API, UI belum tersedia: pengelolaan/publikasi katalog kontrol, pengajuan dan review maker–checker, laporan internal.
 - FUTURE: evidence repository, regulatory pack tervalidasi, temuan, notifikasi, profil institusi umum.
 
 ## Application shell dan informasi
@@ -36,3 +36,11 @@ Implementasi ini mengikuti NUSARIKSA UI/UX Design Standard v1 yang disediakan pe
 ## Pengujian dan pekerjaan lanjutan
 
 Unit tests memverifikasi perhitungan KPI, filter tahun lintas periode, pencarian, status, sorting, serta server CSP/allowlist aset. Pengujian browser interaktif sebenarnya masih menjadi acceptance terpisah sebelum rilis. Tahap berikutnya adalah Assessment Workspace dan alur maker–checker menggunakan API yang sudah tersedia.
+## Assessment Workspace (PR #20)
+
+- Layout split 35:65: daftar kontrol, editor hasil, catatan, progres, versi katalog, dan riwayat.
+- Katalog dipasang sekali saat Draft (versi Published). Tidak ada dropdown untuk mengubah versi setelah dipasang.
+- Penyimpanan memakai PUT per kontrol dengan nomor revisi dari server. 409 tidak pernah diulang otomatis.
+- Penilaian hanya dapat diubah oleh owner dengan assessments:write saat in_progress atau changes_requested; status submitted/approved tetap read-only.
+- Data sintetis tidak digunakan dalam UI produksi. Katalog dan regulatory mappings belum diverifikasi.
+- UI belum lolos browser E2E, audit aksesibilitas, maupun UAT produksi. Semua itu tetap release gate wajib.
