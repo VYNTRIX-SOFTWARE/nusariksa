@@ -8,7 +8,7 @@ Proyek masih dalam tahap pengembangan awal. **Belum siap digunakan untuk operasi
 
 Fondasi backend sudah menggunakan Node.js dan PostgreSQL. Bagian yang telah dikerjakan meliputi migrasi database, tabel lembaga dan akun, autentikasi password Argon2id, sesi pengguna, serta pengujian otomatis melalui GitHub Actions.
 
-Antarmuka web awal sudah menyediakan login, logout, pemeriksaan sesi, navigasi, serta daftar asesmen baca-saja. Pengelolaan katalog, pengisian hasil, review, dan laporan visual masih melalui API. Pengiriman undangan otomatis, MFA, pemulihan akun, dan penyimpanan dokumen bukti belum tersedia. Pemetaan POJK 34 Tahun 2025 beserta ketentuan pelaksananya belum diimplementasikan.
+Antarmuka web awal sudah menyediakan login, logout, pemeriksaan sesi, dashboard status asesmen dari API, sidebar collapsible, navigasi berdasarkan izin, serta daftar asesmen baca-saja. Pengelolaan katalog, pengisian hasil, review, dan laporan visual masih melalui API. Pengiriman undangan otomatis, MFA, pemulihan akun, dan penyimpanan dokumen bukti belum tersedia. Pemetaan POJK 34 Tahun 2025 beserta ketentuan pelaksananya belum diimplementasikan.
 
 ## Menjalankan secara lokal
 
@@ -48,9 +48,9 @@ Server tetap mendengarkan koneksi lokal pada port 3000. Buka **`http://localhost
 
 ## Antarmuka web awal
 
-Akses `http://localhost:3000` setelah server berjalan dan akun telah dibuat. Form login memakai endpoint autentikasi yang sama dengan API. Setelah masuk, halaman menampilkan hak akses pengguna dan daftar maksimal 50 asesmen terbaru bagi akun yang memiliki izin `assessments:read`. Navigasi katalog dan laporan saat ini menampilkan keterangan fitur yang belum tersedia pada frontend; daftar asesmen masih baca-saja.
+Akses `http://localhost:3000` setelah server berjalan dan akun telah dibuat. Form login memakai endpoint autentikasi yang sama dengan API. Setelah masuk, dashboard menampilkan empat metrik berdasarkan maksimal 50 data terbaru dari `GET /assessments`: jumlah ditampilkan, menunggu review, perlu perbaikan, dan disetujui. Metrik tersebut **bukan agregat seluruh database ataupun skor kepatuhan**. Periode di header adalah filter lokal berdasarkan rentang tahun mulai dan akhir asesmen, bukan pengaturan global bank. Daftar asesmen mendukung pencarian judul, filter status, sorting, serta detail baca-saja termasuk versi katalog yang benar-benar terpasang. Sidebar dapat dilipat dan pada mobile memakai drawer. Navigasi Asesmen hanya ditampilkan bila pengguna mempunyai izin `assessments:read`. Katalog, bukti, review, dan laporan belum tersedia sebagai halaman frontend yang aktif.
 
-Sesi disimpan dalam cookie `HttpOnly`, bukan `localStorage` atau `sessionStorage`. Frontend tidak menyimpan token sesi. Semua request ditujukan ke origin yang sama. Pengujian browser interaktif end-to-end masih diperlukan sebelum menyebut frontend siap untuk pilot.
+Sesi disimpan dalam cookie `HttpOnly`, bukan `localStorage` atau `sessionStorage`. Frontend tidak menyimpan token sesi. Semua request ditujukan ke origin yang sama. Nama institusi dan profil pengguna belum tersedia melalui API umum; header memakai label netral, bukan identitas fiktif atau UUID sebagai nama. Versi katalog tampil pada detail asesmen, bukan switcher versi global. Pengujian browser end-to-end, accessibility, dan UAT masih diperlukan sebelum menyebut frontend siap untuk pilot.
 
 ## API yang tersedia
 
