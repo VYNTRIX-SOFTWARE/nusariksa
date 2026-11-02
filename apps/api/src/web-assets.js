@@ -7,6 +7,7 @@ const ASSETS = new Map([
   ['/assets/styles.css', { file: 'assets/styles.css', type: 'text/css; charset=utf-8' }],
   ['/assets/app.js', { file: 'assets/app.js', type: 'text/javascript; charset=utf-8' }],
   ['/assets/session.js', { file: 'assets/session.js', type: 'text/javascript; charset=utf-8' }],
+  ['/assets/assessment-model.js', { file: 'assets/assessment-model.js', type: 'text/javascript; charset=utf-8' }],
 ]);
 
 const CSP = [

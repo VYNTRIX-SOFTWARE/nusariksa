@@ -53,97 +53,139 @@
     </section>
   </main>
 
+  <svg xmlns="http://www.w3.org/2000/svg" class="icon-definitions" aria-hidden="true">
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></symbol>
+    <symbol id="i-clipboard" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="16" rx="2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6M9 16h6"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M5.5 9A7 7 0 0 1 18 7l2 5M4 12l2 5a7 7 0 0 0 12.5-2"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="M5 5l14 14M19 5 5 19"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="m12 3 10 18H2L12 3Z"/><path d="M12 9v5m0 3v.01"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></symbol>
+  </svg>
   <div id="app-screen" class="app-screen" hidden>
-    <aside class="sidebar" aria-label="Navigasi utama">
-      <div class="brand"><span class="brand-mark">N</span><span>NusaRiksa<span class="brand-dot">.</span></span></div>
-      <div class="sidebar-section-label">RUANG KERJA</div>
+    <div id="sidebar-backdrop" class="sidebar-backdrop" hidden></div>
+    <aside id="sidebar" class="sidebar" aria-label="Navigasi utama">
+      <div class="sidebar-head">
+        <div class="brand" aria-label="NusaRiksa"><span class="brand-mark">N</span><span class="brand-name">NusaRiksa<span class="brand-dot">.</span></span></div>
+        <button id="sidebar-toggle" type="button" class="icon-button desktop-collapse" aria-label="Lipat sidebar" aria-expanded="true" title="Lipat sidebar">
+          <svg class="icon"><use href="#i-menu"></use></svg>
+        </button>
+        <button id="sidebar-mobile-close" type="button" class="icon-button mobile-close" aria-label="Tutup navigasi">
+          <svg class="icon"><use href="#i-close"></use></svg>
+        </button>
+      </div>
       <nav class="side-navigation" aria-label="Modul">
-        <button type="button" class="nav-link is-active" data-page="overview" aria-current="page">
-          <span class="nav-symbol" aria-hidden="true">▦</span> Ikhtisar
+        <div class="sidebar-section-label">RINGKASAN</div>
+        <button type="button" class="nav-link is-active" data-page="overview" aria-current="page" title="Dashboard">
+          <svg class="icon nav-icon"><use href="#i-grid"></use></svg><span class="nav-label">Dashboard</span>
         </button>
-        <button type="button" class="nav-link" data-page="assessments">
-          <span class="nav-symbol" aria-hidden="true">☷</span> Asesmen TI
-        </button>
-        <button type="button" class="nav-link" data-page="catalogs">
-          <span class="nav-symbol" aria-hidden="true">▤</span> Katalog Kontrol
-        </button>
-        <button type="button" class="nav-link" data-page="reports">
-          <span class="nav-symbol" aria-hidden="true">▧</span> Laporan
+        <div class="sidebar-section-label sidebar-gap" id="assessment-menu-group" hidden>ASESMEN TI</div>
+        <button type="button" class="nav-link" data-page="assessments" id="assessment-menu" title="Daftar asesmen" hidden>
+          <svg class="icon nav-icon"><use href="#i-clipboard"></use></svg><span class="nav-label">Daftar Asesmen</span>
         </button>
       </nav>
       <div class="sidebar-bottom">
-        <div class="environment-note"><span class="environment-dot"></span> Lingkungan pengembangan</div>
-        <p>Fitur asesmen, katalog, dan laporan sedang disiapkan untuk penggunaan melalui web.</p>
+        <div class="environment-note"><span class="environment-dot"></span><span class="sidebar-foot-text">Tahap pengembangan</span></div>
+        <p class="sidebar-foot-text">Aplikasi self-hosted untuk satu BPR/BPRS. Belum siap digunakan dengan data bank asli.</p>
       </div>
     </aside>
-
     <div class="app-content">
       <header class="topbar">
-        <div class="topbar-text"><span class="topbar-kicker">NUSARIKSA / RUANG KERJA</span><strong id="topbar-page">Ikhtisar</strong></div>
-        <div class="topbar-actions"><span class="user-indicator"><span class="user-avatar">U</span><span id="user-label">Pengguna aktif</span></span>
-          <button type="button" id="logout-button" class="button button-quiet">Keluar</button>
+        <div class="topbar-left">
+          <button id="mobile-nav-toggle" type="button" class="icon-button mobile-toggle" aria-label="Buka navigasi" aria-expanded="false" aria-controls="sidebar">
+            <svg class="icon"><use href="#i-menu"></use></svg>
+          </button>
+          <div class="breadcrumb" aria-label="Breadcrumb"><span>NusaRiksa</span><svg class="icon tiny"><use href="#i-chevron"></use></svg><strong id="topbar-page">Dashboard</strong></div>
+        </div>
+        <div class="topbar-actions">
+          <div class="institution-context" title="Nama institusi belum tersedia melalui API profil. Tidak ada pemilihan tenant.">
+            <span class="institution-label">LINGKUNGAN</span><span>Instansi tunggal</span>
+          </div>
+          <label class="period-picker" for="period-select"><svg class="icon"><use href="#i-calendar"></use></svg><span class="period-text">Periode awal</span>
+            <select id="period-select" aria-label="Filter tahun awal periode asesmen"><option value="all">Semua</option></select>
+          </label>
+          <span class="user-indicator" title="Nama dan email profil belum tersedia dalam API sesi"><span class="user-avatar">U</span><span id="user-label">Akun aktif</span></span>
+          <button type="button" id="logout-button" class="button button-outline">Keluar</button>
         </div>
       </header>
-      <main class="main-area" id="main-content">
+      <main class="main-area" id="main-content" tabindex="-1">
         <div id="app-notice" class="app-notice" role="alert" hidden></div>
-
         <section id="page-overview" class="page" aria-labelledby="overview-title">
           <div class="page-intro">
-            <div><p class="eyebrow">IKHTISAR</p><h1 id="overview-title">Ruang kerja TI</h1>
-              <p class="supporting-copy">Pantau status asesmen dan pekerjaan yang sedang berjalan di lembaga Anda.</p>
+            <div><p class="eyebrow">RUANG KERJA / ASESMEN TI</p><h1 id="overview-title">Dashboard</h1>
+              <p class="supporting-copy">Tinjau pekerjaan, perkembangan asesmen, dan keputusan yang memerlukan perhatian.</p>
             </div>
-            <span class="stage-chip">Tahap pengembangan</span>
+            <button type="button" id="refresh-button" class="button button-outline"><svg class="icon"><use href="#i-refresh"></use></svg> Muat ulang</button>
           </div>
-          <div class="stats-grid">
-            <article class="stat-card"><span>Asesmen ditampilkan</span><strong id="metric-total">—</strong><small>Maksimal 50 terbaru</small></article>
-            <article class="stat-card"><span>Menunggu pemeriksaan</span><strong id="metric-review">—</strong><small>Berstatus submitted</small></article>
-            <article class="stat-card"><span>Sudah disetujui</span><strong id="metric-approved">—</strong><small>Berstatus approved</small></article>
+          <div id="dashboard-access" class="info-message" hidden>
+            <strong>Akses asesmen belum tersedia.</strong><p>Akun ini tidak memiliki izin <code>assessments:read</code>. Hubungi administrator untuk meminta akses yang diperlukan.</p>
           </div>
-          <div class="content-grid">
-            <section class="panel-card">
-              <div class="panel-heading"><div><p class="eyebrow">AKTIVITAS</p><h2>Asesmen terbaru</h2></div>
-                <button class="button button-link" type="button" data-open-page="assessments">Lihat daftar <span aria-hidden="true">→</span></button>
-              </div>
-              <div id="recent-assessments" class="assessment-items"><p class="empty-note">Memuat data asesmen…</p></div>
-            </section>
-            <section class="panel-card panel-rail"><p class="eyebrow">AKSES ANDA</p>
-              <h2>Hak akses sesi ini</h2>
-              <p class="muted">Izin dibaca langsung dari server, berdasarkan peran yang ditetapkan administrator.</p>
-              <div id="permission-list" class="permission-list"><span class="muted">Memuat izin…</span></div>
-              <p class="fine-print">Pengaturan peran dan akses lanjutan masih menggunakan API.</p>
-            </section>
+          <div id="dashboard-content">
+            <p class="scope-note">Ringkasan dari maksimal 50 asesmen terbaru yang dikembalikan server. Angka bukan total seluruh institusi atau skor kepatuhan.</p>
+            <div class="stats-grid">
+              <button type="button" class="stat-card" data-metric="all"><span>Asesmen ditampilkan</span><strong id="metric-total" class="metric-value skeleton-text">—</strong><small>Lihat daftar <svg class="icon tiny"><use href="#i-arrow"></use></svg></small></button>
+              <button type="button" class="stat-card" data-metric="submitted"><span>Menunggu review</span><strong id="metric-review" class="metric-value skeleton-text">—</strong><small>Status: submitted <svg class="icon tiny"><use href="#i-arrow"></use></svg></small></button>
+              <button type="button" class="stat-card" data-metric="changes_requested"><span>Perlu perbaikan</span><strong id="metric-changes" class="metric-value skeleton-text">—</strong><small>Status: changes_requested <svg class="icon tiny"><use href="#i-arrow"></use></svg></small></button>
+              <button type="button" class="stat-card" data-metric="approved"><span>Disetujui</span><strong id="metric-approved" class="metric-value skeleton-text">—</strong><small>Status: approved <svg class="icon tiny"><use href="#i-arrow"></use></svg></small></button>
+            </div>
+            <div class="content-grid">
+              <section class="panel-card">
+                <div class="panel-heading">
+                  <div><p class="eyebrow">TINDAK LANJUT</p><h2>Perlu diperhatikan</h2></div>
+                  <button id="view-all-button" type="button" class="button button-link">Lihat daftar <svg class="icon"><use href="#i-arrow"></use></svg></button>
+                </div>
+                <p class="panel-caption">Berdasarkan status asesmen; bukan antrean tugas pribadi.</p>
+                <div id="attention-list" class="assessment-items" aria-live="polite"><p class="empty-note">Memuat asesmen…</p></div>
+              </section>
+              <section class="panel-card panel-rail">
+                <p class="eyebrow">KONTEKS</p><h2>Pekerjaan saya</h2>
+                <p class="muted">Asesmen milik akun ini yang masih memerlukan pekerjaan. Antrean reviewer khusus belum tersedia.</p>
+                <div id="my-work-list" class="my-work-list"><p class="empty-note">Memuat pekerjaan…</p></div>
+                <div class="context-footer"><p><strong>Model:</strong> Single-tenant, self-hosted</p><p><strong>Versi kontrol:</strong> Ditampilkan pada detail asesmen</p><p><strong>Akses:</strong> Berdasarkan izin backend</p></div>
+              </section>
+            </div>
           </div>
         </section>
 
         <section id="page-assessments" class="page" aria-labelledby="assessments-title" hidden>
-          <div class="page-intro"><div><p class="eyebrow">ASESMEN TI</p><h1 id="assessments-title">Daftar asesmen</h1>
-            <p class="supporting-copy">Daftar baca-saja pada tahap ini. Pengisian dan pengajuan disiapkan pada tahap berikutnya.</p></div>
+          <div class="page-intro">
+            <div><p class="eyebrow">ASESMEN TI / DAFTAR</p><h1 id="assessments-title">Daftar asesmen</h1>
+              <p class="supporting-copy">Cari dan lihat detail asesmen yang sudah tersimpan. Pengisian dan pengajuan melalui web menyusul.</p>
+            </div>
           </div>
-          <section class="panel-card">
-            <div class="panel-heading"><h2>Asesmen lembaga</h2><span class="small-caption">50 data terbaru</span></div>
-            <div class="table-scroll">
-              <table class="data-table"><thead><tr><th>Asesmen</th><th>Periode</th><th>Status</th></tr></thead>
-                <tbody id="assessments-table"><tr><td colspan="3" class="table-empty">Memuat data…</td></tr></tbody>
+          <section class="panel-card table-panel">
+            <div class="panel-heading"><div><h2>Asesmen lembaga</h2><p class="panel-caption">Pencarian hanya pada maksimal 50 data terbaru yang dimuat dari API.</p></div>
+              <span id="filtered-count" class="small-caption">—</span>
+            </div>
+            <div class="table-toolbar">
+              <label class="search-field" for="assessment-search"><svg class="icon"><use href="#i-search"></use></svg><input id="assessment-search" type="search" placeholder="Cari judul asesmen..." autocomplete="off"></label>
+              <label for="status-filter" class="filter-field"><span>Status</span>
+                <select id="status-filter"><option value="all">Semua status</option><option value="draft">Draft</option><option value="in_progress">Dikerjakan</option><option value="submitted">Menunggu review</option><option value="changes_requested">Perlu perbaikan</option><option value="approved">Disetujui</option></select>
+              </label>
+              <label for="sort-filter" class="filter-field"><span>Urutkan</span>
+                <select id="sort-filter"><option value="newest">Terbaru</option><option value="oldest">Terlama</option><option value="title">Judul A–Z</option></select>
+              </label>
+              <button id="reset-filters" class="button button-ghost" type="button">Reset</button>
+            </div>
+            <div class="table-scroll" tabindex="0" aria-label="Tabel asesmen, dapat digulir jika diperlukan">
+              <table class="data-table"><thead><tr><th scope="col">Judul asesmen</th><th scope="col">Periode</th><th scope="col">Status</th><th scope="col">Dibuat</th><th scope="col">Detail</th></tr></thead>
+                <tbody id="assessments-table"><tr><td colspan="5" class="table-empty">Memuat data…</td></tr></tbody>
               </table>
             </div>
           </section>
         </section>
-
-        <section id="page-catalogs" class="page" aria-labelledby="catalogs-title" hidden>
-          <div class="page-intro"><div><p class="eyebrow">KATALOG KONTROL</p><h1 id="catalogs-title">Katalog kontrol TI</h1>
-            <p class="supporting-copy">Katalog berversi sudah tersedia melalui API. Antarmuka pengelolaannya dikembangkan berikutnya.</p></div></div>
-          <div class="placeholder-panel"><span class="placeholder-icon">▤</span><h2>Pengelolaan katalog melalui web</h2>
-            <p>Modul ini belum tersedia pada frontend. Belum ada katalog atau pemetaan POJK bawaan yang telah diverifikasi.</p></div>
-        </section>
-
-        <section id="page-reports" class="page" aria-labelledby="reports-title" hidden>
-          <div class="page-intro"><div><p class="eyebrow">LAPORAN</p><h1 id="reports-title">Laporan asesmen</h1>
-            <p class="supporting-copy">API laporan internal sudah tersedia. Halaman laporan visual akan menyusul.</p></div></div>
-          <div class="placeholder-panel"><span class="placeholder-icon">▧</span><h2>Ringkasan dan hasil pemeriksaan</h2>
-            <p>Laporan hanya dianggap final setelah asesmen disetujui reviewer. Progres pengisian bukan skor kepatuhan regulasi.</p></div>
-        </section>
       </main>
     </div>
   </div>
+  <dialog id="detail-dialog" class="detail-dialog" aria-labelledby="detail-title">
+    <div class="dialog-header"><div><p class="eyebrow">DETAIL ASESMEN · BACA-SAJA</p><h2 id="detail-title">Detail asesmen</h2></div>
+      <button id="close-detail" type="button" class="icon-button" aria-label="Tutup detail"><svg class="icon"><use href="#i-close"></use></svg></button>
+    </div>
+    <div id="detail-body" class="detail-body"><p>Memuat detail…</p></div>
+  </dialog>
+
 </body>
 </html>
