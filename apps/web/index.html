@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="NusaRiksa — tata kelola dan asesmen teknologi informasi BPR/BPRS.">
+  <title>NusaRiksa — Tata Kelola TI</title>
+  <link rel="stylesheet" href="/assets/styles.css">
+  <script type="module" src="/assets/app.js"></script>
+</head>
+<body>
+  <div id="loading-screen" class="loading-screen" role="status">
+    <span class="loading-mark" aria-hidden="true">N</span>
+    <p>Menyiapkan NusaRiksa…</p>
+  </div>
+
+  <main id="login-screen" class="login-screen" hidden>
+    <section class="login-intro" aria-label="Tentang NusaRiksa">
+      <div class="brand brand-light"><span class="brand-mark">N</span><span>NusaRiksa<span class="brand-dot">.</span></span></div>
+      <div class="intro-copy">
+        <p class="eyebrow eyebrow-light">PENGELOLAAN TATA KELOLA TI</p>
+        <h1>Pengendalian yang tertata. Keputusan yang dapat ditelusuri.</h1>
+        <p>Ruang kerja untuk asesmen teknologi informasi, pemeriksaan berjenjang, dan dokumentasi hasil bagi BPR dan BPRS.</p>
+      </div>
+      <div class="intro-footer">
+        <span class="footer-line"></span>
+        <p>NusaRiksa · Proyek sumber terbuka oleh VYNTRIX</p>
+        <p class="footer-muted">Dalam pengembangan — belum untuk data operasional bank.</p>
+      </div>
+    </section>
+
+    <section class="login-panel">
+      <div class="login-box">
+        <div class="login-topline"><span class="small-brand-mark">N</span><span>Akses NusaRiksa</span></div>
+        <p class="eyebrow">SELAMAT DATANG</p>
+        <h2>Masuk ke ruang kerja</h2>
+        <p class="supporting-copy">Gunakan akun yang telah diaktifkan oleh administrator lembaga.</p>
+
+        <form id="login-form" autocomplete="on">
+          <label for="login-email">Alamat email</label>
+          <input id="login-email" name="email" type="email" placeholder="nama@lembaga.co.id"
+            autocomplete="username" maxlength="254" required>
+          <label for="login-password">Kata sandi</label>
+          <input id="login-password" name="password" type="password" placeholder="Masukkan kata sandi"
+            autocomplete="current-password" required>
+          <p id="login-error" class="form-error" role="alert" hidden></p>
+          <button id="login-submit" class="button button-primary" type="submit">Masuk <span aria-hidden="true">→</span></button>
+        </form>
+        <div class="login-help">Belum memiliki akun? Hubungi administrator NusaRiksa di lembaga Anda.</div>
+      </div>
+      <p class="login-legal">Akses hanya untuk pengguna yang berwenang. Aktivitas tertentu dicatat dalam riwayat sistem.</p>
+    </section>
+  </main>
+
+  <div id="app-screen" class="app-screen" hidden>
+    <aside class="sidebar" aria-label="Navigasi utama">
+      <div class="brand"><span class="brand-mark">N</span><span>NusaRiksa<span class="brand-dot">.</span></span></div>
+      <div class="sidebar-section-label">RUANG KERJA</div>
+      <nav class="side-navigation" aria-label="Modul">
+        <button type="button" class="nav-link is-active" data-page="overview" aria-current="page">
+          <span class="nav-symbol" aria-hidden="true">▦</span> Ikhtisar
+        </button>
+        <button type="button" class="nav-link" data-page="assessments">
+          <span class="nav-symbol" aria-hidden="true">☷</span> Asesmen TI
+        </button>
+        <button type="button" class="nav-link" data-page="catalogs">
+          <span class="nav-symbol" aria-hidden="true">▤</span> Katalog Kontrol
+        </button>
+        <button type="button" class="nav-link" data-page="reports">
+          <span class="nav-symbol" aria-hidden="true">▧</span> Laporan
+        </button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="environment-note"><span class="environment-dot"></span> Lingkungan pengembangan</div>
+        <p>Fitur asesmen, katalog, dan laporan sedang disiapkan untuk penggunaan melalui web.</p>
+      </div>
+    </aside>
+
+    <div class="app-content">
+      <header class="topbar">
+        <div class="topbar-text"><span class="topbar-kicker">NUSARIKSA / RUANG KERJA</span><strong id="topbar-page">Ikhtisar</strong></div>
+        <div class="topbar-actions"><span class="user-indicator"><span class="user-avatar">U</span><span id="user-label">Pengguna aktif</span></span>
+          <button type="button" id="logout-button" class="button button-quiet">Keluar</button>
+        </div>
+      </header>
+      <main class="main-area" id="main-content">
+        <div id="app-notice" class="app-notice" role="alert" hidden></div>
+
+        <section id="page-overview" class="page" aria-labelledby="overview-title">
+          <div class="page-intro">
+            <div><p class="eyebrow">IKHTISAR</p><h1 id="overview-title">Ruang kerja TI</h1>
+              <p class="supporting-copy">Pantau status asesmen dan pekerjaan yang sedang berjalan di lembaga Anda.</p>
+            </div>
+            <span class="stage-chip">Tahap pengembangan</span>
+          </div>
+          <div class="stats-grid">
+            <article class="stat-card"><span>Asesmen ditampilkan</span><strong id="metric-total">—</strong><small>Maksimal 50 terbaru</small></article>
+            <article class="stat-card"><span>Menunggu pemeriksaan</span><strong id="metric-review">—</strong><small>Berstatus submitted</small></article>
+            <article class="stat-card"><span>Sudah disetujui</span><strong id="metric-approved">—</strong><small>Berstatus approved</small></article>
+          </div>
+          <div class="content-grid">
+            <section class="panel-card">
+              <div class="panel-heading"><div><p class="eyebrow">AKTIVITAS</p><h2>Asesmen terbaru</h2></div>
+                <button class="button button-link" type="button" data-open-page="assessments">Lihat daftar <span aria-hidden="true">→</span></button>
+              </div>
+              <div id="recent-assessments" class="assessment-items"><p class="empty-note">Memuat data asesmen…</p></div>
+            </section>
+            <section class="panel-card panel-rail"><p class="eyebrow">AKSES ANDA</p>
+              <h2>Hak akses sesi ini</h2>
+              <p class="muted">Izin dibaca langsung dari server, berdasarkan peran yang ditetapkan administrator.</p>
+              <div id="permission-list" class="permission-list"><span class="muted">Memuat izin…</span></div>
+              <p class="fine-print">Pengaturan peran dan akses lanjutan masih menggunakan API.</p>
+            </section>
+          </div>
+        </section>
+
+        <section id="page-assessments" class="page" aria-labelledby="assessments-title" hidden>
+          <div class="page-intro"><div><p class="eyebrow">ASESMEN TI</p><h1 id="assessments-title">Daftar asesmen</h1>
+            <p class="supporting-copy">Daftar baca-saja pada tahap ini. Pengisian dan pengajuan disiapkan pada tahap berikutnya.</p></div>
+          </div>
+          <section class="panel-card">
+            <div class="panel-heading"><h2>Asesmen lembaga</h2><span class="small-caption">50 data terbaru</span></div>
+            <div class="table-scroll">
+              <table class="data-table"><thead><tr><th>Asesmen</th><th>Periode</th><th>Status</th></tr></thead>
+                <tbody id="assessments-table"><tr><td colspan="3" class="table-empty">Memuat data…</td></tr></tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+
+        <section id="page-catalogs" class="page" aria-labelledby="catalogs-title" hidden>
+          <div class="page-intro"><div><p class="eyebrow">KATALOG KONTROL</p><h1 id="catalogs-title">Katalog kontrol TI</h1>
+            <p class="supporting-copy">Katalog berversi sudah tersedia melalui API. Antarmuka pengelolaannya dikembangkan berikutnya.</p></div></div>
+          <div class="placeholder-panel"><span class="placeholder-icon">▤</span><h2>Pengelolaan katalog melalui web</h2>
+            <p>Modul ini belum tersedia pada frontend. Belum ada katalog atau pemetaan POJK bawaan yang telah diverifikasi.</p></div>
+        </section>
+
+        <section id="page-reports" class="page" aria-labelledby="reports-title" hidden>
+          <div class="page-intro"><div><p class="eyebrow">LAPORAN</p><h1 id="reports-title">Laporan asesmen</h1>
+            <p class="supporting-copy">API laporan internal sudah tersedia. Halaman laporan visual akan menyusul.</p></div></div>
+          <div class="placeholder-panel"><span class="placeholder-icon">▧</span><h2>Ringkasan dan hasil pemeriksaan</h2>
+            <p>Laporan hanya dianggap final setelah asesmen disetujui reviewer. Progres pengisian bukan skor kepatuhan regulasi.</p></div>
+        </section>
+      </main>
+    </div>
+  </div>
+</body>
+</html>
