@@ -8,7 +8,7 @@ Proyek masih dalam tahap pengembangan awal. **Belum siap digunakan untuk operasi
 
 Fondasi backend sudah menggunakan Node.js dan PostgreSQL. Bagian yang telah dikerjakan meliputi migrasi database, tabel lembaga dan akun, autentikasi password Argon2id, sesi pengguna, serta pengujian otomatis melalui GitHub Actions.
 
-Antarmuka web menyediakan login, logout, dashboard status asesmen dari API, sidebar collapsible, daftar asesmen, serta workspace pengisian kontrol yang terhubung ke API berdasarkan izin dan status. Pengelolaan katalog, pengisian hasil, review, dan laporan visual masih melalui API. Pengiriman undangan otomatis, MFA, pemulihan akun, dan penyimpanan dokumen bukti belum tersedia. Pemetaan POJK 34 Tahun 2025 beserta ketentuan pelaksananya belum diimplementasikan.
+Antarmuka web menyediakan login, logout, dashboard status asesmen dari API, sidebar collapsible, daftar asesmen, serta workspace pengisian kontrol yang terhubung ke API berdasarkan izin dan status. Pengelolaan katalog dan laporan visual masih melalui API; pengajuan, pemeriksaan maker–checker, dan histori keputusan kini tersedia melalui web. Pengiriman undangan otomatis, MFA, pemulihan akun, dan penyimpanan dokumen bukti belum tersedia. Pemetaan POJK 34 Tahun 2025 beserta ketentuan pelaksananya belum diimplementasikan.
 
 ## Menjalankan secara lokal
 
@@ -48,7 +48,7 @@ Server tetap mendengarkan koneksi lokal pada port 3000. Buka **`http://localhost
 
 ## Antarmuka web awal
 
-Akses `http://localhost:3000` setelah server berjalan dan akun telah dibuat. Form login memakai endpoint autentikasi yang sama dengan API. Setelah masuk, dashboard menampilkan empat metrik berdasarkan maksimal 50 data terbaru dari `GET /assessments`: jumlah ditampilkan, menunggu review, perlu perbaikan, dan disetujui. Metrik tersebut **bukan agregat seluruh database ataupun skor kepatuhan**. Periode di header adalah filter lokal berdasarkan rentang tahun mulai dan akhir asesmen, bukan pengaturan global bank. Daftar asesmen mendukung pencarian judul, filter status, sorting, serta detail baca-saja termasuk versi katalog yang benar-benar terpasang. Sidebar dapat dilipat dan pada mobile memakai drawer. Navigasi Asesmen hanya ditampilkan bila pengguna mempunyai izin `assessments:read`. Katalog, bukti, review, dan laporan belum tersedia sebagai halaman frontend yang aktif.
+Akses `http://localhost:3000` setelah server berjalan dan akun telah dibuat. Form login memakai endpoint autentikasi yang sama dengan API. Setelah masuk, dashboard menampilkan empat metrik berdasarkan maksimal 50 data terbaru dari `GET /assessments`: jumlah ditampilkan, menunggu review, perlu perbaikan, dan disetujui. Metrik tersebut **bukan agregat seluruh database ataupun skor kepatuhan**. Periode di header adalah filter lokal berdasarkan rentang tahun mulai dan akhir asesmen, bukan pengaturan global bank. Daftar asesmen mendukung pencarian judul, filter status, sorting, serta detail baca-saja termasuk versi katalog yang benar-benar terpasang. Sidebar dapat dilipat dan pada mobile memakai drawer. Navigasi Asesmen hanya ditampilkan bila pengguna mempunyai izin `assessments:read`. Katalog, bukti, dan laporan belum tersedia sebagai halaman frontend aktif. Review & Persetujuan tersedia bagi pengguna berizin `assessments:read` dan `assessments:approve`.
 
 Sesi disimpan dalam cookie `HttpOnly`, bukan `localStorage` atau `sessionStorage`. Frontend tidak menyimpan token sesi. Semua request ditujukan ke origin yang sama. Nama institusi dan profil pengguna belum tersedia melalui API umum; header memakai label netral, bukan identitas fiktif atau UUID sebagai nama. Versi katalog tampil pada detail asesmen, bukan switcher versi global. Pengujian browser end-to-end, accessibility, dan UAT masih diperlukan sebelum menyebut frontend siap untuk pilot.
 
@@ -58,8 +58,17 @@ Dari halaman Daftar Asesmen, pengguna dengan izin `assessments:write` dapat memb
 
 Pada asesmen berstatus `in_progress` atau `changes_requested`, pemilik berizin dapat mengisi hasil penilaian per kontrol, catatan, dan menyimpannya secara eksplisit. Hasil yang sudah disimpan memiliki nomor revisi; client mengirim `expectedRevision` ke API. Bila server membalas konflik `409`, isian lokal **tetap dipertahankan** dan pengguna harus memuat ulang sebelum mengirim lagi; tidak ada penimpaan atau pengiriman ulang otomatis. Riwayat perubahan tersedia melalui tombol Lihat riwayat. Pengguna tanpa hak tulis atau asesmen berstatus `submitted`/`approved` hanya dapat melihat data.
 
-Keluar dari workspace atau menutup halaman dengan perubahan yang belum disimpan akan memunculkan konfirmasi. Semua data berasal dari endpoint API, bukan DEMO. Pengajuan dan review melalui web, evidence upload, serta pemetaan ketentuan regulator **belum** tersedia.
+Keluar dari workspace atau menutup halaman dengan perubahan yang belum disimpan akan memunculkan konfirmasi. Semua data berasal dari endpoint API, bukan DEMO. Pengajuan dan review melalui web sudah tersedia. Evidence upload dan pemetaan ketentuan regulator **belum** tersedia.
 
+## Review & Persetujuan di web
+
+Pemilik asesmen berizin `assessments:write` dapat mengajukan asesmen yang berstatus `in_progress` atau `changes_requested` **setelah seluruh kontrol dinilai**. Tindakan ini mengunci hasil penilaian dan menambah siklus pemeriksaan. Pengajuan dari editor yang masih memiliki perubahan belum disimpan tidak diizinkan.
+
+Menu Review & Persetujuan hanya tersedia bagi akun yang memiliki `assessments:read` dan `assessments:approve`. Antrean hanya menampilkan asesmen `submitted` milik pengguna lain dari **maksimal 50 asesmen terbaru** yang dikembalikan API. Antrean ini bukan penugasan personal atau cakupan seluruh database.
+
+Pemeriksa dapat membaca hasil dan catatan setiap kontrol di workspace, lalu memilih `approve` atau `request_changes`. Pengembalian memerlukan alasan minimal 10 karakter. Sebelum tindakan terjadi, UI meminta konfirmasi. Pengajuan, persetujuan dan pengembalian tersedia dalam riwayat `GET /assessments/:id/reviews`, termasuk nomor siklus dari server. Konflik status `409` tidak diulang otomatis. Tidak ada perubahan state machine, hak akses, atau aturan backend.
+
+ID aktor pada riwayat hanya ditampilkan secara ringkas sebagai penanda teknis. Nama akun tidak dibuat-buat karena API profil pengguna umum belum tersedia. Penilaian internal ini bukan sertifikasi kepatuhan oleh OJK.
 ## API yang tersedia
 
 | Metode | Endpoint | Fungsi |

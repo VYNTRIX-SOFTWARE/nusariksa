@@ -4,6 +4,10 @@ import {
   canEditResult, combineControls, validateAssessmentDraft, validateRatingDraft,
 } from './assessment-workspace-model.js';
 import { ApiError } from './session.js';
+import {
+  REVIEW_ACTION_LABELS, canDecideReview, canSubmitReview,
+  maySubmitReview, validateReviewDecision,
+} from './assessment-review-model.js';
 
 const $ = (id) => document.getElementById(id);
 const message = (id,value) => {$(id).textContent=value;};
@@ -37,6 +41,7 @@ function fmtDate(value){
 
 export function createWorkspace({
   api, getUserId, getPermissions, onCreated, onBack, onAuthFailure,
+  onChanged = async () => {},
 }) {
   const state={
     id:null, assessment:null, catalog:null, controls:[], selectedId:null,
@@ -62,6 +67,8 @@ export function createWorkspace({
       || !canStartAssessment(state.assessment,getUserId(),getPermissions(),state.catalog);
     $('workspace-save').disabled=isBusy || state.conflict || !state.dirty || !editable();
     $('assessment-create-submit').disabled=isBusy;
+    $('workspace-submit-review').disabled=isBusy || state.dirty || state.conflict || !canSubmitReview(state.assessment,getUserId(),getPermissions(),state.catalog,state.controls);
+    $('workspace-review-save').disabled=isBusy || !canDecideReview(state.assessment,getUserId(),getPermissions());
   }
   function renderProgress(){
     const total=state.controls.length;
@@ -75,6 +82,67 @@ export function createWorkspace({
       :'Katalog belum terpasang');
     message('workspace-control-count',total+' kontrol');
   }
+
+  function renderReview(){
+    const a=state.assessment;
+    if(!a)return;
+    const maySubmit=maySubmitReview(a,getUserId(),getPermissions(),state.catalog);
+    const ready=canSubmitReview(a,getUserId(),getPermissions(),state.catalog,state.controls);
+    const reviewer=canDecideReview(a,getUserId(),getPermissions());
+    const remaining=state.controls.filter(c=>!Number.isSafeInteger(c.revision)||c.revision<1).length;
+    $('workspace-submit-area').hidden=!maySubmit;
+    $('workspace-submit-review').disabled=state.pending||state.dirty||state.conflict||!ready;
+    $('workspace-review-form').hidden=!reviewer;
+    $('workspace-review-save').disabled=state.pending||!reviewer;
+    $('workspace-review-cycle').textContent='Memuat siklus…';
+    if(maySubmit){
+      message('workspace-review-description','Ajukan asesmen setelah seluruh kontrol dinilai. Hasil akan dikunci sampai pemeriksa mengembalikannya untuk perbaikan.');
+      message('workspace-submit-hint',ready
+        ?'Semua kontrol telah dinilai. Periksa kembali hasil dan catatan sebelum mengajukan.'
+        :remaining+' kontrol belum dinilai. Lengkapi semuanya sebelum mengajukan.');
+    }else if(reviewer){
+      message('workspace-review-description','Periksa hasil seluruh kontrol. Anda bukan pemilik asesmen dan memiliki izin memutuskan review.');
+    }else if(a.status==='submitted'){
+      message('workspace-review-description','Asesmen menunggu keputusan pemeriksa. Hasil penilaian saat ini terkunci.');
+    }else if(a.status==='approved'){
+      message('workspace-review-description','Asesmen telah disetujui dan terkunci. Riwayat keputusan tetap tersedia untuk ditinjau.');
+    }else if(a.status==='changes_requested'){
+      message('workspace-review-description','Asesmen dikembalikan untuk perbaikan. Pemilik berizin dapat merevisi penilaian lalu mengajukan ulang.');
+    }else{
+      message('workspace-review-description','Review baru tersedia setelah asesmen dimulai dan semua kontrol dinilai.');
+    }
+  }
+  async function loadReviewHistory(gen=state.generation){
+    const el=$('workspace-review-history');
+    el.replaceChildren(make('p','empty-note','Memuat riwayat pemeriksaan…'));
+    try {
+      const data=await api(base('/reviews'));
+      if(gen!==state.generation)return;
+      const events=Array.isArray(data.events)?data.events:[];
+      $('workspace-review-cycle').textContent='Siklus '+(data.submissionCycle??'—');
+      el.replaceChildren();
+      if(events.length===0){
+        el.append(make('p','empty-note','Belum ada pengajuan atau keputusan pemeriksaan.'));
+        return;
+      }
+      for(const event of events){
+        const row=make('div','review-history-item','');
+        row.append(make('strong','',(REVIEW_ACTION_LABELS[event.action]??'Peristiwa review')
+          +' · Siklus '+event.submission_cycle));
+        const actor=typeof event.actor_user_id==='string'
+          ?'ID pengguna '+event.actor_user_id.slice(0,8)+'…':'Pengguna tidak diketahui';
+        const time=event.occurred_at?new Date(event.occurred_at).toLocaleString('id-ID'):'—';
+        row.append(make('small','',time+' · '+actor));
+        if(event.note)row.append(make('p','',event.note));
+        el.append(row);
+      }
+    } catch(error) {
+      if(gen!==state.generation)return;
+      if(onAuthFailure(error))return;
+      el.replaceChildren(make('p','empty-note','Riwayat belum dapat dimuat. Coba lagi.'));
+    }
+  }
+
   function renderControls(){
     const el=$('workspace-controls');
     el.replaceChildren();
@@ -107,6 +175,8 @@ export function createWorkspace({
       ?'Konflik revisi: muat ulang sebelum menyimpan kembali.'
       :state.dirty?'Perubahan belum disimpan.':'Tidak ada perubahan.');
     $('workspace-save').disabled=state.pending||state.conflict||!state.dirty;
+    $('workspace-submit-review').disabled=state.pending||state.conflict||state.dirty
+      || !canSubmitReview(state.assessment,getUserId(),getPermissions(),state.catalog,state.controls);
   }
   function renderEditor(){
     const control=selected();
@@ -203,7 +273,8 @@ export function createWorkspace({
       const chip=$('workspace-status');
       chip.textContent=STATUS_LABELS[assessment.status]??assessment.status;
       chip.dataset.status=assessment.status;
-      renderProgress();renderSetup(gen);renderControls();renderEditor();
+      renderProgress();renderSetup(gen);renderControls();renderEditor();renderReview();
+      void loadReviewHistory(gen);
       $('workspace-loading').hidden=true;$('workspace-content').hidden=false;
     }catch(error){
       if(gen!==state.generation)return;
@@ -230,6 +301,7 @@ export function createWorkspace({
       await api(base(path),{method,...(body!==undefined?{body}:{})});
       if(gen!==state.generation)return;
       await load();
+      if(state.id)await onChanged();
     }catch(error){onError(error,gen);}
     finally{renderBusy(false);}
   }
@@ -336,6 +408,41 @@ export function createWorkspace({
     if(!window.confirm('Mulai asesmen ini? Status berubah menjadi Dikerjakan.'))return;
     void runAction('/start');
   });
+
+  $('workspace-submit-review').addEventListener('click',()=>{
+    if(state.pending || !canSubmitReview(state.assessment,getUserId(),getPermissions(),state.catalog,state.controls))return;
+    if(state.dirty){showMessage('Simpan atau batalkan perubahan penilaian sebelum mengajukan review.','warning');return;}
+    if(!window.confirm('Ajukan asesmen ini untuk pemeriksaan? Seluruh penilaian akan terkunci sampai review selesai.'))return;
+    void runAction('/submit');
+  });
+  $('workspace-review-decision').addEventListener('change',(event)=>{
+    const required=event.target.value==='request_changes';
+    $('workspace-review-note').minLength=required?10:0;
+    $('workspace-review-note').required=required;
+  });
+  $('workspace-review-form').addEventListener('submit',async(event)=>{
+    event.preventDefault();
+    if(state.pending||!canDecideReview(state.assessment,getUserId(),getPermissions()))return;
+    const decision=$('workspace-review-decision').value;
+    const note=$('workspace-review-note').value;
+    const reason=validateReviewDecision({decision,note});
+    if(reason){showMessage(reason,'error');return;}
+    const label=decision==='approve'?'menyetujui':'mengembalikan untuk perbaikan';
+    if(!window.confirm('Anda akan '+label+' asesmen ini. Keputusan akan tercatat dalam audit log. Lanjutkan?'))return;
+    const gen=state.generation;
+    renderBusy(true);
+    try{
+      await api(base('/review'),{method:'POST',body:{decision,note}});
+      if(gen!==state.generation)return;
+      $('workspace-review-form').reset();
+      await load();
+      showMessage(decision==='approve'?'Asesmen berhasil disetujui.':'Asesmen dikembalikan untuk perbaikan.','info');
+      if(state.id)await onChanged();
+    }catch(error){onError(error,gen);}
+    finally{renderBusy(false);}
+  });
+  $('workspace-review-history-reload').addEventListener('click',()=>void loadReviewHistory());
+
   window.addEventListener('beforeunload',(event)=>{
     if(!state.dirty)return;
     event.preventDefault();

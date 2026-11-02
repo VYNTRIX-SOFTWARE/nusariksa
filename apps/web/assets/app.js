@@ -6,6 +6,7 @@ import {
   summarizeAssessments, filterAssessments, attentionAssessments, ownWork,
 } from './assessment-model.js';
 import { createWorkspace } from './assessment-workspace.js';
+import { pendingReviewQueue } from './assessment-review-model.js';
 
 const $ = (id) => document.getElementById(id);
 const screens = {
@@ -13,9 +14,9 @@ const screens = {
 };
 const state = {
   userId: null, permissions: [], assessments: [], load: 'loading', page: 'overview',
-  year: 'all', status: 'all', search: '', sort: 'newest',
+  year: 'all', status: 'all', search: '', sort: 'newest', workspaceOrigin:'assessments',
 };
-const pages = {overview: 'Dashboard', assessments: 'Daftar Asesmen', workspace: 'Assessment Workspace'};
+const pages = {overview: 'Dashboard', assessments: 'Daftar Asesmen', reviews: 'Review & Persetujuan', workspace: 'Assessment Workspace'};
 
 function show(screen) {
   for (const [name, element] of Object.entries(screens)) element.hidden = name !== screen;
@@ -93,9 +94,13 @@ function renderPermissions() {
   const hasRead=state.permissions.includes('assessments:read');
   $('assessment-menu').hidden=!hasRead;
   $('assessment-menu-group').hidden=!hasRead;
+  const canReview=hasRead && state.permissions.includes('assessments:approve');
+  $('review-menu').hidden=!canReview;
+  $('review-menu-group').hidden=!canReview;
   $('dashboard-access').hidden=state.load!=='forbidden';
   $('dashboard-content').hidden=state.load==='forbidden';
-  if (!hasRead && state.page==='assessments') navigate('overview');
+  if (!hasRead && ['assessments','workspace'].includes(state.page)) navigate('overview');
+  if (!canReview && state.page==='reviews') navigate('overview');
 }
 function renderMetrics() {
   const loading = state.load!=='ready';
@@ -167,8 +172,44 @@ function renderTable() {
     root.append(tr);
   }
 }
+
+function renderReviewQueue(){
+  const root=$('review-queue-table');
+  root.replaceChildren();
+  if(state.load!=='ready'){
+    const message=state.load==='loading'?'Memuat antrean…'
+      :state.load==='forbidden'?'Anda tidak memiliki izin membaca asesmen.':'Antrean belum dapat dimuat. Gunakan Muat ulang.';
+    const tr=document.createElement('tr'),td=textElement('td','table-empty',message);
+    td.colSpan=4;tr.append(td);root.append(tr);
+    $('review-queue-count').textContent='—';
+    return;
+  }
+  const queue=pendingReviewQueue(state.assessments,state.userId,state.permissions);
+  $('review-queue-count').textContent=queue.length+' dalam 50 terbaru (maks.)';
+  if(queue.length===0){
+    const tr=document.createElement('tr');
+    const td=textElement('td','table-empty',
+      'Tidak ada asesmen yang menunggu review oleh akun Anda pada data yang dimuat.');
+    td.colSpan=4;tr.append(td);root.append(tr);
+  }
+  for(const a of queue){
+    const tr=document.createElement('tr');
+    const title=textElement('td','',a.title);
+    const period=textElement('td','table-date',
+      formatDate(a.period_start)+' – '+formatDate(a.period_end));
+    const status=document.createElement('td');status.append(statusChip(a.status));
+    const action=document.createElement('td');
+    const button=textElement('button','detail-link','Buka pemeriksaan');
+    button.type='button';button.dataset.reviewId=a.id;
+    button.setAttribute('aria-label','Periksa asesmen '+a.title);
+    action.append(button);
+    tr.append(title,period,status,action);
+    root.append(tr);
+  }
+}
+
 function render() {
-  renderPermissions();renderMetrics();renderAttention();renderTable();
+  renderPermissions();renderMetrics();renderAttention();renderTable();renderReviewQueue();
 }
 function populateYears() {
   const picker=$('period-select');
@@ -189,13 +230,14 @@ function closeMobile() {
 }
 function navigate(page) {
   if (!(page in pages)) return false;
-  if((page==='assessments'||page==='workspace')&&!state.permissions.includes('assessments:read'))return false;
+  if(['assessments','workspace','reviews'].includes(page)&&!state.permissions.includes('assessments:read'))return false;
+  if(page==='reviews'&&!state.permissions.includes('assessments:approve'))return false;
   if(state.page==='workspace' && page!=='workspace' && !workspace.confirmLeave())return false;
   if(state.page==='workspace' && page!=='workspace')workspace.close();
   state.page=page;
   for(const section of document.querySelectorAll('.page'))section.hidden=section.id!=='page-'+page;
   for(const btn of document.querySelectorAll('[data-page]')) {
-    const isActive=btn.dataset.page===page || (page==='workspace' && btn.dataset.page==='assessments');
+    const isActive=btn.dataset.page===page || (page==='workspace' && btn.dataset.page===state.workspaceOrigin);
     btn.classList.toggle('is-active',isActive);
     if(isActive)btn.setAttribute('aria-current','page');
     else btn.removeAttribute('aria-current');
@@ -375,16 +417,33 @@ const workspace=createWorkspace({
   getUserId:()=>state.userId,
   getPermissions:()=>state.permissions,
   onAuthFailure:authFailure,
-  onBack:()=>navigate('assessments'),
+  onBack:()=>navigate(state.workspaceOrigin),
+  onChanged:loadWorkspace,
   onCreated:async(id)=>{
     await loadWorkspace();
     if(state.userId && navigate('workspace'))await workspace.open(id);
   },
 });
-async function openWorkspace(id){
+async function openWorkspace(id,origin='assessments'){
   if(!state.permissions.includes('assessments:read'))return;
   if(state.page==='workspace' && !workspace.confirmLeave())return;
-  if(navigate('workspace'))await workspace.open(id);
+  if(origin==='reviews' && !state.permissions.includes('assessments:approve'))return;
+  if(navigate('workspace')){
+    state.workspaceOrigin=origin;
+    for(const button of document.querySelectorAll('[data-page]')){
+      const active=button.dataset.page===origin;
+      button.classList.toggle('is-active',active);
+      if(active)button.setAttribute('aria-current','page');
+      else button.removeAttribute('aria-current');
+    }
+    await workspace.open(id);
+  }
 }
+$('review-queue-table').addEventListener('click',(event)=>{
+  const button=event.target.closest?.('[data-review-id]');
+  if(button&&$('review-queue-table').contains(button))
+    void openWorkspace(button.dataset.reviewId,'reviews');
+});
+$('review-queue-reload').addEventListener('click',()=>void loadWorkspace());
 
 void restoreSession();

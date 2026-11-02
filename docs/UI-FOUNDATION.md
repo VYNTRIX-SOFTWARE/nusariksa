@@ -4,8 +4,8 @@ Implementasi ini mengikuti NUSARIKSA UI/UX Design Standard v1 yang disediakan pe
 
 ## Status modul
 
-- EXISTING UI: login, logout, sesi, Dashboard, filter tahun/status, Daftar Asesmen, Assessment Workspace (membuat, memasang katalog, memulai, mengisi hasil, membaca revisi).
-- EXISTING API, UI belum tersedia: pengelolaan/publikasi katalog kontrol, pengajuan dan review maker–checker, laporan internal.
+- EXISTING UI: login, logout, sesi, Dashboard, filter tahun/status, Daftar Asesmen, Assessment Workspace (membuat, memasang katalog, memulai, mengisi hasil, membaca revisi), pengajuan, antrean review, persetujuan/pengembalian, dan histori maker–checker.
+- EXISTING API, UI belum tersedia: pengelolaan/publikasi katalog kontrol, laporan internal.
 - FUTURE: evidence repository, regulatory pack tervalidasi, temuan, notifikasi, profil institusi umum.
 
 ## Application shell dan informasi
@@ -44,3 +44,12 @@ Unit tests memverifikasi perhitungan KPI, filter tahun lintas periode, pencarian
 - Penilaian hanya dapat diubah oleh owner dengan assessments:write saat in_progress atau changes_requested; status submitted/approved tetap read-only.
 - Data sintetis tidak digunakan dalam UI produksi. Katalog dan regulatory mappings belum diverifikasi.
 - UI belum lolos browser E2E, audit aksesibilitas, maupun UAT produksi. Semua itu tetap release gate wajib.
+
+## Review & Persetujuan (PR #21)
+
+- Maker dapat mengajukan hanya bila semua kontrol dalam katalog terpasang telah dinilai dan editor tidak memiliki perubahan belum tersimpan.
+- Review queue hanya bagi pemegang izin `assessments:read` dan `assessments:approve`, memuat status submitted milik pengguna lain dari maksimal 50 asesmen terbaru.
+- Reviewer membuka workspace baca-saja, memeriksa kontrol dan catatan, kemudian memilih setuju atau kembalikan untuk perbaikan dengan konfirmasi eksplisit.
+- Alasan pengembalian minimal 10 karakter. Keputusan menggunakan POST yang sama dengan backend, tanpa retry otomatis saat 409.
+- Riwayat dari `/assessments/:id/reviews` menampilkan siklus dan peristiwa sebenarnya. Tidak mengarang nama orang atau klaim kepatuhan.
+- Tidak ada perubahan backend, DB, permission, atau regulatory mapping. Uji browser E2E, aksesibilitas dan UAT masih release gate.
