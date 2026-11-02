@@ -2,6 +2,7 @@ import { createServer as createHttpServer } from 'node:http';
 import { pathToFileURL } from 'node:url';
 import { createAuthHandler } from './auth-http.js';
 import { createAssessmentsHandler } from './assessments-http.js';
+import { createControlCatalogsHandler } from './control-catalogs-http.js';
 import { checkDatabase, createPool } from './database.js';
 import { createLoginLimiter } from './login-limiter.js';
 import { createRolesHandler } from './roles-http.js';
@@ -21,12 +22,14 @@ export function createServer({
   listAssessments,
   getAssessment,
   startAssessment,
+  catalogHandlers,
 } = {}) {
   const handleAuth = createAuthHandler({ db: authDb, appOrigin, limiter: loginLimiter });
   const handleAssessments = createAssessmentsHandler({
     db: authDb, appOrigin, create: createAssessment, list: listAssessments,
     get: getAssessment, start: startAssessment,
   });
+  const handleCatalogs = createControlCatalogsHandler({ db: authDb, appOrigin, ...catalogHandlers });
   const handleRoles = createRolesHandler({ db: authDb, appOrigin, changeRole });
   const handleAccounts = createUserAccountsHandler({
     db: authDb, appOrigin, createUser, activateUser, disableUser, listUsers,
@@ -76,6 +79,22 @@ export function createServer({
       try {
         if (request.url?.endsWith('/roles')) await handleRoles(request, response);
         else await handleAccounts(request, response);
+      } catch {
+        if (!response.headersSent) {
+          response.writeHead(503);
+          response.end(JSON.stringify({ error: 'Unavailable' }));
+        } else {
+          response.destroy();
+        }
+      }
+      return;
+    }
+
+    if (request.url === '/catalogs' || request.url?.startsWith('/catalogs/')
+      || request.url?.startsWith('/catalog-versions/')
+      || request.url?.endsWith('/catalog') || request.url?.endsWith('/checklist')) {
+      try {
+        await handleCatalogs(request, response);
       } catch {
         if (!response.headersSent) {
           response.writeHead(503);
