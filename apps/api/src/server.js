@@ -10,6 +10,7 @@ import { checkDatabase, createPool } from './database.js';
 import { createLoginLimiter } from './login-limiter.js';
 import { createRolesHandler } from './roles-http.js';
 import { createUserAccountsHandler } from './users-http.js';
+import { serveWebAsset } from './web-assets.js';
 
 export function createServer({
   checkReadiness = async () => false,
@@ -172,6 +173,8 @@ export function createServer({
       }
       return;
     }
+
+    if (await serveWebAsset(request, response)) return;
 
     response.writeHead(404);
     response.end(JSON.stringify({ error: 'Not found' }));
