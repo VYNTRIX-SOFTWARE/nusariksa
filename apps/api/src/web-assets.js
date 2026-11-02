@@ -8,6 +8,8 @@ const ASSETS = new Map([
   ['/assets/app.js', { file: 'assets/app.js', type: 'text/javascript; charset=utf-8' }],
   ['/assets/session.js', { file: 'assets/session.js', type: 'text/javascript; charset=utf-8' }],
   ['/assets/assessment-model.js', { file: 'assets/assessment-model.js', type: 'text/javascript; charset=utf-8' }],
+  ['/assets/assessment-workspace-model.js', { file: 'assets/assessment-workspace-model.js', type: 'text/javascript; charset=utf-8' }],
+  ['/assets/assessment-workspace.js', { file: 'assets/assessment-workspace.js', type: 'text/javascript; charset=utf-8' }],
 ]);
 
 const CSP = [

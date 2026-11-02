@@ -8,7 +8,7 @@ Proyek masih dalam tahap pengembangan awal. **Belum siap digunakan untuk operasi
 
 Fondasi backend sudah menggunakan Node.js dan PostgreSQL. Bagian yang telah dikerjakan meliputi migrasi database, tabel lembaga dan akun, autentikasi password Argon2id, sesi pengguna, serta pengujian otomatis melalui GitHub Actions.
 
-Antarmuka web awal sudah menyediakan login, logout, pemeriksaan sesi, dashboard status asesmen dari API, sidebar collapsible, navigasi berdasarkan izin, serta daftar asesmen baca-saja. Pengelolaan katalog, pengisian hasil, review, dan laporan visual masih melalui API. Pengiriman undangan otomatis, MFA, pemulihan akun, dan penyimpanan dokumen bukti belum tersedia. Pemetaan POJK 34 Tahun 2025 beserta ketentuan pelaksananya belum diimplementasikan.
+Antarmuka web menyediakan login, logout, dashboard status asesmen dari API, sidebar collapsible, daftar asesmen, serta workspace pengisian kontrol yang terhubung ke API berdasarkan izin dan status. Pengelolaan katalog, pengisian hasil, review, dan laporan visual masih melalui API. Pengiriman undangan otomatis, MFA, pemulihan akun, dan penyimpanan dokumen bukti belum tersedia. Pemetaan POJK 34 Tahun 2025 beserta ketentuan pelaksananya belum diimplementasikan.
 
 ## Menjalankan secara lokal
 
@@ -51,6 +51,14 @@ Server tetap mendengarkan koneksi lokal pada port 3000. Buka **`http://localhost
 Akses `http://localhost:3000` setelah server berjalan dan akun telah dibuat. Form login memakai endpoint autentikasi yang sama dengan API. Setelah masuk, dashboard menampilkan empat metrik berdasarkan maksimal 50 data terbaru dari `GET /assessments`: jumlah ditampilkan, menunggu review, perlu perbaikan, dan disetujui. Metrik tersebut **bukan agregat seluruh database ataupun skor kepatuhan**. Periode di header adalah filter lokal berdasarkan rentang tahun mulai dan akhir asesmen, bukan pengaturan global bank. Daftar asesmen mendukung pencarian judul, filter status, sorting, serta detail baca-saja termasuk versi katalog yang benar-benar terpasang. Sidebar dapat dilipat dan pada mobile memakai drawer. Navigasi Asesmen hanya ditampilkan bila pengguna mempunyai izin `assessments:read`. Katalog, bukti, review, dan laporan belum tersedia sebagai halaman frontend yang aktif.
 
 Sesi disimpan dalam cookie `HttpOnly`, bukan `localStorage` atau `sessionStorage`. Frontend tidak menyimpan token sesi. Semua request ditujukan ke origin yang sama. Nama institusi dan profil pengguna belum tersedia melalui API umum; header memakai label netral, bukan identitas fiktif atau UUID sebagai nama. Versi katalog tampil pada detail asesmen, bukan switcher versi global. Pengujian browser end-to-end, accessibility, dan UAT masih diperlukan sebelum menyebut frontend siap untuk pilot.
+
+## Assessment Workspace
+
+Dari halaman Daftar Asesmen, pengguna dengan izin `assessments:write` dapat membuat asesmen Draft. Pemilik asesmen dapat memasang **satu katalog versi terpublikasi** saat status masih Draft, lalu memulai asesmen. Katalog yang dipasang tidak dapat diganti, sesuai kontrak backend. Pemilihan katalog mengambil daftar maksimal 50 katalog dan 50 versi per katalog dari API yang ada; publikasi dan pengelolaan katalog belum disediakan pada UI.
+
+Pada asesmen berstatus `in_progress` atau `changes_requested`, pemilik berizin dapat mengisi hasil penilaian per kontrol, catatan, dan menyimpannya secara eksplisit. Hasil yang sudah disimpan memiliki nomor revisi; client mengirim `expectedRevision` ke API. Bila server membalas konflik `409`, isian lokal **tetap dipertahankan** dan pengguna harus memuat ulang sebelum mengirim lagi; tidak ada penimpaan atau pengiriman ulang otomatis. Riwayat perubahan tersedia melalui tombol Lihat riwayat. Pengguna tanpa hak tulis atau asesmen berstatus `submitted`/`approved` hanya dapat melihat data.
+
+Keluar dari workspace atau menutup halaman dengan perubahan yang belum disimpan akan memunculkan konfirmasi. Semua data berasal dari endpoint API, bukan DEMO. Pengajuan dan review melalui web, evidence upload, serta pemetaan ketentuan regulator **belum** tersedia.
 
 ## API yang tersedia
 

@@ -153,8 +153,9 @@
         <section id="page-assessments" class="page" aria-labelledby="assessments-title" hidden>
           <div class="page-intro">
             <div><p class="eyebrow">ASESMEN TI / DAFTAR</p><h1 id="assessments-title">Daftar asesmen</h1>
-              <p class="supporting-copy">Cari dan lihat detail asesmen yang sudah tersimpan. Pengisian dan pengajuan melalui web menyusul.</p>
+              <p class="supporting-copy">Kelola asesmen dan isi penilaian melalui ruang kerja sesuai izin akun.</p>
             </div>
+            <button id="assessment-create" type="button" class="button button-primary workspace-primary" hidden>Buat asesmen</button>
           </div>
           <section class="panel-card table-panel">
             <div class="panel-heading"><div><h2>Asesmen lembaga</h2><p class="panel-caption">Pencarian hanya pada maksimal 50 data terbaru yang dimuat dari API.</p></div>
@@ -177,6 +178,83 @@
             </div>
           </section>
         </section>
+
+        <section id="page-workspace" class="page" aria-labelledby="workspace-title" hidden>
+          <div class="page-intro">
+            <div>
+              <button id="workspace-back" type="button" class="button button-link">← Daftar asesmen</button>
+              <p class="eyebrow">ASESMEN TI / WORKSPACE</p>
+              <h1 id="workspace-title">Ruang kerja asesmen</h1>
+              <p id="workspace-subtitle" class="supporting-copy">Memuat detail asesmen…</p>
+            </div>
+            <div class="workspace-actions"><span id="workspace-status" class="status-chip">Memuat…</span>
+              <button id="workspace-reload" type="button" class="button button-outline">Muat ulang</button>
+            </div>
+          </div>
+          <div id="workspace-message" class="workspace-message" role="status" aria-live="polite" hidden></div>
+          <div id="workspace-loading" class="workspace-loading">Memuat asesmen dan checklist dari server…</div>
+          <div id="workspace-content" hidden>
+            <div class="workspace-overview">
+              <div><span class="workspace-kicker">PROGRES PENGISIAN</span><strong id="workspace-progress-label">0 dari 0 kontrol</strong></div>
+              <progress id="workspace-progress" value="0" max="1">0%</progress>
+              <span id="workspace-progress-percent">0%</span>
+              <span id="workspace-catalog-tag" class="workspace-catalog-tag">Katalog belum terpasang</span>
+            </div>
+            <div id="workspace-setup" class="workspace-setup" hidden>
+              <div><h2>Persiapan asesmen</h2><p id="workspace-setup-note">Pilih versi katalog terpublikasi sebelum memulai.</p></div>
+              <div id="workspace-catalog-controls" class="workspace-setup-controls">
+                <label for="workspace-catalog">Katalog terpublikasi</label>
+                <select id="workspace-catalog"><option value="">Pilih katalog</option></select>
+                <button id="workspace-attach" type="button" class="button button-outline">Pasang katalog</button>
+              </div>
+              <button id="workspace-start" type="button" class="button button-primary workspace-primary" hidden>Mulai asesmen</button>
+            </div>
+            <div class="workspace-grid">
+              <aside class="workspace-list-panel" aria-label="Daftar kontrol">
+                <div class="workspace-list-head"><h2>Daftar kontrol</h2><span id="workspace-control-count">0 kontrol</span></div>
+                <label for="workspace-filter">Tampilkan</label>
+                <select id="workspace-filter"><option value="all">Semua kontrol</option>
+                  <option value="not_assessed">Belum dinilai</option><option value="assessed">Sudah dinilai</option></select>
+                <div id="workspace-controls" class="workspace-controls" aria-live="polite">
+                  <p class="empty-note">Kontrol belum tersedia.</p>
+                </div>
+              </aside>
+              <section class="workspace-editor" aria-label="Penilaian kontrol">
+                <div id="workspace-editor-empty" class="workspace-editor-empty">
+                  <h2>Pilih kontrol</h2><p>Detail penilaian muncul di sini setelah memilih kontrol.</p>
+                </div>
+                <div id="workspace-editor-content" hidden>
+                  <div class="workspace-editor-heading">
+                    <span id="workspace-control-code" class="workspace-code">—</span>
+                    <span id="workspace-control-revision" class="workspace-revision">Belum dinilai</span>
+                  </div>
+                  <h2 id="workspace-control-title">Kontrol TI</h2>
+                  <p id="workspace-control-description" class="workspace-description"></p>
+                  <p id="workspace-control-source" class="workspace-source" hidden></p>
+                  <form id="workspace-result-form">
+                    <label for="workspace-rating">Hasil penilaian</label>
+                    <select id="workspace-rating" required>
+                      <option value="">Pilih hasil penilaian</option>
+                      <option value="compliant">Memenuhi</option>
+                      <option value="partially_compliant">Memenuhi sebagian</option>
+                      <option value="non_compliant">Belum memenuhi</option>
+                      <option value="not_applicable">Tidak relevan</option>
+                    </select>
+                    <label for="workspace-note">Catatan pemeriksaan</label>
+                    <textarea id="workspace-note" maxlength="2000" rows="5" placeholder="Tuliskan kondisi serta dasar penilaian."></textarea>
+                    <p class="workspace-help">Catatan minimal 10 karakter untuk hasil selain Memenuhi. Dokumen bukti belum tersedia pada versi ini.</p>
+                    <div class="workspace-save-row"><span id="workspace-dirty-label" class="workspace-dirty-label">Belum ada perubahan.</span>
+                      <button id="workspace-save" type="submit" class="button button-primary workspace-primary">Simpan penilaian</button></div>
+                  </form>
+                  <div class="workspace-history-head"><h3>Riwayat penilaian</h3>
+                    <button id="workspace-history-refresh" class="button button-link" type="button">Lihat riwayat</button></div>
+                  <div id="workspace-history" class="workspace-history"><p>Riwayat belum dimuat.</p></div>
+                </div>
+              </section>
+            </div>
+            <p class="workspace-disclaimer">Penilaian internal; bukan skor atau pengesahan kepatuhan regulator.</p>
+          </div>
+        </section>
       </main>
     </div>
   </div>
@@ -185,6 +263,24 @@
       <button id="close-detail" type="button" class="icon-button" aria-label="Tutup detail"><svg class="icon"><use href="#i-close"></use></svg></button>
     </div>
     <div id="detail-body" class="detail-body"><p>Memuat detail…</p></div>
+  </dialog>
+
+  <dialog id="assessment-create-dialog" class="create-dialog" aria-labelledby="assessment-create-title">
+    <div class="dialog-header"><div><p class="eyebrow">ASESMEN TI</p><h2 id="assessment-create-title">Buat asesmen baru</h2></div>
+      <button id="assessment-create-close" type="button" class="icon-button" aria-label="Tutup form"><svg class="icon"><use href="#i-close"></use></svg></button>
+    </div>
+    <form id="assessment-create-form" class="create-assessment-form">
+      <label for="assessment-create-name">Judul asesmen</label>
+      <input id="assessment-create-name" minlength="3" maxlength="200" required placeholder="Contoh: Asesmen TI Semester I">
+      <div class="workspace-date-grid">
+        <div><label for="assessment-create-start">Tanggal mulai periode</label><input id="assessment-create-start" type="date" min="1900-01-01" max="2100-12-31" required></div>
+        <div><label for="assessment-create-end">Tanggal akhir periode</label><input id="assessment-create-end" type="date" min="1900-01-01" max="2100-12-31" required></div>
+      </div>
+      <p class="workspace-help">Asesmen dibuat sebagai Draft. Katalog bisa dipasang setelah asesmen dibuat.</p>
+      <p id="assessment-create-error" class="form-error" role="alert" hidden></p>
+      <div class="create-actions"><button id="assessment-create-cancel" type="button" class="button button-outline">Batal</button>
+        <button id="assessment-create-submit" type="submit" class="button button-primary workspace-primary">Simpan asesmen</button></div>
+    </form>
   </dialog>
 
 </body>

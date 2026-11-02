@@ -5,6 +5,7 @@ import {
   STATUS_LABELS, validAssessments, yearsForAssessments,
   summarizeAssessments, filterAssessments, attentionAssessments, ownWork,
 } from './assessment-model.js';
+import { createWorkspace } from './assessment-workspace.js';
 
 const $ = (id) => document.getElementById(id);
 const screens = {
@@ -14,7 +15,7 @@ const state = {
   userId: null, permissions: [], assessments: [], load: 'loading', page: 'overview',
   year: 'all', status: 'all', search: '', sort: 'newest',
 };
-const pages = {overview: 'Dashboard', assessments: 'Daftar Asesmen'};
+const pages = {overview: 'Dashboard', assessments: 'Daftar Asesmen', workspace: 'Assessment Workspace'};
 
 function show(screen) {
   for (const [name, element] of Object.entries(screens)) element.hidden = name !== screen;
@@ -39,6 +40,9 @@ function cleanSession() {
   state.sort = 'newest';
   $('login-password').value = '';
   $('detail-dialog').close?.();
+  $('assessment-create-dialog').close?.();
+  state.page='overview';
+  workspace.close();
   notice('');
 }
 function authFailure(error) {
@@ -85,6 +89,7 @@ function assessmentRow(a) {
   return row;
 }
 function renderPermissions() {
+  workspace.syncPermissions();
   const hasRead=state.permissions.includes('assessments:read');
   $('assessment-menu').hidden=!hasRead;
   $('assessment-menu-group').hidden=!hasRead;
@@ -155,8 +160,8 @@ function renderTable() {
     const tdTitle=document.createElement('td');tdTitle.append(detailButton(a,'table-title'));
     const tdStatus=document.createElement('td');tdStatus.append(statusChip(a.status));
     const tdAction=document.createElement('td');
-    const btn=textElement('button','detail-link','Lihat');btn.type='button';btn.dataset.detailId=a.id;
-    btn.setAttribute('aria-label','Lihat detail '+a.title);tdAction.append(btn);
+    const btn=textElement('button','detail-link','Buka workspace');btn.type='button';btn.dataset.workspaceId=a.id;
+    btn.setAttribute('aria-label','Buka workspace '+a.title);tdAction.append(btn);
     tr.append(tdTitle,textElement('td','table-date',formatDate(a.period_start)+' – '+formatDate(a.period_end)),
       tdStatus,textElement('td','table-date',formatDate(a.created_at)),tdAction);
     root.append(tr);
@@ -183,18 +188,21 @@ function closeMobile() {
   $('mobile-nav-toggle').setAttribute('aria-expanded','false');
 }
 function navigate(page) {
-  if (!(page in pages)) return;
-  if(page==='assessments'&&!state.permissions.includes('assessments:read'))return;
+  if (!(page in pages)) return false;
+  if((page==='assessments'||page==='workspace')&&!state.permissions.includes('assessments:read'))return false;
+  if(state.page==='workspace' && page!=='workspace' && !workspace.confirmLeave())return false;
+  if(state.page==='workspace' && page!=='workspace')workspace.close();
   state.page=page;
   for(const section of document.querySelectorAll('.page'))section.hidden=section.id!=='page-'+page;
   for(const btn of document.querySelectorAll('[data-page]')) {
-    const isActive=btn.dataset.page===page;
+    const isActive=btn.dataset.page===page || (page==='workspace' && btn.dataset.page==='assessments');
     btn.classList.toggle('is-active',isActive);
     if(isActive)btn.setAttribute('aria-current','page');
     else btn.removeAttribute('aria-current');
   }
   $('topbar-page').textContent=pages[page];
   notice('');closeMobile();
+  return true;
 }
 async function loadWorkspace() {
   state.load='loading';state.assessments=[];render();
@@ -271,8 +279,14 @@ async function openDetail(id) {
         detailPair('Versi katalog',String(v.version)),
         detailPair('Kontrol katalog',String(Array.isArray(checklist.controls)?checklist.controls.length:0)));
     }else dl.append(detailPair('Katalog','Belum terpasang'));
-    root.append(dl,textElement('p','detail-helper',
-      'Ini adalah detail baca-saja. Hasil asesmen, bukti, dan laporan lengkap akan disediakan pada modul berikutnya.'));
+    const openBtn=textElement('button','button button-outline','Buka workspace');
+    openBtn.type='button';
+    openBtn.addEventListener('click',()=>{
+      dlg.close();
+      void openWorkspace(detail.id);
+    });
+    root.append(dl,openBtn,textElement('p','detail-helper',
+      'Penilaian bisa dilakukan di workspace sesuai izin dan status asesmen. Bukti dan laporan visual belum tersedia.'));
   }catch(error) {
     if(authFailure(error))return;
     renderMessage(root,error instanceof ApiError&&error.status===403
@@ -345,12 +359,32 @@ $('reset-filters').addEventListener('click',()=>{
 });
 for(const id of ['attention-list','my-work-list','assessments-table']) {
   $(id).addEventListener('click',(event)=>{
-    const button=event.target.closest?.('[data-detail-id]');
-    if(button&&$(id).contains(button))void openDetail(button.dataset.detailId);
+    const target=event.target.closest?.('[data-workspace-id],[data-detail-id]');
+    if(!target||!$(id).contains(target))return;
+    if(target.dataset.workspaceId)void openWorkspace(target.dataset.workspaceId);
+    else void openDetail(target.dataset.detailId);
   });
 }
 $('close-detail').addEventListener('click',()=>$('detail-dialog').close());
 $('detail-dialog').addEventListener('click',(event)=>{
   if(event.target===$('detail-dialog'))$('detail-dialog').close();
 });
+
+const workspace=createWorkspace({
+  api:requestJson,
+  getUserId:()=>state.userId,
+  getPermissions:()=>state.permissions,
+  onAuthFailure:authFailure,
+  onBack:()=>navigate('assessments'),
+  onCreated:async(id)=>{
+    await loadWorkspace();
+    if(state.userId && navigate('workspace'))await workspace.open(id);
+  },
+});
+async function openWorkspace(id){
+  if(!state.permissions.includes('assessments:read'))return;
+  if(state.page==='workspace' && !workspace.confirmLeave())return;
+  if(navigate('workspace'))await workspace.open(id);
+}
+
 void restoreSession();
