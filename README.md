@@ -8,7 +8,7 @@ Proyek masih dalam tahap pengembangan awal. **Belum siap digunakan untuk operasi
 
 Fondasi backend sudah menggunakan Node.js dan PostgreSQL. Bagian yang telah dikerjakan meliputi migrasi database, tabel lembaga dan akun, autentikasi password Argon2id, sesi pengguna, serta pengujian otomatis melalui GitHub Actions.
 
-Antarmuka pengguna, pengiriman undangan otomatis, MFA, pemulihan akun, pengelolaan dokumen bukti, penilaian checklist, dan laporan kepatuhan belum tersedia. Pengaturan akun dan peran saat ini baru melalui API. Pemetaan POJK 34 Tahun 2025 beserta ketentuan pelaksananya juga belum diimplementasikan.
+Antarmuka pengguna, pengiriman undangan otomatis, MFA, pemulihan akun, pengelolaan dokumen bukti, persetujuan hasil asesmen, dan laporan kepatuhan belum tersedia. Pengaturan akun dan peran saat ini baru melalui API. Pemetaan POJK 34 Tahun 2025 beserta ketentuan pelaksananya juga belum diimplementasikan.
 
 ## Menjalankan secara lokal
 
@@ -71,6 +71,9 @@ Server berjalan di `http://127.0.0.1:3000` secara default. Port dapat diubah mel
 | `POST` | `/catalog-versions/:id/publish` | Menerbitkan versi katalog yang berisi kontrol |
 | `POST` | `/assessments/:id/catalog` | Memasang versi terpublikasi pada asesmen draft |
 | `GET` | `/assessments/:id/checklist` | Membaca checklist dari versi katalog yang terpasang |
+| `GET` | `/assessments/:id/results` | Hasil kontrol, revisi, dan progres pengisian |
+| `PUT` | `/assessments/:id/results/:controlId` | Mengisi atau memperbarui hasil kontrol oleh pemilik asesmen |
+| `GET` | `/assessments/:id/results/:controlId/history` | Riwayat revisi hasil kontrol |
 
 Endpoint login menerima JSON berisi `email` dan `password`. Akun harus sudah ada dalam database, berstatus `active`, dan memiliki hash password Argon2id. Admin pertama dibuat melalui perintah lokal `npm run admin:bootstrap -- --name "Nama Bank" --kind BPR --email admin@example.test` setelah `DATABASE_URL` disetel. Proses meminta password secara interaktif tanpa menampilkannya. Perintah ini hanya dapat dipakai pada database yang belum memiliki lembaga maupun akun.
 
@@ -84,7 +87,11 @@ Peran disimpan di tabel `user_roles`. Perubahan peran melalui layanan internal d
 
 Katalog dibuat dengan kode dan judul, lalu versi pertama dimulai sebagai draft. Kontrol ditambahkan dengan kode, judul, deskripsi opsional, dan referensi dokumen/bagian opsional. Informasi referensi yang diinput pengguna **bukan bukti bahwa kontrol telah diverifikasi terhadap regulasi**.
 
-Versi draft dapat diterbitkan setelah berisi setidaknya satu kontrol. Versi yang sudah diterbitkan tidak dapat diubah; versi berikutnya menyalin isi versi terpublikasi ke draft baru. Setiap asesmen dapat mengaitkan satu versi katalog ketika masih draft. Checklist ditampilkan dari versi tersebut dan belum mendukung pengisian hasil atau penilaian. Batas awal adalah 200 kontrol per versi.
+Versi draft dapat diterbitkan setelah berisi setidaknya satu kontrol. Versi yang sudah diterbitkan tidak dapat diubah; versi berikutnya menyalin isi versi terpublikasi ke draft baru. Setiap asesmen dapat mengaitkan satu versi katalog ketika masih draft. Checklist menggunakan versi katalog yang terpasang. Setelah asesmen berstatus `in_progress`, pemilik yang memiliki izin tulis dapat mengisi hasil penilaian. Batas awal adalah 200 kontrol per versi.
+
+Penilaian menerima `rating` berupa `compliant`, `partially_compliant`, `non_compliant`, atau `not_applicable`, serta `note` dan `expectedRevision`. Kontrol yang belum dinilai tampil sebagai `not_assessed`. Pengisian pertama memakai `expectedRevision: 0`; perubahan berikutnya harus menggunakan nomor revisi terkini. Catatan minimal 10 karakter diperlukan untuk hasil selain `compliant`. Tiap revisi tersimpan dalam riwayat audit yang dilindungi dari pengubahan biasa.
+
+Belum ada perhitungan skor kepatuhan otomatis, review hasil, atau unggah bukti. Hasil ini merupakan penilaian internal pengguna, bukan penetapan kepatuhan oleh regulator.
 
 Belum ada katalog bawaan, daftar kontrol resmi POJK, atau pemetaan pasal yang telah diverifikasi. Pemilihan isi kontrol dan sumber regulasi menjadi pekerjaan terpisah sebelum asesmen digunakan untuk kepatuhan.
 

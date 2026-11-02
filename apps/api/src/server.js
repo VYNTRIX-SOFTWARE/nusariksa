@@ -2,6 +2,7 @@ import { createServer as createHttpServer } from 'node:http';
 import { pathToFileURL } from 'node:url';
 import { createAuthHandler } from './auth-http.js';
 import { createAssessmentsHandler } from './assessments-http.js';
+import { createAssessmentResultsHandler } from './assessment-results-http.js';
 import { createControlCatalogsHandler } from './control-catalogs-http.js';
 import { checkDatabase, createPool } from './database.js';
 import { createLoginLimiter } from './login-limiter.js';
@@ -23,6 +24,7 @@ export function createServer({
   getAssessment,
   startAssessment,
   catalogHandlers,
+  resultHandlers,
 } = {}) {
   const handleAuth = createAuthHandler({ db: authDb, appOrigin, limiter: loginLimiter });
   const handleAssessments = createAssessmentsHandler({
@@ -30,6 +32,7 @@ export function createServer({
     get: getAssessment, start: startAssessment,
   });
   const handleCatalogs = createControlCatalogsHandler({ db: authDb, appOrigin, ...catalogHandlers });
+  const handleResults = createAssessmentResultsHandler({ db: authDb, appOrigin, ...resultHandlers });
   const handleRoles = createRolesHandler({ db: authDb, appOrigin, changeRole });
   const handleAccounts = createUserAccountsHandler({
     db: authDb, appOrigin, createUser, activateUser, disableUser, listUsers,
@@ -95,6 +98,20 @@ export function createServer({
       || request.url?.endsWith('/catalog') || request.url?.endsWith('/checklist')) {
       try {
         await handleCatalogs(request, response);
+      } catch {
+        if (!response.headersSent) {
+          response.writeHead(503);
+          response.end(JSON.stringify({ error: 'Unavailable' }));
+        } else {
+          response.destroy();
+        }
+      }
+      return;
+    }
+
+    if (request.url?.startsWith('/assessments/') && request.url.includes('/results')) {
+      try {
+        await handleResults(request, response);
       } catch {
         if (!response.headersSent) {
           response.writeHead(503);
