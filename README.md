@@ -8,7 +8,7 @@ Proyek masih dalam tahap pengembangan awal. **Belum siap digunakan untuk operasi
 
 Fondasi backend sudah menggunakan Node.js dan PostgreSQL. Bagian yang telah dikerjakan meliputi migrasi database, tabel lembaga dan akun, autentikasi password Argon2id, sesi pengguna, serta pengujian otomatis melalui GitHub Actions.
 
-Antarmuka pengguna, pengiriman undangan otomatis, MFA, pemulihan akun, pengelolaan dokumen bukti, persetujuan hasil asesmen, dan laporan kepatuhan belum tersedia. Pengaturan akun dan peran saat ini baru melalui API. Pemetaan POJK 34 Tahun 2025 beserta ketentuan pelaksananya juga belum diimplementasikan.
+Antarmuka web, pengiriman undangan otomatis, MFA, pemulihan akun, dan penyimpanan dokumen bukti belum tersedia. Pengelolaan akun, asesmen, pemeriksaan, dan laporan internal saat ini dilakukan melalui API. Pemetaan POJK 34 Tahun 2025 beserta ketentuan pelaksananya belum diimplementasikan.
 
 ## Menjalankan secara lokal
 
@@ -77,6 +77,7 @@ Server berjalan di `http://127.0.0.1:3000` secara default. Port dapat diubah mel
 | `POST` | `/assessments/:id/submit` | Mengajukan asesmen setelah semua kontrol dinilai |
 | `POST` | `/assessments/:id/review` | Menyetujui atau mengembalikan asesmen oleh pemeriksa |
 | `GET` | `/assessments/:id/reviews` | Riwayat pengajuan dan keputusan pemeriksaan |
+| `GET` | `/assessments/:id/report` | Laporan internal asesmen, distribusi hasil, dan keputusan pemeriksaan |
 
 Endpoint login menerima JSON berisi `email` dan `password`. Akun harus sudah ada dalam database, berstatus `active`, dan memiliki hash password Argon2id. Admin pertama dibuat melalui perintah lokal `npm run admin:bootstrap -- --name "Nama Bank" --kind BPR --email admin@example.test` setelah `DATABASE_URL` disetel. Proses meminta password secara interaktif tanpa menampilkannya. Perintah ini hanya dapat dipakai pada database yang belum memiliki lembaga maupun akun.
 
@@ -95,6 +96,8 @@ Versi draft dapat diterbitkan setelah berisi setidaknya satu kontrol. Versi yang
 Penilaian menerima `rating` berupa `compliant`, `partially_compliant`, `non_compliant`, atau `not_applicable`, serta `note` dan `expectedRevision`. Kontrol yang belum dinilai tampil sebagai `not_assessed`. Pengisian pertama memakai `expectedRevision: 0`; perubahan berikutnya harus menggunakan nomor revisi terkini. Catatan minimal 10 karakter diperlukan untuk hasil selain `compliant`. Tiap revisi tersimpan dalam riwayat audit yang dilindungi dari pengubahan biasa.
 
 Pengajuan review hanya bisa dilakukan pemilik setelah seluruh kontrol dalam katalog terisi. Selama status `submitted` dan `approved`, hasil terkunci dari perubahan. Pemeriksa dengan izin `assessments:approve` tidak boleh menjadi pemilik asesmen tersebut. Keputusan `approve` menyetujui asesmen, sedangkan `request_changes` harus menyertakan alasan minimal 10 karakter. Hasil yang dikembalikan dapat diperbaiki dan diajukan ulang. Setiap pengajuan dan keputusan dicatat bersama nomor siklus review.
+
+Laporan internal tersedia lewat `GET /assessments/:id/report` bagi pengguna dengan izin `reports:read`. Respons JSON memuat identitas lembaga dan asesmen, referensi versi katalog, hasil setiap kontrol, jumlah penilaian per kategori, progres pengisian, serta keputusan pemeriksa terakhir. Laporan berstatus final hanya jika asesmen sudah `approved`. Persentase progres menunjukkan **kelengkapan pengisian**, bukan skor kepatuhan. Belum ada ekspor PDF atau unggah bukti.
 
 Belum ada perhitungan skor kepatuhan otomatis atau unggah bukti. Hasil ini merupakan penilaian internal pengguna, bukan penetapan kepatuhan oleh regulator.
 
