@@ -29,7 +29,7 @@ test('aset laporan disajikan lewat allowlist dan CSP existing', async () => {
     assert.match(source, /textContent/);
     assert.doesNotMatch(source, /\.innerHTML\s*=/);
     assert.match(source, /generation/);
-    assert.match(source, /reports:read/);
+    assert.match(source, /canReadReport/);
     assert.equal((await fetch(base + '/assets/assessment-report-private.js')).status,404);
   } finally {
     server.close();
