@@ -86,6 +86,9 @@
         <button type="button" class="nav-link" data-page="assessments" id="assessment-menu" title="Daftar asesmen" hidden>
           <svg class="icon nav-icon"><use href="#i-clipboard"></use></svg><span class="nav-label">Daftar Asesmen</span>
         </button>
+        <button type="button" class="nav-link" data-page="catalogs" id="catalog-menu" title="Katalog Kontrol" hidden>
+          <svg class="icon nav-icon"><use href="#i-clipboard"></use></svg><span class="nav-label">Katalog Kontrol</span>
+        </button>
         <div class="sidebar-section-label sidebar-gap" id="report-menu-group" hidden>PELAPORAN</div>
         <button type="button" class="nav-link" data-page="reports" id="report-menu" title="Laporan Asesmen" hidden>
           <svg class="icon nav-icon"><use href="#i-clipboard"></use></svg><span class="nav-label">Laporan Asesmen</span>
@@ -207,6 +210,84 @@
               </table>
             </div>
           </section>
+        </section>
+
+
+        <section id="page-catalogs" class="page" aria-labelledby="catalog-page-title" hidden>
+          <div class="page-intro">
+            <div><p class="eyebrow">ASESMEN TI / KATALOG</p>
+              <h1 id="catalog-page-title">Katalog Kontrol</h1>
+              <p class="supporting-copy">Susun kontrol pada versi Draft dan terbitkan versi agar dapat digunakan pada asesmen.</p>
+            </div>
+            <button type="button" id="catalog-refresh" class="button button-outline">Muat ulang</button>
+          </div>
+          <p class="scope-note">Daftar terbatas pada 50 katalog pertama menurut kode dan 50 versi terbaru per katalog. Isi kontrol merupakan data internal pengguna, bukan pemetaan regulasi yang telah diverifikasi.</p>
+          <div id="catalog-message" class="workspace-message" role="status" aria-live="polite" hidden></div>
+          <div class="catalog-layout">
+            <aside class="panel-card catalog-sidebar" aria-label="Daftar katalog">
+              <div class="panel-heading catalog-panel-heading">
+                <div><h2>Katalog tersedia</h2><p id="catalog-count" class="panel-caption">—</p></div>
+                <button type="button" id="catalog-new-toggle" class="button button-outline" hidden>Buat katalog</button>
+              </div>
+              <form id="catalog-create-form" class="catalog-create-form" autocomplete="off">
+                <div id="catalog-new-panel" class="catalog-form-panel" data-expanded="false" hidden>
+                  <label for="catalog-create-code">Kode katalog</label>
+                  <input id="catalog-create-code" type="text" minlength="2" maxlength="32" pattern="[A-Za-z][A-Za-z0-9_-]{1,31}" placeholder="KONTROL_TI" required>
+                  <label for="catalog-create-title">Judul katalog</label>
+                  <input id="catalog-create-title" type="text" minlength="3" maxlength="200" placeholder="Katalog kontrol TI internal" required>
+                  <button id="catalog-create-submit" type="submit" class="button button-primary">Simpan katalog</button>
+                </div>
+              </form>
+              <div id="catalog-list" class="catalog-list" aria-live="polite"><p class="empty-note">Memuat katalog…</p></div>
+            </aside>
+            <div class="catalog-main">
+              <section class="panel-card">
+                <div class="catalog-head">
+                  <div><p class="eyebrow">KATALOG TERPILIH</p><h2 id="catalog-active-title">Pilih katalog</h2></div>
+                  <button type="button" id="catalog-next-version" class="button button-outline" hidden>Buat versi berikutnya</button>
+                </div>
+                <div id="catalog-versions" class="catalog-versions" aria-label="Versi katalog"><p class="empty-note">Pilih katalog untuk melihat versi.</p></div>
+                <p id="catalog-status-hint" class="catalog-helper">Pilih katalog dan versi untuk melihat kontrol.</p>
+              </section>
+              <section class="panel-card catalog-table-panel" aria-labelledby="catalog-controls-title">
+                <div class="panel-heading">
+                  <div><h2 id="catalog-controls-title">Daftar kontrol</h2><p class="panel-caption">Kontrol yang sudah diterbitkan tidak dapat diubah.</p></div>
+                  <span id="catalog-control-count" class="small-caption">—</span>
+                </div>
+                <div class="table-scroll" tabindex="0" aria-label="Tabel kontrol katalog, dapat digulir">
+                  <table class="data-table">
+                    <thead><tr><th scope="col">Kontrol</th><th scope="col">Urutan</th><th scope="col">Rujukan</th><th scope="col">Status versi</th></tr></thead>
+                    <tbody id="catalog-controls-body"><tr><td colspan="4" class="table-empty">Pilih versi katalog.</td></tr></tbody>
+                  </table>
+                </div>
+                <div class="catalog-publish-row">
+                  <button id="catalog-publish" type="button" class="button button-primary" hidden>Terbitkan versi</button>
+                </div>
+              </section>
+              <section class="panel-card catalog-add-panel" aria-labelledby="catalog-add-title">
+                <h2 id="catalog-add-title">Tambahkan kontrol ke Draft</h2>
+                <p class="panel-caption">Hanya versi Draft yang menerima kontrol baru. Edit/hapus kontrol belum didukung API; pastikan data benar sebelum menyimpan.</p>
+                <form id="catalog-add-form" class="catalog-control-form" autocomplete="off" hidden>
+                  <div class="catalog-form-grid">
+                    <div><label for="catalog-control-code">Kode kontrol</label>
+                      <input id="catalog-control-code" type="text" minlength="2" maxlength="32" pattern="[A-Za-z][A-Za-z0-9_-]{1,31}" placeholder="AKSES_01" required></div>
+                    <div><label for="catalog-control-title">Judul kontrol</label>
+                      <input id="catalog-control-title" type="text" minlength="3" maxlength="200" required placeholder="Pengaturan hak akses"></div>
+                  </div>
+                  <label for="catalog-control-description">Deskripsi kontrol</label>
+                  <textarea id="catalog-control-description" maxlength="2000" rows="3" placeholder="Uraikan kontrol; baris baru akan disimpan sebagai spasi."></textarea>
+                  <div class="catalog-form-grid">
+                    <div><label for="catalog-source-document">Dokumen sumber (opsional)</label>
+                      <input id="catalog-source-document" type="text" maxlength="200" placeholder="Judul dokumen"></div>
+                    <div><label for="catalog-source-section">Bagian sumber (opsional)</label>
+                      <input id="catalog-source-section" type="text" maxlength="100" placeholder="Bab atau bagian"></div>
+                  </div>
+                  <p class="workspace-help">Jika mencantumkan sumber, isi kedua kolom sekaligus. Referensi belum diverifikasi oleh sistem.</p>
+                  <button id="catalog-add-submit" type="submit" class="button button-primary">Tambahkan kontrol</button>
+                </form>
+              </section>
+            </div>
+          </div>
         </section>
 
         <section id="page-reports" class="page" aria-labelledby="reports-heading" hidden>
