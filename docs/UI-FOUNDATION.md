@@ -35,7 +35,7 @@ Implementasi ini mengikuti NUSARIKSA UI/UX Design Standard v1 yang disediakan pe
 
 ## Pengujian dan pekerjaan lanjutan
 
-Unit tests memverifikasi perhitungan KPI, filter tahun lintas periode, pencarian, status, sorting, serta server CSP/allowlist aset. Pengujian browser interaktif sebenarnya masih menjadi acceptance terpisah sebelum rilis. Tahap berikutnya adalah Assessment Workspace dan alur maker–checker menggunakan API yang sudah tersedia.
+Unit tests memverifikasi perhitungan KPI, filter tahun lintas periode, pencarian, status, sorting, dan server CSP/allowlist aset. Pengujian browser interaktif tetap menjadi acceptance terpisah sebelum rilis.
 ## Assessment Workspace (PR #20)
 
 - Layout split 35:65: daftar kontrol, editor hasil, catatan, progres, versi katalog, dan riwayat.
@@ -54,7 +54,7 @@ Unit tests memverifikasi perhitungan KPI, filter tahun lintas periode, pencarian
 - Riwayat dari `/assessments/:id/reviews` menampilkan siklus dan peristiwa sebenarnya. Tidak mengarang nama orang atau klaim kepatuhan.
 - Tidak ada perubahan backend, DB, permission, atau regulatory mapping. Uji browser E2E, aksesibilitas dan UAT masih release gate.
 
-## Laporan internal asesmen (PR #22 — draft)
+## Laporan internal asesmen (PR #22 — merged)
 
 - Navigasi laporan berdasarkan `reports:read`, tanpa menyamakan izin tersebut dengan `assessments:read`.
 - Pilihan asesmen berbasis maksimal 50 terbaru pada `GET /assessments` hanya bila izin baca asesmen tersedia; pemegang izin laporan saja dapat memasukkan UUID asesmen secara manual.
@@ -62,3 +62,13 @@ Unit tests memverifikasi perhitungan KPI, filter tahun lintas periode, pencarian
 - `completionPercent` adalah kelengkapan pengisian, bukan skor kepatuhan. Status final internal hanya mengikuti field `final` backend; tidak ada klaim pengesahan OJK.
 - Rendering menggunakan DOM aman tanpa `innerHTML` untuk data API, request same-origin, CSP dan allowlist dipertahankan, serta respons async usang diabaikan.
 - Pengujian model dan aset ditambahkan. Browser E2E, audit aksesibilitas dan UAT tetap menjadi release gate yang belum terpenuhi.
+
+## Pengelolaan katalog kontrol (PR #23)
+
+- Menu Katalog Kontrol hanya untuk akun dengan `assessments:read`. Semua mutasi juga membutuhkan `assessments:write`; otorisasi final tetap pada backend.
+- Daftar katalog dari `GET /catalogs` dibatasi 50 kode pertama; daftar versi dari `GET /catalogs/:id/versions` dibatasi 50 versi terbaru.
+- Pembuatan katalog melalui `POST /catalogs` membuat versi 1 berstatus Draft. Kontrol baru ditambahkan melalui `POST /catalog-versions/:id/controls`, maksimal 200 per versi dan tanpa edit/hapus di UI karena API belum menyediakannya.
+- Draft dapat diterbitkan bila memiliki minimal satu kontrol, dengan konfirmasi eksplisit. Versi Published read-only; `POST /catalogs/:id/versions` menyalin versi terpublikasi terbaru menjadi Draft berikutnya.
+- Rujukan sumber adalah input pengguna dan tidak otomatis dianggap resmi/terverifikasi. Tidak ada seed katalog POJK atau klaim pemetaan regulasi.
+- Permintaan tidak diulang otomatis pada status 409. Teks respons API dirender dengan DOM aman; stale response diabaikan.
+- Unit test, pengujian aset/CSP dan integrasi API yang telah ada dijalankan pada CI; browser E2E, audit aksesibilitas dan UAT tetap release gate terpisah.
