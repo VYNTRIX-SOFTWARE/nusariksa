@@ -86,6 +86,10 @@
         <button type="button" class="nav-link" data-page="assessments" id="assessment-menu" title="Daftar asesmen" hidden>
           <svg class="icon nav-icon"><use href="#i-clipboard"></use></svg><span class="nav-label">Daftar Asesmen</span>
         </button>
+        <div class="sidebar-section-label sidebar-gap" id="report-menu-group" hidden>PELAPORAN</div>
+        <button type="button" class="nav-link" data-page="reports" id="report-menu" title="Laporan Asesmen" hidden>
+          <svg class="icon nav-icon"><use href="#i-clipboard"></use></svg><span class="nav-label">Laporan Asesmen</span>
+        </button>
         <div class="sidebar-section-label sidebar-gap" id="review-menu-group" hidden>PEMERIKSAAN</div>
         <button type="button" class="nav-link" data-page="reviews" id="review-menu" title="Review & Persetujuan" hidden>
           <svg class="icon nav-icon"><use href="#i-clipboard"></use></svg><span class="nav-label">Review & Persetujuan</span>
@@ -203,6 +207,87 @@
               </table>
             </div>
           </section>
+        </section>
+
+        <section id="page-reports" class="page" aria-labelledby="reports-heading" hidden>
+          <div class="page-intro">
+            <div><p class="eyebrow">ASESMEN TI / PELAPORAN</p>
+              <h1 id="reports-heading">Laporan Asesmen</h1>
+              <p class="supporting-copy">Rangkuman penilaian internal, distribusi hasil, dan keputusan pemeriksa berdasarkan data server.</p>
+            </div>
+          </div>
+          <section class="panel-card report-picker" aria-label="Pilih asesmen untuk laporan">
+            <p id="report-scope" class="scope-note">Memeriksa izin dan daftar asesmen…</p>
+            <div id="report-select-area" class="report-selection" hidden>
+              <label for="report-select">Asesmen</label>
+              <select id="report-select"><option value="">Pilih asesmen</option></select>
+              <button type="button" id="report-open" class="button button-primary">Lihat laporan</button>
+            </div>
+            <form id="report-manual-form" class="report-selection" hidden>
+              <label for="report-manual-id">ID asesmen</label>
+              <input id="report-manual-id" type="text" inputmode="text" placeholder="UUID asesmen" autocomplete="off" required maxlength="36">
+              <button type="submit" class="button button-primary">Lihat laporan</button>
+            </form>
+          </section>
+          <div id="report-message" class="workspace-message" role="alert" hidden></div>
+          <div id="report-loading" class="workspace-loading" hidden>Memuat laporan dari server…</div>
+          <div id="report-empty" class="workspace-loading">Pilih asesmen untuk menampilkan laporan internal.</div>
+          <div id="report-content" hidden>
+            <section class="panel-card report-head" aria-label="Informasi laporan">
+              <div class="report-title-row"><div>
+                <p class="eyebrow">LAPORAN PENILAIAN INTERNAL</p>
+                <h2 id="report-title">Laporan asesmen</h2>
+              </div><span id="report-state" class="report-state">Pratinjau Internal</span></div>
+              <dl id="report-metadata" class="report-meta-grid"></dl>
+            </section>
+            <section aria-labelledby="report-summary-title">
+              <h2 id="report-summary-title" class="report-section-title">Ringkasan penilaian</h2>
+              <div class="report-stats">
+                <div class="panel-card"><span>Total kontrol</span><strong id="report-total">—</strong></div>
+                <div class="panel-card"><span>Sudah dinilai</span><strong id="report-assessed">—</strong></div>
+                <div class="panel-card"><span>Belum dinilai</span><strong id="report-unassessed">—</strong></div>
+                <div class="panel-card"><span>Kelengkapan pengisian</span><strong id="report-progress">—</strong></div>
+              </div>
+              <div class="panel-card report-progress-panel">
+                <label for="report-progress-bar">Progres pengisian kontrol — bukan skor kepatuhan</label>
+                <progress id="report-progress-bar" min="0" max="100" value="0">0%</progress>
+              </div>
+            </section>
+            <section class="panel-card" aria-labelledby="report-distribution-heading">
+              <h2 id="report-distribution-heading" class="report-section-title">Distribusi hasil penilaian</h2>
+              <p class="panel-caption">Jumlah kontrol dalam setiap kategori. Tidak menyatakan tingkat kepatuhan regulator.</p>
+              <div id="report-distribution" class="report-distribution"></div>
+            </section>
+            <section class="panel-card table-panel" aria-labelledby="report-controls-heading">
+              <div class="panel-heading">
+                <div><h2 id="report-controls-heading">Rincian kontrol</h2>
+                  <p class="panel-caption">Data berdasarkan versi katalog yang terpasang pada asesmen.</p></div>
+                <span id="report-control-count" class="small-caption">—</span>
+              </div>
+              <div class="report-filter-row">
+                <label for="report-filter">Filter hasil</label>
+                <select id="report-filter">
+                  <option value="all">Semua hasil</option>
+                  <option value="compliant">Memenuhi</option>
+                  <option value="partially_compliant">Memenuhi sebagian</option>
+                  <option value="non_compliant">Belum memenuhi</option>
+                  <option value="not_applicable">Tidak relevan</option>
+                  <option value="not_assessed">Belum dinilai</option>
+                </select>
+              </div>
+              <div class="table-scroll" tabindex="0" aria-label="Rincian laporan kontrol, dapat digulir">
+                <table class="data-table">
+                  <thead><tr><th scope="col">Kontrol</th><th scope="col">Hasil</th><th scope="col">Catatan</th><th scope="col">Revisi</th></tr></thead>
+                  <tbody id="report-controls-body"></tbody>
+                </table>
+              </div>
+            </section>
+            <section class="panel-card" aria-labelledby="report-review-heading">
+              <h2 id="report-review-heading" class="report-section-title">Keputusan pemeriksa terakhir</h2>
+              <div id="report-decision"></div>
+            </section>
+            <p id="report-disclaimer" class="workspace-disclaimer">Penilaian internal; bukan pengesahan kepatuhan oleh OJK.</p>
+          </div>
         </section>
 
         <section id="page-workspace" class="page" aria-labelledby="workspace-title" hidden>
