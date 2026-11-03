@@ -8,7 +8,7 @@ Proyek masih dalam tahap pengembangan awal. **Belum siap digunakan untuk operasi
 
 Fondasi backend sudah menggunakan Node.js dan PostgreSQL. Bagian yang telah dikerjakan meliputi migrasi database, tabel lembaga dan akun, autentikasi password Argon2id, sesi pengguna, serta pengujian otomatis melalui GitHub Actions.
 
-Antarmuka web menyediakan login, logout, dashboard status asesmen dari API, sidebar collapsible, daftar asesmen, serta workspace pengisian kontrol yang terhubung ke API berdasarkan izin dan status. Pengelolaan katalog dan laporan visual masih melalui API; pengajuan, pemeriksaan maker–checker, dan histori keputusan kini tersedia melalui web. Pengiriman undangan otomatis, MFA, pemulihan akun, dan penyimpanan dokumen bukti belum tersedia. Pemetaan POJK 34 Tahun 2025 beserta ketentuan pelaksananya belum diimplementasikan.
+Antarmuka web menyediakan login, logout, dashboard status asesmen dari API, sidebar collapsible, daftar asesmen, serta workspace pengisian kontrol yang terhubung ke API berdasarkan izin dan status. Pengelolaan katalog masih melalui API; pengajuan, pemeriksaan maker–checker, histori keputusan dan laporan asesmen internal kini tersedia melalui web. Pengiriman undangan otomatis, MFA, pemulihan akun, dan penyimpanan dokumen bukti belum tersedia. Pemetaan POJK 34 Tahun 2025 beserta ketentuan pelaksananya belum diimplementasikan.
 
 ## Menjalankan secara lokal
 
@@ -48,7 +48,7 @@ Server tetap mendengarkan koneksi lokal pada port 3000. Buka **`http://localhost
 
 ## Antarmuka web awal
 
-Akses `http://localhost:3000` setelah server berjalan dan akun telah dibuat. Form login memakai endpoint autentikasi yang sama dengan API. Setelah masuk, dashboard menampilkan empat metrik berdasarkan maksimal 50 data terbaru dari `GET /assessments`: jumlah ditampilkan, menunggu review, perlu perbaikan, dan disetujui. Metrik tersebut **bukan agregat seluruh database ataupun skor kepatuhan**. Periode di header adalah filter lokal berdasarkan rentang tahun mulai dan akhir asesmen, bukan pengaturan global bank. Daftar asesmen mendukung pencarian judul, filter status, sorting, serta detail baca-saja termasuk versi katalog yang benar-benar terpasang. Sidebar dapat dilipat dan pada mobile memakai drawer. Navigasi Asesmen hanya ditampilkan bila pengguna mempunyai izin `assessments:read`. Katalog, bukti, dan laporan belum tersedia sebagai halaman frontend aktif. Review & Persetujuan tersedia bagi pengguna berizin `assessments:read` dan `assessments:approve`.
+Akses `http://localhost:3000` setelah server berjalan dan akun telah dibuat. Form login memakai endpoint autentikasi yang sama dengan API. Setelah masuk, dashboard menampilkan empat metrik berdasarkan maksimal 50 data terbaru dari `GET /assessments`: jumlah ditampilkan, menunggu review, perlu perbaikan, dan disetujui. Metrik tersebut **bukan agregat seluruh database ataupun skor kepatuhan**. Periode di header adalah filter lokal berdasarkan rentang tahun mulai dan akhir asesmen, bukan pengaturan global bank. Daftar asesmen mendukung pencarian judul, filter status, sorting, serta detail baca-saja termasuk versi katalog yang benar-benar terpasang. Sidebar dapat dilipat dan pada mobile memakai drawer. Navigasi Asesmen hanya ditampilkan bila pengguna mempunyai izin `assessments:read`. Katalog dan bukti belum tersedia sebagai halaman frontend aktif. Laporan asesmen internal tersedia bagi akun dengan izin reports:read. Review & Persetujuan tersedia bagi pengguna berizin `assessments:read` dan `assessments:approve`.
 
 Sesi disimpan dalam cookie `HttpOnly`, bukan `localStorage` atau `sessionStorage`. Frontend tidak menyimpan token sesi. Semua request ditujukan ke origin yang sama. Nama institusi dan profil pengguna belum tersedia melalui API umum; header memakai label netral, bukan identitas fiktif atau UUID sebagai nama. Versi katalog tampil pada detail asesmen, bukan switcher versi global. Pengujian browser end-to-end, accessibility, dan UAT masih diperlukan sebelum menyebut frontend siap untuk pilot.
 
@@ -135,3 +135,11 @@ Kontribusi dapat dimulai dari [panduan kontribusi](CONTRIBUTING.md). Temuan keam
 NusaRiksa menggunakan lisensi [GNU AGPL-3.0-only](LICENSE). Penggunaan komersial diperbolehkan sesuai ketentuan lisensinya. Informasi hak cipta tersedia di [NOTICE.md](NOTICE.md).
 
 NusaRiksa bukan produk resmi atau layanan yang disahkan oleh Otoritas Jasa Keuangan. Penggunaan aplikasi tidak menggantikan tanggung jawab bank dalam memenuhi ketentuan yang berlaku.
+
+## Laporan asesmen internal di web
+
+Menu **Laporan Asesmen** hanya tampil bagi akun dengan izin `reports:read`. Bila juga memiliki `assessments:read`, pengguna dapat memilih asesmen dari maksimal 50 data terbaru yang dikembalikan API; daftar tersebut bukan keseluruhan arsip. Tanpa izin baca asesmen, pengguna dapat membuka laporan menggunakan UUID asesmen yang sudah diketahui, dengan otorisasi tetap diterapkan pada backend.
+
+Halaman mengambil data melalui `GET /assessments/:id/report` dan menampilkan identitas institusi dan asesmen, versi katalog, kelengkapan pengisian, distribusi hasil, rincian kontrol, serta keputusan pemeriksa terakhir. Label **Final Internal** hanya muncul jika respons backend menandai `final=true`. Kelengkapan pengisian tidak boleh ditafsirkan sebagai skor kepatuhan atau pengesahan OJK.
+
+Antarmuka tetap menggunakan aset same-origin, DOM rendering aman, CSP, dan cookie sesi yang sudah ada. Tidak terdapat ekspor PDF, lampiran bukti, maupun pemetaan regulasi tervalidasi. Pengujian browser end-to-end, aksesibilitas dan UAT masih menjadi persyaratan sebelum digunakan pada operasional.
