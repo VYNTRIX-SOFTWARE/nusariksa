@@ -304,3 +304,56 @@ h1,h2,p{margin-top:0}h1,h2{letter-spacing:-.027em}
 .review-history-item p{margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
 .review-history-item small{font-size:11px;color:var(--secondary)}
 @media(max-width:760px){.review-panel{padding:18px}.review-action-area button{width:100%}.review-panel-heading{flex-direction:column;gap:5px}}
+
+
+/* Reporting UI — NusaRiksa design tokens */
+.report-picker{margin-bottom:18px}
+.report-picker .scope-note{margin:0 0 15px}
+.report-selection{display:flex;flex-wrap:wrap;align-items:end;gap:12px}
+.report-selection label{font-size:12px;color:var(--secondary);font-weight:700;flex-basis:100%}
+.report-selection select,.report-selection input,.report-filter-row select{border:1px solid #D1D5DB;border-radius:8px;background:#fff;color:var(--text);padding:11px 12px;font:inherit;font-size:13px}
+.report-selection select,.report-selection input{flex:1;min-width:210px}
+.report-selection .button{min-height:40px}
+.report-head{margin-bottom:18px}
+.report-title-row{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:14px}
+.report-title-row h2{margin:0;font-size:22px;line-height:1.4;overflow-wrap:anywhere}
+.report-state{display:inline-flex;align-items:center;border-radius:8px;background:#F5F2FF;color:#5A3DC7;padding:9px 12px;font-size:12px;font-weight:700}
+.report-state[data-final="true"]{background:#EDF7F2;color:#206447}
+.report-meta-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 24px;margin:0}
+.report-meta-item{display:grid;grid-template-columns:minmax(110px,40%) 1fr;gap:12px;padding:12px 0;border-bottom:1px solid #ECEEF1;font-size:12px;line-height:1.65}
+.report-meta-item dt{color:var(--secondary)}
+.report-meta-item dd{margin:0;color:var(--text);font-weight:650;white-space:pre-wrap;overflow-wrap:anywhere}
+.report-section-title{font-size:17px;margin:0 0 16px}
+.report-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:12px 0 16px}
+.report-stats>.panel-card{display:grid;gap:9px}
+.report-stats span{font-size:12px;color:var(--secondary)}
+.report-stats strong{font-size:27px;font-variant-numeric:tabular-nums;color:#2A2640}
+.report-progress-panel{margin-bottom:18px}
+.report-progress-panel label{display:block;font-size:12px;font-weight:650;color:var(--secondary);margin-bottom:10px}
+.report-progress-panel progress{width:100%;height:12px;accent-color:var(--primary)}
+.report-distribution{display:grid;gap:17px;margin:18px 0 3px}
+.report-bar-row{display:grid;gap:6px}
+.report-bar-head{display:flex;justify-content:space-between;gap:10px;font-size:12px;color:#394254}
+.report-bar-head strong{font-variant-numeric:tabular-nums}
+.report-bar-track{height:9px;border-radius:20px;background:#F0EFF5;overflow:hidden}
+.report-bar{height:100%;background:var(--primary);border-radius:20px}
+.report-bar[data-rating="partially_compliant"]{background:#A78BFA}
+.report-bar[data-rating="non_compliant"]{background:#B45369}
+.report-bar[data-rating="not_applicable"]{background:#94A3B8}
+.report-bar[data-rating="not_assessed"]{background:#C5C9D1}
+.report-filter-row{margin:0 18px 15px;display:flex;align-items:center;flex-wrap:wrap;gap:10px}
+.report-filter-row label{font-size:12px;color:var(--secondary);font-weight:650}
+.report-control-code{color:var(--primary-hover);font-size:11px}
+.report-control-name{font-weight:650;margin-top:5px}
+.report-control-extra{color:var(--secondary);font-size:11px;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere}
+.report-note{white-space:pre-wrap;overflow-wrap:anywhere;min-width:180px}
+@media(max-width:980px){.report-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:760px){
+  .report-meta-grid{grid-template-columns:1fr}
+  .report-selection{align-items:stretch;flex-direction:column}
+  .report-selection label{flex-basis:auto}
+  .report-selection select,.report-selection input{width:100%;min-width:0;flex:auto}
+  .report-stats{gap:10px}
+  .report-stats strong{font-size:23px}
+  .report-meta-item{grid-template-columns:110px minmax(0,1fr)}
+}

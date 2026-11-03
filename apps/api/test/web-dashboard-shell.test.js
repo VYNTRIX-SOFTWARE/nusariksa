@@ -19,7 +19,10 @@ test('shell disajikan tanpa melemahkan CSP atau mengaktifkan fitur palsu',async(
       'id="detail-dialog"','id="metric-changes"',
     ]) assert.ok(html.includes(marker));
     assert.doesNotMatch(html,/data-page="catalogs"/);
-    assert.doesNotMatch(html,/data-page="reports"/);
+    assert.match(html,/data-page="reports"/);
+    assert.match(html,/id="report-menu"[^>]*hidden/);
+    assert.match(html,/id="report-menu-group"[^>]*hidden/);
+    assert.match(html,/id="page-reports"[^>]*hidden/);
     assert.doesNotMatch(html,/DEMO\b|Patuh OJK|switcher bank/i);
     assert.doesNotMatch(html,/<script(?![^>]*\bsrc=)[^>]*>[\s\S]*?<\/script>/i);
     const css=await(await fetch(base+'/assets/styles.css')).text();
