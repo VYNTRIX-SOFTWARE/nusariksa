@@ -143,3 +143,11 @@ Menu **Laporan Asesmen** hanya tampil bagi akun dengan izin `reports:read`. Bila
 Halaman mengambil data melalui `GET /assessments/:id/report` dan menampilkan identitas institusi dan asesmen, versi katalog, kelengkapan pengisian, distribusi hasil, rincian kontrol, serta keputusan pemeriksa terakhir. Label **Final Internal** hanya muncul jika respons backend menandai `final=true`. Kelengkapan pengisian tidak boleh ditafsirkan sebagai skor kepatuhan atau pengesahan OJK.
 
 Antarmuka tetap menggunakan aset same-origin, DOM rendering aman, CSP, dan cookie sesi yang sudah ada. Tidak terdapat ekspor PDF, lampiran bukti, maupun pemetaan regulasi tervalidasi. Pengujian browser end-to-end, aksesibilitas dan UAT masih menjadi persyaratan sebelum digunakan pada operasional.
+
+## Pengelolaan katalog kontrol di web
+
+Menu **Katalog Kontrol** tampil bagi pengguna dengan izin `assessments:read`. Pengguna dengan tambahan `assessments:write` dapat membuat katalog, menambah kontrol pada versi Draft, menerbitkan versi, dan menyalin versi terbit terbaru menjadi Draft baru. Semua operasi menggunakan endpoint katalog yang sudah ada dengan sesi dan aturan akses server.
+
+Versi yang telah diterbitkan bersifat tidak dapat diubah. API belum menyediakan operasi edit atau hapus kontrol, sehingga UI hanya mendukung penambahan kontrol baru; penyalinan versi tidak mengubah atau mengganti kontrol yang sudah ada. Setiap versi dibatasi 200 kontrol. Daftar hanya memuat maksimal 50 katalog berdasarkan kode dan 50 versi terbaru per katalog.
+
+Referensi dokumen pada kontrol disimpan sebagaimana diinput pengguna dan belum diverifikasi sebagai pemetaan regulasi. Untuk membuat asesmen, versi katalog harus berstatus Published. Pengujian browser end-to-end, aksesibilitas dan UAT masih diperlukan sebelum pengoperasian dengan data bank.
