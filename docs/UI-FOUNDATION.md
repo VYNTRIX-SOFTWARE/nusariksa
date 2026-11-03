@@ -4,8 +4,8 @@ Implementasi ini mengikuti NUSARIKSA UI/UX Design Standard v1 yang disediakan pe
 
 ## Status modul
 
-- EXISTING UI: login, logout, sesi, Dashboard, filter tahun/status, Daftar Asesmen, Assessment Workspace (membuat, memasang katalog, memulai, mengisi hasil, membaca revisi), pengajuan, antrean review, persetujuan/pengembalian, dan histori maker–checker.
-- EXISTING API, UI belum tersedia: pengelolaan/publikasi katalog kontrol, laporan internal.
+- EXISTING UI: login, logout, sesi, Dashboard, filter tahun/status, Daftar Asesmen, Assessment Workspace (membuat, memasang katalog, memulai, mengisi hasil, membaca revisi), pengajuan, antrean review, persetujuan/pengembalian, histori maker–checker, dan laporan internal asesmen berbasis API.
+- EXISTING API, UI belum tersedia: pengelolaan/publikasi katalog kontrol.
 - FUTURE: evidence repository, regulatory pack tervalidasi, temuan, notifikasi, profil institusi umum.
 
 ## Application shell dan informasi
@@ -28,7 +28,7 @@ Implementasi ini mengikuti NUSARIKSA UI/UX Design Standard v1 yang disediakan pe
 1. Tidak ada perubahan business logic, schema, permission atau kontrak API.
 2. Metrik hanya menghitung data yang diterima, tidak disebut angka total semua bank atau skor kepatuhan.
 3. Navigasi mengikuti permissions; SUPER_ADMIN tidak otomatis memiliki hak assessments:write atau approve.
-4. Tidak ada menu palsu untuk regulatory pack, evidence, review, atau laporan yang belum punya UI.
+4. Tidak ada menu palsu untuk regulatory pack dan evidence yang belum punya UI. Menu laporan hanya untuk pemegang izin reports:read.
 5. Detail tidak mengarang versi katalog dan tidak memakai UUID sebagai nama pengguna.
 6. Request 401 kembali ke login, error tidak ditampilkan sebagai angka nol, dan forbidden menjelaskan akses.
 7. UI harus diuji pada desktop 1280/1440 px, mobile 390 px, keyboard, zoom 200%, dan audit kontras sebelum dinyatakan production-ready.
@@ -53,3 +53,12 @@ Unit tests memverifikasi perhitungan KPI, filter tahun lintas periode, pencarian
 - Alasan pengembalian minimal 10 karakter. Keputusan menggunakan POST yang sama dengan backend, tanpa retry otomatis saat 409.
 - Riwayat dari `/assessments/:id/reviews` menampilkan siklus dan peristiwa sebenarnya. Tidak mengarang nama orang atau klaim kepatuhan.
 - Tidak ada perubahan backend, DB, permission, atau regulatory mapping. Uji browser E2E, aksesibilitas dan UAT masih release gate.
+
+## Laporan internal asesmen (PR #22 — draft)
+
+- Navigasi laporan berdasarkan `reports:read`, tanpa menyamakan izin tersebut dengan `assessments:read`.
+- Pilihan asesmen berbasis maksimal 50 terbaru pada `GET /assessments` hanya bila izin baca asesmen tersedia; pemegang izin laporan saja dapat memasukkan UUID asesmen secara manual.
+- Satu laporan diambil dengan `GET /assessments/:id/report`; UI menampilkan institusi, versi katalog, periode, status internal, progress pengisian, distribusi hasil, rincian per kontrol dan keputusan review terakhir.
+- `completionPercent` adalah kelengkapan pengisian, bukan skor kepatuhan. Status final internal hanya mengikuti field `final` backend; tidak ada klaim pengesahan OJK.
+- Rendering menggunakan DOM aman tanpa `innerHTML` untuk data API, request same-origin, CSP dan allowlist dipertahankan, serta respons async usang diabaikan.
+- Pengujian model dan aset ditambahkan. Browser E2E, audit aksesibilitas dan UAT tetap menjadi release gate yang belum terpenuhi.
