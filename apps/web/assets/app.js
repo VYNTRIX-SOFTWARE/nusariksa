@@ -7,6 +7,7 @@ import {
 } from './assessment-model.js';
 import { createWorkspace } from './assessment-workspace.js';
 import { pendingReviewQueue } from './assessment-review-model.js';
+import { createReporting } from './assessment-report.js';
 
 const $ = (id) => document.getElementById(id);
 const screens = {
@@ -16,7 +17,7 @@ const state = {
   userId: null, permissions: [], assessments: [], load: 'loading', page: 'overview',
   year: 'all', status: 'all', search: '', sort: 'newest', workspaceOrigin:'assessments',
 };
-const pages = {overview: 'Dashboard', assessments: 'Daftar Asesmen', reviews: 'Review & Persetujuan', workspace: 'Assessment Workspace'};
+const pages = {overview: 'Dashboard', assessments: 'Daftar Asesmen', reviews: 'Review & Persetujuan', reports: 'Laporan Asesmen', workspace: 'Assessment Workspace'};
 
 function show(screen) {
   for (const [name, element] of Object.entries(screens)) element.hidden = name !== screen;
@@ -44,6 +45,7 @@ function cleanSession() {
   $('assessment-create-dialog').close?.();
   state.page='overview';
   workspace.close();
+  reporting.clear();
   notice('');
 }
 function authFailure(error) {
@@ -91,6 +93,7 @@ function assessmentRow(a) {
 }
 function renderPermissions() {
   workspace.syncPermissions();
+  reporting.sync();
   const hasRead=state.permissions.includes('assessments:read');
   $('assessment-menu').hidden=!hasRead;
   $('assessment-menu-group').hidden=!hasRead;
@@ -101,6 +104,7 @@ function renderPermissions() {
   $('dashboard-content').hidden=state.load==='forbidden';
   if (!hasRead && ['assessments','workspace'].includes(state.page)) navigate('overview');
   if (!canReview && state.page==='reviews') navigate('overview');
+  if (!state.permissions.includes('reports:read') && state.page==='reports') navigate('overview');
 }
 function renderMetrics() {
   const loading = state.load!=='ready';
@@ -231,6 +235,7 @@ function closeMobile() {
 function navigate(page) {
   if (!(page in pages)) return false;
   if(['assessments','workspace','reviews'].includes(page)&&!state.permissions.includes('assessments:read'))return false;
+  if(page==='reports'&&!state.permissions.includes('reports:read'))return false;
   if(page==='reviews'&&!state.permissions.includes('assessments:approve'))return false;
   if(state.page==='workspace' && page!=='workspace' && !workspace.confirmLeave())return false;
   if(state.page==='workspace' && page!=='workspace')workspace.close();
@@ -410,6 +415,13 @@ for(const id of ['attention-list','my-work-list','assessments-table']) {
 $('close-detail').addEventListener('click',()=>$('detail-dialog').close());
 $('detail-dialog').addEventListener('click',(event)=>{
   if(event.target===$('detail-dialog'))$('detail-dialog').close();
+});
+
+const reporting=createReporting({
+  api:requestJson,
+  getPermissions:()=>state.permissions,
+  getAssessments:()=>state.assessments,
+  onAuthFailure:authFailure,
 });
 
 const workspace=createWorkspace({
