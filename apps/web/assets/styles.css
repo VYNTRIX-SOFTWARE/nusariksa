@@ -357,3 +357,46 @@ h1,h2,p{margin-top:0}h1,h2{letter-spacing:-.027em}
   .report-stats strong{font-size:23px}
   .report-meta-item{grid-template-columns:110px minmax(0,1fr)}
 }
+
+
+/* Pengelolaan katalog kontrol */
+.catalog-layout{display:grid;grid-template-columns:minmax(240px,300px) minmax(0,1fr);gap:16px;align-items:start}
+.catalog-sidebar,.catalog-main{min-width:0}
+.catalog-main{display:grid;gap:16px}
+.catalog-panel-heading{align-items:flex-start;flex-wrap:wrap;gap:10px}
+.catalog-panel-heading h2{font-size:16px;margin:0 0 7px}
+.catalog-panel-heading .button{font-size:11px;padding:8px 10px}
+.catalog-list{display:grid;gap:7px;max-height:65vh;overflow-y:auto;margin-top:15px}
+.catalog-list .empty-note,.catalog-versions .empty-note{margin:10px 0}
+.catalog-list-item{width:100%;display:grid;gap:6px;text-align:left;border:1px solid var(--border);border-radius:8px;padding:12px;background:#fff;color:var(--text);font:inherit}
+.catalog-list-item:hover{background:#F9F8FF}
+.catalog-list-item.is-selected{background:var(--primary-soft);border-color:#C7B8FF;box-shadow:inset 3px 0 var(--primary)}
+.catalog-list-code{font-size:11px;color:var(--primary-hover);letter-spacing:.03em}
+.catalog-list-title{font-size:12px;line-height:1.55;overflow-wrap:anywhere}
+.catalog-head{display:flex;justify-content:space-between;align-items:start;gap:15px;flex-wrap:wrap}
+.catalog-head h2{font-size:18px;margin:0;overflow-wrap:anywhere}
+.catalog-versions{display:flex;gap:9px;flex-wrap:wrap;margin:20px 0 10px}
+.catalog-version-button{display:flex;gap:10px;align-items:center;border-radius:8px;border:1px solid var(--border);background:#fff;padding:10px 13px;font-size:12px;color:var(--text)}
+.catalog-version-button.is-selected{background:var(--primary-soft);border-color:#C7B8FF;color:var(--primary-hover)}
+.catalog-version-state{font-size:11px;color:var(--secondary);font-weight:650}
+.catalog-helper{font-size:12px;color:var(--secondary);line-height:1.7;margin:10px 0 0}
+.catalog-create-form,.catalog-control-form{min-width:0}
+.catalog-form-panel,.catalog-control-form{display:grid;gap:10px}
+.catalog-form-panel{background:#FAF9FF;border:1px solid #E7DFFF;border-radius:9px;padding:14px;margin:10px 0}
+.catalog-form-panel label,.catalog-control-form label{display:block;font-size:12px;font-weight:650;color:#3F4555}
+.catalog-form-panel input,.catalog-control-form input,.catalog-control-form textarea{border:1px solid #D1D5DB;background:#fff;border-radius:8px;color:var(--text);font:inherit;font-size:13px;width:100%;min-width:0;padding:11px 12px}
+.catalog-control-form textarea{resize:vertical}
+.catalog-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.catalog-form-grid>div{min-width:0;display:grid;gap:8px}
+.catalog-form-panel .button,.catalog-control-form .button{justify-self:start}
+.catalog-control-form .workspace-help{margin:0 0 6px}
+.catalog-add-panel h2{font-size:16px;margin:0 0 10px}
+.catalog-add-panel .panel-caption{margin-bottom:18px;line-height:1.6}
+.catalog-control-title{font-size:12px;font-weight:650;margin-top:6px;overflow-wrap:anywhere}
+.catalog-control-detail{font-size:11px;color:var(--secondary);line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere}
+.catalog-publish-row{display:flex;justify-content:flex-end;padding-top:16px}
+.catalog-table-panel{min-width:0}
+.catalog-table-panel .panel-heading{margin-bottom:15px}
+.catalog-table-panel .data-table{min-width:690px}
+@media(max-width:980px){.catalog-layout{grid-template-columns:1fr}.catalog-list{max-height:260px}.catalog-sidebar{order:0}}
+@media(max-width:760px){.catalog-form-grid{grid-template-columns:1fr}.catalog-head{flex-direction:column}.catalog-form-panel .button,.catalog-control-form .button{width:100%}}
