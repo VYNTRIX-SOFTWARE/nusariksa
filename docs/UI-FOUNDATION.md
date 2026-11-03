@@ -4,8 +4,8 @@ Implementasi ini mengikuti NUSARIKSA UI/UX Design Standard v1 yang disediakan pe
 
 ## Status modul
 
-- EXISTING UI: login, logout, sesi, Dashboard, filter tahun/status, Daftar Asesmen, Assessment Workspace (membuat, memasang katalog, memulai, mengisi hasil, membaca revisi), pengajuan, antrean review, persetujuan/pengembalian, histori maker–checker, dan laporan internal asesmen berbasis API.
-- EXISTING API, UI belum tersedia: pengelolaan/publikasi katalog kontrol.
+- EXISTING UI: login, logout, sesi, Dashboard, filter tahun/status, Daftar Asesmen, Assessment Workspace (membuat, memasang katalog, memulai, mengisi hasil, membaca revisi), pengajuan, antrean review, persetujuan/pengembalian, histori maker–checker, laporan internal asesmen berbasis API, dan pengelolaan katalog kontrol melalui web.
+- EXISTING API, UI belum tersedia: penyuntingan/penghapusan kontrol yang sudah dibuat (endpoint belum tersedia).
 - FUTURE: evidence repository, regulatory pack tervalidasi, temuan, notifikasi, profil institusi umum.
 
 ## Application shell dan informasi
@@ -28,7 +28,7 @@ Implementasi ini mengikuti NUSARIKSA UI/UX Design Standard v1 yang disediakan pe
 1. Tidak ada perubahan business logic, schema, permission atau kontrak API.
 2. Metrik hanya menghitung data yang diterima, tidak disebut angka total semua bank atau skor kepatuhan.
 3. Navigasi mengikuti permissions; SUPER_ADMIN tidak otomatis memiliki hak assessments:write atau approve.
-4. Tidak ada menu palsu untuk regulatory pack dan evidence yang belum punya UI. Menu laporan hanya untuk pemegang izin reports:read.
+4. Tidak ada menu palsu untuk regulatory pack dan evidence yang belum punya UI. Menu laporan hanya untuk pemegang izin reports:read; menu katalog untuk assessments:read, mutasi katalog hanya untuk assessments:write.
 5. Detail tidak mengarang versi katalog dan tidak memakai UUID sebagai nama pengguna.
 6. Request 401 kembali ke login, error tidak ditampilkan sebagai angka nol, dan forbidden menjelaskan akses.
 7. UI harus diuji pada desktop 1280/1440 px, mobile 390 px, keyboard, zoom 200%, dan audit kontras sebelum dinyatakan production-ready.
