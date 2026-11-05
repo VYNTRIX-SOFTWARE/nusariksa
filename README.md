@@ -176,14 +176,14 @@ Endpoint tersedia: `GET/POST /maturity-models`, `GET/POST /maturity-models/:id/v
 
 ## Penilaian Maturitas TI — engine internal (PR #26, development)
 
-Menu **Penilaian Maturitas** memungkinkan pemilik asesmen membuat penilaian dari metodologi **Published** dengan kebijakan agregasi yang ditetapkan secara eksplisit. Domain dinilai pada **Level 0–5** sesuai enam kriteria pada versi rubrik yang terkunci. Setiap nilai wajib memiliki justifikasi minimal 10 karakter; lampiran bukti dapat ditautkan menggunakan UUID berkas bukti dari modul Evidence Management. Server memastikan lampiran berasal dari institusi yang sama dan pemegang izin memiliki akses \`evidence:read\`; sistem **tidak menguji apakah bukti memadai** untuk level yang dipilih.
+Menu **Penilaian Maturitas** memungkinkan pemilik asesmen membuat penilaian dari metodologi **Published** dengan kebijakan agregasi yang ditetapkan secara eksplisit. Domain dinilai pada **Level 0–5** sesuai enam kriteria pada versi rubrik yang terkunci. Setiap nilai wajib memiliki justifikasi minimal 10 karakter; lampiran bukti dapat ditautkan menggunakan UUID berkas bukti dari modul Evidence Management. Server memastikan lampiran berasal dari institusi yang sama dan pemegang izin memiliki akses `evidence:read`; sistem **tidak menguji apakah bukti memadai** untuk level yang dipilih.
 
 Model mendukung dua metode agregasi internal yang tersimpan dan terkunci pada versi rubrik:
-- \`minimum\`: level agregat sama dengan level domain **terendah**.
-- \`mean_floor\`: rata-rata aritmetika level seluruh domain dengan bobot setara, lalu **dibulatkan ke bawah**.
+- `minimum`: level agregat sama dengan level domain **terendah**.
+- `mean_floor`: rata-rata aritmetika level seluruh domain dengan bobot setara, lalu **dibulatkan ke bawah**.
 
-Nilai agregat **tidak dihitung** bila satu saja domain belum dinilai. Pemilihan metode dilakukan pada Draft melalui \`PUT /maturity-versions/:id/aggregation\`. Versi metodologi yang sudah Published sebelum fitur ini dan belum memiliki metode tidak memperoleh nilai default; buat versi Draft berikutnya, pilih metode, lalu terbitkan agar dapat digunakan dalam penilaian. Tidak ada modifikasi otomatis pada versi lama.
+Nilai agregat **tidak dihitung** bila satu saja domain belum dinilai. Pemilihan metode dilakukan pada Draft melalui `PUT /maturity-versions/:id/aggregation`. Versi metodologi yang sudah Published sebelum fitur ini dan belum memiliki metode tidak memperoleh nilai default; buat versi Draft berikutnya, pilih metode, lalu terbitkan agar dapat digunakan dalam penilaian. Tidak ada modifikasi otomatis pada versi lama.
 
-Endpoint: \`GET/POST /maturity-assessments\`, \`GET /maturity-assessments/:id\`, \`PUT /maturity-assessments/:id/domains/:domainId\`, dan \`GET /maturity-assessments/:id/domains/:domainId/history\`. Update memakai \`expectedRevision\` untuk menolak stale write (HTTP 409), dan setiap revisi dicatat dalam log append-only. Penilaian hanya dapat diubah oleh pemilik dengan \`assessments:write\`. Pengguna dengan \`assessments:read\` dapat membaca dalam cakupan institusinya.
+Endpoint: `GET/POST /maturity-assessments`, `GET /maturity-assessments/:id`, `PUT /maturity-assessments/:id/domains/:domainId`, dan `GET /maturity-assessments/:id/domains/:domainId/history`. Update memakai `expectedRevision` untuk menolak stale write (HTTP 409), dan setiap revisi dicatat dalam log append-only. Penilaian hanya dapat diubah oleh pemilik dengan `assessments:write`. Pengguna dengan `assessments:read` dapat membaca dalam cakupan institusinya.
 
 **Bukan maturity assessment resmi OJK.** Level agregat ini merupakan kalkulasi internal dari kebijakan pengguna, tidak membuktikan kepatuhan atau kematangan terhadap suatu standar eksternal. Belum ada review/approval hasil maturitas, evaluasi kecukupan bukti, audit browser E2E, atau UAT. Jangan gunakan data bank asli sebelum security hardening dan acceptance selesai.
