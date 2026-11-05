@@ -414,3 +414,34 @@ h1,h2,p{margin-top:0}h1,h2{letter-spacing:-.027em}
 .workspace-evidence-upload input{font:inherit;font-size:12px;max-width:100%}
 .workspace-evidence-upload .button{justify-self:start}
 @media(max-width:760px){.workspace-evidence-item{align-items:stretch;flex-direction:column}.workspace-evidence-upload .button{width:100%}}
+
+
+/* Maturity methodology registry — internal rubric, not a regulatory score */
+.maturity-selector{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px;margin:14px 0}
+.maturity-selector>div{display:grid;gap:7px;min-width:0}
+.maturity-selector label,.maturity-edit-form label,.maturity-criterion-form label{font-size:12px;color:var(--secondary);font-weight:700}
+.maturity-selector input,.maturity-selector select,.maturity-edit-form input,.maturity-edit-form textarea,.maturity-criterion-form textarea{width:100%;min-width:0;background:#fff;color:var(--text);border:1px solid #D1D5DB;border-radius:8px;padding:11px 12px;font:inherit;font-size:13px}
+.maturity-edit-form textarea,.maturity-criterion-form textarea{resize:vertical}
+.maturity-actionbar{display:flex;align-items:center;flex-wrap:wrap;gap:9px;margin-top:12px}
+.maturity-actionbar .button-primary{width:auto;min-height:40px;padding:10px 16px}
+.maturity-edit-form{margin-top:17px;display:grid;gap:11px;background:#FAF9FF;border:1px solid #E9E1FF;border-radius:10px;padding:16px}
+.maturity-edit-form h2,.maturity-edit-form h3{font-size:15px;margin:0}
+.maturity-edit-form .button{justify-self:start}
+.maturity-rubric-heading{display:flex;align-items:start;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.maturity-rubric-heading h2{font-size:18px;margin:0 0 8px;overflow-wrap:anywhere}
+.maturity-rubric-heading .panel-caption{overflow-wrap:anywhere}
+.maturity-layout{display:grid;grid-template-columns:minmax(225px,300px) minmax(0,1fr);gap:16px;align-items:start}
+.maturity-layout>.panel-card{min-width:0}
+.maturity-domain-list{display:grid;gap:8px;margin:12px 0}
+.maturity-domain-item{width:100%;display:grid;gap:6px;text-align:left;padding:12px;border:1px solid var(--border);border-radius:9px;background:#fff;color:var(--text)}
+.maturity-domain-item strong{font-size:12px;color:var(--primary-hover)}
+.maturity-domain-item span{font-size:12px;overflow-wrap:anywhere}
+.maturity-domain-item small{font-size:11px;color:var(--secondary)}
+.maturity-domain-item.is-selected{background:var(--primary-soft);border-color:#B9AAFF;box-shadow:inset 3px 0 var(--primary)}
+.maturity-criteria-list{display:grid;gap:12px;margin-top:16px}
+.maturity-criterion-form{display:grid;gap:8px;padding:13px;border-radius:9px;border:1px solid var(--border)}
+.maturity-criterion-form .button{justify-self:start}
+.maturity-criterion-form textarea[readonly]{background:#F8F9FC;color:#374151}
+#maturity-version-state[data-status="published"]{background:#EDF7F2;color:#206447}
+@media(max-width:980px){.maturity-layout{grid-template-columns:1fr}}
+@media(max-width:760px){.maturity-selector{grid-template-columns:1fr}.maturity-actionbar{display:grid}.maturity-actionbar .button,.maturity-edit-form .button{width:100%}}

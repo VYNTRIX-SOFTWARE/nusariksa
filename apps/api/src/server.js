@@ -6,6 +6,7 @@ import { createAssessmentResultsHandler } from './assessment-results-http.js';
 import { createAssessmentReviewsHandler } from './assessment-reviews-http.js';
 import { createAssessmentReportsHandler } from './assessment-reports-http.js';
 import { createAssessmentEvidenceHandler } from './assessment-evidence-http.js';
+import { createMaturityHandler } from './maturity-http.js';
 import { createControlCatalogsHandler } from './control-catalogs-http.js';
 import { checkDatabase, createPool } from './database.js';
 import { createLoginLimiter } from './login-limiter.js';
@@ -32,6 +33,7 @@ export function createServer({
   reviewHandlers,
   reportHandler,
   evidenceHandlers,
+  maturityHandlers,
   evidenceKey = process.env.EVIDENCE_ENCRYPTION_KEY,
 } = {}) {
   const handleAuth = createAuthHandler({ db: authDb, appOrigin, limiter: loginLimiter });
@@ -43,6 +45,9 @@ export function createServer({
   const handleResults = createAssessmentResultsHandler({ db: authDb, appOrigin, ...resultHandlers });
   const handleReviews = createAssessmentReviewsHandler({ db: authDb, appOrigin, ...reviewHandlers });
   const handleReport = createAssessmentReportsHandler({ db: authDb, appOrigin, report: reportHandler });
+  const handleMaturity = createMaturityHandler({
+    db: authDb, appOrigin, ...maturityHandlers,
+  });
   const handleEvidence = createAssessmentEvidenceHandler({
     db: authDb, appOrigin, evidenceKey, ...evidenceHandlers,
   });
@@ -111,6 +116,23 @@ export function createServer({
       || request.url?.endsWith('/catalog') || request.url?.endsWith('/checklist')) {
       try {
         await handleCatalogs(request, response);
+      } catch {
+        if (!response.headersSent) {
+          response.writeHead(503);
+          response.end(JSON.stringify({ error: 'Unavailable' }));
+        } else {
+          response.destroy();
+        }
+      }
+      return;
+    }
+
+    if (request.url === '/maturity-models' ||
+      request.url?.startsWith('/maturity-models/') ||
+      request.url?.startsWith('/maturity-versions/') ||
+      request.url?.startsWith('/maturity-domains/')) {
+      try {
+        await handleMaturity(request, response);
       } catch {
         if (!response.headersSent) {
           response.writeHead(503);

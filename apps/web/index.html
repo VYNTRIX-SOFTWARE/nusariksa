@@ -89,6 +89,9 @@
         <button type="button" class="nav-link" data-page="catalogs" id="catalog-menu" title="Katalog Kontrol" hidden>
           <svg class="icon nav-icon"><use href="#i-clipboard"></use></svg><span class="nav-label">Katalog Kontrol</span>
         </button>
+        <button type="button" class="nav-link" data-page="maturity" id="maturity-menu" title="Metodologi Maturitas" hidden>
+          <svg class="icon nav-icon"><use href="#i-clipboard"></use></svg><span class="nav-label">Metodologi Maturitas</span>
+        </button>
         <div class="sidebar-section-label sidebar-gap" id="report-menu-group" hidden>PELAPORAN</div>
         <button type="button" class="nav-link" data-page="reports" id="report-menu" title="Laporan Asesmen" hidden>
           <svg class="icon nav-icon"><use href="#i-clipboard"></use></svg><span class="nav-label">Laporan Asesmen</span>
@@ -287,6 +290,80 @@
                 </form>
               </section>
             </div>
+          </div>
+        </section>
+
+        <section id="page-maturity" class="page" aria-labelledby="maturity-heading" hidden>
+          <div class="page-intro">
+            <div>
+              <p class="eyebrow">ASESMEN TI / MATURITAS</p>
+              <h1 id="maturity-heading">Metodologi Maturitas</h1>
+              <p class="supporting-copy">Definisikan domain dan kriteria Level 0–5 pada model internal berversi. Belum menghitung skor atau menilai maturitas bank.</p>
+            </div>
+            <button type="button" class="button button-outline" id="maturity-refresh">Muat ulang</button>
+          </div>
+          <div class="panel-card">
+            <p class="workspace-help">Referensi metodologi dimasukkan oleh pengguna dan belum diverifikasi sebagai kerangka resmi regulator. Versi yang diterbitkan tidak dapat diubah.</p>
+            <div id="maturity-message" class="workspace-message" role="status" aria-live="polite" hidden></div>
+            <div class="maturity-selector">
+              <div><label for="maturity-model-select">Model maturitas</label>
+                <select id="maturity-model-select"><option value="">Pilih model</option></select></div>
+              <div><label for="maturity-version-select">Versi metodologi</label>
+                <select id="maturity-version-select"><option value="">Pilih versi</option></select></div>
+            </div>
+            <div class="maturity-actionbar">
+              <button id="maturity-create-toggle" class="button button-outline" type="button" hidden>Buat model baru</button>
+              <button id="maturity-next-version" class="button button-outline" type="button" hidden>Buat versi berikutnya</button>
+              <button id="maturity-publish" class="button button-primary" type="button" hidden>Terbitkan metodologi</button>
+            </div>
+            <form id="maturity-create-form" class="maturity-edit-form" hidden>
+              <h2>Model maturitas baru</h2>
+              <div class="maturity-selector">
+                <div><label for="maturity-model-code">Kode model</label>
+                  <input id="maturity-model-code" maxlength="32" minlength="2" placeholder="MAT_TI_INTERNAL" required></div>
+                <div><label for="maturity-model-title">Nama model</label>
+                  <input id="maturity-model-title" maxlength="200" minlength="3" placeholder="Metodologi Maturitas TI Internal" required></div>
+              </div>
+              <label for="maturity-model-reference">Sumber / referensi metodologi</label>
+              <input id="maturity-model-reference" minlength="3" maxlength="300" placeholder="Dokumen metodologi internal (versi dan tanggal)" required>
+              <button type="submit" class="button button-primary">Buat model</button>
+            </form>
+          </div>
+          <div id="maturity-rubric-content" hidden>
+            <section class="panel-card" aria-labelledby="maturity-rubric-title">
+              <div class="maturity-rubric-heading">
+                <div><p class="eyebrow">RUBRIK TERPILIH</p>
+                  <h2 id="maturity-rubric-title">Rubrik maturitas</h2>
+                  <p id="maturity-rubric-reference" class="panel-caption">Referensi —</p>
+                </div>
+                <span id="maturity-version-state" class="status-chip">Draft</span>
+              </div>
+              <p id="maturity-completeness" class="workspace-help">Kriteria belum lengkap.</p>
+              <p class="workspace-help">Untuk dapat diterbitkan, setiap domain wajib memiliki enam kriteria eksplisit Level 0 sampai Level 5. Level ini tidak otomatis mengukur kepatuhan atau maturitas bank.</p>
+            </section>
+            <div class="maturity-layout">
+              <section class="panel-card" aria-labelledby="maturity-domains-title">
+                <div class="panel-heading"><h2 id="maturity-domains-title">Domain</h2>
+                  <span id="maturity-domain-count" class="small-caption">0</span></div>
+                <div id="maturity-domain-list" class="maturity-domain-list" aria-live="polite"></div>
+                <form id="maturity-domain-form" class="maturity-edit-form" hidden>
+                  <h3>Tambah domain</h3>
+                  <label for="maturity-domain-code">Kode domain</label>
+                  <input id="maturity-domain-code" maxlength="32" minlength="2" placeholder="GOV_01" required>
+                  <label for="maturity-domain-title">Judul domain</label>
+                  <input id="maturity-domain-title" maxlength="200" minlength="3" placeholder="Tata Kelola TI" required>
+                  <label for="maturity-domain-description">Deskripsi (opsional)</label>
+                  <textarea id="maturity-domain-description" maxlength="2000" rows="3"></textarea>
+                  <button type="submit" class="button button-outline">Tambah domain</button>
+                </form>
+              </section>
+              <section class="panel-card" aria-labelledby="maturity-criteria-title">
+                <h2 id="maturity-criteria-title">Kriteria per level</h2>
+                <p id="maturity-domain-summary" class="panel-caption">Pilih domain untuk menyusun kriteria.</p>
+                <div id="maturity-criteria-list" class="maturity-criteria-list"></div>
+              </section>
+            </div>
+            <p class="workspace-disclaimer">Fitur ini hanya menyusun model maturitas internal. Belum ada penilaian domain, perhitungan agregat, maupun pengesahan regulator.</p>
           </div>
         </section>
 
