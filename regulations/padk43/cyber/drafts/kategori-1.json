@@ -189,6 +189,96 @@
       "tablePage": 18,
       "rankCriteria": [],
       "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 21,
+      "domain": "TK",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "workingSummary": "Evaluasi berkala penerapan manajemen risiko keamanan siber",
+      "tablePage": 19,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 22,
+      "domain": "TK",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "workingSummary": "Penguatan budaya dan kesadaran keamanan siber seluruh pegawai",
+      "tablePage": 19,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 23,
+      "domain": "ID",
+      "subdomain": "PENGUKURAN_RISIKO_SIBER",
+      "workingSummary": "Penilaian kerentanan keamanan siber secara berkala",
+      "tablePage": 19,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 24,
+      "domain": "ID",
+      "subdomain": "PENGUKURAN_RISIKO_SIBER",
+      "workingSummary": "Retensi log untuk audit dan investigasi insiden",
+      "tablePage": 19,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 25,
+      "domain": "ID",
+      "subdomain": "PENGUKURAN_RISIKO_SIBER",
+      "workingSummary": "Klasifikasi data menurut kritikalitas dan sensitivitas",
+      "tablePage": 19,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 26,
+      "domain": "ID",
+      "subdomain": "PENGUKURAN_RISIKO_SIBER",
+      "workingSummary": "Pengamanan informasi sesuai klasifikasi data",
+      "tablePage": 19,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 27,
+      "domain": "ID",
+      "subdomain": "PENGUKURAN_RISIKO_SIBER",
+      "workingSummary": "Analisis dampak bisnis terhadap ancaman siber",
+      "tablePage": 19,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 28,
+      "domain": "ID",
+      "subdomain": "PENGUKURAN_RISIKO_SIBER",
+      "workingSummary": "Pengujian keamanan dan penetration testing berkala",
+      "tablePage": 19,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 29,
+      "domain": "ID",
+      "subdomain": "PENGUKURAN_RISIKO_SIBER",
+      "workingSummary": "Peninjauan kebijakan mengikuti perubahan ancaman dan teknologi",
+      "tablePage": 20,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 30,
+      "domain": "ID",
+      "subdomain": "PENGUKURAN_RISIKO_SIBER",
+      "workingSummary": "Prioritas risiko dan pemutakhiran inventaris risiko siber",
+      "tablePage": 20,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
     }
   ]
 }
