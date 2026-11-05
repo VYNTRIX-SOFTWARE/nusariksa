@@ -40,3 +40,11 @@ Setiap tahap memerlukan implementasi dan pengujian yang dapat diulang sebelum di
 - **Belum tersedia:** isi lengkap kategori 1/2 yang telah dikonfirmasi halaman demi halaman dari PDF OJK; tidak ada data sintetis yang diterbitkan sebagai regulatory pack.
 - Quality gate otomatis memeriksa struktur; reviewer manusia harus memeriksa ketepatan transkripsi dan rumus sebelum approval. `regulatory:release-gate` harus gagal pada kondisi tanpa kedua pack.
 - Selanjutnya: transkripsi dan QA seluruh isi resmi, verifikasi kasus batas komposit, import versi regulatory pack yang immutable, kertas kerja per indikator, approval hasil, browser E2E, dan UAT.
+
+## Source-bound transkripsi PADK — PR #29
+
+- Workbench transkripsi parsial dilengkapi pelacakan jumlah indikator dan kriteria, status `DRAFT_UNVERIFIED`, serta nomor yang belum dicatat. Catatan awal: kategori 1 = 6/80 indikator dan 0/400 kriteria; kategori 2 = 6/60 indikator dan 0/300 kriteria.
+- Source review **belum selesai**: catatan awal bersumber dari salinan PDF publik; file asli OJK perlu diunduh, di-hash SHA-256, dan dicocokkan terhadap semua tabel dan halaman sebelum melanjutkan.
+- Release gate memerlukan file PDF yang benar-benar dibaca, hash sesuai kedua pack, dan review independen isi/transkripsi. Kode pengecekan bukan persetujuan OJK.
+- Selanjutnya: selesaikan 140 indikator/700 kriteria dari Lampiran IV, silang-periksa butir kategori, lakukan approval reviewer, buat regulatory pack immutable, dan verifikasi rumus terhadap contoh OJK.
+
