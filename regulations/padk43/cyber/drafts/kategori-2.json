@@ -279,6 +279,96 @@
       "tablePage": 32,
       "rankCriteria": [],
       "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 31,
+      "domain": "PL",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "workingSummary": "Proteksi email korporasi melalui pemeriksaan otomatis spam, phishing, dan malware",
+      "tablePage": 32,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 32,
+      "domain": "PL",
+      "subdomain": "MANAJEMEN_IDENTITAS_AUTENTIKASI_KONTROL_AKSES",
+      "workingSummary": "Pengendalian akses berbasis peran pada seluruh sistem: ID unik, kata sandi aman, dan pemisahan akun administrator",
+      "tablePage": 32,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 33,
+      "domain": "PL",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "workingSummary": "Pemisahan SSID jaringan pegawai dan tamu dengan pembatasan akses seperti VLAN",
+      "tablePage": 33,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 34,
+      "domain": "PL",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "workingSummary": "Pengendalian EOL/EOS aset TI dengan inventaris, patching berkala, dan isolasi perangkat yang habis dukungan",
+      "tablePage": 33,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 35,
+      "domain": "PL",
+      "subdomain": "MANAJEMEN_IDENTITAS_AUTENTIKASI_KONTROL_AKSES",
+      "workingSummary": "Penyesuaian atau penonaktifan hak akses saat pegawai pindah atau berhenti beserta log perubahan",
+      "tablePage": 33,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 36,
+      "domain": "PL",
+      "subdomain": "KEAMANAN_DATA",
+      "workingSummary": "Penghapusan aman data pada perangkat sebelum dimusnahkan atau dialihkan, disertai verifikasi dan bukti",
+      "tablePage": 33,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 37,
+      "domain": "PL",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "workingSummary": "Pengamanan akses fisik ruang server dengan kunci, kartu akses atau biometrik serta pencatatan akses",
+      "tablePage": 33,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 38,
+      "domain": "PL",
+      "subdomain": "MANAJEMEN_IDENTITAS_AUTENTIKASI_KONTROL_AKSES",
+      "workingSummary": "Penerapan autentikasi multifaktor pada seluruh sistem kritikal",
+      "tablePage": 34,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 39,
+      "domain": "PL",
+      "subdomain": "MANAJEMEN_IDENTITAS_AUTENTIKASI_KONTROL_AKSES",
+      "workingSummary": "Instalasi perangkat lunak dibatasi kepada pengelola TI atau pihak yang memperoleh otorisasi",
+      "tablePage": 34,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 40,
+      "domain": "PL",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "workingSummary": "Pemisahan jaringan sistem kritikal dari jaringan umum seperti surat elektronik",
+      "tablePage": 34,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
     }
   ]
 }
