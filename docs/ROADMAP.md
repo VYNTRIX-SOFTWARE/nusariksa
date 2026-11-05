@@ -12,3 +12,10 @@ API pemeriksaan hidup, pengujian HTTP, pemeriksaan sintaks, CI, dan dokumentasi 
 4. Pemetaan regulasi berversi setelah penelaahan ketentuan resmi.
 
 Setiap tahap memerlukan implementasi dan pengujian yang dapat diulang sebelum dinyatakan selesai.
+
+## Metodologi dan asesmen maturitas
+
+- Fondasi tersedia: model maturitas berreferensi, versi Draft/Published, domain, dan enam kriteria per domain; versi Published tidak dapat diubah.
+- Belum tersedia: penilaian maturitas per domain, pembuktian level melalui evidence, reviewer acceptance, perhitungan/aggregasi maturity level, serta baseline dan target improvement.
+- Sebelum scoring: verifikasi dasar metodologi, rumus, bobot, dan hubungan antar-domain. Nilai kelengkapan asesmen kontrol tidak digunakan sebagai skor maturitas.
+- Kesiapan produksi masih memerlukan security hardening, browser E2E, audit aksesibilitas, UAT, serta review referensi regulasi resmi.
