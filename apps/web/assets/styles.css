@@ -400,3 +400,17 @@ h1,h2,p{margin-top:0}h1,h2{letter-spacing:-.027em}
 .catalog-table-panel .data-table{min-width:690px}
 @media(max-width:980px){.catalog-layout{grid-template-columns:1fr}.catalog-list{max-height:260px}.catalog-sidebar{order:0}}
 @media(max-width:760px){.catalog-form-grid{grid-template-columns:1fr}.catalog-head{flex-direction:column}.catalog-form-panel .button,.catalog-control-form .button{width:100%}}
+
+/* Evidence — workspace control attachments */
+.workspace-evidence-panel{margin-top:24px;border-top:1px solid var(--border)}
+.workspace-evidence-panel .workspace-help{margin:12px 0;line-height:1.65}
+.workspace-evidence-list{display:grid;gap:10px;margin-top:14px}
+.workspace-evidence-item{display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid var(--border);border-radius:8px;padding:12px 14px;background:#FAFAFC}
+.workspace-evidence-meta{min-width:0;display:grid;gap:5px}
+.workspace-evidence-meta strong{font-size:12px;overflow-wrap:anywhere}
+.workspace-evidence-meta small{font-size:11px;color:var(--secondary);overflow-wrap:anywhere}
+.workspace-evidence-upload{margin-top:17px;border:1px solid #E7DFFF;background:#FAF9FF;border-radius:9px;padding:15px;display:grid;gap:11px}
+.workspace-evidence-upload label{font-size:12px;font-weight:650}
+.workspace-evidence-upload input{font:inherit;font-size:12px;max-width:100%}
+.workspace-evidence-upload .button{justify-self:start}
+@media(max-width:760px){.workspace-evidence-item{align-items:stretch;flex-direction:column}.workspace-evidence-upload .button{width:100%}}
