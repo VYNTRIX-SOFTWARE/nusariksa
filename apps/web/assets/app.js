@@ -10,6 +10,7 @@ import { pendingReviewQueue } from './assessment-review-model.js';
 import { createReporting } from './assessment-report.js';
 import { createControlCatalogManagement } from './control-catalog.js';
 import { createMaturityManagement } from './maturity-ui.js';
+import { createMaturityAssessmentUI } from './maturity-assessment-ui.js';
 
 const $ = (id) => document.getElementById(id);
 const screens = {
@@ -19,7 +20,7 @@ const state = {
   userId: null, permissions: [], assessments: [], load: 'loading', page: 'overview',
   year: 'all', status: 'all', search: '', sort: 'newest', workspaceOrigin:'assessments',
 };
-const pages = {overview: 'Dashboard', assessments: 'Daftar Asesmen', reviews: 'Review & Persetujuan', reports: 'Laporan Asesmen', catalogs: 'Katalog Kontrol', maturity: 'Metodologi Maturitas', workspace: 'Assessment Workspace'};
+const pages = {overview: 'Dashboard', assessments: 'Daftar Asesmen', reviews: 'Review & Persetujuan', reports: 'Laporan Asesmen', catalogs: 'Katalog Kontrol', maturity: 'Metodologi Maturitas', 'maturity-assessments': 'Penilaian Maturitas', workspace: 'Assessment Workspace'};
 
 function show(screen) {
   for (const [name, element] of Object.entries(screens)) element.hidden = name !== screen;
@@ -50,6 +51,7 @@ function cleanSession() {
   reporting.clear();
   catalogs.clear();
   maturity.clear();
+  maturityAssessments.clear();
   notice('');
 }
 function authFailure(error) {
@@ -100,6 +102,7 @@ function renderPermissions() {
   reporting.sync();
   catalogs.sync();
   maturity.sync();
+  maturityAssessments.sync();
   const hasRead=state.permissions.includes('assessments:read');
   $('assessment-menu').hidden=!hasRead;
   $('assessment-menu-group').hidden=!hasRead;
@@ -108,7 +111,7 @@ function renderPermissions() {
   $('review-menu-group').hidden=!canReview;
   $('dashboard-access').hidden=state.load!=='forbidden';
   $('dashboard-content').hidden=state.load==='forbidden';
-  if (!hasRead && ['assessments','workspace','catalogs','maturity'].includes(state.page)) navigate('overview');
+  if (!hasRead && ['assessments','workspace','catalogs','maturity','maturity-assessments'].includes(state.page)) navigate('overview');
   if (!canReview && state.page==='reviews') navigate('overview');
   if (!state.permissions.includes('reports:read') && state.page==='reports') navigate('overview');
 }
@@ -240,11 +243,12 @@ function closeMobile() {
 }
 function navigate(page) {
   if (!(page in pages)) return false;
-  if(['assessments','workspace','reviews','catalogs','maturity'].includes(page)&&!state.permissions.includes('assessments:read'))return false;
+  if(['assessments','workspace','reviews','catalogs','maturity','maturity-assessments'].includes(page)&&!state.permissions.includes('assessments:read'))return false;
   if(page==='reports'&&!state.permissions.includes('reports:read'))return false;
   if(page==='reviews'&&!state.permissions.includes('assessments:approve'))return false;
   if(state.page==='workspace' && page!=='workspace' && !workspace.confirmLeave())return false;
   if(state.page==='maturity' && page!=='maturity' && !maturity.confirmLeave())return false;
+  if(state.page==='maturity-assessments' && page!=='maturity-assessments' && !maturityAssessments.confirmLeave())return false;
   if(state.page==='workspace' && page!=='workspace')workspace.close();
   state.page=page;
   for(const section of document.querySelectorAll('.page'))section.hidden=section.id!=='page-'+page;
@@ -258,6 +262,7 @@ function navigate(page) {
   notice('');closeMobile();
   if(page==='catalogs') void catalogs.load();
   if(page==='maturity') void maturity.load();
+  if(page==='maturity-assessments') void maturityAssessments.load();
   return true;
 }
 async function loadWorkspace() {
@@ -424,6 +429,13 @@ for(const id of ['attention-list','my-work-list','assessments-table']) {
 $('close-detail').addEventListener('click',()=>$('detail-dialog').close());
 $('detail-dialog').addEventListener('click',(event)=>{
   if(event.target===$('detail-dialog'))$('detail-dialog').close();
+});
+
+const maturityAssessments=createMaturityAssessmentUI({
+  api:requestJson,
+  getPermissions:()=>state.permissions,
+  getUserId:()=>state.userId,
+  onAuthFailure:authFailure,
 });
 
 const maturity=createMaturityManagement({
