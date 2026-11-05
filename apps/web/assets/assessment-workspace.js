@@ -1,4 +1,5 @@
 import { STATUS_LABELS } from './assessment-model.js';
+import { createEvidenceUI } from './assessment-evidence.js';
 import {
   RATING_LABELS, canWriteAssessment, canAttachCatalog, canStartAssessment,
   canEditResult, combineControls, validateAssessmentDraft, validateRatingDraft,
@@ -47,6 +48,7 @@ export function createWorkspace({
     id:null, assessment:null, catalog:null, controls:[], selectedId:null,
     dirty:false, conflict:false, pending:false, generation:0,
   };
+  const evidence=createEvidenceUI({api,getPermissions,onAuthFailure});
   const allowed=()=>canWriteAssessment(state.assessment,getUserId(),getPermissions());
   const editable=()=>canEditResult(state.assessment,getUserId(),getPermissions(),state.catalog);
   const selected=()=>state.controls.find(x=>x.id===state.selectedId)??null;
@@ -58,6 +60,7 @@ export function createWorkspace({
   function close(){
     state.generation++;
     state.id=null;state.dirty=false;state.conflict=false;state.selectedId=null;
+    evidence.clear();
   }
   function renderBusy(isBusy){
     state.pending=isBusy;
@@ -182,7 +185,7 @@ export function createWorkspace({
     const control=selected();
     $('workspace-editor-empty').hidden=!!control;
     $('workspace-editor-content').hidden=!control;
-    if(!control)return;
+    if(!control){evidence.clear();return;}
     message('workspace-control-code',control.control_code);
     message('workspace-control-title',control.title);
     message('workspace-control-description',control.description || 'Tidak ada deskripsi kontrol.');
@@ -202,6 +205,11 @@ export function createWorkspace({
     state.dirty=false;state.conflict=false;
     message('workspace-dirty-label',editable()?'Tidak ada perubahan.':'Baca-saja sesuai status dan hak akses.');
     $('workspace-save').disabled=true;
+    evidence.open({
+      assessmentId:state.id, controlId:control.id,
+      status:state.assessment?.status, ownerId:state.assessment?.owner_user_id,
+      userId:getUserId(),
+    });
   }
   async function catalogChoices(gen){
     const select=$('workspace-catalog');
@@ -286,6 +294,7 @@ export function createWorkspace({
   async function open(id){
     state.id=id;state.assessment=null;state.catalog=null;state.controls=[];
     state.selectedId=null;state.dirty=false;state.conflict=false;
+    evidence.clear();
     $('workspace-loading').textContent='Memuat asesmen dan checklist dari server…';
     await load();
   }
