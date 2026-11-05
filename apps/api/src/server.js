@@ -8,6 +8,7 @@ import { createAssessmentReportsHandler } from './assessment-reports-http.js';
 import { createAssessmentEvidenceHandler } from './assessment-evidence-http.js';
 import { createMaturityHandler } from './maturity-http.js';
 import { createMaturityAssessmentsHandler } from './maturity-assessments-http.js';
+import { createPadkCyberHandler } from './padk-cyber-http.js';
 import { createControlCatalogsHandler } from './control-catalogs-http.js';
 import { checkDatabase, createPool } from './database.js';
 import { createLoginLimiter } from './login-limiter.js';
@@ -36,6 +37,7 @@ export function createServer({
   evidenceHandlers,
   maturityHandlers,
   maturityAssessmentHandlers,
+  padkCyberHandlers,
   evidenceKey = process.env.EVIDENCE_ENCRYPTION_KEY,
 } = {}) {
   const handleAuth = createAuthHandler({ db: authDb, appOrigin, limiter: loginLimiter });
@@ -52,6 +54,9 @@ export function createServer({
   });
   const handleMaturityAssessments = createMaturityAssessmentsHandler({
     db: authDb, appOrigin, ...maturityAssessmentHandlers,
+  });
+  const handlePadkCyber = createPadkCyberHandler({
+    db: authDb, appOrigin, ...padkCyberHandlers,
   });
   const handleEvidence = createAssessmentEvidenceHandler({
     db: authDb, appOrigin, evidenceKey, ...evidenceHandlers,
@@ -121,6 +126,20 @@ export function createServer({
       || request.url?.endsWith('/catalog') || request.url?.endsWith('/checklist')) {
       try {
         await handleCatalogs(request, response);
+      } catch {
+        if (!response.headersSent) {
+          response.writeHead(503);
+          response.end(JSON.stringify({ error: 'Unavailable' }));
+        } else {
+          response.destroy();
+        }
+      }
+      return;
+    }
+
+    if (request.url?.startsWith('/regulatory/padk43/cyber')) {
+      try {
+        await handlePadkCyber(request, response);
       } catch {
         if (!response.headersSent) {
           response.writeHead(503);
