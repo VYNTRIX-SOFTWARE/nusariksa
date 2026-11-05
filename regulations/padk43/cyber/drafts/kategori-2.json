@@ -369,6 +369,186 @@
       "tablePage": 34,
       "rankCriteria": [],
       "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 41,
+      "domain": "PL",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "workingSummary": "Prosedur change management tertulis untuk peninjauan perubahan konfigurasi.",
+      "tablePage": 34,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 42,
+      "domain": "PL",
+      "subdomain": "KEAMANAN_DATA",
+      "workingSummary": "Prosedur manajemen data meliputi perlindungan, transfer, dan penghapusan.",
+      "tablePage": 34,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 43,
+      "domain": "PL",
+      "subdomain": "KESADARAN_PELATIHAN",
+      "workingSummary": "Edukasi rutin nasabah tentang risiko siber pada layanan berbasis TI.",
+      "tablePage": 34,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 44,
+      "domain": "PL",
+      "subdomain": "MANAJEMEN_IDENTITAS_AUTENTIKASI_KONTROL_AKSES",
+      "workingSummary": "Autentikasi berbasis sertifikat digital pada sistem kritikal.",
+      "tablePage": 34,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 45,
+      "domain": "PL",
+      "subdomain": "MANAJEMEN_IDENTITAS_AUTENTIKASI_KONTROL_AKSES",
+      "workingSummary": "Kontrol akses ABAC pada sistem kritikal dengan pertimbangan lokasi, waktu, perangkat, dan risiko.",
+      "tablePage": 34,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 46,
+      "domain": "PL",
+      "subdomain": "MANAJEMEN_IDENTITAS_AUTENTIKASI_KONTROL_AKSES",
+      "workingSummary": "Pembatasan nominal dan jenis transaksi.",
+      "tablePage": 35,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 47,
+      "domain": "DT",
+      "subdomain": "KETAHANAN_INFRASTRUKTUR_TI",
+      "workingSummary": "Pemantauan login gagal pada sistem kritikal, notifikasi kepada tim keamanan dan pemilik akun, serta lockout.",
+      "tablePage": 35,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 48,
+      "domain": "PP",
+      "subdomain": "ANALISIS_INSIDEN",
+      "workingSummary": "Prosedur respons insiden mencakup deteksi, pelaporan, eskalasi, penanganan, pemulihan, dan pengujian.",
+      "tablePage": 35,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 49,
+      "domain": "PP",
+      "subdomain": "ANALISIS_INSIDEN",
+      "workingSummary": "Matriks eskalasi berdasarkan keparahan insiden, prioritas, dampak, dan komunikasi pelaporan.",
+      "tablePage": 35,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 50,
+      "domain": "PP",
+      "subdomain": "ANALISIS_INSIDEN",
+      "workingSummary": "Prosedur pelaporan kejadian mencurigakan yang disosialisasikan kepada pegawai.",
+      "tablePage": 35,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 51,
+      "domain": "PP",
+      "subdomain": "ANALISIS_INSIDEN",
+      "workingSummary": "Simulasi tanggap insiden secara rutin dan terdokumentasi.",
+      "tablePage": 35,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 52,
+      "domain": "PP",
+      "subdomain": "ANALISIS_INSIDEN",
+      "workingSummary": "Evaluasi prosedur, root cause analysis, dan tindak lanjut pascainsiden.",
+      "tablePage": 36,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 53,
+      "domain": "PP",
+      "subdomain": "ANALISIS_INSIDEN",
+      "workingSummary": "Prosedur komunikasi penanggulangan dan pemulihan insiden yang ditetapkan Direksi.",
+      "tablePage": 36,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 54,
+      "domain": "PP",
+      "subdomain": "PELAKSANAAN_RENCANA_PEMULIHAN_INSIDEN_SIBER",
+      "workingSummary": "Penyusunan dan penerapan Disaster Recovery Plan untuk memulihkan layanan setelah insiden.",
+      "tablePage": 36,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 55,
+      "domain": "PP",
+      "subdomain": "PELAKSANAAN_RENCANA_PEMULIHAN_INSIDEN_SIBER",
+      "workingSummary": "Pencadangan seluruh data aktivitas bank pada setiap akhir hari.",
+      "tablePage": 36,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 56,
+      "domain": "PP",
+      "subdomain": "PELAKSANAAN_RENCANA_PEMULIHAN_INSIDEN_SIBER",
+      "workingSummary": "Pengujian restore data minimal satu kali setiap tahun.",
+      "tablePage": 36,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 57,
+      "domain": "PP",
+      "subdomain": "PELAKSANAAN_RENCANA_PEMULIHAN_INSIDEN_SIBER",
+      "workingSummary": "Penetapan RTO dan RPO berdasarkan kritikalitas sistem penting.",
+      "tablePage": 36,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 58,
+      "domain": "PP",
+      "subdomain": "PELAKSANAAN_RENCANA_PEMULIHAN_INSIDEN_SIBER",
+      "workingSummary": "Evaluasi DRP secara rutin termasuk uji failover.",
+      "tablePage": 36,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 59,
+      "domain": "PP",
+      "subdomain": "PELAKSANAAN_RENCANA_PEMULIHAN_INSIDEN_SIBER",
+      "workingSummary": "Prosedur notifikasi ke OJK, BI, atau lembaga eksternal saat insiden, lengkap dengan tenggat dan tanggung jawab.",
+      "tablePage": 37,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 60,
+      "domain": "PP",
+      "subdomain": "PELAKSANAAN_RENCANA_PEMULIHAN_INSIDEN_SIBER",
+      "workingSummary": "Komunikasi ke nasabah dan publik saat insiden melalui kanal, persetujuan pesan, FAQ, dan pelatihan.",
+      "tablePage": 37,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
     }
   ]
 }
