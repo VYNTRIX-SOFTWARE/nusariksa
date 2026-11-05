@@ -93,7 +93,8 @@ export function createEvidenceUI({ api, getPermissions, onAuthFailure }) {
       info.append(element('strong','',file.fileName),
         element('small','',Math.ceil(file.sizeBytes / 1024) + ' KiB · ' +
           (file.uploadedAt ? new Date(file.uploadedAt).toLocaleString('id-ID') : 'Waktu tidak tersedia') +
-          ' · ID pengunggah ' + String(file.uploadedBy || '—').slice(0,8)));
+          ' · ID pengunggah ' + String(file.uploadedBy || '—').slice(0,8)),
+        element('small','', 'ID bukti (untuk penilaian maturitas): ' + file.id));
       const link = element('a','detail-link','Unduh');
       link.href = '/assessments/' + encodeURIComponent(context.assessmentId) +
         '/evidence/' + encodeURIComponent(file.id) + '/download';
