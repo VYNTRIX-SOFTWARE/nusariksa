@@ -43,7 +43,7 @@ Setiap tahap memerlukan implementasi dan pengujian yang dapat diulang sebelum di
 
 ## Source-bound transkripsi PADK — PR #29
 
-- Workbench transkripsi parsial dilengkapi pelacakan jumlah indikator dan kriteria, status `DRAFT_UNVERIFIED`, serta nomor yang belum dicatat. Status draft setelah PR #30: kategori 1 = 20/80 indikator dan 0/400 kriteria; kategori 2 = 20/60 indikator dan 0/300 kriteria. Nomor 18–20 berbeda substansinya antar kategori.
+- Workbench transkripsi parsial dilengkapi pelacakan jumlah indikator dan kriteria, status `DRAFT_UNVERIFIED`, serta nomor yang belum dicatat. Status draft PR #33: kategori 1 = 30/80 indikator dan 0/400 kriteria; kategori 2 = 30/60 indikator dan 0/300 kriteria. Nomor 18–30 memiliki perbedaan urutan dan cakupan antar kategori; domain Identifikasi mulai pada nomor 23 untuk kategori 1 dan nomor 22 untuk kategori 2.
 - Source review **belum selesai**: catatan awal bersumber dari salinan PDF publik; file asli OJK perlu diunduh, di-hash SHA-256, dan dicocokkan terhadap semua tabel dan halaman sebelum melanjutkan.
 - Release gate memerlukan file PDF yang benar-benar dibaca, hash sesuai kedua pack, dan review independen isi/transkripsi. Kode pengecekan bukan persetujuan OJK.
 - Selanjutnya: selesaikan 140 indikator/700 kriteria dari Lampiran IV, silang-periksa butir kategori, lakukan approval reviewer, buat regulatory pack immutable, dan verifikasi rumus terhadap contoh OJK.

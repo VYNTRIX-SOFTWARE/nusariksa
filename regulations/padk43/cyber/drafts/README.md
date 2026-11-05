@@ -8,15 +8,18 @@ Folder `drafts/` menampung *catatan kerja*, bukan dataset regulasi tervalidasi. 
 
 | Kategori | Indikator diharapkan | Dicatat dalam draft | Kriteria peringkat diperlukan | Dicatat |
 | --- | ---: | ---: | ---: | ---: |
-| 1 | 80 | 20 | 400 | 0 |
-| 2 | 60 | 20 | 300 | 0 |
-| **Total** | **140** | **40** | **700** | **0** |
+| 1 | 80 | 30 | 400 | 0 |
+| 2 | 60 | 30 | 300 | 0 |
+| **Total** | **140** | **60** | **700** | **0** |
 
 Catatan sumber awal mengacu pada **Lampiran IV Bab III, Kertas Kerja Penilaian Tingkat Maturitas Keamanan Siber**:
 
-- Kategori 1: indikator **1–7** dari halaman tercetak **16**, **8–12** dari halaman **17**, **13–20** dari halaman **18**.
-- Kategori 2: indikator **1–7** dari halaman tercetak **28**, **8–12** dari halaman **29**, **13–19** dari halaman **30**, dan **20** dari halaman **31**.
+- Kategori 1: indikator **1–7** pada halaman tercetak **16**, **8–12** pada halaman **17**, **13–20** pada halaman **18**, **21–28** pada halaman **19**, dan **29–30** pada halaman **20**.
+- Kategori 2: indikator **1–7** pada halaman tercetak **28**, **8–12** pada halaman **29**, **13–19** pada halaman **30**, **20–27** pada halaman **31**, dan **28–30** pada halaman **32**.
 - Indikator **18–20** tidak identik antar kategori: pada kategori 1 laporan maturitas, laporan kepada Direksi, dan audit intern merupakan nomor 18, 19, dan 20; pada kategori 2 laporan maturitas kepada Direksi digabung pada nomor 18, audit intern dengan cakupan hak akses ada pada nomor 19, sedangkan evaluasi kebijakan/prosedur/limit ada pada nomor 20.
+
+- Pada kategori 1 domain **Identifikasi** dimulai di nomor **23**, sedangkan pada kategori 2 di nomor **22**. Kategori 2 memulai domain **Pelindungan** pada nomor **29**. Nomor yang sama tidak selalu mewakili parameter atau domain yang sama pada kedua kategori.
+- Halaman sumber untuk parameter yang berlanjut ke halaman berikutnya menunjuk halaman tempat nomor baris pertama kali muncul; perlu pemeriksaan visual atas seluruh lanjutan sel sebelum digunakan sebagai data resmi.
 - Semua ringkasan adalah **parafrasa kerja**, bukan teks parameter lengkap yang sudah diverifikasi dan tidak boleh diimpor sebagai regulatory pack.
 - Kelima peringkat tiap indikator ditetapkan pada bagian D, halaman tercetak 38–80; **belum diisi dan belum di-approve**.
 

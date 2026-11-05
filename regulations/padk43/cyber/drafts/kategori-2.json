@@ -189,6 +189,96 @@
       "tablePage": 31,
       "rankCriteria": [],
       "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 21,
+      "domain": "TK",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "workingSummary": "Pembinaan budaya dan tanggung jawab keamanan siber pegawai",
+      "tablePage": 31,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 22,
+      "domain": "ID",
+      "subdomain": "PENGUKURAN_RISIKO_SIBER",
+      "workingSummary": "Pengukuran kerentanan keamanan siber secara berkala",
+      "tablePage": 31,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 23,
+      "domain": "ID",
+      "subdomain": "PENGUKURAN_RISIKO_SIBER",
+      "workingSummary": "Penyimpanan log untuk audit dan investigasi insiden",
+      "tablePage": 31,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 24,
+      "domain": "ID",
+      "subdomain": "PENGUKURAN_RISIKO_SIBER",
+      "workingSummary": "Pengamanan informasi menurut klasifikasi dan sensitivitas",
+      "tablePage": 31,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 25,
+      "domain": "ID",
+      "subdomain": "PENGUKURAN_RISIKO_SIBER",
+      "workingSummary": "Analisis dampak bisnis atas serangan siber",
+      "tablePage": 31,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 26,
+      "domain": "ID",
+      "subdomain": "PENGUKURAN_RISIKO_SIBER",
+      "workingSummary": "Pengujian keamanan berkala perangkat dan layanan",
+      "tablePage": 31,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 27,
+      "domain": "ID",
+      "subdomain": "PENGUKURAN_RISIKO_SIBER",
+      "workingSummary": "Peninjauan kebijakan mengikuti perkembangan ancaman dan teknologi",
+      "tablePage": 31,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 28,
+      "domain": "ID",
+      "subdomain": "PENGUKURAN_RISIKO_SIBER",
+      "workingSummary": "Inventaris aset TI yang diperbarui berkala",
+      "tablePage": 32,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 29,
+      "domain": "PL",
+      "subdomain": "KESADARAN_PELATIHAN",
+      "workingSummary": "Pelatihan pegawai dan simulasi phishing tahunan",
+      "tablePage": 32,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 30,
+      "domain": "PL",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "workingSummary": "Penguatan keamanan perangkat kerja dan pengendalian akses",
+      "tablePage": 32,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
     }
   ]
 }
