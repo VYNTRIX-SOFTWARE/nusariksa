@@ -27,6 +27,8 @@ export function validMaturityDetail(data,id){
       ||!Number.isSafeInteger(d.revision)||d.revision<0)
     ||data.summary.totalDomains!==data.domains.length
     ||data.summary.assessedDomains!==data.domains.filter(d=>d.level!==null).length
+    ||data.summary.unassessedDomains!==data.domains.filter(d=>d.level===null).length
+    ||data.summary.complete!==(data.domains.length>0&&data.domains.every(d=>d.level!==null))
     ||(data.summary.complete!==true&&data.summary.overallLevel!==null)
     ||(data.summary.complete===true
       &&(!Number.isInteger(data.summary.overallLevel)
