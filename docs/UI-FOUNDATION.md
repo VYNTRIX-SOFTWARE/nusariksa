@@ -95,8 +95,8 @@ Unit tests memverifikasi perhitungan KPI, filter tahun lintas periode, pencarian
 ## Penilaian Maturitas internal (PR #26 — development)
 
 - Halaman Penilaian Maturitas terpisah dari Metodologi Maturitas, tetap memakai vanilla JS, API same-origin, CSP, dan token sesi hanya di cookie HttpOnly.
-- Pengguna dengan \`assessments:read\` melihat maksimal 50 asesmen terbaru. Pembuatan dan penilaian per domain memerlukan \`assessments:write\`; penilaian dibatasi pemilik asesmen.
+- Pengguna dengan `assessments:read` melihat maksimal 50 asesmen terbaru. Pembuatan dan penilaian per domain memerlukan `assessments:write`; penilaian dibatasi pemilik asesmen.
 - Input level mengikuti kriteria Level 0–5 dari rubrik terbit; justifikasi wajib, lampiran evidence bersifat opsional dengan UUID yang diverifikasi server. Referensi evidence bukan penilaian otomatis tentang kecukupan bukti.
-- Versi metodologi tidak bisa dimodifikasi setelah terbit. Metode agregasi \`minimum\` atau \`mean_floor\` disimpan pada Draft dan disalin ke Draft versi berikutnya. Versi lama tanpa metode tidak mendapat default tersembunyi.
+- Versi metodologi tidak bisa dimodifikasi setelah terbit. Metode agregasi `minimum` atau `mean_floor` disimpan pada Draft dan disalin ke Draft versi berikutnya. Versi lama tanpa metode tidak mendapat default tersembunyi.
 - Hasil agregat tidak tersedia selama satu pun domain belum dinilai. Form mempertahankan isian pada HTTP 409 dan meminta refresh; perubahan memiliki revision counter dan histori append-only.
 - Label jelas menyatakan level ini perhitungan internal yang belum melalui approval atau sertifikasi OJK. Browser E2E, UAT, dan aksesibilitas masih outstanding.
