@@ -201,3 +201,9 @@ Endpoint `GET /regulatory/padk43/cyber/framework` tersedia bagi pengguna `assess
 Parser dan validator untuk paket indikator kategori 1/2 tersedia. Setiap indikator harus memiliki nomor, domain, subdomain, teks parameter, referensi halaman, dan kriteria peringkat 1–5; sumber PDF ditautkan dengan SHA-256. Paket ditolak bila data tidak lengkap atau ada kriteria duplikat. Sidik jari canonical SHA-256 dipakai untuk mendeteksi perubahan setelah review, dengan attestasi substansi dan teknis dari orang berbeda.
 
 **Belum ada regulatory pack lengkap yang di-commit.** Tidak ada seed indikator dummy dan tidak ada klaim bahwa reviewer OJK telah mengesahkan hasil. `npm run regulatory:check` memeriksa file yang tersedia pada pengembangan; `npm run regulatory:release-gate` gagal sampai kedua kategori lengkap. Verifikasi isi terhadap PDF OJK dan review independen pada PR tetap wajib di luar pengecekan otomatis. Panduan: [Regulatory Pack Review](regulations/padk43/cyber/README.md).
+
+## Workbench transkripsi Lampiran IV (PR #29 — pengembangan)
+
+Untuk menyiapkan regulatory pack kategori 1/2, tersedia direktori `regulations/padk43/cyber/drafts/` berisi ringkasan kerja **6 indikator awal per kategori** (12 dari 140 indikator). Belum ada kriteria peringkat yang ditranskripsi (**0 dari 700 kriteria**) atau PDF resmi OJK yang disahkan sebagai sumber dalam repo. Draft selalu berstatus `DRAFT_UNVERIFIED`, tidak dipakai pada API dan tidak dapat dianggap sebagai dataset penilaian resmi.
+
+`npm run regulatory:draft-status` menampilkan jumlah indikator/kriteria serta nomor yang belum ada; `npm run regulatory:draft-strict` menolak status draft. Keduanya terpisah dari `npm run regulatory:release-gate -- --source-pdf=/path/ke/PADK43.pdf`, yang kini juga wajib memeriksa byte PDF dan kecocokan SHA-256 dengan kedua pack. Pengecekan hash bukan pengganti review manusia terhadap dokumen OJK. Detail [panduan transkripsi](regulations/padk43/cyber/drafts/README.md).

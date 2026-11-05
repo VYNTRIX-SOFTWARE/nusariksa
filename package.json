@@ -11,11 +11,13 @@
     "start": "node apps/api/src/server.js",
     "check:syntax": "node scripts/check-syntax.js",
     "test": "node --test",
-    "check": "npm run check:syntax && npm test && npm run regulatory:check",
+    "check": "npm run check:syntax && npm test && npm run regulatory:draft-status && npm run regulatory:check",
     "db:migrate": "node scripts/migrate.js",
     "admin:bootstrap": "node scripts/bootstrap-admin.js",
     "regulatory:check": "node scripts/check-padk-regulatory-packs.js",
-    "regulatory:release-gate": "node scripts/check-padk-regulatory-packs.js --release"
+    "regulatory:release-gate": "node scripts/check-padk-regulatory-packs.js --release",
+    "regulatory:draft-status": "node scripts/check-padk-transcription-drafts.js",
+    "regulatory:draft-strict": "node scripts/check-padk-transcription-drafts.js --strict"
   },
   "license": "AGPL-3.0-only",
   "dependencies": {

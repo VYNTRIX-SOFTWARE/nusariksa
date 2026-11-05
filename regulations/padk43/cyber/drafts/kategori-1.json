@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "reference": "43/PADK.03/2025:LAMPIRAN_IV",
+  "category": 1,
+  "status": "DRAFT_UNVERIFIED",
+  "source": {
+    "authorityUrl": "https://ojk.go.id/id/regulasi/Pages/PADK-43-PADK03-2025-Penyelenggaraan-Teknologi-Informasi-oleh-BPR-BPRS.aspx",
+    "workingCopyUrl": "https://bprbatuartorejo.com/wp-content/uploads/2025/12/PADK43-PADK.03-2025Penyelenggaraan-Teknologi-Informasi-oleh-Bank-Perekonomian-Rakyat-dan-Bank-Perekonomian-Rakyat-Syariah2025.pdf",
+    "pdfSha256": null,
+    "verifiedAgainstOfficialPdf": false
+  },
+  "items": [
+    {
+      "number": 1,
+      "domain": "TK",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "workingSummary": "Penetapan tertulis tanggung jawab Direksi dan Komisaris atas risiko keamanan siber.",
+      "tablePage": 16,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 2,
+      "domain": "TK",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "workingSummary": "Penetapan selera risiko keamanan siber oleh Direksi.",
+      "tablePage": 16,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 3,
+      "domain": "TK",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "workingSummary": "Perumusan strategi keamanan siber selaras tujuan bank dan peninjauan berkala.",
+      "tablePage": 16,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 4,
+      "domain": "TK",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "workingSummary": "Komunikasi strategi, prosedur, dan batas risiko siber kepada seluruh pegawai.",
+      "tablePage": 16,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 5,
+      "domain": "TK",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "workingSummary": "Penunjukan fungsi yang bertanggung jawab atas ketahanan dan keamanan siber.",
+      "tablePage": 16,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 6,
+      "domain": "TK",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "workingSummary": "Kejelasan peran keamanan siber dalam struktur organisasi dan manajemen risiko.",
+      "tablePage": 16,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    }
+  ]
+}
