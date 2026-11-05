@@ -187,3 +187,12 @@ Nilai agregat **tidak dihitung** bila satu saja domain belum dinilai. Pemilihan 
 Endpoint: `GET/POST /maturity-assessments`, `GET /maturity-assessments/:id`, `PUT /maturity-assessments/:id/domains/:domainId`, dan `GET /maturity-assessments/:id/domains/:domainId/history`. Update memakai `expectedRevision` untuk menolak stale write (HTTP 409), dan setiap revisi dicatat dalam log append-only. Penilaian hanya dapat diubah oleh pemilik dengan `assessments:write`. Pengguna dengan `assessments:read` dapat membaca dalam cakupan institusinya.
 
 **Bukan maturity assessment resmi OJK.** Level agregat ini merupakan kalkulasi internal dari kebijakan pengguna, tidak membuktikan kepatuhan atau kematangan terhadap suatu standar eksternal. Belum ada review/approval hasil maturitas, evaluasi kecukupan bukti, audit browser E2E, atau UAT. Jangan gunakan data bank asli sebelum security hardening dan acceptance selesai.
+
+## Fondasi simulasi PADK 43/2025 Lampiran IV (PR #27)
+
+NusaRiksa menyediakan endpoint **pratinjau teknis** untuk kalkulasi maturitas **keamanan siber** sesuai struktur penilaian Lampiran IV PADK 43/PADK.03/2025. Kerangka ini **terpisah** dari penilaian maturitas internal Level 0–5. Kategori 1 mensyaratkan 80 indikator dan kategori 2 mensyaratkan 60 indikator. Rumus pratinjau mengambil rata-rata peringkat 1–5 pada lima domain, kemudian mengalikannya dengan bobot 25%, 15%, 25%, 15%, dan 20%. Peringkat **1 adalah hasil paling memadai**, bukan paling buruk.
+
+Endpoint `GET /regulatory/padk43/cyber/framework` tersedia bagi pengguna `assessments:read`. Endpoint `POST /regulatory/padk43/cyber/preview` hanya menerima manifest 80/60 indikator yang lengkap dan peringkat masing-masing indikator dari pengguna dengan `assessments:write`. Permintaan tidak disimpan pada database. Skor komposit **tidak muncul** sampai semua indikator dinilai. Hasil akan selalu ditandai `PREVIEW_UNVERIFIED`.
+
+**Belum tersedia** peta indikator 80/60 yang sudah diverifikasi, kriteria lengkap tiap peringkat, bukti/approval, penyimpanan kertas kerja, browser UI, maupun ekspor. Penentuan pembulatan dua desimal masih menunggu verifikasi terhadap contoh resmi. **Fitur ini belum dapat menghasilkan hasil maturitas resmi PADK.** Detail kontrak, asumsi dan release gate ada di [docs/PADK-CYBER-MATURITY.md](docs/PADK-CYBER-MATURITY.md).
+
