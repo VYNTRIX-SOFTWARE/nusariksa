@@ -144,6 +144,11 @@ export async function createNextMaturityVersionInTransaction(db, {actorId,modelI
       [inserted.rows[0].id,domain.id],
     );
   }
+  await db.query(
+    'INSERT INTO maturity_aggregation_policies(version_id,method,configured_by) ' +
+    'SELECT $1,method,$3 FROM maturity_aggregation_policies WHERE version_id=$2',
+    [created.rows[0].id,latest.rows[0].id,actorId],
+  );
   return created.rows[0];
 }
 
@@ -225,7 +230,12 @@ export async function getMaturityRubric(db,actorId,versionId) {
   for(const level of levels.rows) {
     byId.get(level.domain_id)?.levels.push({level:level.level,criterion:level.criterion});
   }
+  const policy = await db.query(
+    'SELECT method FROM maturity_aggregation_policies WHERE version_id=$1',
+    [versionId],
+  );
   return { version: version.rows[0], domains: [...byId.values()],
+    aggregationMethod: policy.rows[0]?.method ?? null,
     note:'Metodologi internal pengguna; bukan hasil penilaian atau level maturitas yang disahkan OJK.' };
 }
 
