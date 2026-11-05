@@ -81,3 +81,13 @@ Unit tests memverifikasi perhitungan KPI, filter tahun lintas periode, pencarian
 - Enkripsi AES-256-GCM di aplikasi dan trigger immutable di database; key wajib terkonfigurasi untuk upload/unduh.
 - Batas 1 MiB/file, 10 file/kontrol, PDF/PNG/JPEG, magic bytes sederhana.
 - Antivirus scanning, rotasi kunci, retensi, audit unduhan dan browser E2E belum tersedia. Ini bukan production-ready.
+
+## Metodologi Maturitas (PR #25 — pengembangan)
+
+- Halaman Metodologi Maturitas mengikuti UI/UX Standard v1 dan memakai vanilla JavaScript + API same-origin.
+- Akses baca `assessments:read`, akses mutasi `assessments:write`, dengan backend tetap sebagai sumber otorisasi.
+- Input sumber metodologi diwajibkan; teks dari API hanya dirender dengan DOM aman.
+- Model dapat memiliki maksimal 50 daftar yang dimuat, hingga 50 versi dan 30 domain per versi; setiap domain mempunyai kriteria Level 0–5.
+- Publikasi memerlukan satu domain atau lebih dan keenam kriteria per domain. Published read-only, revisi dilakukan pada salinan Draft berikutnya.
+- Halaman tidak menghitung atau menampilkan skor maturitas, tidak menggunakan data demo, dan tidak mengklaim penilaian resmi OJK.
+- Browser E2E, audit aksesibilitas, serta UAT tetap belum ditutup sebagai release gate.
