@@ -6,7 +6,7 @@ import {
 } from './padk-cyber-maturity.js';
 
 const BASE = '/regulatory/padk43/cyber';
-const MAX_BODY = 65536;
+const MAX_BODY = 262144;
 
 function respond(response, status, value) {
   response.writeHead(status);
