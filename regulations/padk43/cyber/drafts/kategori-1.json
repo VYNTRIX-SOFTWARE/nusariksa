@@ -279,6 +279,96 @@
       "tablePage": 20,
       "rankCriteria": [],
       "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 31,
+      "domain": "ID",
+      "subdomain": "PENGUKURAN_RISIKO_SIBER",
+      "workingSummary": "Inventaris aset TI meliputi perangkat keras, perangkat lunak, jaringan, dan infrastruktur serta pembaruan berkala",
+      "tablePage": 20,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 32,
+      "domain": "PL",
+      "subdomain": "KESADARAN_PELATIHAN",
+      "workingSummary": "Pelatihan ketahanan dan keamanan siber kepada seluruh pegawai secara berkala",
+      "tablePage": 20,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 33,
+      "domain": "PL",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "workingSummary": "Hardening perangkat kerja: anti-malware berkala, pembatasan USB, penguncian otomatis, dan firewall lokal",
+      "tablePage": 20,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 34,
+      "domain": "PL",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "workingSummary": "Proteksi email korporasi melalui pemeriksaan otomatis spam, phishing, dan malware",
+      "tablePage": 21,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 35,
+      "domain": "PL",
+      "subdomain": "KESADARAN_PELATIHAN",
+      "workingSummary": "Simulasi phishing tahunan melalui pengiriman email untuk mengukur respons pegawai",
+      "tablePage": 21,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 36,
+      "domain": "PL",
+      "subdomain": "MANAJEMEN_IDENTITAS_AUTENTIKASI_KONTROL_AKSES",
+      "workingSummary": "Penerapan pengendalian akses berbasis peran atau RBAC pada seluruh sistem",
+      "tablePage": 21,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 37,
+      "domain": "PL",
+      "subdomain": "MANAJEMEN_IDENTITAS_AUTENTIKASI_KONTROL_AKSES",
+      "workingSummary": "Penggunaan ID unik dan kata sandi pribadi oleh setiap pegawai untuk mengakses perangkat komputer",
+      "tablePage": 21,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 38,
+      "domain": "PL",
+      "subdomain": "MANAJEMEN_IDENTITAS_AUTENTIKASI_KONTROL_AKSES",
+      "workingSummary": "Kontrol akses pengguna termasuk kompleksitas kata sandi, kedaluwarsa, riwayat, dan penguncian akun",
+      "tablePage": 21,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 39,
+      "domain": "PL",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "workingSummary": "Pemisahan SSID jaringan pegawai dan tamu disertai pengamanan akses seperti VLAN",
+      "tablePage": 21,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 40,
+      "domain": "PL",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "workingSummary": "Pengendalian siklus hidup aset TI: inventaris EOL/EOS, patching terjadwal, dan isolasi perangkat usang",
+      "tablePage": 21,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
     }
   ]
 }

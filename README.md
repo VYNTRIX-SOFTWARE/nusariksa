@@ -202,8 +202,8 @@ Parser dan validator untuk paket indikator kategori 1/2 tersedia. Setiap indikat
 
 **Belum ada regulatory pack lengkap yang di-commit.** Tidak ada seed indikator dummy dan tidak ada klaim bahwa reviewer OJK telah mengesahkan hasil. `npm run regulatory:check` memeriksa file yang tersedia pada pengembangan; `npm run regulatory:release-gate` gagal sampai kedua kategori lengkap. Verifikasi isi terhadap PDF OJK dan review independen pada PR tetap wajib di luar pengecekan otomatis. Panduan: [Regulatory Pack Review](regulations/padk43/cyber/README.md).
 
-## Workbench transkripsi Lampiran IV (PR #29–#33 — pengembangan)
+## Workbench transkripsi Lampiran IV (PR #29–#34 — pengembangan)
 
-Untuk menyiapkan regulatory pack kategori 1/2, tersedia direktori `regulations/padk43/cyber/drafts/` berisi ringkasan kerja **30 indikator per kategori** (60 dari 140 indikator). Belum ada kriteria peringkat yang ditranskripsi (**0 dari 700 kriteria**) atau PDF resmi OJK yang disahkan sebagai sumber dalam repo. Draft selalu berstatus `DRAFT_UNVERIFIED`, tidak dipakai pada API dan tidak dapat dianggap sebagai dataset penilaian resmi.
+Untuk menyiapkan regulatory pack kategori 1/2, tersedia direktori `regulations/padk43/cyber/drafts/` berisi ringkasan kerja **40 indikator per kategori** (80 dari 140 indikator). Belum ada kriteria peringkat yang ditranskripsi (**0 dari 700 kriteria**) atau PDF resmi OJK yang disahkan sebagai sumber dalam repo. Draft selalu berstatus `DRAFT_UNVERIFIED`, tidak dipakai pada API dan tidak dapat dianggap sebagai dataset penilaian resmi.
 
 `npm run regulatory:draft-status` menampilkan jumlah indikator/kriteria serta nomor yang belum ada; `npm run regulatory:draft-strict` menolak status draft. Keduanya terpisah dari `npm run regulatory:release-gate -- --source-pdf=/path/ke/PADK43.pdf`, yang kini juga wajib memeriksa byte PDF dan kecocokan SHA-256 dengan kedua pack. Pengecekan hash bukan pengganti review manusia terhadap dokumen OJK. Detail [panduan transkripsi](regulations/padk43/cyber/drafts/README.md).
