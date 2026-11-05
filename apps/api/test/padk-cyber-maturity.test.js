@@ -53,7 +53,7 @@ test('kategori 1 dan 2 wajib memiliki pemetaan ordinal lengkap dan lima domain',
       ...manifest, indicators: manifest.indicators.map(p => ({ ...p, domain: 'TK' })),
     }), PadkCyberError);
     assert.throws(() => validatePadkCyberManifest({
-      ...manifest, indicators: manifest.indicators.map(p => ({ ...p, title: '<script>' })),
+      ...manifest, indicators: manifest.indicators.map(p => ({ ...p, title: 'Uji dengan\nkarakter kontrol' })),
     }), PadkCyberError);
   }
   assert.throws(() => validatePadkCyberManifest(syntheticManifest(3)), PadkCyberError);
