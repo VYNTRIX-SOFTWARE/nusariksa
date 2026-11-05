@@ -48,7 +48,7 @@ Server tetap mendengarkan koneksi lokal pada port 3000. Buka **`http://localhost
 
 ## Antarmuka web awal
 
-Akses `http://localhost:3000` setelah server berjalan dan akun telah dibuat. Form login memakai endpoint autentikasi yang sama dengan API. Setelah masuk, dashboard menampilkan empat metrik berdasarkan maksimal 50 data terbaru dari `GET /assessments`: jumlah ditampilkan, menunggu review, perlu perbaikan, dan disetujui. Metrik tersebut **bukan agregat seluruh database ataupun skor kepatuhan**. Periode di header adalah filter lokal berdasarkan rentang tahun mulai dan akhir asesmen, bukan pengaturan global bank. Daftar asesmen mendukung pencarian judul, filter status, sorting, serta detail baca-saja termasuk versi katalog yang benar-benar terpasang. Sidebar dapat dilipat dan pada mobile memakai drawer. Navigasi Asesmen hanya ditampilkan bila pengguna mempunyai izin `assessments:read`. Bukti belum tersedia sebagai halaman frontend aktif. Pengelolaan katalog membutuhkan izin assessments:read; pembuatan, penambahan kontrol, dan publikasi membutuhkan assessments:write. Laporan asesmen internal tersedia bagi akun dengan izin reports:read. Review & Persetujuan tersedia bagi pengguna berizin `assessments:read` dan `assessments:approve`.
+Akses `http://localhost:3000` setelah server berjalan dan akun telah dibuat. Form login memakai endpoint autentikasi yang sama dengan API. Setelah masuk, dashboard menampilkan empat metrik berdasarkan maksimal 50 data terbaru dari `GET /assessments`: jumlah ditampilkan, menunggu review, perlu perbaikan, dan disetujui. Metrik tersebut **bukan agregat seluruh database ataupun skor kepatuhan**. Periode di header adalah filter lokal berdasarkan rentang tahun mulai dan akhir asesmen, bukan pengaturan global bank. Daftar asesmen mendukung pencarian judul, filter status, sorting, serta detail baca-saja termasuk versi katalog yang benar-benar terpasang. Sidebar dapat dilipat dan pada mobile memakai drawer. Navigasi Asesmen hanya ditampilkan bila pengguna mempunyai izin `assessments:read`. Bukti pendukung sudah tersedia di Assessment Workspace sebagai lampiran per kontrol; unggah memerlukan izin dan kunci enkripsi server yang benar. Belum siap untuk data bank nyata. Pengelolaan katalog membutuhkan izin assessments:read; pembuatan, penambahan kontrol, dan publikasi membutuhkan assessments:write. Laporan asesmen internal tersedia bagi akun dengan izin reports:read. Review & Persetujuan tersedia bagi pengguna berizin `assessments:read` dan `assessments:approve`.
 
 Sesi disimpan dalam cookie `HttpOnly`, bukan `localStorage` atau `sessionStorage`. Frontend tidak menyimpan token sesi. Semua request ditujukan ke origin yang sama. Nama institusi dan profil pengguna belum tersedia melalui API umum; header memakai label netral, bukan identitas fiktif atau UUID sebagai nama. Versi katalog tampil pada detail asesmen, bukan switcher versi global. Pengujian browser end-to-end, accessibility, dan UAT masih diperlukan sebelum menyebut frontend siap untuk pilot.
 
@@ -58,7 +58,7 @@ Dari halaman Daftar Asesmen, pengguna dengan izin `assessments:write` dapat memb
 
 Pada asesmen berstatus `in_progress` atau `changes_requested`, pemilik berizin dapat mengisi hasil penilaian per kontrol, catatan, dan menyimpannya secara eksplisit. Hasil yang sudah disimpan memiliki nomor revisi; client mengirim `expectedRevision` ke API. Bila server membalas konflik `409`, isian lokal **tetap dipertahankan** dan pengguna harus memuat ulang sebelum mengirim lagi; tidak ada penimpaan atau pengiriman ulang otomatis. Riwayat perubahan tersedia melalui tombol Lihat riwayat. Pengguna tanpa hak tulis atau asesmen berstatus `submitted`/`approved` hanya dapat melihat data.
 
-Keluar dari workspace atau menutup halaman dengan perubahan yang belum disimpan akan memunculkan konfirmasi. Semua data berasal dari endpoint API, bukan DEMO. Pengajuan dan review melalui web sudah tersedia. Evidence upload dan pemetaan ketentuan regulator **belum** tersedia.
+Keluar dari workspace atau menutup halaman dengan perubahan yang belum disimpan akan memunculkan konfirmasi. Semua data berasal dari endpoint API, bukan DEMO. Pengajuan dan review melalui web sudah tersedia. Evidence upload versi pengembangan telah tersedia dengan penyimpanan terenkripsi, tetapi belum layak untuk data bank nyata. Pemetaan ketentuan regulator **belum** tersedia.
 
 ## Review & Persetujuan di web
 
@@ -101,6 +101,8 @@ ID aktor pada riwayat hanya ditampilkan secara ringkas sebagai penanda teknis. N
 | `POST` | `/assessments/:id/review` | Menyetujui atau mengembalikan asesmen oleh pemeriksa |
 | `GET` | `/assessments/:id/reviews` | Riwayat pengajuan dan keputusan pemeriksaan |
 | `GET` | `/assessments/:id/report` | Laporan internal asesmen, distribusi hasil, dan keputusan pemeriksaan |
+| `GET / POST` | `/assessments/:id/controls/:controlId/evidence` | Daftar bukti atau tambah bukti terenkripsi pada kontrol |
+| `GET` | `/assessments/:id/evidence/:evidenceId/download` | Unduh bukti dengan otorisasi dan verifikasi GCM |
 
 Endpoint login menerima JSON berisi `email` dan `password`. Akun harus sudah ada dalam database, berstatus `active`, dan memiliki hash password Argon2id. Admin pertama dibuat melalui perintah lokal `npm run admin:bootstrap -- --name "Nama Bank" --kind BPR --email admin@example.test` setelah `DATABASE_URL` disetel. Proses meminta password secara interaktif tanpa menampilkannya. Perintah ini hanya dapat dipakai pada database yang belum memiliki lembaga maupun akun.
 
@@ -151,3 +153,15 @@ Menu **Katalog Kontrol** tampil bagi pengguna dengan izin `assessments:read`. Pe
 Versi yang telah diterbitkan bersifat tidak dapat diubah. API belum menyediakan operasi edit atau hapus kontrol, sehingga UI hanya mendukung penambahan kontrol baru; penyalinan versi tidak mengubah atau mengganti kontrol yang sudah ada. Setiap versi dibatasi 200 kontrol. Daftar hanya memuat maksimal 50 katalog berdasarkan kode dan 50 versi terbaru per katalog.
 
 Referensi dokumen pada kontrol disimpan sebagaimana diinput pengguna dan belum diverifikasi sebagai pemetaan regulasi. Untuk membuat asesmen, versi katalog harus berstatus Published. Pengujian browser end-to-end, aksesibilitas dan UAT masih diperlukan sebelum pengoperasian dengan data bank.
+
+## Evidence Management — fondasi pengembangan (PR #24)
+
+Panel bukti muncul pada kontrol asesmen bagi pemegang izin `evidence:read`. Pemilik asesmen dengan `evidence:write` dapat menambah berkas selama status `in_progress` atau `changes_requested`. Bukti yang telah diunggah tidak dapat ditimpa, diganti maupun dihapus melalui API ini. Reviewer dan auditor berizin dapat melihat metadata dan mengunduh berkas.
+
+Unggah memakai JSON dengan field `fileName`, `mediaType` dan `contentBase64` ke `POST /assessments/:id/controls/:controlId/evidence`. Berkas terbatas pada PDF/PNG/JPEG sampai **1 MiB** dan maksimal **10 lampiran per kontrol**. Backend memeriksa signature dasar (magic bytes), tetapi **belum melakukan antivirus scanning atau validasi semantik dokumen**. Unduhan menggunakan `application/octet-stream`, header `attachment` dan `nosniff`, bukan pratinjau inline.
+
+Konten disimpan sebagai `ciphertext` AES-256-GCM di PostgreSQL dengan nonce unik, tag autentikasi dan SHA-256 plaintext. Metadata file dan hubungan asesmen/kontrol ikut diikat sebagai AAD. Tabel memakai foreign key untuk mencegah bukti ditempelkan pada katalog yang salah, dan trigger menolak UPDATE/DELETE/TRUNCATE biasa. Proteksi ini tidak melindungi dari administrator database yang memiliki hak superuser.
+
+Untuk mencoba upload di lingkungan pengembangan, siapkan `EVIDENCE_ENCRYPTION_KEY` sebagai **64 karakter hex acak (32 byte)** di lingkungan proses server, misalnya nilai dari `openssl rand -hex 32`. Jangan simpan kunci dalam git, log atau file konfigurasi yang dikomit. Simpan dan backup kunci menggunakan secret manager yang sesuai; **kehilangan kunci berarti semua bukti terenkripsi tidak dapat dipulihkan**. Pergantian/rotasi kunci belum tersedia. Tanpa kunci valid, upload dan unduh mengembalikan HTTP 503; daftar metadata tetap tersedia bagi pengguna berizin.
+
+**Belum untuk operasional BPR/BPRS:** belum ada antivirus/CDR, file quarantine, pengelolaan retensi dan legal hold, mekanisme rotasi kunci, audit unduhan yang persisten, object storage, pemantauan kapasitas, dan browser E2E/UAT. Blob disimpan pada tabel PostgreSQL sehingga memengaruhi ukuran backup. Jangan gunakan untuk data bank asli hingga seluruh release gate ditutup.
