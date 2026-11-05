@@ -94,7 +94,9 @@ CREATE TABLE maturity_domain_results (
   FOREIGN KEY (assessment_id,model_version_id)
     REFERENCES maturity_assessments(id,model_version_id) ON DELETE RESTRICT,
   FOREIGN KEY (domain_id,model_version_id)
-    REFERENCES maturity_domains(id,version_id) ON DELETE RESTRICT
+    REFERENCES maturity_domains(id,version_id) ON DELETE RESTRICT,
+  FOREIGN KEY (domain_id,level)
+    REFERENCES maturity_domain_levels(domain_id,level) ON DELETE RESTRICT
 );
 
 CREATE TABLE maturity_domain_result_events (
