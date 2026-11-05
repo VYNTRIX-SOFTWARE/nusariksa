@@ -316,7 +316,7 @@ export function createMaturityAssessmentUI({
   });
   $('ma-domain-list').addEventListener('click',event=>{
     const target=event.target.closest?.('[data-domain-id]');
-    if(!target||!$('ma-domain-list').contains(target)||!confirmLeave())return;
+    if(!target||!$('ma-domain-list').contains(target)||state.busy||!confirmLeave())return;
     state.selectedDomainId=target.dataset.domainId;
     renderDetail();
     $('ma-history').replaceChildren(node('p','empty-note','Klik Muat riwayat untuk menampilkan perubahan.'));
