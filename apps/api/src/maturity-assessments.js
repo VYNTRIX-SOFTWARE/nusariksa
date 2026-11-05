@@ -269,6 +269,8 @@ export async function rateMaturityDomainInTransaction(db,{
 }
 
 export async function listMaturityDomainHistory(db,{actorId,assessmentId,domainId}){
+  if(!validId(assessmentId)||!validId(domainId))
+    throw new MaturityError(400,'Invalid maturity history target');
   await permitted(db,actorId,'assessments:read');
   const a=await findAssessment(db,actorId,assessmentId);
   const domain=await db.query('SELECT 1 FROM maturity_domains WHERE id=$1 AND version_id=$2',
