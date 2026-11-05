@@ -43,6 +43,7 @@ export function validatePadkRegulatoryPack(raw) {
     reject('Format atau referensi regulatory pack tidak valid');
   }
 
+  if (!Array.isArray(raw.indicators)) reject('Daftar indikator harus berupa array');
   const source = raw.source;
   if (!exactObject(source, ['authority', 'regulation', 'annex', 'table', 'url', 'pdfSha256'])
     || source.authority !== 'OJK'
@@ -72,7 +73,7 @@ export function validatePadkRegulatoryPack(raw) {
     if (!exactObject(item, [
       'number', 'domain', 'subdomain', 'title', 'tablePage', 'rankCriteria',
     ]) || !integerInRange(item.tablePage, 16, 37)
-      || !content(item.title, 12, 240)
+      || !content(item.title, 12, 2000)
       || !Array.isArray(item.rankCriteria)
       || item.rankCriteria.length !== 5) {
       reject('Referensi halaman atau kriteria peringkat indikator tidak lengkap');
@@ -87,6 +88,9 @@ export function validatePadkRegulatoryPack(raw) {
         || !integerInRange(rank.criteriaPage, 38, 80)) {
         reject('Tiap indikator harus memiliki kriteria peringkat 1–5 serta halaman Lampiran IV');
       }
+    }
+    if (new Set(sorted.map(row => row.criterion.trim().toLowerCase())).size !== 5) {
+      reject('Kriteria lima peringkat tidak boleh identik');
     }
     return { ...basic, tablePage: item.tablePage, rankCriteria: sorted };
   });
