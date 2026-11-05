@@ -56,8 +56,12 @@ export function createMaturityManagement({api,getPermissions,onAuthFailure}){
       ||!state.versions?.length||state.versions[0].status!=='published';
     $('maturity-next-version').disabled=state.busy;
     $('maturity-publish').hidden=!allowWrite||!draft();
-    $('maturity-publish').disabled=state.busy||!rubricComplete(state.rubric?.domains);
+    $('maturity-publish').disabled=state.busy||!rubricComplete(state.rubric?.domains)
+      ||!state.rubric?.aggregationMethod;
     $('maturity-refresh').disabled=state.busy;
+    $('maturity-policy-form').hidden=!allowWrite||!draft();
+    $('maturity-policy-form').querySelector('button').disabled=state.busy;
+    $('maturity-policy-method').disabled=state.busy;
     $('maturity-domain-form').hidden=!allowWrite||!draft()
       ||!state.rubric||state.rubric.domains.length>=30;
   }
@@ -75,11 +79,18 @@ export function createMaturityManagement({api,getPermissions,onAuthFailure}){
     $('maturity-rubric-reference').textContent='Referensi metodologi: '+version.methodology_reference;
     $('maturity-version-state').textContent=version.status==='published'?'Terbit':'Draft';
     $('maturity-version-state').dataset.status=version.status;
+    const method=state.rubric.aggregationMethod;
+    $('maturity-policy-method').value=method??'';
+    $('maturity-policy-description').textContent=method==='minimum'
+      ?'Agregasi: level domain terendah. Tidak ada bobot atau rata-rata.'
+      :method==='mean_floor'
+        ?'Agregasi: jumlah level dibagi jumlah domain, lalu dibulatkan ke bawah. Semua domain berbobot sama.'
+        :'Belum ada metode agregasi. Metodologi yang telah terbit tanpa metode tidak dapat digunakan untuk penilaian agregat; buat Draft baru untuk menetapkannya.';
     const complete=domains.filter(d=>d.levels.length===6
       &&new Set(d.levels.map(x=>x.level)).size===6).length;
     $('maturity-completeness').textContent=complete+' dari '+domains.length+
       ' domain memiliki enam kriteria level. '+
-      (rubricComplete(domains)?'Rubrik lengkap dan dapat diterbitkan.':
+      (rubricComplete(domains)?'Kriteria lengkap. Tentukan metode agregasi sebelum publikasi agar rubrik dapat digunakan untuk penilaian.':
         'Lengkapi semua domain sebelum publikasi.');
     $('maturity-domain-count').textContent=domains.length+' domain';
     const list=$('maturity-domain-list');
@@ -294,8 +305,21 @@ export function createMaturityManagement({api,getPermissions,onAuthFailure}){
       method:'PUT',body:{criterion},
     }),async()=>selectVersion(versionId,domainId),'Kriteria Level '+level+' tersimpan.');
   });
+  $('maturity-policy-form').addEventListener('submit',event=>{
+    event.preventDefault();
+    if(!writable()||!draft()||!confirmLeave())return;
+    const method=$('maturity-policy-method').value;
+    if(!['minimum','mean_floor'].includes(method)){
+      notice('Pilih metode agregasi yang tersedia.','error');return;
+    }
+    const id=state.versionId,domainId=state.domainId;
+    void perform(()=>api('/maturity-versions/'+encodeURIComponent(id)+'/aggregation',{
+      method:'PUT',body:{method},
+    }),async()=>selectVersion(id,domainId),'Metode agregasi disimpan pada versi Draft.');
+  });
   $('maturity-publish').addEventListener('click',()=>{
-    if(!writable()||!draft()||!rubricComplete(state.rubric?.domains))return;
+    if(!writable()||!draft()||!rubricComplete(state.rubric?.domains)
+      ||!state.rubric?.aggregationMethod)return;
     if(!confirmLeave()||!window.confirm('Terbitkan metodologi? Seluruh domain dan kriterianya akan terkunci permanen.'))return;
     const modelId=state.modelId,versionId=state.versionId;
     void perform(()=>api('/maturity-versions/'+encodeURIComponent(versionId)+'/publish',{
