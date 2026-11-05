@@ -95,7 +95,7 @@ Perlu dilanjutkan dengan pencocokan seluruh butir kategori 1/2 terhadap Lampiran
 
 ## Catatan draft per nomor (PR #29)
 
-Direktori [drafts/](drafts/README.md) menyediakan workbench **yang tidak dapat dipromosikan menjadi regulatory pack**. Isinya baru ringkasan kerja indikator 1–6 per kategori, bukan 80/60 indikator yang sudah diverifikasi. Progres dapat dibaca lewat `npm run regulatory:draft-status`; total awal 12/140 indikator dan 0/700 kriteria.
+Direktori [drafts/](drafts/README.md) menyediakan workbench **yang tidak dapat dipromosikan menjadi regulatory pack**. Isinya baru ringkasan kerja indikator 1–20 per kategori, bukan 80/60 indikator yang sudah diverifikasi. Progres dapat dibaca lewat `npm run regulatory:draft-status`; total draft 40/140 indikator dan 0/700 kriteria. Nomor 18–20 tidak identik antar kategori.
 
 Saat menjalankan `npm run regulatory:release-gate -- --source-pdf=/path/ke/PADK43.pdf`, sumber PDF harus tersedia di disk dengan byte yang cocok terhadap `source.pdfSha256` pada kedua pack. Pemegang akun tetap harus memastikan PDF itu memang diterbitkan OJK dan approval konten dilakukan secara independen sebelum release.
 

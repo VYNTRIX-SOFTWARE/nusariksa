@@ -22,11 +22,34 @@ test('progres transkripsi hanya mencatat sumber yang jelas belum diverifikasi',a
   assert.equal(stats.productionEligible,false);
   assert.equal(stats.totalExpectedIndicators,140);
   assert.equal(stats.totalExpectedRankCriteria,700);
-  assert.equal(stats.totalDraftedIndicators,12);
+  assert.equal(stats.totalDraftedIndicators,40);
   assert.equal(stats.totalDraftedRankCriteria,0);
-  assert.equal(stats.categories[0].missingNumbers.length,74);
-  assert.equal(stats.categories[1].missingNumbers.length,54);
+  assert.equal(stats.categories[0].missingNumbers.length,60);
+  assert.equal(stats.categories[1].missingNumbers.length,40);
   assert.equal(stats.categories[0].items[0].tablePage,16);
+  assert.equal(stats.categories[0].items.length,20);
+  assert.equal(stats.categories[1].items.length,20);
+  for (const item of stats.categories[0].items) {
+    assert.equal(item.domain,'TK');
+    assert.equal(item.reviewStatus,'NEEDS_SOURCE_REVIEW');
+    assert.equal(item.rankCriteria.length,0);
+  }
+  assert.equal(stats.categories[0].items[6].tablePage,16);
+  assert.equal(stats.categories[0].items[7].tablePage,17);
+  assert.equal(stats.categories[0].items[19].tablePage,18);
+  assert.equal(stats.categories[1].items[6].tablePage,28);
+  assert.equal(stats.categories[1].items[7].tablePage,29);
+  assert.equal(stats.categories[1].items[19].tablePage,31);
+  assert.notEqual(
+    stats.categories[0].items[17].workingSummary,
+    stats.categories[1].items[17].workingSummary,
+    'Indikator 18 kategori 1 dan 2 tidak boleh disalin identik',
+  );
+  assert.notEqual(
+    stats.categories[0].items[18].workingSummary,
+    stats.categories[1].items[18].workingSummary,
+    'Indikator 19 kategori 1 dan 2 berbeda substansi',
+  );
   assert.equal(stats.categories[1].items[0].tablePage,28);
   assert.equal(stats.categories[0].sourcePdfVerified,false);
   assert.equal(drafts[0].source.pdfSha256,null);
@@ -75,7 +98,7 @@ test('CLI development melaporkan progres, mode ketat gagal tanpa verifikasi',()=
     cwd:root,encoding:'utf8',timeout:15000,
   });
   assert.equal(dev.status,0,dev.stderr);
-  assert.match(dev.stdout,/12\/140 indikator/);
+  assert.match(dev.stdout,/40\/140 indikator/);
   assert.match(dev.stdout,/0\/700 kriteria/);
   assert.match(dev.stdout,/RELEASE: BLOCKED/);
 
@@ -89,6 +112,6 @@ test('CLI development melaporkan progres, mode ketat gagal tanpa verifikasi',()=
   });
   assert.equal(json.status,0,json.stderr);
   const stats=JSON.parse(json.stdout);
-  assert.equal(stats.categories[0].missingNumbers[0],7);
+  assert.equal(stats.categories[0].missingNumbers[0],21);
   assert.equal(stats.productionEligible,false);
 });
