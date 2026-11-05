@@ -1,7 +1,5 @@
 # NusaRiksa
 
-**Kelanjutan pengembangan:** [Checkpoint proyek](docs/PROJECT-CHECKPOINT.md) — keputusan arsitektur, alur GitHub, status modul, release gate dan progres regulasi. Periksa status PR/CI GitHub live sebelum memulai sprint berikutnya.
-
 NusaRiksa adalah proyek sumber terbuka dari VYNTRIX untuk membantu Bank Perekonomian Rakyat (BPR) dan BPR Syariah (BPRS) mengelola tata kelola, risiko, dan kepatuhan teknologi informasi. Aplikasi ini dirancang untuk dapat dijalankan sendiri oleh masing-masing lembaga.
 
 Proyek masih dalam tahap pengembangan awal. **Belum siap digunakan untuk operasional bank atau menyimpan data asli.**
