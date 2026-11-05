@@ -196,3 +196,8 @@ Endpoint `GET /regulatory/padk43/cyber/framework` tersedia bagi pengguna `assess
 
 **Belum tersedia** peta indikator 80/60 yang sudah diverifikasi, kriteria lengkap tiap peringkat, bukti/approval, penyimpanan kertas kerja, browser UI, maupun ekspor. Penentuan pembulatan dua desimal masih menunggu verifikasi terhadap contoh resmi. **Fitur ini belum dapat menghasilkan hasil maturitas resmi PADK.** Detail kontrak, asumsi dan release gate ada di [docs/PADK-CYBER-MATURITY.md](docs/PADK-CYBER-MATURITY.md).
 
+## Regulatory Pack Quality Gate — PADK Lampiran IV (PR #28)
+
+Parser dan validator untuk paket indikator kategori 1/2 tersedia. Setiap indikator harus memiliki nomor, domain, subdomain, teks parameter, referensi halaman, dan kriteria peringkat 1–5; sumber PDF ditautkan dengan SHA-256. Paket ditolak bila data tidak lengkap atau ada kriteria duplikat. Sidik jari canonical SHA-256 dipakai untuk mendeteksi perubahan setelah review, dengan attestasi substansi dan teknis dari orang berbeda.
+
+**Belum ada regulatory pack lengkap yang di-commit.** Tidak ada seed indikator dummy dan tidak ada klaim bahwa reviewer OJK telah mengesahkan hasil. `npm run regulatory:check` memeriksa file yang tersedia pada pengembangan; `npm run regulatory:release-gate` gagal sampai kedua kategori lengkap. Verifikasi isi terhadap PDF OJK dan review independen pada PR tetap wajib di luar pengecekan otomatis. Panduan: [Regulatory Pack Review](regulations/padk43/cyber/README.md).
