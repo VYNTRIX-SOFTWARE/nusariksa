@@ -63,6 +63,132 @@
       "tablePage": 16,
       "rankCriteria": [],
       "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 7,
+      "domain": "TK",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "workingSummary": "Pemahaman seluruh SDM tentang risiko dan strategi siber",
+      "tablePage": 16,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 8,
+      "domain": "TK",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "workingSummary": "Kebijakan keamanan siber tertulis dan evaluasi minimal tahunan",
+      "tablePage": 17,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 9,
+      "domain": "TK",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "workingSummary": "Baseline proteksi seluruh aset TI dipantau secara berkala",
+      "tablePage": 17,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 10,
+      "domain": "TK",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "workingSummary": "Koordinasi dan komunikasi keamanan siber antarunit diatur tertulis",
+      "tablePage": 17,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 11,
+      "domain": "TK",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "workingSummary": "Pengelolaan risiko siber pihak ketiga dan subkontraktor dievaluasi",
+      "tablePage": 17,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 12,
+      "domain": "TK",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "workingSummary": "Daftar akses pihak ketiga serta perjanjian keamanan siber",
+      "tablePage": 17,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 13,
+      "domain": "TK",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "workingSummary": "Dokumentasi kebijakan prosedur dan limit risiko keamanan siber",
+      "tablePage": 18,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 14,
+      "domain": "TK",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "workingSummary": "Evaluasi dan penyempurnaan sistem pengukuran risiko siber berkala",
+      "tablePage": 18,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 15,
+      "domain": "TK",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "workingSummary": "Penyediaan dan pengembangan sistem informasi manajemen risiko siber",
+      "tablePage": 18,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 16,
+      "domain": "TK",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "workingSummary": "Penyesuaian informasi risiko dengan kompleksitas serta perubahan bank",
+      "tablePage": 18,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 17,
+      "domain": "TK",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "workingSummary": "Peninjauan berkala kecukupan informasi manajemen risiko siber",
+      "tablePage": 18,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 18,
+      "domain": "TK",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "workingSummary": "Penyusunan berkala laporan maturitas oleh fungsi keamanan siber",
+      "tablePage": 18,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 19,
+      "domain": "TK",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "workingSummary": "Penyampaian laporan berkala keamanan siber kepada Direksi",
+      "tablePage": 18,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
+    },
+    {
+      "number": 20,
+      "domain": "TK",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "workingSummary": "Audit intern TI berkala termasuk pengelolaan keamanan siber",
+      "tablePage": 18,
+      "rankCriteria": [],
+      "reviewStatus": "NEEDS_SOURCE_REVIEW"
     }
   ]
 }
