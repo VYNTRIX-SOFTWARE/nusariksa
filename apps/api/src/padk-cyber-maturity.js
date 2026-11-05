@@ -85,7 +85,7 @@ export function validatePadkCyberManifest(manifest) {
       || seen.has(item.number) || !DOMAIN_BY_CODE.has(item.domain)
       || typeof item.subdomain !== 'string' || !CODE.test(item.subdomain)
       || typeof item.title !== 'string' || item.title.length < 8
-      || item.title.length > 240 || item.title !== item.title.trim()
+      || item.title.length > 2000 || item.title !== item.title.trim()
       || BAD_TEXT.test(item.title)) {
       invalid('Peta indikator memiliki nomor, domain, atau teks yang tidak valid');
     }

@@ -11,9 +11,11 @@
     "start": "node apps/api/src/server.js",
     "check:syntax": "node scripts/check-syntax.js",
     "test": "node --test",
-    "check": "npm run check:syntax && npm test",
+    "check": "npm run check:syntax && npm test && npm run regulatory:check",
     "db:migrate": "node scripts/migrate.js",
-    "admin:bootstrap": "node scripts/bootstrap-admin.js"
+    "admin:bootstrap": "node scripts/bootstrap-admin.js",
+    "regulatory:check": "node scripts/check-padk-regulatory-packs.js",
+    "regulatory:release-gate": "node scripts/check-padk-regulatory-packs.js --release"
   },
   "license": "AGPL-3.0-only",
   "dependencies": {

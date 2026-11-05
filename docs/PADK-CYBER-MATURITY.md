@@ -31,7 +31,7 @@ Parameter yang sudah dapat dijadikan invariant teknis:
 Endpoint hanya tersedia kepada pengguna dengan sesi dan permission yang sesuai:
 
 - `GET /regulatory/padk43/cyber/framework` — mengembalikan metadata domain, bobot, peringkat, dan jumlah indikator; memerlukan `assessments:read`.
-- `POST /regulatory/padk43/cyber/preview` — simulasi read-only yang **tidak menyimpan data**; memerlukan `assessments:write`, origin yang sesuai, JSON, dan payload maksimal 64 KiB.
+- `POST /regulatory/padk43/cyber/preview` — simulasi read-only yang **tidak menyimpan data**; memerlukan `assessments:write`, origin yang sesuai, JSON, dan payload maksimal 256 KiB.
 
 Payload `POST` berupa objek:
 
@@ -67,3 +67,9 @@ Sebelum rilis yang mengklaim kesesuaian Lampiran IV, reviewer regulasi harus mem
 5. Browser E2E, UAT praktisi BPR/BPRS, pentest, perlindungan data pribadi, dan pengujian restore. Tanpa seluruh gerbang ini, fitur tidak boleh dinyatakan siap produksi.
 
 Implementasi ini **terpisah** dari kalkulator maturitas internal generik PR #26. Tidak ada migrasi, pengubahan bobot generik, atau klaim bahwa `minimum`/`mean_floor` merupakan rumus PADK.
+
+## Quality gate untuk regulatory pack (PR #28)
+
+Validator `apps/api/src/padk-regulatory-pack-review.js` memeriksa seluruh 80/60 indikator dan kelima kriteria peringkat setiap indikator, kode domain, halaman tabel dan halaman kriteria, hash file PDF sumber, serta dua attestasi yang terikat ke fingerprint paket. Dokumentasi dan format file ada di [regulations/padk43/cyber/README.md](../../regulations/padk43/cyber/README.md).
+
+Ini **bukan** tanda bahwa pack resmi telah selesai. Sumber indikator untuk kedua kategori masih harus ditranskripsi dan direview secara terpisah dari PDF OJK. `npm run regulatory:release-gate` harus gagal selama paket belum ada; CI pengembangan boleh lulus tanpa memalsukan data. Skrip struktural juga tidak dapat menggantikan approval independen atas isi dan referensi halaman.

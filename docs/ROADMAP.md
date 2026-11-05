@@ -34,3 +34,9 @@ Setiap tahap memerlukan implementasi dan pengujian yang dapat diulang sebelum di
 - Tahap berikutnya: kertas kerja UI kategori 1/2, jawaban per parameter dengan justifikasi/bukti, maker–checker, komposit yang tervalidasi, dan ekspor sesuai kertas kerja.
 - Validasi, keterbatasan dan rujukan: [docs/PADK-CYBER-MATURITY.md](PADK-CYBER-MATURITY.md).
 
+## Quality gate paket indikator PADK (PR #28)
+
+- Tersedia: validator 80/60 indikator dan 400/300 kriteria peringkat 1–5, referensi halaman, fingerprint SHA-256 canonical, pernyataan reviewer substansi/teknis independen, serta pemeriksaan skrip untuk pengembangan dan rilis.
+- **Belum tersedia:** isi lengkap kategori 1/2 yang telah dikonfirmasi halaman demi halaman dari PDF OJK; tidak ada data sintetis yang diterbitkan sebagai regulatory pack.
+- Quality gate otomatis memeriksa struktur; reviewer manusia harus memeriksa ketepatan transkripsi dan rumus sebelum approval. `regulatory:release-gate` harus gagal pada kondisi tanpa kedua pack.
+- Selanjutnya: transkripsi dan QA seluruh isi resmi, verifikasi kasus batas komposit, import versi regulatory pack yang immutable, kertas kerja per indikator, approval hasil, browser E2E, dan UAT.
