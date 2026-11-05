@@ -2,7 +2,7 @@
 
 **Status: BELUM ADA regulatory pack yang lengkap dan diperiksa untuk produksi.**
 
-Kode pada direktori ini hanya menjalankan pemeriksaan struktur. Tidak mengisi 80/60 indikator dengan placeholder, tidak menganggap konten yang dihasilkan AI sebagai salinan resmi, dan **tidak menyimpulkan bahwa suatu paket sudah disetujui OJK**.
+Pemeriksaan struktur tidak menggantikan validasi isi terhadap dokumen sumber. Data indikator tidak boleh diisi dengan placeholder, dan hasil pemeriksaan otomatis **bukan persetujuan atau pengesahan OJK**.
 
 ## Sumber dan cakupan
 
