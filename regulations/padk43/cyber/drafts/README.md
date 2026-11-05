@@ -8,14 +8,14 @@ Folder `drafts/` menampung *catatan kerja*, bukan dataset regulasi tervalidasi. 
 
 | Kategori | Indikator diharapkan | Dicatat dalam draft | Kriteria peringkat diperlukan | Dicatat |
 | --- | ---: | ---: | ---: | ---: |
-| 1 | 80 | 40 | 400 | 0 |
-| 2 | 60 | 40 | 300 | 0 |
-| **Total** | **140** | **80** | **700** | **0** |
+| 1 | 80 | 80 | 400 | 0 |
+| 2 | 60 | 60 | 300 | 0 |
+| **Total** | **140** | **140** | **700** | **0** |
 
 Catatan sumber awal mengacu pada **Lampiran IV Bab III, Kertas Kerja Penilaian Tingkat Maturitas Keamanan Siber**:
 
-- Kategori 1: indikator **1–7** pada halaman tercetak **16**, **8–12** pada halaman **17**, **13–20** pada halaman **18**, **21–28** pada halaman **19**, **29–33** pada halaman **20**, dan **34–40** pada halaman **21**.
-- Kategori 2: indikator **1–7** pada halaman tercetak **28**, **8–12** pada halaman **29**, **13–19** pada halaman **30**, **20–27** pada halaman **31**, **28–32** pada halaman **32**, **33–37** pada halaman **33**, dan **38–40** pada halaman **34**.
+- Kategori 1: indikator **1–7** pada halaman tercetak **16**, **8–12** pada halaman **17**, **13–20** pada halaman **18**, **21–28** pada halaman **19**, **29–33** pada halaman **20**, **34–40** pada halaman **21**, **41–45** pada halaman **22**, **46–53** pada halaman **23**, **54–60** pada halaman **24**, **61–66** pada halaman **25**, **67–74** pada halaman **26**, dan **75–80** pada halaman **27**.
+- Kategori 2: indikator **1–7** pada halaman tercetak **28**, **8–12** pada halaman **29**, **13–19** pada halaman **30**, **20–27** pada halaman **31**, **28–32** pada halaman **32**, **33–37** pada halaman **33**, **38–45** pada halaman **34**, **46–51** pada halaman **35**, **52–58** pada halaman **36**, dan **59–60** pada halaman **37**.
 - Indikator **18–20** tidak identik antar kategori: pada kategori 1 laporan maturitas, laporan kepada Direksi, dan audit intern merupakan nomor 18, 19, dan 20; pada kategori 2 laporan maturitas kepada Direksi digabung pada nomor 18, audit intern dengan cakupan hak akses ada pada nomor 19, sedangkan evaluasi kebijakan/prosedur/limit ada pada nomor 20.
 
 - Pada kategori 1 domain **Identifikasi** dimulai di nomor **23** dan **Pelindungan** di nomor **32**. Kategori 2 mulai **Identifikasi** di nomor **22** dan **Pelindungan** di nomor **29**. Nomor yang sama tidak selalu mewakili parameter atau domain yang sama pada kedua kategori.
@@ -61,3 +61,12 @@ Rumus domain dan komposit yang dikutip dari **Lampiran IV Bab III huruf B.2.c–
 Pembacaan teks PDF pihak ketiga untuk **Tabel 3 (kriteria peringkat)** menunjukkan kemungkinan perpindahan isi antarsel atau baris ketika teks diekstraksi, terutama pada indikator 2 serta sekitar nomor 20–22. Contohnya, deskripsi peringkat yang terbaca pada nomor 2 tampak membahas strategi (bukan selera risiko), sedangkan sebagian kriteria sekitar nomor 20–22 terlihat berdekatan dengan parameter nomor berikutnya. Ini **belum membuktikan naskah OJK salah**; sangat mungkin masalah struktur tabel/ekstraksi.
 
 **Keputusan kerja:** Jangan mengisi kriteria peringkat dari teks ekstraksi tersebut tanpa mengecek posisi sel pada visual PDF resmi, nomor dan halaman tabel, dan review independen. Karena verifikasi visual/source PDF resmi belum berhasil diselesaikan dalam sesi ini, semua `rankCriteria` tetap kosong. Prioritas berikutnya ialah verifikasi tabel visual Lampiran IV bagian C dan D, bukan mengarang isian hanya untuk menaikkan progres.
+
+## Cakupan nomor lengkap belum berarti review selesai
+
+Semua 140 nomor kini mempunyai ringkasan kerja dan alokasi domain/subdomain, **bukan teks parameter yang telah diverifikasi**. Rujukan halaman menunjukkan lokasi awal pada salinan yang diperiksa; sel yang berlanjut lintas halaman harus dibandingkan secara visual terhadap PDF resmi. Pencatatan kategori 1 dan kategori 2 dilakukan terpisah karena urutan indikator dan jumlah butir per domain berbeda.
+
+- Kategori 1: Deteksi mulai nomor **63**, Penanggulangan & Pemulihan mulai nomor **66**.
+- Kategori 2: Deteksi mulai nomor **47**, Penanggulangan & Pemulihan mulai nomor **48**.
+- Belum ada kriteria rank 1–5 yang diverifikasi. Target berikutnya adalah audit sumber primer, penyandingan parameter dan kriteria Tabel 3, reviewer independen, dan pembuatan `packs/kategori-1.json` serta `packs/kategori-2.json`.
+- Status mesin tetap `DRAFT_UNVERIFIED`; `regulatory:release-gate` wajib gagal sampai pack produksi lolos seluruh validasi.

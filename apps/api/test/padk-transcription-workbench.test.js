@@ -22,13 +22,13 @@ test('progres transkripsi hanya mencatat sumber yang jelas belum diverifikasi',a
   assert.equal(stats.productionEligible,false);
   assert.equal(stats.totalExpectedIndicators,140);
   assert.equal(stats.totalExpectedRankCriteria,700);
-  assert.equal(stats.totalDraftedIndicators,80);
+  assert.equal(stats.totalDraftedIndicators,140);
   assert.equal(stats.totalDraftedRankCriteria,0);
-  assert.equal(stats.categories[0].missingNumbers.length,40);
-  assert.equal(stats.categories[1].missingNumbers.length,20);
+  assert.equal(stats.categories[0].missingNumbers.length,0);
+  assert.equal(stats.categories[1].missingNumbers.length,0);
   assert.equal(stats.categories[0].items[0].tablePage,16);
-  assert.equal(stats.categories[0].items.length,40);
-  assert.equal(stats.categories[1].items.length,40);
+  assert.equal(stats.categories[0].items.length,80);
+  assert.equal(stats.categories[1].items.length,60);
   for (const category of stats.categories) {
     for (const item of category.items) {
       assert.equal(item.reviewStatus,'NEEDS_SOURCE_REVIEW');
@@ -53,6 +53,31 @@ test('progres transkripsi hanya mencatat sumber yang jelas belum diverifikasi',a
   assert.equal(stats.categories[1].items[30].domain,'PL');
   assert.equal(stats.categories[1].items[30].tablePage,32);
   assert.equal(stats.categories[1].items[39].tablePage,34);
+  assert.deepEqual(stats.categories[0].items.slice(40,62).map(x=>x.domain),Array(22).fill('PL'));
+  assert.deepEqual(stats.categories[0].items.slice(62,65).map(x=>x.domain),Array(3).fill('DT'));
+  assert.deepEqual(stats.categories[0].items.slice(65).map(x=>x.domain),Array(15).fill('PP'));
+  assert.deepEqual(stats.categories[1].items.slice(40,46).map(x=>x.domain),Array(6).fill('PL'));
+  assert.equal(stats.categories[1].items[46].domain,'DT');
+  assert.deepEqual(stats.categories[1].items.slice(47).map(x=>x.domain),Array(13).fill('PP'));
+  assert.equal(stats.categories[0].items[40].tablePage,22);
+  assert.equal(stats.categories[0].items[45].tablePage,23);
+  assert.equal(stats.categories[0].items[60].tablePage,25);
+  assert.equal(stats.categories[0].items[65].tablePage,25);
+  assert.equal(stats.categories[0].items[74].tablePage,27);
+  assert.equal(stats.categories[0].items[79].tablePage,27);
+  assert.equal(stats.categories[1].items[40].tablePage,34);
+  assert.equal(stats.categories[1].items[45].tablePage,35);
+  assert.equal(stats.categories[1].items[47].tablePage,35);
+  assert.equal(stats.categories[1].items[51].tablePage,36);
+  assert.equal(stats.categories[1].items[59].tablePage,37);
+  assert.equal(stats.categories[0].items[46].subdomain,'MANAJEMEN_IDENTITAS_AUTENTIKASI_KONTROL_AKSES');
+  assert.equal(stats.categories[1].items[46].subdomain,'KETAHANAN_INFRASTRUKTUR_TI');
+  assert.equal(stats.categories[0].items[73].subdomain,
+    'PELAKSANAAN_RENCANA_PEMULIHAN_INSIDEN_SIBER');
+  assert.equal(stats.categories[1].items[53].subdomain,
+    'PELAKSANAAN_RENCANA_PEMULIHAN_INSIDEN_SIBER');
+  assert.equal(stats.totalDraftedRankCriteria,0);
+  assert.equal(stats.categories.every(c=>c.missingRankCriteria>0),true);
   assert.equal(stats.categories[0].items[35].subdomain,
     'MANAJEMEN_IDENTITAS_AUTENTIKASI_KONTROL_AKSES');
   assert.equal(stats.categories[1].items[35].subdomain,'KEAMANAN_DATA');
@@ -127,7 +152,7 @@ test('CLI development melaporkan progres, mode ketat gagal tanpa verifikasi',()=
     cwd:root,encoding:'utf8',timeout:15000,
   });
   assert.equal(dev.status,0,dev.stderr);
-  assert.match(dev.stdout,/80\/140 indikator/);
+  assert.match(dev.stdout,/140\/140 indikator/);
   assert.match(dev.stdout,/0\/700 kriteria/);
   assert.match(dev.stdout,/RELEASE: BLOCKED/);
 
@@ -141,6 +166,7 @@ test('CLI development melaporkan progres, mode ketat gagal tanpa verifikasi',()=
   });
   assert.equal(json.status,0,json.stderr);
   const stats=JSON.parse(json.stdout);
-  assert.equal(stats.categories[0].missingNumbers[0],41);
+  assert.deepEqual(stats.categories[0].missingNumbers,[]);
+  assert.deepEqual(stats.categories[1].missingNumbers,[]);
   assert.equal(stats.productionEligible,false);
 });
