@@ -18,7 +18,9 @@ test('shell disajikan tanpa melemahkan CSP atau mengaktifkan fitur palsu',async(
       'id="period-select"','id="assessment-search"','id="status-filter"',
       'id="detail-dialog"','id="metric-changes"',
     ]) assert.ok(html.includes(marker));
-    assert.doesNotMatch(html,/data-page="catalogs"/);
+    assert.match(html,/data-page="catalogs"/);
+    assert.match(html,/id="catalog-menu"[^>]*hidden/);
+    assert.match(html,/id="page-catalogs"[^>]*hidden/);
     assert.match(html,/data-page="reports"/);
     assert.match(html,/id="report-menu"[^>]*hidden/);
     assert.match(html,/id="report-menu-group"[^>]*hidden/);
