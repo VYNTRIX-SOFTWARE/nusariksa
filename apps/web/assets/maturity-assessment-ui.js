@@ -52,6 +52,8 @@ export function createMaturityAssessmentUI({
     state.versions=null;state.detail=null;state.selectedDomainId=null;
     state.busy=false;state.createOpen=false;state.dirty=false;
     $('ma-create-form').reset();$('ma-rating-form').reset();
+    $('ma-create-model').replaceChildren(option('Pilih model',''));
+    $('ma-create-version').replaceChildren(option('Pilih versi terbit',''));
     $('ma-detail').hidden=true;
     message('');
     renderList();renderActions();
@@ -278,7 +280,7 @@ export function createMaturityAssessmentUI({
   });
   $('ma-assessment-select').addEventListener('change',event=>{
     if(!confirmLeave()){event.target.value=state.activeId??'';return;}
-    state.activeId=event.target.value;
+    void open(event.target.value);
   });
   $('ma-open').addEventListener('click',()=>void open($('ma-assessment-select').value));
   $('ma-create-toggle').addEventListener('click',()=>{
