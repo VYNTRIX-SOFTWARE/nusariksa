@@ -16,6 +16,8 @@ const ASSETS = new Map([
   ['/assets/assessment-evidence.js', { file: 'assets/assessment-evidence.js', type: 'text/javascript; charset=utf-8' }],
   ['/assets/maturity-model.js', { file: 'assets/maturity-model.js', type: 'text/javascript; charset=utf-8' }],
   ['/assets/maturity-ui.js', { file: 'assets/maturity-ui.js', type: 'text/javascript; charset=utf-8' }],
+  ['/assets/maturity-assessment-model.js', { file: 'assets/maturity-assessment-model.js', type: 'text/javascript; charset=utf-8' }],
+  ['/assets/maturity-assessment-ui.js', { file: 'assets/maturity-assessment-ui.js', type: 'text/javascript; charset=utf-8' }],
   ['/assets/control-catalog-model.js', { file: 'assets/control-catalog-model.js', type: 'text/javascript; charset=utf-8' }],
   ['/assets/control-catalog.js', { file: 'assets/control-catalog.js', type: 'text/javascript; charset=utf-8' }],
 ]);

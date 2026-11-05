@@ -7,6 +7,7 @@ import { createAssessmentReviewsHandler } from './assessment-reviews-http.js';
 import { createAssessmentReportsHandler } from './assessment-reports-http.js';
 import { createAssessmentEvidenceHandler } from './assessment-evidence-http.js';
 import { createMaturityHandler } from './maturity-http.js';
+import { createMaturityAssessmentsHandler } from './maturity-assessments-http.js';
 import { createControlCatalogsHandler } from './control-catalogs-http.js';
 import { checkDatabase, createPool } from './database.js';
 import { createLoginLimiter } from './login-limiter.js';
@@ -34,6 +35,7 @@ export function createServer({
   reportHandler,
   evidenceHandlers,
   maturityHandlers,
+  maturityAssessmentHandlers,
   evidenceKey = process.env.EVIDENCE_ENCRYPTION_KEY,
 } = {}) {
   const handleAuth = createAuthHandler({ db: authDb, appOrigin, limiter: loginLimiter });
@@ -47,6 +49,9 @@ export function createServer({
   const handleReport = createAssessmentReportsHandler({ db: authDb, appOrigin, report: reportHandler });
   const handleMaturity = createMaturityHandler({
     db: authDb, appOrigin, ...maturityHandlers,
+  });
+  const handleMaturityAssessments = createMaturityAssessmentsHandler({
+    db: authDb, appOrigin, ...maturityAssessmentHandlers,
   });
   const handleEvidence = createAssessmentEvidenceHandler({
     db: authDb, appOrigin, evidenceKey, ...evidenceHandlers,
@@ -116,6 +121,21 @@ export function createServer({
       || request.url?.endsWith('/catalog') || request.url?.endsWith('/checklist')) {
       try {
         await handleCatalogs(request, response);
+      } catch {
+        if (!response.headersSent) {
+          response.writeHead(503);
+          response.end(JSON.stringify({ error: 'Unavailable' }));
+        } else {
+          response.destroy();
+        }
+      }
+      return;
+    }
+
+    if (request.url === '/maturity-assessments' ||
+      request.url?.startsWith('/maturity-assessments/')) {
+      try {
+        await handleMaturityAssessments(request, response);
       } catch {
         if (!response.headersSent) {
           response.writeHead(503);

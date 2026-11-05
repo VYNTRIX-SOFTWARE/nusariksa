@@ -1,6 +1,7 @@
 import { originAccepted, tokenFromCookies } from './auth-http.js';
 import { userHasPermission } from './authorization.js';
 import { findSession } from './sessions.js';
+import { setMaturityPolicy } from './maturity-assessments.js';
 import {
   MaturityError, createMaturityModel, listMaturityModels, listMaturityVersions,
   createNextMaturityVersion, addMaturityDomain, setMaturityLevel,
@@ -11,6 +12,7 @@ const ID='([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})';
 const VERSIONS=new RegExp('^/maturity-models/'+ID+'/versions$','i');
 const DOMAINS=new RegExp('^/maturity-versions/'+ID+'/domains$','i');
 const PUBLISH=new RegExp('^/maturity-versions/'+ID+'/publish$','i');
+const POLICY=new RegExp('^/maturity-versions/'+ID+'/aggregation$','i');
 const LEVEL=new RegExp('^/maturity-domains/'+ID+'/levels/([0-5])$','i');
 const MAX_BODY=4096;
 function respond(response,status,body){
@@ -45,6 +47,7 @@ export function createMaturityHandler({
   versions=listMaturityVersions,nextVersion=createNextMaturityVersion,
   domains=getMaturityRubric,addDomain=addMaturityDomain,
   setLevel=setMaturityLevel,publish=publishMaturityVersion,
+  setPolicy=setMaturityPolicy,
 }){
   return async function handleMaturity(request,response){
     const path=request.url??'';
@@ -53,13 +56,15 @@ export function createMaturityHandler({
     const domainMatch=DOMAINS.exec(path);
     const publishMatch=PUBLISH.exec(path);
     const levelMatch=LEVEL.exec(path);
+    const policyMatch=POLICY.exec(path);
     const isRead=method==='GET';
     const isWrite=method==='POST'||method==='PUT';
     const supported=(path==='/maturity-models' && (method==='GET'||method==='POST'))
       || (versionMatch && (method==='GET'||method==='POST'))
       || (domainMatch && (method==='GET'||method==='POST'))
       || (publishMatch&&method==='POST')
-      || (levelMatch&&method==='PUT');
+      || (levelMatch&&method==='PUT')
+      || (policyMatch&&method==='PUT');
     if(!supported){respond(response,404,{error:'Not found'});return;}
     if(!db||!appOrigin){respond(response,503,{error:'Unavailable'});return;}
     if(isWrite&&!originAccepted(request,appOrigin)){
@@ -87,11 +92,15 @@ export function createMaturityHandler({
         respond(response,200,await publish(db,{actorId:session.userId,versionId:publishMatch[1]}));
         return;
       }
-      const required=levelMatch?['criterion']:path==='/maturity-models'
+      const required=policyMatch?['method']:levelMatch?['criterion']:path==='/maturity-models'
         ?['code','title','methodologyReference']:['code','title'];
       const parsed=await jsonBody(request,required,domainMatch?['description']:[]);
       if(parsed.status){respond(response,parsed.status,{error:'Invalid request'});return;}
-      if(levelMatch){
+      if(policyMatch){
+        respond(response,200,await setPolicy(db,{
+          actorId:session.userId,versionId:policyMatch[1],method:parsed.data.method,
+        }));
+      }else if(levelMatch){
         respond(response,200,await setLevel(db,{
           actorId:session.userId,domainId:levelMatch[1],
           level:Number(levelMatch[2]),criterion:parsed.data.criterion,

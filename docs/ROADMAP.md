@@ -16,6 +16,12 @@ Setiap tahap memerlukan implementasi dan pengujian yang dapat diulang sebelum di
 ## Metodologi dan asesmen maturitas
 
 - Fondasi tersedia: model maturitas berreferensi, versi Draft/Published, domain, dan enam kriteria per domain; versi Published tidak dapat diubah.
-- Belum tersedia: penilaian maturitas per domain, pembuktian level melalui evidence, reviewer acceptance, perhitungan/aggregasi maturity level, serta baseline dan target improvement.
-- Sebelum scoring: verifikasi dasar metodologi, rumus, bobot, dan hubungan antar-domain. Nilai kelengkapan asesmen kontrol tidak digunakan sebagai skor maturitas.
+- Penilaian level per domain, justifikasi, tautan evidence yang diverifikasi keberadaannya, dan agregasi internal minimum/rata-rata floor kini tersedia. Belum tersedia: reviewer acceptance, pemeriksaan kecukupan evidence, metodologi regulator tervalidasi, serta baseline dan target improvement.
+- Skoring agregat internal hanya memakai kebijakan eksplisit per versi (minimum atau mean_floor), dan hanya ditampilkan setelah semua domain dinilai. Validasi metodologi, bobot, dan hubungan antar-domain terhadap referensi resmi masih perlu kajian; kelengkapan asesmen kontrol bukan skor maturitas.
 - Kesiapan produksi masih memerlukan security hardening, browser E2E, audit aksesibilitas, UAT, serta review referensi regulasi resmi.
+
+## Tahap lanjutan Maturity Assessment
+
+- PR #26 (development): maturity assessment terikat pada rubrik terbit dan kebijakan agregasi internal, penilaian per domain, justifikasi, referensi evidence, revisi dengan concurrency check, dan histori hasil.
+- Berikutnya: maker–checker untuk hasil maturitas, metodologi/rumus yang tervalidasi dan dapat diaudit, evidence adequacy review, baseline–target, trend, dan remediation tracking.
+- Release gate: browser E2E nyata, uji akses dan konflik lintas akun, aksesibilitas, pentest/security review, mekanisme retensi bukti, UAT praktisi, dan dokumentasi batasan klaim regulator.

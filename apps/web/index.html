@@ -89,6 +89,9 @@
         <button type="button" class="nav-link" data-page="catalogs" id="catalog-menu" title="Katalog Kontrol" hidden>
           <svg class="icon nav-icon"><use href="#i-clipboard"></use></svg><span class="nav-label">Katalog Kontrol</span>
         </button>
+        <button type="button" class="nav-link" data-page="maturity-assessments" id="maturity-assessments-menu" title="Penilaian Maturitas" hidden>
+          <svg class="icon nav-icon"><use href="#i-clipboard"></use></svg><span class="nav-label">Penilaian Maturitas</span>
+        </button>
         <button type="button" class="nav-link" data-page="maturity" id="maturity-menu" title="Metodologi Maturitas" hidden>
           <svg class="icon nav-icon"><use href="#i-clipboard"></use></svg><span class="nav-label">Metodologi Maturitas</span>
         </button>
@@ -293,6 +296,96 @@
           </div>
         </section>
 
+        <section id="page-maturity-assessments" class="page" aria-labelledby="ma-heading" hidden>
+          <div class="page-intro">
+            <div><p class="eyebrow">ASESMEN TI / PENILAIAN MATURITAS</p>
+              <h1 id="ma-heading">Penilaian Maturitas</h1>
+              <p class="supporting-copy">Penilaian internal per domain menggunakan rubrik terbit yang memiliki metode agregasi tersimpan. Bukan skor atau sertifikasi OJK.</p></div>
+            <button type="button" class="button button-outline" id="ma-refresh">Muat ulang</button>
+          </div>
+          <p id="ma-message" class="workspace-message" role="alert" hidden></p>
+          <section class="panel-card">
+            <div class="panel-heading">
+              <div><h2>Asesmen maturitas</h2>
+                <p class="panel-caption">Menampilkan maksimal 50 asesmen terbaru, bukan seluruh data.</p></div>
+              <button type="button" id="ma-create-toggle" class="button button-outline" hidden>Buat asesmen</button>
+            </div>
+            <div class="maturity-selector">
+              <div><label for="ma-assessment-select">Asesmen tersedia</label>
+                <select id="ma-assessment-select"><option value="">Pilih asesmen</option></select></div>
+              <div class="ma-selector-action">
+                <button id="ma-open" class="button button-outline" type="button">Buka asesmen</button>
+              </div>
+            </div>
+            <form id="ma-create-form" class="maturity-edit-form" hidden>
+              <h3>Asesmen maturitas baru</h3>
+              <label for="ma-create-model">Model metodologi</label>
+              <select id="ma-create-model" required><option value="">Pilih model</option></select>
+              <label for="ma-create-version">Versi yang telah diterbitkan</label>
+              <select id="ma-create-version" required><option value="">Pilih versi metodologi</option></select>
+              <label for="ma-create-title">Judul asesmen</label>
+              <input id="ma-create-title" maxlength="200" minlength="3" placeholder="Penilaian maturitas TI 2027" required>
+              <div class="maturity-selector">
+                <div><label for="ma-create-start">Awal periode</label><input id="ma-create-start" type="date" required></div>
+                <div><label for="ma-create-end">Akhir periode</label><input id="ma-create-end" type="date" required></div>
+              </div>
+              <p class="workspace-help">Asesmen akan menggunakan versi metodologi terbit yang tidak dapat diubah. Kriteria wajib lengkap dan metode agregasi sudah dikonfigurasi.</p>
+              <button class="button button-primary" type="submit" id="ma-create-submit">Simpan asesmen</button>
+            </form>
+          </section>
+          <div id="ma-detail" hidden>
+            <section class="panel-card">
+              <div class="maturity-rubric-heading">
+                <div><p class="eyebrow">HASIL PENILAIAN INTERNAL</p>
+                  <h2 id="ma-detail-title">Asesmen maturitas</h2>
+                  <p id="ma-detail-meta" class="panel-caption">Metodologi —</p></div>
+                <span id="ma-overall" class="report-state">Belum lengkap</span>
+              </div>
+              <div class="report-stats">
+                <div class="panel-card"><span>Domain</span><strong id="ma-total">0</strong></div>
+                <div class="panel-card"><span>Dinilai</span><strong id="ma-assessed">0</strong></div>
+                <div class="panel-card"><span>Belum dinilai</span><strong id="ma-unassessed">0</strong></div>
+                <div class="panel-card"><span>Level agregat internal</span><strong id="ma-level">—</strong></div>
+              </div>
+              <p id="ma-method" class="workspace-help">Metode agregasi —</p>
+              <p class="workspace-disclaimer">Level hasil penilaian internal berdasarkan rubrik pengguna. Bukan hasil pemeriksaan, sertifikasi, atau penetapan tingkat maturitas oleh OJK. Tidak ada approval/reviewer pada tahap ini.</p>
+            </section>
+            <div class="maturity-layout">
+              <section class="panel-card" aria-labelledby="ma-domains-heading">
+                <div class="panel-heading"><h2 id="ma-domains-heading">Domain penilaian</h2>
+                  <span id="ma-domains-count" class="small-caption">—</span></div>
+                <div id="ma-domain-list" class="maturity-domain-list"></div>
+              </section>
+              <section class="panel-card" aria-labelledby="ma-editor-heading">
+                <h2 id="ma-editor-heading">Penilaian domain</h2>
+                <p id="ma-domain-name" class="panel-caption">Pilih domain.</p>
+                <div id="ma-criteria" class="ma-criteria"></div>
+                <form id="ma-rating-form" class="maturity-edit-form" hidden>
+                  <label for="ma-rating-level">Level yang didukung bukti</label>
+                  <select id="ma-rating-level" required>
+                    <option value="">Pilih Level 0–5</option>
+                    <option value="0">Level 0</option><option value="1">Level 1</option>
+                    <option value="2">Level 2</option><option value="3">Level 3</option>
+                    <option value="4">Level 4</option><option value="5">Level 5</option>
+                  </select>
+                  <label for="ma-rating-justification">Justifikasi (minimal 10 karakter)</label>
+                  <textarea id="ma-rating-justification" rows="4" maxlength="2000" minlength="10" required placeholder="Jelaskan kondisi, kriteria yang terpenuhi, dan dasar penilaiannya."></textarea>
+                  <label for="ma-rating-evidence">ID bukti pendukung (opsional)</label>
+                  <input id="ma-rating-evidence" maxlength="36" placeholder="UUID lampiran dari Assessment Workspace">
+                  <p class="workspace-help">ID bukti harus berasal dari lampiran yang tersimpan pada institusi yang sama. Sistem memeriksa keberadaan file, tetapi belum menilai kecukupan atau keaslian bukti.</p>
+                  <p id="ma-evidence-link" class="workspace-help"></p>
+                  <button id="ma-rating-save" type="submit" class="button button-primary">Simpan penilaian domain</button>
+                </form>
+                <div class="maturity-rubric-heading">
+                  <h3>Riwayat revisi</h3>
+                  <button id="ma-history-refresh" class="button button-link" type="button" hidden>Muat riwayat</button>
+                </div>
+                <div id="ma-history" class="workspace-history"><p>Belum ada riwayat penilaian.</p></div>
+              </section>
+            </div>
+          </div>
+        </section>
+
         <section id="page-maturity" class="page" aria-labelledby="maturity-heading" hidden>
           <div class="page-intro">
             <div>
@@ -338,6 +431,16 @@
                 </div>
                 <span id="maturity-version-state" class="status-chip">Draft</span>
               </div>
+              <form id="maturity-policy-form" class="maturity-policy-form" hidden>
+                <label for="maturity-policy-method">Metode agregasi tingkat maturitas internal</label>
+                <select id="maturity-policy-method" required>
+                  <option value="">Pilih metode secara eksplisit</option>
+                  <option value="minimum">Level domain terendah (konservatif)</option>
+                  <option value="mean_floor">Rata-rata aritmetika seluruh domain, dibulatkan ke bawah</option>
+                </select>
+                <button type="submit" class="button button-outline">Simpan metode</button>
+              </form>
+              <p id="maturity-policy-description" class="workspace-help">Belum ada metode agregasi tersimpan.</p>
               <p id="maturity-completeness" class="workspace-help">Kriteria belum lengkap.</p>
               <p class="workspace-help">Untuk dapat diterbitkan, setiap domain wajib memiliki enam kriteria eksplisit Level 0 sampai Level 5. Level ini tidak otomatis mengukur kepatuhan atau maturitas bank.</p>
             </section>
