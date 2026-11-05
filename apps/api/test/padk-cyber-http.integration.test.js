@@ -83,7 +83,7 @@ test('API pratinjau PADK menjaga permission, origin, format dan menolak klaim re
         assert.equal((await send(preview,'POST',cookies.maker,body(),
           ORIGIN,'text/plain')).status,415);
         assert.equal((await send(preview,'POST',cookies.maker,'{')).status,400);
-        assert.equal((await send(preview,'POST',cookies.maker,'x'.repeat(70000))).status,413);
+        assert.equal((await send(preview,'POST',cookies.maker,'x'.repeat(270000))).status,413);
         assert.equal((await send(preview,'POST',cookies.maker,{
           ...body(),official:true,
         })).status,400);
