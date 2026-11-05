@@ -338,6 +338,16 @@
                 </div>
                 <span id="maturity-version-state" class="status-chip">Draft</span>
               </div>
+              <form id="maturity-policy-form" class="maturity-policy-form" hidden>
+                <label for="maturity-policy-method">Metode agregasi tingkat maturitas internal</label>
+                <select id="maturity-policy-method" required>
+                  <option value="">Pilih metode secara eksplisit</option>
+                  <option value="minimum">Level domain terendah (konservatif)</option>
+                  <option value="mean_floor">Rata-rata aritmetika seluruh domain, dibulatkan ke bawah</option>
+                </select>
+                <button type="submit" class="button button-outline">Simpan metode</button>
+              </form>
+              <p id="maturity-policy-description" class="workspace-help">Belum ada metode agregasi tersimpan.</p>
               <p id="maturity-completeness" class="workspace-help">Kriteria belum lengkap.</p>
               <p class="workspace-help">Untuk dapat diterbitkan, setiap domain wajib memiliki enam kriteria eksplisit Level 0 sampai Level 5. Level ini tidak otomatis mengukur kepatuhan atau maturitas bank.</p>
             </section>
