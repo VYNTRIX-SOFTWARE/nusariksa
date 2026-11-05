@@ -25,3 +25,12 @@ Setiap tahap memerlukan implementasi dan pengujian yang dapat diulang sebelum di
 - PR #26 (development): maturity assessment terikat pada rubrik terbit dan kebijakan agregasi internal, penilaian per domain, justifikasi, referensi evidence, revisi dengan concurrency check, dan histori hasil.
 - Berikutnya: maker–checker untuk hasil maturitas, metodologi/rumus yang tervalidasi dan dapat diaudit, evidence adequacy review, baseline–target, trend, dan remediation tracking.
 - Release gate: browser E2E nyata, uji akses dan konflik lintas akun, aksesibilitas, pentest/security review, mekanisme retensi bukti, UAT praktisi, dan dokumentasi batasan klaim regulator.
+
+## PADK 43/PADK.03/2025 — Maturitas Keamanan Siber
+
+- Fondasi kalkulasi pratinjau (PR #27): kategori 1/2 (80/60 indikator), 5 domain dan bobot resmi, skala 1–5 dengan 1 paling memadai, nilai domain sebagai rata-rata indikator, komposit berbobot dan klasifikasi bersyarat hanya bila lengkap.
+- Kalkulator **dipisah** dari metodologi maturitas internal PR #26. Tidak ada peta indikator sintetis yang dirilis sebagai pack regulasi; belum ada persistence, kertas kerja UI, review kriteria, evidence, atau PDF.
+- P0 untuk release: teliti nomor, subdomain, parameter dan kriteria level 1–5 dari dua tabel Lampiran IV secara penuh; verifikasi rumus dan pembulatan di titik batas, lalu kunci *regulatory pack* dengan versi/approval yang dapat diaudit.
+- Tahap berikutnya: kertas kerja UI kategori 1/2, jawaban per parameter dengan justifikasi/bukti, maker–checker, komposit yang tervalidasi, dan ekspor sesuai kertas kerja.
+- Validasi, keterbatasan dan rujukan: [docs/PADK-CYBER-MATURITY.md](PADK-CYBER-MATURITY.md).
+
