@@ -17,8 +17,13 @@ import {
 } from '../apps/api/src/maturity-models.js';
 import {
   setMaturityPolicyInTransaction,createMaturityAssessmentInTransaction,
-  rateMaturityDomainInTransaction,
+  rateMaturityDomainInTransaction,getMaturityAssessmentInTransaction,
+  listMaturityAssessments,listMaturityDomainHistory,
 } from '../apps/api/src/maturity-assessments.js';
+import {
+  submitMaturityAssessmentInTransaction,reviewMaturityAssessmentInTransaction,
+  listMaturityReviewHistory,listPendingMaturityReviews,
+} from '../apps/api/src/maturity-assessment-reviews.js';
 
 const delay=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 const waitFor=async(action,label,timeout=14000)=>{
@@ -301,7 +306,20 @@ async function main(){
     const fixture=await seed(client);
     const port=await openPort();
     const origin='http://localhost:'+port;
-    server=createServer({authDb:client,appOrigin:origin});
+    server=createServer({
+      authDb:client,appOrigin:origin,
+      maturityAssessmentHandlers:{
+        create:(db,args)=>createMaturityAssessmentInTransaction(db,args),
+        list:(db,args)=>listMaturityAssessments(db,args),
+        detail:(db,args)=>getMaturityAssessmentInTransaction(db,args),
+        rate:(db,args)=>rateMaturityDomainInTransaction(db,args),
+        history:(db,args)=>listMaturityDomainHistory(db,args),
+        submit:(db,args)=>submitMaturityAssessmentInTransaction(db,args),
+        review:(db,args)=>reviewMaturityAssessmentInTransaction(db,args),
+        reviews:(db,args)=>listMaturityReviewHistory(db,args),
+        queue:(db,args)=>listPendingMaturityReviews(db,args),
+      },
+    });
     server.listen(port,'127.0.0.1');await once(server,'listening');
     await runBrowser(origin,client,fixture);
   }finally{
