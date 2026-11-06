@@ -36,13 +36,13 @@ LANGUAGE plpgsql AS $$
 DECLARE current_status text;
 BEGIN
   SELECT status INTO current_status FROM maturity_assessment_review_state
-  WHERE assessment_id = NEW.assessment_id;
+  WHERE assessment_id = CASE WHEN TG_OP='DELETE' THEN OLD.assessment_id ELSE NEW.assessment_id END;
   IF current_status IN ('submitted','approved') THEN
     RAISE EXCEPTION 'Submitted or approved maturity results are locked';
   END IF;
-  RETURN NEW;
+  RETURN CASE WHEN TG_OP='DELETE' THEN OLD ELSE NEW END;
 END;
-$$;
+$;
 CREATE TRIGGER maturity_review_rating_guard
-BEFORE INSERT OR UPDATE ON maturity_domain_results
+BEFORE INSERT OR UPDATE OR DELETE ON maturity_domain_results
 FOR EACH ROW EXECUTE FUNCTION protect_submitted_maturity_results();
