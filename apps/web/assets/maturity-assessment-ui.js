@@ -2,6 +2,8 @@ import {
   canReadMaturityAssessments,canCreateMaturityAssessments,
   canRateMaturityAssessment,validMaturityAssessments,validMaturityDetail,
   ratingPayload,isMaturityAssessmentId,
+  canSubmitMaturityAssessment,canReviewMaturityAssessment,
+  validMaturityReviewQueue,reviewDecisionPayload,validMaturityReviewHistory,
 } from './maturity-assessment-model.js';
 import {parseMaturityModels,parseMaturityVersions,parseMaturityRubric} from './maturity-model.js';
 
@@ -22,12 +24,16 @@ export function createMaturityAssessmentUI({
   const state={
     assessments:null,activeId:null,detail:null,selectedDomainId:null,
     models:null,versions:null,busy:false,generation:0,createGeneration:0,
-    createOpen:false,dirty:false,
+    createOpen:false,dirty:false,queue:null,queueGeneration:0,
   };
   const allowed=()=>canReadMaturityAssessments(getPermissions());
   const writable=()=>canCreateMaturityAssessments(getPermissions());
   const owner=()=>state.detail&&canRateMaturityAssessment(
-    getPermissions(),getUserId(),state.detail.ownerUserId);
+    getPermissions(),getUserId(),state.detail.ownerUserId)
+    &&['in_progress','changes_requested'].includes(state.detail.review?.status);
+  const queueAllowed=()=>allowed()&&getPermissions().includes('assessments:approve');
+  const canSubmit=()=>canSubmitMaturityAssessment(getPermissions(),getUserId(),state.detail);
+  const canReview=()=>canReviewMaturityAssessment(getPermissions(),getUserId(),state.detail);
   const selected=()=>state.detail?.domains.find(d=>d.id===state.selectedDomainId)??null;
 
   function message(value,kind='info'){
@@ -45,18 +51,19 @@ export function createMaturityAssessmentUI({
     state.detail=null;state.selectedDomainId=null;state.dirty=false;
     $('ma-detail').hidden=true;
     $('ma-history').replaceChildren(node('p','empty-note','Belum ada riwayat penilaian.'));
+    $('ma-review-history').replaceChildren(node('p','empty-note','Belum ada riwayat pemeriksaan.'));
   }
   function clear(){
-    state.generation++;state.createGeneration++;
-    state.assessments=null;state.activeId=null;state.models=null;
+    state.generation++;state.createGeneration++;state.queueGeneration++;
+    state.assessments=null;state.queue=null;state.activeId=null;state.models=null;
     state.versions=null;state.detail=null;state.selectedDomainId=null;
     state.busy=false;state.createOpen=false;state.dirty=false;
-    $('ma-create-form').reset();$('ma-rating-form').reset();
+    $('ma-create-form').reset();$('ma-rating-form').reset();$('ma-review-form').reset();
     $('ma-create-model').replaceChildren(option('Pilih model',''));
     $('ma-create-version').replaceChildren(option('Pilih versi terbit',''));
     $('ma-detail').hidden=true;
     message('');
-    renderList();renderActions();
+    renderList();renderQueue();renderActions();
   }
   function renderList(){
     const root=$('ma-assessment-select');
@@ -67,6 +74,46 @@ export function createMaturityAssessmentUI({
     root.disabled=state.busy||!state.assessments?.length;
     $('ma-open').disabled=state.busy||!state.assessments?.length;
   }
+  function renderQueue(){
+    const panel=$('ma-review-queue-panel');
+    panel.hidden=!queueAllowed();
+    if(!queueAllowed())return;
+    const root=$('ma-review-queue');root.replaceChildren();
+    const rows=state.queue;
+    $('ma-review-queue-count').textContent=rows?rows.length+' menunggu pemeriksaan':'Memuat antrean…';
+    if(!rows?.length){
+      const tr=node('tr'),td=node('td','table-empty',
+        rows?'Tidak ada pengajuan maturitas yang menunggu pemeriksaan.':'Memuat antrean…');
+      td.colSpan=4;tr.append(td);root.append(tr);return;
+    }
+    for(const item of rows){
+      const tr=node('tr');
+      const action=node('td');
+      const button=node('button','detail-link','Periksa');
+      button.type='button';button.dataset.maReviewId=item.id;
+      button.setAttribute('aria-label','Periksa penilaian '+item.title);
+      button.disabled=state.busy;
+      action.append(button);
+      tr.append(node('td','',item.title),
+        node('td','table-date',item.periodStart+' – '+item.periodEnd),
+        node('td','',String(item.submissionCycle)),action);
+      root.append(tr);
+    }
+  }
+  async function loadQueue(){
+    if(!queueAllowed())return;
+    const gen=++state.queueGeneration;
+    state.queue=null;renderQueue();
+    try{
+      const rows=validMaturityReviewQueue(await api('/maturity-assessments/review-queue'));
+      if(gen!==state.queueGeneration||!queueAllowed())return;
+      state.queue=rows;renderQueue();
+    }catch(error){
+      if(gen!==state.queueGeneration)return;
+      state.queue=[];renderQueue();
+      failure(error,'Antrean pemeriksa gagal dimuat.');
+    }
+  }
   function renderActions(){
     $('ma-create-toggle').hidden=!writable();
     $('ma-create-form').hidden=!writable()||!state.createOpen;
@@ -75,6 +122,11 @@ export function createMaturityAssessmentUI({
     $('ma-rating-save').disabled=state.busy||!owner()||!state.dirty;
     $('ma-rating-form').hidden=!selected()||!owner();
     $('ma-history-refresh').hidden=!selected()||selected().revision===0;
+    $('ma-submit').hidden=!canSubmit();
+    $('ma-submit').disabled=state.busy;
+    $('ma-review-form').hidden=!canReview();
+    $('ma-review-save').disabled=state.busy;
+    $('ma-review-queue-refresh').disabled=state.busy;
   }
   function renderCriteria(){
     const domain=selected();
@@ -128,10 +180,15 @@ export function createMaturityAssessmentUI({
     $('ma-assessed').textContent=String(summary.assessedDomains);
     $('ma-unassessed').textContent=String(summary.unassessedDomains);
     $('ma-level').textContent=summary.complete?'Level '+summary.overallLevel:'—';
+    const status=data.review?.status??'in_progress';
+    const labels={in_progress:'Sedang dikerjakan',submitted:'Menunggu review',
+      changes_requested:'Perlu perbaikan',approved:'Disetujui internal'};
     $('ma-overall').textContent=summary.complete
-      ?'Tingkat internal '+summary.overallLevel+' · Belum direview'
+      ?'Level internal '+summary.overallLevel+' · '+(labels[status]??status)
       :'Belum lengkap';
-    $('ma-overall').dataset.final='false';
+    $('ma-overall').dataset.final=String(status==='approved');
+    $('ma-review-state').textContent='Status: '+(labels[status]??status)+
+      ' · Siklus pengajuan: '+(data.review?.submissionCycle??0);
     $('ma-method').textContent=summary.methodLabel+' · '+
       (summary.complete?'Semua domain telah dinilai.':'Agregat belum tersedia sebelum semua domain dinilai.');
     $('ma-domains-count').textContent=data.domains.length+' domain';
@@ -148,6 +205,33 @@ export function createMaturityAssessmentUI({
     }
     renderCriteria();renderActions();
   }
+  async function reviewHistory(){
+    if(!state.detail||!allowed())return;
+    const gen=state.generation,id=state.detail.id;
+    const root=$('ma-review-history');
+    root.replaceChildren(node('p','empty-note','Memuat riwayat pemeriksaan…'));
+    try{
+      const data=validMaturityReviewHistory(
+        await api('/maturity-assessments/'+encodeURIComponent(id)+'/reviews'),id);
+      if(gen!==state.generation||state.detail?.id!==id)return;
+      root.replaceChildren();
+      if(!data.events.length)root.append(node('p','empty-note','Belum ada pengajuan atau keputusan.'));
+      for(const entry of data.events){
+        const item=node('div','workspace-history-item');
+        const action={SUBMITTED:'Diajukan',APPROVED:'Disetujui internal',
+          CHANGES_REQUESTED:'Dikembalikan untuk perbaikan'}[entry.action]??entry.action;
+        item.append(node('strong','',action+' · Siklus '+entry.submission_cycle),
+          node('p','',entry.note||'Tanpa catatan.'),
+          node('small','',(entry.occurred_at?new Date(entry.occurred_at).toLocaleString('id-ID'):'—')+
+            ' · Aktor: '+entry.actor_user_id));
+        root.append(item);
+      }
+    }catch(error){
+      if(gen!==state.generation)return;
+      if(onAuthFailure(error))return;
+      root.replaceChildren(node('p','empty-note','Riwayat pemeriksaan gagal dimuat.'));
+    }
+  }
   function failure(error,defaultText){
     if(onAuthFailure(error))return;
     const status=error?.status;
@@ -159,6 +243,7 @@ export function createMaturityAssessmentUI({
   }
   async function loadList(preferred=state.activeId){
     if(!allowed()||state.busy)return;
+    if(queueAllowed())void loadQueue();
     const gen=++state.generation;
     state.assessments=null;state.detail=null;state.activeId=null;
     state.selectedDomainId=null;state.dirty=false;
@@ -191,6 +276,7 @@ export function createMaturityAssessmentUI({
       message('');
       renderDetail();
       if(selected()?.revision>0)void history();
+      void reviewHistory();
     }catch(error){
       if(gen!==state.generation)return;
       state.detail=null;renderDetail();
@@ -275,6 +361,48 @@ export function createMaturityAssessmentUI({
     }
   }
 
+  $('ma-review-queue-refresh').addEventListener('click',()=>void loadQueue());
+  $('ma-review-queue').addEventListener('click',event=>{
+    const button=event.target.closest?.('[data-ma-review-id]');
+    if(button&&$('ma-review-queue').contains(button))
+      void open(button.dataset.maReviewId);
+  });
+  $('ma-submit').addEventListener('click',()=>{
+    if(!canSubmit()||state.busy||!confirmLeave())return;
+    const id=state.detail.id;
+    if(!window.confirm('Ajukan seluruh hasil penilaian untuk diperiksa? Hasil terkunci sampai dikembalikan.'))return;
+    void perform(()=>api('/maturity-assessments/'+encodeURIComponent(id)+'/submit',
+      {method:'POST'}),async()=>{
+      await open(id);
+      if(queueAllowed())await loadQueue();
+    },'Penilaian berhasil diajukan ke pemeriksa.');
+  });
+  $('ma-review-form').addEventListener('submit',event=>{
+    event.preventDefault();
+    if(!canReview()||state.busy)return;
+    let body;
+    try{
+      body=reviewDecisionPayload($('ma-review-decision').value,$('ma-review-note').value);
+    }catch(error){message(error.message,'error');return;}
+    if(!window.confirm(body.decision==='approve'
+      ?'Setujui penilaian maturitas internal ini? Keputusan akan mengunci hasil.'
+      :'Kembalikan penilaian kepada pembuat untuk perbaikan?'))return;
+    const id=state.detail.id,gen=state.generation;
+    state.busy=true;renderActions();
+    void (async()=>{
+      try{
+        await api('/maturity-assessments/'+encodeURIComponent(id)+'/review',{method:'POST',body});
+        if(gen!==state.generation)return;
+        state.busy=false;$('ma-review-form').reset();
+        await open(id);
+        if(queueAllowed())await loadQueue();
+        message('Keputusan pemeriksaan berhasil dicatat.','success');
+      }catch(error){
+        if(gen===state.generation)failure(error,'Gagal menyimpan keputusan pemeriksaan.');
+      }finally{state.busy=false;renderActions();}
+    })();
+  });
+  $('ma-review-history-refresh').addEventListener('click',()=>void reviewHistory());
   $('ma-refresh').addEventListener('click',()=>{
     if(confirmLeave())void loadList();
   });
@@ -357,7 +485,7 @@ export function createMaturityAssessmentUI({
     sync(){
       $('maturity-assessments-menu').hidden=!allowed();
       if(!allowed()){clear();return;}
-      renderActions();
+      renderActions();renderQueue();
     },
   };
 }
