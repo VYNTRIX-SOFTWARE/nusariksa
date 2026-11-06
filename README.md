@@ -213,3 +213,14 @@ Untuk menyiapkan regulatory pack kategori 1/2, tersedia direktori `regulations/p
 Untuk mengisi kriteria peringkat kategori 1/2 secara bertahap, tersedia `node scripts/padk-rank-batch.js` dan alias `npm run regulatory:rank-batch`. Perintah `--template --category=1 --from=1 --to=5` menghasilkan JSON batch kosong; `--input=<file>` melakukan validasi tanpa menulis; `--input=<file> --apply` memperbarui draft setelah memeriksa fingerprint baseline, nomor, rank, teks, dan halaman. Proses ini tidak mengubah status `DRAFT_UNVERIFIED`, tidak membuat kriteria palsu, serta tidak mempromosikan regulatory pack. Panduan di [drafts/README.md](regulations/padk43/cyber/drafts/README.md).
 
 **Kriteria masih 0/700 sampai transkripsi dari Lampiran IV diperiksa dan benar-benar diimpor.** Kode importer bukan pengganti verifikasi visual dan review independen.
+
+## Hak cipta, lisensi, dan identitas proyek
+
+NusaRiksa adalah proyek sumber terbuka yang diprakarsai VYNTRIX dan didistribusikan berdasarkan **GNU AGPL-3.0-only**. Lisensi ini memperbolehkan penggunaan komersial sesuai persyaratannya; penggunaan atau modifikasi yang memenuhi lisensi **tidak memerlukan izin komersial terpisah**. Ketentuan kode tidak otomatis memberikan hak untuk mengaku sebagai produk/layanan resmi VYNTRIX.
+
+- [Teks lisensi AGPL-3.0](LICENSE)
+- [Pemberitahuan hak cipta dan asal proyek](NOTICE.md)
+- [Panduan nama, logo, dan merek](TRADEMARKS.md)
+- [Panduan kontribusi dan kepemilikan kontribusi](CONTRIBUTING.md)
+
+Pemberitahuan tersebut bukan klaim bahwa seluruh hak cipta kontribusi telah dialihkan kepada VYNTRIX. Implementasi tampilan legal notices, akses source code dari antarmuka web, dan pemeriksaan kepatuhan rilis tetap memerlukan pemeriksaan terpisah.
