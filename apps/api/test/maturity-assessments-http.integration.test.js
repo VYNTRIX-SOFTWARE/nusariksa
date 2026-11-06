@@ -1,6 +1,10 @@
 import assert from 'node:assert/strict';
 import {once} from 'node:events';
 import {test} from 'node:test';
+import {
+  submitMaturityAssessmentInTransaction,reviewMaturityAssessmentInTransaction,
+  listMaturityReviewHistory,
+} from '../src/maturity-assessment-reviews.js';
 import {createPool} from '../src/database.js';
 import {runMigrations} from '../src/migrations.js';
 import {createSession} from '../src/sessions.js';
@@ -71,6 +75,9 @@ test('HTTP asesmen maturitas memerlukan policy, mengaudit revisi, dan tidak memb
           create:(client,args)=>createMaturityAssessmentInTransaction(client,args),
           detail:(client,args)=>getMaturityAssessmentInTransaction(client,args),
           rate:(client,args)=>rateMaturityDomainInTransaction(client,args),
+          submit:(client,args)=>submitMaturityAssessmentInTransaction(client,args),
+          review:(client,args)=>reviewMaturityAssessmentInTransaction(client,args),
+          reviews:(client,args)=>listMaturityReviewHistory(client,args),
         },
       });
       server.listen(0,'127.0.0.1');await once(server,'listening');
