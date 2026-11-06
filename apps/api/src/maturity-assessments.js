@@ -1,5 +1,6 @@
 import { userHasPermission } from './authorization.js';
 import { MaturityError } from './maturity-models.js';
+import { maturityReviewStatus, assertMaturityEditable } from './maturity-assessment-reviews.js';
 
 const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const DATE=/^(\d{4})-(\d{2})-(\d{2})$/;
@@ -187,6 +188,7 @@ export async function getMaturityAssessmentInTransaction(db,{actorId,id}){
     level:row.level,criterion:row.criterion,
   });
   const evidenceAllowed=await userHasPermission(db,actorId,'evidence:read');
+  const review=await maturityReviewStatus(db,{actorId,assessmentId:id});
   const domains=result.rows.map(row=>({
     id:row.id,code:row.code,title:row.title,description:row.description,
     position:row.position,criteria:criteria.get(row.id)??[],
@@ -201,6 +203,7 @@ export async function getMaturityAssessmentInTransaction(db,{actorId,id}){
     periodStart:assessment.period_start,periodEnd:assessment.period_end,
     ownerUserId:assessment.owner_user_id,createdAt:assessment.created_at,
     modelVersionId:assessment.model_version_id,
+    review,
     model:{code:assessment.model_code,title:assessment.model_title,
       version:assessment.version,methodologyReference:assessment.methodology_reference},
     summary:calculateMaturitySummary(domains,assessment.method),
@@ -218,6 +221,7 @@ export async function rateMaturityDomainInTransaction(db,{
   const assessment=await findAssessment(db,actorId,assessmentId,true);
   if(assessment.owner_user_id!==actorId)
     throw new MaturityError(403,'Only the maturity assessment owner can rate domains');
+  await assertMaturityEditable(db,assessmentId);
   const criterion=await db.query(
     'SELECT 1 FROM maturity_domain_levels l '+
     'JOIN maturity_domains d ON d.id=l.domain_id '+

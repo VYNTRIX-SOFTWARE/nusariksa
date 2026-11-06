@@ -1,6 +1,10 @@
 import assert from 'node:assert/strict';
 import {once} from 'node:events';
 import {test} from 'node:test';
+import {
+  submitMaturityAssessmentInTransaction,reviewMaturityAssessmentInTransaction,
+  listMaturityReviewHistory,
+} from '../src/maturity-assessment-reviews.js';
 import {createPool} from '../src/database.js';
 import {runMigrations} from '../src/migrations.js';
 import {createSession} from '../src/sessions.js';
@@ -40,18 +44,21 @@ test('HTTP asesmen maturitas memerlukan policy, mengaudit revisi, dan tidak memb
         "INSERT INTO users(email,status,password_hash) VALUES "+
         "('ma-writer@example.test','active','hash-uji'),"+
         "('ma-viewer@example.test','active','hash-uji'),"+
-        "('ma-unauthorized@example.test','active','hash-uji') RETURNING id,email",
+        "('ma-unauthorized@example.test','active','hash-uji'),"+
+        "('ma-reviewer@example.test','active','hash-uji') RETURNING id,email",
       );
       const ids=Object.fromEntries(people.rows.map(r=>[r.email,r.id]));
       const maker=ids['ma-writer@example.test'];
       const viewer=ids['ma-viewer@example.test'];
       const none=ids['ma-unauthorized@example.test'];
+      const reviewer=ids['ma-reviewer@example.test'];
       await db.query(
-        "INSERT INTO user_roles(user_id,role) VALUES ($1,'IT_OFFICER'),($2,'VIEWER')",
-        [maker,viewer],
+        "INSERT INTO user_roles(user_id,role) VALUES "+
+        "($1,'IT_OFFICER'),($2,'VIEWER'),($3,'REVIEWER')",
+        [maker,viewer,reviewer],
       );
       const cookies={};
-      for(const [key,userId] of [['maker',maker],['viewer',viewer],['none',none]]){
+      for(const [key,userId] of [['maker',maker],['viewer',viewer],['none',none],['reviewer',reviewer]]){
         cookies[key]='__Host-nusariksa_session='+(await createSession(db,userId)).token;
       }
       const server=createServer({
@@ -68,6 +75,9 @@ test('HTTP asesmen maturitas memerlukan policy, mengaudit revisi, dan tidak memb
           create:(client,args)=>createMaturityAssessmentInTransaction(client,args),
           detail:(client,args)=>getMaturityAssessmentInTransaction(client,args),
           rate:(client,args)=>rateMaturityDomainInTransaction(client,args),
+          submit:(client,args)=>submitMaturityAssessmentInTransaction(client,args),
+          review:(client,args)=>reviewMaturityAssessmentInTransaction(client,args),
+          reviews:(client,args)=>listMaturityReviewHistory(client,args),
         },
       });
       server.listen(0,'127.0.0.1');await once(server,'listening');
@@ -171,6 +181,10 @@ test('HTTP asesmen maturitas memerlukan policy, mengaudit revisi, dan tidak memb
         assert.equal(partial.summary.assessedDomains,1);
         assert.equal(partial.summary.complete,false);
         assert.equal(partial.summary.overallLevel,null);
+        const reviewPath='/maturity-assessments/'+assessmentId;
+        assert.equal(partial.review.status,'in_progress');
+        assert.equal((await send(reviewPath+'/submit','POST',cookies.maker)).status,409);
+        assert.equal((await send(reviewPath+'/submit','POST',cookies.reviewer)).status,403);
 
         // Reuse immutable evidence from an existing control assessment, same institution.
         const cat=await createCatalogInTransaction(db,{
@@ -214,6 +228,60 @@ test('HTTP asesmen maturitas memerlukan policy, mengaudit revisi, dan tidak memb
         assert.equal(complete.domains[0].evidenceFileName,'rekaman uji.pdf');
         assert.equal(complete.domains[0].evidenceAssessmentId,controlAssessment.id);
         assert.equal(complete.domains[1].level,5);
+        const submitted=await send(reviewPath+'/submit','POST',cookies.maker);
+        assert.equal(submitted.status,200);
+        assert.equal((await submitted.json()).submissionCycle,1);
+        await db.query('SAVEPOINT review_rating_lock');
+        await assert.rejects(db.query(
+          'UPDATE maturity_domain_results SET justification=$3 WHERE assessment_id=$1 AND domain_id=$2',
+          [assessmentId,nextRubric.rows[0].id,justification]),e=>e.code==='P0001');
+        await db.query('ROLLBACK TO SAVEPOINT review_rating_lock');
+        await db.query('SAVEPOINT review_delete_lock');
+        await assert.rejects(db.query(
+          'DELETE FROM maturity_domain_results WHERE assessment_id=$1 AND domain_id=$2',
+          [assessmentId,nextRubric.rows[0].id]),e=>e.code==='P0001');
+        await db.query('ROLLBACK TO SAVEPOINT review_delete_lock');
+        assert.equal((await send(reviewPath+'/submit','POST',cookies.maker)).status,409);
+        assert.equal((await send(ratingPath+nextRubric.rows[1].id,'PUT',cookies.maker,{
+          level:3,justification,expectedRevision:1,
+        })).status,409);
+        assert.equal((await send(reviewPath+'/review','POST',cookies.maker,{
+          decision:'approve',note:'Sudah direview.',
+        })).status,403);
+        assert.equal((await send(reviewPath+'/review','POST',cookies.reviewer,{
+          decision:'request_changes',note:'kurang',
+        })).status,400);
+        assert.equal((await send(reviewPath+'/review','POST',cookies.reviewer,{
+          decision:'request_changes',note:'Perbaiki dasar penilaian domain kedua.',
+        },'https://evil.example')).status,403);
+        const returned=await send(reviewPath+'/review','POST',cookies.reviewer,{
+          decision:'request_changes',note:'Perbaiki dasar penilaian domain kedua.',
+        });
+        assert.equal(returned.status,200);
+        assert.equal((await returned.json()).status,'changes_requested');
+        assert.equal((await send(ratingPath+nextRubric.rows[1].id,'PUT',cookies.maker,{
+          level:3,justification,expectedRevision:1,
+        })).status,200);
+        assert.equal((await send(reviewPath+'/submit','POST',cookies.maker)).status,200);
+        const approved=await send(reviewPath+'/review','POST',cookies.reviewer,{
+          decision:'approve',note:'Penilaian sesuai rubrik internal.',
+        });
+        assert.equal(approved.status,200);
+        assert.equal((await approved.json()).submissionCycle,2);
+        assert.equal((await send(reviewPath+'/review','POST',cookies.reviewer,{
+          decision:'approve',note:'Selesai.',
+        })).status,409);
+        assert.equal((await send(ratingPath+nextRubric.rows[1].id,'PUT',cookies.maker,{
+          level:5,justification,expectedRevision:2,
+        })).status,409);
+        const audited=await(await send(reviewPath+'/reviews','GET',cookies.viewer)).json();
+        assert.equal(audited.status,'approved');
+        assert.deepEqual(audited.events.map(x=>x.action),
+          ['APPROVED','SUBMITTED','CHANGES_REQUESTED','SUBMITTED']);
+        const ratedDetail=await(await send(reviewPath,'GET',cookies.viewer)).json();
+        assert.equal(ratedDetail.review.status,'approved');
+        assert.equal(ratedDetail.review.submissionCycle,2);
+
         const history=await(await send(ratingPath+nextRubric.rows[0].id+'/history','GET',
           cookies.viewer)).json();
         assert.deepEqual(history.history.map(x=>x.revision),[2,1]);
@@ -225,6 +293,11 @@ test('HTTP asesmen maturitas memerlukan policy, mengaudit revisi, dan tidak memb
             [assessmentId]),e=>e.code==='P0001',
         );
         await db.query('ROLLBACK TO SAVEPOINT immutable_maturity_event');
+        await db.query('SAVEPOINT immutable_maturity_review');
+        await assert.rejects(db.query(
+          'DELETE FROM maturity_assessment_review_events WHERE assessment_id=$1',
+          [assessmentId]),e=>e.code==='P0001');
+        await db.query('ROLLBACK TO SAVEPOINT immutable_maturity_review');
         assert.equal(calculateMaturitySummary([{level:1},{level:5}], 'mean_floor').overallLevel,3);
       }finally{
         server.close();await once(server,'close');
