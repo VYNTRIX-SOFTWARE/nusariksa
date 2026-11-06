@@ -243,7 +243,13 @@ async function runBrowser(base,db,fixture){
       "document.getElementById('ma-review-decision').value='request_changes';"+
       "document.getElementById('ma-review-note').value='Perjelas justifikasi domain pertama sebelum approval.';"+
       "document.getElementById('ma-review-form').requestSubmit()");
-    await until("document.getElementById('ma-review-state').textContent.includes('Perlu perbaikan')",'changes requested');
+    try{
+      await until("document.getElementById('ma-review-state').textContent.includes('Perlu perbaikan')",'changes requested');
+    }catch(error){
+      const browserState=await evalJs("({message:document.getElementById('ma-message').textContent,reviewState:document.getElementById('ma-review-state').textContent,decision:document.getElementById('ma-review-decision').value,note:document.getElementById('ma-review-note').value,formHidden:document.getElementById('ma-review-form').hidden})");
+      const dbState=await db.query('SELECT status,submission_cycle FROM maturity_assessment_review_state WHERE assessment_id=$1',[fixture.assessmentId]);
+      throw new Error(error.message+' | browser: '+JSON.stringify(browserState)+' | db: '+JSON.stringify(dbState.rows));
+    }
     await logout();
 
     await login('maker');
