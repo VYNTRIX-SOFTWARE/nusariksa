@@ -48,3 +48,5 @@ jobs:
         run: npm run db:migrate
       - name: Jalankan pemeriksaan
         run: npm run check
+      - name: Uji browser alur maker-checker maturitas
+        run: npm run test:browser
