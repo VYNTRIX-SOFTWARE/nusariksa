@@ -237,7 +237,7 @@ async function runBrowser(base,db,fixture){
     await openMaturity();
     await until("Boolean(document.querySelector('#ma-review-queue [data-ma-review-id]'))",'review queue item');
     await evalJs("document.querySelector('#ma-review-queue [data-ma-review-id]').click()");
-    await until("!document.getElementById('ma-review-form').hidden",'review form');
+    await until("!document.getElementById('ma-detail').hidden && !document.getElementById('ma-review-form').hidden",'review form');
     assert.equal(await evalJs("document.getElementById('ma-submit').hidden"),true);
     await evalJs("window.__e2eReviewSubmitted=0;document.getElementById('ma-review-form').addEventListener('submit',()=>window.__e2eReviewSubmitted++,{capture:true});");
     await evalJs("window.confirm=()=>true;"+
@@ -270,7 +270,7 @@ async function runBrowser(base,db,fixture){
     await openMaturity();
     await until("Boolean(document.querySelector('#ma-review-queue [data-ma-review-id]'))",'second review queue item');
     await evalJs("document.querySelector('#ma-review-queue [data-ma-review-id]').click()");
-    await until("!document.getElementById('ma-review-form').hidden",'second review form');
+    await until("!document.getElementById('ma-detail').hidden && !document.getElementById('ma-review-form').hidden",'second review form');
     await evalJs("window.confirm=()=>true;"+
       "document.getElementById('ma-review-decision').value='approve';"+
       "document.getElementById('ma-review-note').value='Penilaian sesuai rubrik internal.';"+
