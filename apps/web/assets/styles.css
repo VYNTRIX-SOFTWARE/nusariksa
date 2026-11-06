@@ -471,3 +471,14 @@ h1,h2,p{margin-top:0}h1,h2{letter-spacing:-.027em}
   #maturity-policy-form select{min-width:0;width:100%}
   #ma-rating-form .button-primary{width:100%}
 }
+
+/* Maturity maker-checker — scoped reviewer queue and readable decision history */
+#ma-review-queue-panel{margin-bottom:18px}
+#ma-review-queue-panel .data-table{min-width:560px}
+#ma-review-queue-count{display:block;margin:0 0 12px;color:var(--secondary)}
+#ma-review-form{margin:16px 0}
+#ma-review-form select{width:100%;min-width:0;border:1px solid #D1D5DB;border-radius:8px;background:#fff;color:var(--text);padding:11px 12px;font:inherit;font-size:13px}
+#ma-review-form .button{width:auto}
+#ma-review-history{margin-top:12px}
+#ma-evidence-link{overflow-wrap:anywhere}
+@media(max-width:760px){#ma-review-form .button{width:100%}}

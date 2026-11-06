@@ -4,6 +4,7 @@ import {findSession} from './sessions.js';
 import {MaturityError} from './maturity-models.js';
 import {
   submitMaturityAssessment,reviewMaturityAssessment,listMaturityReviewHistory,
+  listPendingMaturityReviews,
 } from './maturity-assessment-reviews.js';
 import {
   createMaturityAssessment,listMaturityAssessments,getMaturityAssessment,
@@ -14,7 +15,8 @@ const ID='([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})';
 const SINGLE=new RegExp('^/maturity-assessments/'+ID+'$','i');
 const RESULT=new RegExp('^/maturity-assessments/'+ID+'/domains/'+ID+'$','i');
 const HISTORY=new RegExp('^/maturity-assessments/'+ID+'/domains/'+ID+'/history$','i');
-const SUBMIT=new RegExp('^/maturity-assessments/'+ID+'/submit$','i');
+const SUBMIT=new RegExp('^/maturity-assessments/'+ID+'/submit'+String.fromCharCode(36),'i');
+const REVIEW_QUEUE='/maturity-assessments/review-queue';
 const REVIEW=new RegExp('^/maturity-assessments/'+ID+'/review$','i');
 const REVIEWS=new RegExp('^/maturity-assessments/'+ID+'/reviews$','i');
 const MAX_BODY=6000;
@@ -47,7 +49,7 @@ export function createMaturityAssessmentsHandler({
   detail=getMaturityAssessment,rate=rateMaturityDomain,
   history=listMaturityDomainHistory,
   submit=submitMaturityAssessment,review=reviewMaturityAssessment,
-  reviews=listMaturityReviewHistory,
+  reviews=listMaturityReviewHistory,queue=listPendingMaturityReviews,
 }){
   return async function handleMaturityAssessment(request,response){
     const path=request.url??'',method=request.method;
@@ -55,6 +57,7 @@ export function createMaturityAssessmentsHandler({
       matchHistory=HISTORY.exec(path),matchSubmit=SUBMIT.exec(path),
       matchReview=REVIEW.exec(path),matchReviews=REVIEWS.exec(path);
     const supported=(path==='/maturity-assessments'&&['GET','POST'].includes(method))
+      ||(path===REVIEW_QUEUE&&method==='GET')
       ||(matchSingle&&method==='GET')
       ||(matchResult&&method==='PUT')
       ||(matchHistory&&method==='GET')
@@ -71,12 +74,13 @@ export function createMaturityAssessmentsHandler({
     const session=token?await findSession(db,token):null;
     if(!session){respond(response,401,{error:'Unauthorized'});return;}
     if(!await userHasPermission(db,session.userId,
-      matchReview?'assessments:approve':writing?'assessments:write':'assessments:read')){
+      (matchReview||path===REVIEW_QUEUE)?'assessments:approve':writing?'assessments:write':'assessments:read')){
       respond(response,403,{error:'Forbidden'});return;
     }
     try{
       if(method==='GET'){
-        const value=path==='/maturity-assessments'
+        const value=path===REVIEW_QUEUE?await queue(db,{actorId:session.userId})
+          :path==='/maturity-assessments'
           ?await list(db,{actorId:session.userId})
           :matchHistory?await history(db,{actorId:session.userId,
             assessmentId:matchHistory[1],domainId:matchHistory[2]})

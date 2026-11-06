@@ -3,7 +3,7 @@ import {once} from 'node:events';
 import {test} from 'node:test';
 import {
   submitMaturityAssessmentInTransaction,reviewMaturityAssessmentInTransaction,
-  listMaturityReviewHistory,
+  listMaturityReviewHistory,listPendingMaturityReviews,
 } from '../src/maturity-assessment-reviews.js';
 import {createPool} from '../src/database.js';
 import {runMigrations} from '../src/migrations.js';
@@ -78,6 +78,7 @@ test('HTTP asesmen maturitas memerlukan policy, mengaudit revisi, dan tidak memb
           submit:(client,args)=>submitMaturityAssessmentInTransaction(client,args),
           review:(client,args)=>reviewMaturityAssessmentInTransaction(client,args),
           reviews:(client,args)=>listMaturityReviewHistory(client,args),
+          queue:(client,args)=>listPendingMaturityReviews(client,args),
         },
       });
       server.listen(0,'127.0.0.1');await once(server,'listening');
@@ -154,6 +155,11 @@ test('HTTP asesmen maturitas memerlukan policy, mengaudit revisi, dan tidak memb
         const assessmentId=result.id;
         const ratingPath='/maturity-assessments/'+assessmentId+'/domains/';
         assert.equal((await send('/maturity-assessments','GET',cookies.viewer)).status,200);
+        assert.equal((await send('/maturity-assessments/review-queue')).status,401);
+        assert.equal((await send('/maturity-assessments/review-queue','GET',cookies.viewer)).status,403);
+        assert.equal((await send('/maturity-assessments/review-queue','GET',cookies.maker)).status,403);
+        assert.deepEqual((await(await send('/maturity-assessments/review-queue',
+          'GET',cookies.reviewer)).json()).assessments,[]);
         assert.equal((await send(ratingPath+nextRubric.rows[0].id,'PUT',cookies.viewer,{
           level:0,justification,expectedRevision:0,
         })).status,403);
@@ -231,6 +237,12 @@ test('HTTP asesmen maturitas memerlukan policy, mengaudit revisi, dan tidak memb
         const submitted=await send(reviewPath+'/submit','POST',cookies.maker);
         assert.equal(submitted.status,200);
         assert.equal((await submitted.json()).submissionCycle,1);
+        const reviewQueue=await(await send('/maturity-assessments/review-queue',
+          'GET',cookies.reviewer)).json();
+        assert.equal(reviewQueue.assessments.length,1);
+        assert.equal(reviewQueue.assessments[0].id,assessmentId);
+        assert.equal(reviewQueue.assessments[0].ownerUserId,maker);
+        assert.equal(reviewQueue.assessments[0].submissionCycle,1);
         await db.query('SAVEPOINT review_rating_lock');
         await assert.rejects(db.query(
           'UPDATE maturity_domain_results SET justification=$3 WHERE assessment_id=$1 AND domain_id=$2',
@@ -259,15 +271,21 @@ test('HTTP asesmen maturitas memerlukan policy, mengaudit revisi, dan tidak memb
         });
         assert.equal(returned.status,200);
         assert.equal((await returned.json()).status,'changes_requested');
+        assert.equal((await(await send('/maturity-assessments/review-queue',
+          'GET',cookies.reviewer)).json()).assessments.length,0);
         assert.equal((await send(ratingPath+nextRubric.rows[1].id,'PUT',cookies.maker,{
           level:3,justification,expectedRevision:1,
         })).status,200);
         assert.equal((await send(reviewPath+'/submit','POST',cookies.maker)).status,200);
+        assert.equal((await(await send('/maturity-assessments/review-queue',
+          'GET',cookies.reviewer)).json()).assessments[0].submissionCycle,2);
         const approved=await send(reviewPath+'/review','POST',cookies.reviewer,{
           decision:'approve',note:'Penilaian sesuai rubrik internal.',
         });
         assert.equal(approved.status,200);
         assert.equal((await approved.json()).submissionCycle,2);
+        assert.equal((await(await send('/maturity-assessments/review-queue',
+          'GET',cookies.reviewer)).json()).assessments.length,0);
         assert.equal((await send(reviewPath+'/review','POST',cookies.reviewer,{
           decision:'approve',note:'Selesai.',
         })).status,409);
