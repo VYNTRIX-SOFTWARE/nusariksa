@@ -247,7 +247,7 @@ export function createMaturityAssessmentUI({
     const gen=++state.generation;
     state.assessments=null;state.detail=null;state.activeId=null;
     state.selectedDomainId=null;state.dirty=false;
-    $('ma-detail').hidden=true;message('');renderList();
+    $('ma-detail').hidden=true;message('');renderList();renderActions();
     try{
       const data=validMaturityAssessments(await api('/maturity-assessments'));
       if(gen!==state.generation||!allowed())return;
@@ -266,7 +266,7 @@ export function createMaturityAssessmentUI({
     if(!allowed()||state.busy||!isMaturityAssessmentId(id)||!confirmLeave())return;
     const gen=++state.generation;
     state.activeId=id;state.detail=null;state.selectedDomainId=null;state.dirty=false;
-    $('ma-detail').hidden=true;message('Memuat asesmen maturitas…');renderList();
+    $('ma-detail').hidden=true;message('Memuat asesmen maturitas…');renderList();renderActions();
     try{
       const data=validMaturityDetail(await api('/maturity-assessments/'+encodeURIComponent(id)),id);
       if(gen!==state.generation||!allowed())return;
