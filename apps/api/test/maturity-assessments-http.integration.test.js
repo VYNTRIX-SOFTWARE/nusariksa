@@ -231,6 +231,16 @@ test('HTTP asesmen maturitas memerlukan policy, mengaudit revisi, dan tidak memb
         const submitted=await send(reviewPath+'/submit','POST',cookies.maker);
         assert.equal(submitted.status,200);
         assert.equal((await submitted.json()).submissionCycle,1);
+        await db.query('SAVEPOINT review_rating_lock');
+        await assert.rejects(db.query(
+          'UPDATE maturity_domain_results SET justification=$3 WHERE assessment_id=$1 AND domain_id=$2',
+          [assessmentId,nextRubric.rows[0].id,justification]),e=>e.code==='P0001');
+        await db.query('ROLLBACK TO SAVEPOINT review_rating_lock');
+        await db.query('SAVEPOINT review_delete_lock');
+        await assert.rejects(db.query(
+          'DELETE FROM maturity_domain_results WHERE assessment_id=$1 AND domain_id=$2',
+          [assessmentId,nextRubric.rows[0].id]),e=>e.code==='P0001');
+        await db.query('ROLLBACK TO SAVEPOINT review_delete_lock');
         assert.equal((await send(reviewPath+'/submit','POST',cookies.maker)).status,409);
         assert.equal((await send(ratingPath+nextRubric.rows[1].id,'PUT',cookies.maker,{
           level:3,justification,expectedRevision:1,
