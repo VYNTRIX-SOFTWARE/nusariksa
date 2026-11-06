@@ -304,6 +304,21 @@
             <button type="button" class="button button-outline" id="ma-refresh">Muat ulang</button>
           </div>
           <p id="ma-message" class="workspace-message" role="alert" hidden></p>
+          <section id="ma-review-queue-panel" class="panel-card" aria-labelledby="ma-review-queue-title" hidden>
+            <div class="panel-heading">
+              <div><h2 id="ma-review-queue-title">Antrean reviewer maturitas</h2>
+                <p class="panel-caption">Penilaian internal yang telah diajukan oleh pengguna lain dalam institusi ini.</p></div>
+              <button id="ma-review-queue-refresh" type="button" class="button button-outline">Muat antrean</button>
+            </div>
+            <p id="ma-review-queue-count" class="small-caption" aria-live="polite">—</p>
+            <div class="table-scroll" tabindex="0" aria-label="Antrean penilaian maturitas internal">
+              <table class="data-table">
+                <thead><tr><th scope="col">Asesmen</th><th scope="col">Periode</th><th scope="col">Siklus</th><th scope="col">Tindakan</th></tr></thead>
+                <tbody id="ma-review-queue"><tr><td colspan="4" class="table-empty">Antrean belum dimuat.</td></tr></tbody>
+              </table>
+            </div>
+            <p class="workspace-help">Maksimal 50 pengajuan terbaru; hanya asesmen berstatus submitted. Pemeriksa tidak dapat menyetujui penilaiannya sendiri.</p>
+          </section>
           <section class="panel-card">
             <div class="panel-heading">
               <div><h2>Asesmen maturitas</h2>
@@ -348,7 +363,28 @@
                 <div class="panel-card"><span>Level agregat internal</span><strong id="ma-level">—</strong></div>
               </div>
               <p id="ma-method" class="workspace-help">Metode agregasi —</p>
-              <p class="workspace-disclaimer">Level hasil penilaian internal berdasarkan rubrik pengguna. Bukan hasil pemeriksaan, sertifikasi, atau penetapan tingkat maturitas oleh OJK. Tidak ada approval/reviewer pada tahap ini.</p>
+              <p id="ma-review-state" class="workspace-help" aria-live="polite">Status pemeriksaan —</p>
+              <div class="maturity-actionbar">
+                <button id="ma-submit" class="button button-primary" type="button" hidden>Ajukan untuk review</button>
+              </div>
+              <form id="ma-review-form" class="maturity-edit-form" hidden>
+                <h3>Keputusan pemeriksa</h3>
+                <label for="ma-review-decision">Keputusan</label>
+                <select id="ma-review-decision" required>
+                  <option value="">Pilih keputusan</option>
+                  <option value="approve">Setujui penilaian internal</option>
+                  <option value="request_changes">Kembalikan untuk perbaikan</option>
+                </select>
+                <label for="ma-review-note">Catatan keputusan (wajib minimal 10 karakter untuk pengembalian)</label>
+                <textarea id="ma-review-note" maxlength="2000" rows="3" placeholder="Jelaskan hasil pemeriksaan, terutama alasan pengembalian."></textarea>
+                <button id="ma-review-save" class="button button-primary" type="submit">Simpan keputusan</button>
+              </form>
+              <div class="maturity-rubric-heading">
+                <h3>Riwayat pengajuan dan pemeriksaan</h3>
+                <button id="ma-review-history-refresh" class="button button-link" type="button">Muat riwayat</button>
+              </div>
+              <div id="ma-review-history" class="workspace-history"><p>Belum ada riwayat.</p></div>
+              <p class="workspace-disclaimer">Penilaian Level 0–5 dan keputusan reviewer bersifat internal. Bukan hasil pemeriksaan, sertifikasi, atau penetapan tingkat maturitas oleh OJK.</p>
             </section>
             <div class="maturity-layout">
               <section class="panel-card" aria-labelledby="ma-domains-heading">
@@ -373,9 +409,9 @@
                   <label for="ma-rating-evidence">ID bukti pendukung (opsional)</label>
                   <input id="ma-rating-evidence" maxlength="36" placeholder="UUID lampiran dari Assessment Workspace">
                   <p class="workspace-help">ID bukti harus berasal dari lampiran yang tersimpan pada institusi yang sama. Sistem memeriksa keberadaan file, tetapi belum menilai kecukupan atau keaslian bukti.</p>
-                  <p id="ma-evidence-link" class="workspace-help"></p>
                   <button id="ma-rating-save" type="submit" class="button button-primary">Simpan penilaian domain</button>
                 </form>
+                <p id="ma-evidence-link" class="workspace-help">Belum ada bukti pendukung.</p>
                 <div class="maturity-rubric-heading">
                   <h3>Riwayat revisi</h3>
                   <button id="ma-history-refresh" class="button button-link" type="button" hidden>Muat riwayat</button>
