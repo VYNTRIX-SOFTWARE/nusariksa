@@ -224,3 +224,7 @@ NusaRiksa adalah proyek sumber terbuka yang diprakarsai VYNTRIX dan didistribusi
 - [Panduan kontribusi dan kepemilikan kontribusi](CONTRIBUTING.md)
 
 Pemberitahuan tersebut bukan klaim bahwa seluruh hak cipta kontribusi telah dialihkan kepada VYNTRIX. Implementasi tampilan legal notices, akses source code dari antarmuka web, dan pemeriksaan kepatuhan rilis tetap memerlukan pemeriksaan terpisah.
+
+## Workbench review visual kriteria PADK (pengembangan)
+
+Alat lokal di [`tools/padk-review/`](tools/padk-review/) menampilkan PDF sumber berdampingan dengan form kriteria peringkat 1–5 dari template batch. Hasil transkripsi dapat disimpan sementara sebagai JSON dan diekspor ke importer `scripts/padk-rank-batch.js` setelah pemeriksaan visual. Tidak ada pengunggahan file atau penilaian otomatis; status regulatory pack tetap belum terverifikasi. Lihat [panduan workbench](tools/padk-review/README.md).

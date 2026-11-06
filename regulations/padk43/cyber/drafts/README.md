@@ -98,3 +98,7 @@ Perintah `--apply` menolak baseline yang sudah berubah, kriteria yang sudah teri
 Setelah menerapkan sebuah batch, buat template baru karena `baseSha256` berubah. Untuk kategori 2 gunakan `--category=2`; nomor dan kategori **tidak** boleh dipertukarkan. Jangan menyimpan berkas kerja lokal yang mengandung catatan review internal di direktori publik repository tanpa kebutuhan proyek yang jelas.
 
 **Sumber referensi wajib:** PADK 43/PADK.03/2025, Lampiran IV bagian C dan D; tabel kriteria memiliki sel yang dapat berlanjut ke halaman berikutnya. Pemeriksaan visual terhadap PDF yang dapat diverifikasi dan review substansi oleh pihak berbeda tetap menjadi release gate. Kedua regulatory pack produksi belum tersedia, sehingga `regulatory:release-gate` masih harus gagal.
+
+## Review visual dengan PDF lokal
+
+Antarmuka offline tersedia di [`tools/padk-review/`](../../../../tools/padk-review/) untuk membandingkan halaman PDF asli dengan isian peringkat 1–5 secara manual. Buka halaman HTML, impor template dari CLI, muat berkas PDF sumber lokal, simpan progres, lalu ekspor hasil ke format importer. Workbench tidak menjamin autentisitas berkas PDF; sumber penerbit dan reviewer independen tetap harus diperiksa secara terpisah.

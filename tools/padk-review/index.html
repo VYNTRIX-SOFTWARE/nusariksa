@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'unsafe-inline'; frame-src blob:; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'none'; connect-src 'none'">
+  <title>Review Kriteria PADK — NusaRiksa</title>
+  <style>
+    :root{color-scheme:light;font:15px/1.48 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#242538;background:#f5f5fa}
+    *{box-sizing:border-box}
+    body{margin:0}
+    header{background:#fff;border-bottom:1px solid #e5e5ed;padding:17px max(22px,calc((100% - 1600px)/2))}
+    .brand{display:flex;align-items:center;gap:12px}
+    .mark{width:33px;height:33px;background:#6d4aff;color:#fff;border-radius:10px;display:grid;place-items:center;font-weight:800}
+    h1{font-size:19px;margin:0;letter-spacing:-.3px}
+    header p{color:#63677b;margin:2px 0 0;font-size:13px}
+    main{max-width:1600px;margin:0 auto;padding:20px 22px 40px}
+    .notice{padding:12px 16px;border:1px solid #dfdafc;border-left:4px solid #6d4aff;background:#f0edff;border-radius:9px;font-size:13px;margin-bottom:16px}
+    .toolbar,.workspace{display:grid;gap:16px}
+    .toolbar{grid-template-columns:minmax(250px,1fr) minmax(250px,1fr) auto}
+    .workspace{grid-template-columns:minmax(340px,1fr) minmax(340px,1fr);align-items:start;margin-top:16px}
+    .panel{background:#fff;border:1px solid #e3e3eb;border-radius:13px;overflow:hidden}
+    .panelhead{padding:13px 16px;border-bottom:1px solid #ececf1;display:flex;justify-content:space-between;align-items:center;gap:10px}
+    .panelhead h2{margin:0;font-size:15px;font-weight:750}
+    .panelbody{padding:16px}
+    .field{display:block;font-weight:650;font-size:12px;color:#51546a;margin-bottom:6px}
+    input[type=file],input[type=number],select,textarea{width:100%;font:inherit;border:1px solid #d6d7e2;border-radius:8px;padding:9px 11px;background:white;color:#242538}
+    textarea{resize:vertical;min-height:78px;line-height:1.5}
+    input:focus,select:focus,textarea:focus{outline:2px solid #a697ff;outline-offset:0;border-color:#6d4aff}
+    input[type=file]{font-size:12px}
+    button{font:inherit;cursor:pointer;padding:9px 13px;border-radius:8px;border:1px solid #d6d7e2;background:white;color:#383951;font-weight:650}
+    button.primary{background:#6d4aff;color:#fff;border-color:#6d4aff}
+    button:disabled{opacity:.48;cursor:not-allowed}
+    button:focus-visible{outline:3px solid #b6aaff;outline-offset:2px}
+    .muted,.help{font-size:12px;color:#696d80}
+    .help{margin:6px 0 0}
+    .controls{display:flex;align-items:end;gap:9px;flex-wrap:wrap}
+    .controls>label{flex:1;min-width:80px}
+    .controls>.page-input{max-width:135px}
+    .pdf-view{height:min(70vh,820px);min-height:440px;width:100%;border:0;background:#f1f1f5}
+    .pdf-empty{height:440px;display:grid;place-items:center;color:#74788d;padding:20px;text-align:center}
+    .form-area{max-height:min(70vh,820px);min-height:440px;overflow:auto;padding:16px}
+    .rank{border:1px solid #e8e7ef;padding:13px;border-radius:10px;margin-bottom:13px}
+    .rank:last-child{margin-bottom:0}
+    .rank h3{font-size:13px;margin:0 0 10px;display:flex;justify-content:space-between;gap:10px}
+    .rank h3 span{color:#6d4aff}
+    .rank .field{margin-top:8px}
+    .page-row{display:flex;align-items:center;gap:9px}
+    .page-row input{max-width:120px}
+    .pill{display:inline-block;background:#f0edff;color:#6145ce;font-size:12px;padding:4px 8px;border-radius:30px}
+    .footer-actions{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+    .status{min-height:28px;font-size:13px;white-space:pre-wrap}
+    .status.error{color:#a32433}
+    .status.ok{color:#216c4c}
+    .smallprint{font-size:12px;color:#717487;margin:9px 0 0}
+    @media(max-width:880px){.toolbar{grid-template-columns:1fr}.workspace{grid-template-columns:1fr}.pdf-view{height:54vh;min-height:320px}.pdf-empty{height:300px}.form-area{max-height:none}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand"><div class="mark" aria-hidden="true">N</div><div>
+      <h1>Review Kriteria PADK</h1>
+      <p>NusaRiksa · Workbench offline Lampiran IV</p>
+    </div></div>
+  </header>
+  <main>
+    <div class="notice"><strong>Data kerja — bukan regulatory pack tervalidasi.</strong>
+      Periksa setiap parameter dan lima kriteria peringkat langsung pada PDF sumber. Aplikasi ini tidak mengirim berkas ke server dan tidak menetapkan hasil resmi.
+    </div>
+    <section class="toolbar" aria-label="Pemuatan sumber dan template">
+      <div class="panel"><div class="panelbody">
+        <label class="field" for="batch-file">1. Template batch JSON dari CLI</label>
+        <input id="batch-file" type="file" accept=".json,application/json">
+        <p class="help">Buat dari <code>node scripts/padk-rank-batch.js --category=1 --template --from=1 --to=5</code>. Isi baru disimpan saat Anda mengunduh hasil.</p>
+      </div></div>
+      <div class="panel"><div class="panelbody">
+        <label class="field" for="pdf-file">2. PDF sumber (dipilih dari perangkat)</label>
+        <input id="pdf-file" type="file" accept=".pdf,application/pdf">
+        <p class="help">Gunakan naskah resmi dari OJK. Navigasi PDF memakai nomor halaman fisik, bukan nomor halaman tercetak Lampiran IV.</p>
+      </div></div>
+      <div class="panel"><div class="panelbody">
+        <div class="field">Progres batch</div>
+        <strong id="progress" aria-live="polite">0 / 0</strong>
+        <p class="help">Semua isian wajib lengkap sebelum ekspor.</p>
+        <button class="primary" id="export" type="button" disabled>Ekspor JSON</button>
+      </div></div>
+    </section>
+
+    <section class="workspace">
+      <section class="panel" aria-label="Dokumen rujukan">
+        <div class="panelhead"><h2>Dokumen sumber</h2><span class="pill">PDF lokal</span></div>
+        <div class="panelbody">
+          <div class="controls">
+            <label class="page-input"><span class="field">Halaman fisik PDF</span><input id="physical-page" type="number" min="1" step="1" value="1" aria-label="Nomor halaman fisik PDF"></label>
+            <button id="go-page" type="button" disabled>Buka halaman</button>
+            <a id="open-pdf" href="#" rel="noopener noreferrer" target="_blank" hidden>Buka tab PDF</a>
+          </div>
+          <p class="help">Nomor PDF fisik dapat berbeda dari nomor tercetak 38–80 pada Tabel 3. Cocokkan keduanya secara manual.</p>
+        </div>
+        <div id="pdf-placeholder" class="pdf-empty">Pilih PDF sumber untuk menampilkan halaman di sini.</div>
+        <iframe id="pdf-frame" class="pdf-view" title="Pratinjau dokumen sumber" hidden></iframe>
+      </section>
+      <section class="panel" aria-label="Pengisian kriteria">
+        <div class="panelhead"><h2>Kriteria peringkat</h2><span id="category" class="pill">Belum dimuat</span></div>
+        <div class="panelbody">
+          <label class="field" for="indicator">Indikator yang dikerjakan</label>
+          <select id="indicator" disabled><option value="">Muat template dahulu</option></select>
+          <p class="help">Peringkat 1 paling memadai; peringkat 5 paling tidak memadai. Periksa sel yang bersambung antarhalaman.</p>
+        </div>
+        <div class="form-area" id="form-area">
+          <p class="muted">Pilih template JSON untuk mulai memeriksa isian.</p>
+        </div>
+      </section>
+    </section>
+    <section class="panel" style="margin-top:16px">
+      <div class="panelbody">
+        <div class="footer-actions">
+          <button id="save-progress" type="button" disabled>Simpan progres lokal</button>
+          <button class="primary" id="export-bottom" type="button" disabled>Unduh hasil batch untuk validasi CLI</button>
+          <span class="muted">File hasil ekspor tetap <code>SOURCE_REVIEW_PENDING</code> dan memerlukan review independen.</span>
+        </div>
+        <div id="status" class="status" role="status" aria-live="polite"></div>
+      </div>
+    </section>
+    <p class="smallprint">Workbench hanya berjalan pada perangkat lokal. Tidak ada pengisian otomatis, penyimpanan server, atau perubahan langsung ke repository. Ekspor ulang secara berkala supaya isian tidak hilang saat tab ditutup.</p>
+  </main>
+  <script src="./review.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>

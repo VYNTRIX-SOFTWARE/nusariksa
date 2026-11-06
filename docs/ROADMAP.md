@@ -54,3 +54,9 @@ Setiap tahap memerlukan implementasi dan pengujian yang dapat diulang sebelum di
 - Importer memvalidasi halaman (38–80), rank (1–5), duplikasi, kelengkapan teks, fingerprint baseline, dan hanya mengubah draft setelah opsi `--apply` diberikan secara eksplisit.
 - Draft tetap memerlukan pemeriksaan PDF penerbit dan review independen. Belum tersedia regulatory pack produksi atau hasil validasi 700 kriteria; release gate tetap terblokir.
 - P0 berikutnya: pemeriksaan visual dan transkripsi kriteria Tabel 3 secara bertahap, rekonsiliasi parameter antar kategori, dan pengujian hasil pada contoh regulasi.
+
+## Workbench review visual offline (PR #38)
+
+- Antarmuka lokal untuk membandingkan PDF Lampiran IV dengan isian level 1–5 per indikator, halaman PDF fisik dan halaman tercetak dipisahkan secara eksplisit.
+- Penyimpanan progres parsial dan ekspor JSON lengkap yang dapat diperiksa melalui importer CLI sebelum `--apply`; tidak ada koneksi eksternal atau promosi otomatis menjadi regulatory pack.
+- **Belum ada kriteria regulator yang ditambahkan atau diverifikasi (0/700).** Langkah berikutnya memeriksa PDF primer OJK dan memulai transkripsi per batch beserta review substansi dan teknis.
