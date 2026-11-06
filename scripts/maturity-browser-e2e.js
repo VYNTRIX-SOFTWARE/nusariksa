@@ -47,10 +47,12 @@ function chromePath(){
 }
 class Cdp {
   constructor(socket){
-    this.socket=socket;this.sequence=0;this.pending=new Map();
+    this.socket=socket;this.sequence=0;this.pending=new Map();this.errors=[];
     socket.addEventListener('message',event=>{
       let packet;
       try{packet=JSON.parse(event.data);}catch{return;}
+      if(packet.method==='Runtime.consoleAPICalled'&&packet.params?.type==='error')
+        this.errors.push(packet.params.args?.map(x=>x.description??x.value??'').join(' ')??'unknown error');
       if(!packet.id)return;
       const pending=this.pending.get(packet.id);
       if(!pending)return;
@@ -201,7 +203,7 @@ async function runBrowser(base,db,fixture){
       await until("document.getElementById('maturity-assessments-menu') && !document.getElementById('maturity-assessments-menu').hidden",'maturity navigation');
     }catch(error){
       const diagnostic=await evalJs("(async()=>({loginVisible:!document.getElementById('login-screen').hidden,appVisible:!document.getElementById('app-screen').hidden,notice:document.getElementById('app-notice').textContent,loginError:document.getElementById('login-error').textContent,permissions:await fetch('/auth/permissions').then(async r=>({status:r.status,body:await r.text()})),assessments:await fetch('/assessments').then(async r=>({status:r.status,body:await r.text()})),missing:['ma-review-form','ma-review-queue-panel','ma-review-state','ma-review-queue','ma-submit','ma-review-history'].filter(id=>!document.getElementById(id)),menuHidden:document.getElementById('maturity-assessments-menu')?.hidden}))()");
-      throw new Error(error.message+' | browser: '+JSON.stringify(diagnostic));
+      throw new Error(error.message+' | browser: '+JSON.stringify(diagnostic)+' | console: '+c.errors.join(' | '));
     }
     await evalJs("document.getElementById('maturity-assessments-menu').click()");
     await until("document.getElementById('ma-detail') && !document.getElementById('ma-detail').hidden",'maturity details');
