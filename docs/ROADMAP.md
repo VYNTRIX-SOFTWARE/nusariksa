@@ -67,3 +67,11 @@ Setiap tahap memerlukan implementasi dan pengujian yang dapat diulang sebelum di
 - Detail asesmen menyertakan status review; endpoint terproteksi sesi, permission, dan origin. Migrasi `0014` menambah status serta review event terpisah dari asesmen kontrol reguler.
 - Belum ada UI antrean reviewer dan belum diuji browser nyata; ini merupakan tahap backend, bukan kesiapan produksi.
 - Rubrik maturitas internal Level 0–5 tetap berbeda dengan **peringkat keamanan siber PADK 1–5**. Regulatory pack PADK masih belum lengkap (0/700 kriteria).
+
+## Sprint #40 — Reviewer UI untuk maturitas internal (Draft PR)
+
+- Daftar antrean reviewer khusus dari `GET /maturity-assessments/review-queue` mengembalikan maksimal 50 pengajuan berstatus `submitted` dari institusi pengguna, dengan izin `assessments:approve` dan pemisahan maker–checker.
+- UI Penilaian Maturitas menampilkan antrean pemeriksa, status/siklus review, pengajuan maker, tindakan `approve` dan `request_changes`, justifikasi, evidence referensi, serta histori append-only.
+- Otorisasi, isolasi institusi, dan pembekuan penilaian ditentukan backend; penyembunyian kontrol UI bukan pengganti pemeriksaan server.
+- Ada uji unit validasi kontrol UI serta tambahan pengujian integrasi HTTP untuk antrean dan transisi status. Hasil CI dan pengujian browser nyata **harus diperiksa sebelum Ready for review**.
+- Batasan: bukan workflow peringkat keamanan siber resmi PADK, belum ada penugasan reviewer, pagination, ataupun audit kecukupan bukti secara manusia.
