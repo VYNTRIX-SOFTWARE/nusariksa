@@ -70,3 +70,31 @@ Semua 140 nomor kini mempunyai ringkasan kerja dan alokasi domain/subdomain, **b
 - Kategori 2: Deteksi mulai nomor **47**, Penanggulangan & Pemulihan mulai nomor **48**.
 - Belum ada kriteria rank 1–5 yang diverifikasi. Target berikutnya adalah audit sumber primer, penyandingan parameter dan kriteria Tabel 3, reviewer independen, dan pembuatan `packs/kategori-1.json` serta `packs/kategori-2.json`.
 - Status mesin tetap `DRAFT_UNVERIFIED`; `regulatory:release-gate` wajib gagal sampai pack produksi lolos seluruh validasi.
+
+## Pengisian kriteria peringkat secara batch (PR #36)
+
+Setelah nomor indikator lengkap, sisa pekerjaan adalah transkripsi **400 kriteria kategori 1** dan **300 kriteria kategori 2** dari Tabel 3 Lampiran IV. Untuk menghindari penyuntingan JSON yang panjang secara manual, tersedia alat offline pembuat template dan importer batch.
+
+1. Buat berkas kerja hanya untuk nomor yang akan diperiksa visual (contoh 1–5):
+   
+   ```bash
+   node scripts/padk-rank-batch.js --category=1 --template --from=1 --to=5 > review-k1-1-5.json
+   ```
+2. Buka berkas tersebut; isi setiap objek `entries` dengan **`workingSummary`** (15–3000 karakter) dan **`criteriaPage`** sesuai halaman tercetak Lampiran IV (38–80). Nomor, kategori, urutan level, dan hash baseline tidak diubah. `workingSummary` masih merupakan teks kerja yang memerlukan review sumber.
+3. Jalankan validasi tanpa perubahan file:
+   
+   ```bash
+   node scripts/padk-rank-batch.js --category=1 --input=review-k1-1-5.json
+   ```
+4. Setelah sumber dibandingkan dan isinya diperiksa, terapkan ke draft lokal:
+   
+   ```bash
+   node scripts/padk-rank-batch.js --category=1 --input=review-k1-1-5.json --apply
+   node scripts/check-padk-transcription-drafts.js
+   ```
+
+Perintah `--apply` menolak baseline yang sudah berubah, kriteria yang sudah terisi, nomor ganda, level di luar 1–5, halaman di luar 38–80, teks kosong, dan kriteria duplikat pada indikator yang sama. Seluruh file tetap `DRAFT_UNVERIFIED` dengan `NEEDS_SOURCE_REVIEW`, meskipun kelima peringkat terisi. **Pengisian batch bukan pengesahan dokumen atau hasil penilaian.**
+
+Setelah menerapkan sebuah batch, buat template baru karena `baseSha256` berubah. Untuk kategori 2 gunakan `--category=2`; nomor dan kategori **tidak** boleh dipertukarkan. Jangan menyimpan berkas kerja lokal yang mengandung catatan review internal di direktori publik repository tanpa kebutuhan proyek yang jelas.
+
+**Sumber referensi wajib:** PADK 43/PADK.03/2025, Lampiran IV bagian C dan D; tabel kriteria memiliki sel yang dapat berlanjut ke halaman berikutnya. Pemeriksaan visual terhadap PDF yang dapat diverifikasi dan review substansi oleh pihak berbeda tetap menjadi release gate. Kedua regulatory pack produksi belum tersedia, sehingga `regulatory:release-gate` masih harus gagal.

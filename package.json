@@ -17,7 +17,8 @@
     "regulatory:check": "node scripts/check-padk-regulatory-packs.js",
     "regulatory:release-gate": "node scripts/check-padk-regulatory-packs.js --release",
     "regulatory:draft-status": "node scripts/check-padk-transcription-drafts.js",
-    "regulatory:draft-strict": "node scripts/check-padk-transcription-drafts.js --strict"
+    "regulatory:draft-strict": "node scripts/check-padk-transcription-drafts.js --strict",
+    "regulatory:rank-batch": "node scripts/padk-rank-batch.js"
   },
   "license": "AGPL-3.0-only",
   "dependencies": {

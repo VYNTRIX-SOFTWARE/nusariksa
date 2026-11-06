@@ -48,3 +48,9 @@ Setiap tahap memerlukan implementasi dan pengujian yang dapat diulang sebelum di
 - Release gate memerlukan file PDF yang benar-benar dibaca, hash sesuai kedua pack, dan review independen isi/transkripsi. Kode pengecekan bukan persetujuan OJK.
 - Selanjutnya: selesaikan 140 indikator/700 kriteria dari Lampiran IV, silang-periksa butir kategori, lakukan approval reviewer, buat regulatory pack immutable, dan verifikasi rumus terhadap contoh OJK.
 
+## Input batch kriteria PADK (PR #36)
+
+- Template kriteria yang belum diisi dapat diekspor per rentang nomor dan per kategori tanpa membuat isi parameter atau nilai peringkat.
+- Importer memvalidasi halaman (38–80), rank (1–5), duplikasi, kelengkapan teks, fingerprint baseline, dan hanya mengubah draft setelah opsi `--apply` diberikan secara eksplisit.
+- Draft tetap memerlukan pemeriksaan PDF penerbit dan review independen. Belum tersedia regulatory pack produksi atau hasil validasi 700 kriteria; release gate tetap terblokir.
+- P0 berikutnya: pemeriksaan visual dan transkripsi kriteria Tabel 3 secara bertahap, rekonsiliasi parameter antar kategori, dan pengujian hasil pada contoh regulasi.
