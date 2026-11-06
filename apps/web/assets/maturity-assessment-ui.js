@@ -380,10 +380,11 @@ export function createMaturityAssessmentUI({
   $('ma-review-form').addEventListener('submit',event=>{
     event.preventDefault();
     if(!canReview()||state.busy){
-      console.error('Maturity review form blocked',{
+      console.error('Maturity review form blocked',JSON.stringify({
         allowed:canReview(),busy:state.busy,userId:getUserId(),
         owner:state.detail?.ownerUserId,status:state.detail?.review?.status,
-      });
+        permissions:getPermissions(),
+      }));
       return;
     }
     let body;
