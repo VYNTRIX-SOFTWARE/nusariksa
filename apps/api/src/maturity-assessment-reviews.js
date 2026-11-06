@@ -112,6 +112,30 @@ export async function reviewMaturityAssessmentInTransaction(db,{actorId,assessme
   );
   return {assessmentId,status,submissionCycle:state.submission_cycle,reviewedBy:actorId};
 }
+// Reviewer queue is scoped by the authenticated user's institution, not a supplied tenant ID.
+export async function listPendingMaturityReviews(db,{actorId}){
+  await permitted(db,actorId,'assessments:approve');
+  const result=await db.query(
+    'SELECT a.id,a.title, '+
+    "to_char(a.period_start,'YYYY-MM-DD') AS period_start, "+
+    "to_char(a.period_end,'YYYY-MM-DD') AS period_end, "+
+    'a.owner_user_id,s.submission_cycle, '+
+    "(SELECT max(e.occurred_at) FROM maturity_assessment_review_events e "+
+    "WHERE e.assessment_id=a.id AND e.submission_cycle=s.submission_cycle "+
+    "AND e.action='SUBMITTED') AS submitted_at "+
+    'FROM maturity_assessments a '+
+    'JOIN users u ON u.id=$1 AND u.institution_id=a.institution_id '+
+    'JOIN maturity_assessment_review_state s ON s.assessment_id=a.id '+
+    "WHERE s.status='submitted' AND a.owner_user_id<>$1 "+
+    'ORDER BY submitted_at DESC NULLS LAST,a.id DESC LIMIT 50',[actorId],
+  );
+  return {assessments:result.rows.map(row=>({
+    id:row.id,title:row.title,periodStart:row.period_start,
+    periodEnd:row.period_end,ownerUserId:row.owner_user_id,
+    submissionCycle:row.submission_cycle,submittedAt:row.submitted_at,
+  }))};
+}
+
 export async function listMaturityReviewHistory(db,{actorId,assessmentId}){
   await permitted(db,actorId,'assessments:read');
   await target(db,{actorId,assessmentId});
