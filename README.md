@@ -207,3 +207,15 @@ Parser dan validator untuk paket indikator kategori 1/2 tersedia. Setiap indikat
 Untuk menyiapkan regulatory pack kategori 1/2, tersedia direktori `regulations/padk43/cyber/drafts/` berisi ringkasan kerja **seluruh 80 indikator kategori 1 dan 60 indikator kategori 2** (140 dari 140 indikator). Belum ada kriteria peringkat yang ditranskripsi (**0 dari 700 kriteria**) atau PDF resmi OJK yang disahkan sebagai sumber dalam repo. Draft selalu berstatus `DRAFT_UNVERIFIED`, tidak dipakai pada API dan tidak dapat dianggap sebagai dataset penilaian resmi.
 
 `npm run regulatory:draft-status` menampilkan jumlah indikator/kriteria serta nomor yang belum ada; `npm run regulatory:draft-strict` menolak status draft. Keduanya terpisah dari `npm run regulatory:release-gate -- --source-pdf=/path/ke/PADK43.pdf`, yang kini juga wajib memeriksa byte PDF dan kecocokan SHA-256 dengan kedua pack. Pengecekan hash bukan pengganti review manusia terhadap dokumen OJK. Detail [panduan transkripsi](regulations/padk43/cyber/drafts/README.md).
+
+
+## Hak cipta, lisensi, dan identitas proyek
+
+NusaRiksa adalah proyek sumber terbuka yang diprakarsai VYNTRIX dan didistribusikan berdasarkan **GNU AGPL-3.0-only**. Lisensi ini memperbolehkan penggunaan komersial sesuai persyaratannya; penggunaan atau modifikasi yang memenuhi lisensi **tidak memerlukan izin komersial terpisah**. Ketentuan kode tidak otomatis memberikan hak untuk mengaku sebagai produk/layanan resmi VYNTRIX.
+
+- [Teks lisensi AGPL-3.0](LICENSE)
+- [Pemberitahuan hak cipta dan asal proyek](NOTICE.md)
+- [Panduan nama, logo, dan merek](TRADEMARKS.md)
+- [Panduan kontribusi dan kepemilikan kontribusi](CONTRIBUTING.md)
+
+Pemberitahuan tersebut bukan klaim bahwa seluruh hak cipta kontribusi telah dialihkan kepada VYNTRIX. Implementasi tampilan legal notices, akses source code dari antarmuka web, dan pemeriksaan kepatuhan rilis tetap memerlukan pemeriksaan terpisah.
