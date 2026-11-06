@@ -379,7 +379,13 @@ export function createMaturityAssessmentUI({
   });
   $('ma-review-form').addEventListener('submit',event=>{
     event.preventDefault();
-    if(!canReview()||state.busy)return;
+    if(!canReview()||state.busy){
+      console.error('Maturity review form blocked',{
+        allowed:canReview(),busy:state.busy,userId:getUserId(),
+        owner:state.detail?.ownerUserId,status:state.detail?.review?.status,
+      });
+      return;
+    }
     let body;
     try{
       body=reviewDecisionPayload($('ma-review-decision').value,$('ma-review-note').value);
