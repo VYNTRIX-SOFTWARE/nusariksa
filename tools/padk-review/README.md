@@ -10,11 +10,11 @@ Dari root repository, gunakan Node.js 24 atau lebih baru:
 node scripts/padk-rank-batch.js --category=1 --template --from=1 --to=5 > review-k1-1-5.json
 ```
 
-Untuk kategori 2, ganti menjadi \`--category=2\`. Sebaiknya buat batch kecil (1–5 indikator) agar review dan pelacakan sel tabel mudah dilakukan.
+Untuk kategori 2, ganti menjadi `--category=2`. Sebaiknya buat batch kecil (1–5 indikator) agar review dan pelacakan sel tabel mudah dilakukan.
 
 ## Membuka workbench
 
-Buka \`tools/padk-review/index.html\` menggunakan browser desktop modern. Semua aset berupa HTML, CSS, dan JavaScript lokal; tidak ada dependensi pihak ketiga. Apabila kebijakan browser memblokir file lokal, jalankan static server lokal yang terikat hanya ke \`127.0.0.1\`, bukan server publik.
+Buka `tools/padk-review/index.html` menggunakan browser desktop modern. Semua aset berupa HTML, CSS, dan JavaScript lokal; tidak ada dependensi pihak ketiga. Apabila kebijakan browser memblokir file lokal, jalankan static server lokal yang terikat hanya ke `127.0.0.1`, bukan server publik.
 
 1. Muat template batch JSON dari langkah sebelumnya.
 2. Pilih PDF sumber yang diperoleh dari laman penerbit OJK. Dokumen ditampilkan menggunakan kemampuan penampil PDF browser; tidak dikirim ke server.
@@ -31,9 +31,9 @@ node scripts/padk-rank-batch.js --category=1 --input=review-k1-1-5-siap-validasi
 node scripts/check-padk-transcription-drafts.js
 ```
 
-Jalankan \`--apply\` hanya setelah review substansi terhadap tabel PDF; CLI kembali memeriksa kategori, fingerprint baseline, nomor, rank, halaman, teks, dan duplikasi. Kalau baseline draft berubah, buat ulang template dan periksa perubahan sebelum memasukkan batch baru.
+Jalankan `--apply` hanya setelah review substansi terhadap tabel PDF; CLI kembali memeriksa kategori, fingerprint baseline, nomor, rank, halaman, teks, dan duplikasi. Kalau baseline draft berubah, buat ulang template dan periksa perubahan sebelum memasukkan batch baru.
 
-Form tidak membaca parameter otomatis, tidak menyimpulkan keabsahan PDF, dan tidak melakukan approval reviewer. Output tetap \`SOURCE_REVIEW_PENDING\`; draft yang diperbarui tetap \`DRAFT_UNVERIFIED\`/\`NEEDS_SOURCE_REVIEW\`. Tidak ada promosi ke \`packs/\` dan release gate produksi tetap BLOCKED sampai verifikasi dokumen primer serta review independen terpenuhi.
+Form tidak membaca parameter otomatis, tidak menyimpulkan keabsahan PDF, dan tidak melakukan approval reviewer. Output tetap `SOURCE_REVIEW_PENDING`; draft yang diperbarui tetap `DRAFT_UNVERIFIED`/`NEEDS_SOURCE_REVIEW`. Tidak ada promosi ke `packs/` dan release gate produksi tetap BLOCKED sampai verifikasi dokumen primer serta review independen terpenuhi.
 
 ## Pengamanan dan privasi
 
