@@ -200,7 +200,7 @@ async function runBrowser(base,db,fixture){
     try{
       await until("document.getElementById('maturity-assessments-menu') && !document.getElementById('maturity-assessments-menu').hidden",'maturity navigation');
     }catch(error){
-      const diagnostic=await evalJs("(async()=>({loginVisible:!document.getElementById('login-screen').hidden,appVisible:!document.getElementById('app-screen').hidden,notice:document.getElementById('app-notice').textContent,loginError:document.getElementById('login-error').textContent,permissions:await fetch('/auth/permissions').then(async r=>({status:r.status,body:await r.text()}))}))()");
+      const diagnostic=await evalJs("(async()=>({loginVisible:!document.getElementById('login-screen').hidden,appVisible:!document.getElementById('app-screen').hidden,notice:document.getElementById('app-notice').textContent,loginError:document.getElementById('login-error').textContent,permissions:await fetch('/auth/permissions').then(async r=>({status:r.status,body:await r.text()})),assessments:await fetch('/assessments').then(async r=>({status:r.status,body:await r.text()})),missing:['ma-review-form','ma-review-queue-panel','ma-review-state','ma-review-queue','ma-submit','ma-review-history'].filter(id=>!document.getElementById(id)),menuHidden:document.getElementById('maturity-assessments-menu')?.hidden}))()");
       throw new Error(error.message+' | browser: '+JSON.stringify(diagnostic));
     }
     await evalJs("document.getElementById('maturity-assessments-menu').click()");
