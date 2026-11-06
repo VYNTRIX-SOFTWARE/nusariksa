@@ -47,3 +47,43 @@ export function ratingPayload({level,justification,evidenceId,expectedRevision}=
   return {level:Number(level),justification,evidenceId:evidenceId||null,expectedRevision};
 }
 export function isMaturityAssessmentId(id){return validId(id)}
+
+const REVIEW_STATES=['in_progress','submitted','changes_requested','approved'];
+export function canSubmitMaturityAssessment(permissions,actorId,detail){
+  return Boolean(detail&&canRateMaturityAssessment(permissions,actorId,detail.ownerUserId)
+    &&detail.summary?.complete===true
+    &&['in_progress','changes_requested'].includes(detail.review?.status));
+}
+export function canReviewMaturityAssessment(permissions,actorId,detail){
+  return Boolean(detail&&canReadMaturityAssessments(permissions)
+    &&permissions.includes('assessments:approve')&&validId(actorId)
+    &&actorId!==detail.ownerUserId&&detail.review?.status==='submitted');
+}
+export function validMaturityReviewQueue(payload){
+  if(!payload||!Array.isArray(payload.assessments)
+    ||payload.assessments.length>50
+    ||payload.assessments.some(a=>!a||!validId(a.id)||!validId(a.ownerUserId)
+      ||typeof a.title!=='string'||typeof a.periodStart!=='string'
+      ||typeof a.periodEnd!=='string'||!Number.isSafeInteger(a.submissionCycle)
+      ||a.submissionCycle<1))
+    throw new TypeError('Antrean reviewer maturitas dari server tidak valid.');
+  return payload.assessments;
+}
+export function reviewDecisionPayload(decision,note){
+  if(!['approve','request_changes'].includes(decision)
+    ||typeof note!=='string'||note.length>2000
+    ||/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/.test(note)
+    ||(decision==='request_changes'&&note.trim().length<10))
+    throw new TypeError('Pilih keputusan dan isi alasan pengembalian minimal 10 karakter.');
+  return {decision,note};
+}
+export function validMaturityReviewHistory(payload,id){
+  if(!payload||payload.assessmentId!==id
+    ||!REVIEW_STATES.includes(payload.status)
+    ||!Array.isArray(payload.events)
+    ||payload.events.some(e=>!e||!['SUBMITTED','APPROVED','CHANGES_REQUESTED'].includes(e.action)
+      ||!Number.isSafeInteger(e.submission_cycle)||e.submission_cycle<1
+      ||typeof e.note!=='string'))
+    throw new TypeError('Riwayat reviewer maturitas dari server tidak valid.');
+  return payload;
+}
