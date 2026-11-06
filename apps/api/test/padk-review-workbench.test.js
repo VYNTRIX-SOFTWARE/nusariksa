@@ -59,7 +59,7 @@ test('hasil ekspor lengkap langsung kompatibel dengan validator batch PR #36',as
 test('menolak manipulasi kategori, header, hash, nomor, peringkat dan duplikasi',async()=>{
   const input=fill(preparePadkRankBatch(await draft(2),{from:60,to:60}));
   const mutate=[
-    x=>{x.category=1;},
+    x=>{x.category=3;},
     x=>{x.status='VERIFIED';},
     x=>{x.baseSha256='not-a-hash';},
     x=>{x.schemaVersion=2;},
