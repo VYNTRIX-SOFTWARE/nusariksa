@@ -209,7 +209,7 @@ async function runBrowser(base,db,fixture){
     try{
       await until("document.getElementById('ma-detail') && !document.getElementById('ma-detail').hidden",'maturity details');
     }catch(error){
-      const info=await evalJs("(async()=>({pageHidden:document.getElementById('page-maturity-assessments').hidden,message:document.getElementById('ma-message').textContent,selected:document.getElementById('ma-assessment-select').value,options:[...document.getElementById('ma-assessment-select').options].map(x=>x.textContent),list:await fetch('/maturity-assessments').then(async r=>({status:r.status,body:await r.text()}))}))()");
+      const info=await evalJs("(async()=>({pageHidden:document.getElementById('page-maturity-assessments').hidden,message:document.getElementById('ma-message').textContent,selected:document.getElementById('ma-assessment-select').value,options:[...document.getElementById('ma-assessment-select').options].map(x=>x.textContent),list:await fetch('/maturity-assessments').then(async r=>({status:r.status,body:await r.text()})),detail:await fetch('/maturity-assessments/'+document.getElementById('ma-assessment-select').value).then(async r=>({status:r.status,body:await r.text()}))}))()");
       throw new Error(error.message+' | maturity: '+JSON.stringify(info));
     }
   }
