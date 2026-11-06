@@ -140,7 +140,7 @@ export function createReporting({ api, getPermissions, getAssessments, onAuthFai
     }
     select.value = available.some(item => item.id === selected) ? selected : '';
     $('report-select-area').hidden = !canListReportAssessments(permissions);
-    $('report-manual-area').hidden = canListReportAssessments(permissions);
+    $('report-manual-form').hidden = canListReportAssessments(permissions);
     $('report-scope').textContent = canListReportAssessments(permissions)
       ? 'Pilihan berasal dari maksimal 50 asesmen terbaru yang dikembalikan API; bukan seluruh database.'
       : 'Akun memiliki reports:read tetapi tidak assessments:read. Masukkan ID asesmen yang sah untuk membuka laporan.';
