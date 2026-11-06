@@ -278,6 +278,7 @@ async function loadWorkspace() {
     state.load='ready';
     populateYears();render();
   }catch(error) {
+    console.error('Workspace loading failed:',error);
     if(authFailure(error))return;
     if(error instanceof ApiError && error.status===403) {
       state.load='forbidden';state.assessments=[];state.permissions=state.permissions.filter(p=>p!=='assessments:read');
@@ -364,6 +365,7 @@ $('login-form').addEventListener('submit',async(event)=>{
     const result=await signIn(email,password);$('login-password').value='';
     await enterApp(result.userId);
   }catch(error) {
+    console.error('Login rendering failed:',error);
     if(error instanceof ApiError&&error.status===401)loginError('Email atau kata sandi tidak sesuai.');
     else if(error instanceof ApiError&&error.status===429)loginError('Terlalu banyak percobaan. Coba lagi beberapa saat.');
     else loginError('Masuk gagal. Periksa koneksi dan konfigurasi server.');
