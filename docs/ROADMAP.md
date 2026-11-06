@@ -60,3 +60,10 @@ Setiap tahap memerlukan implementasi dan pengujian yang dapat diulang sebelum di
 - Antarmuka lokal untuk membandingkan PDF Lampiran IV dengan isian level 1–5 per indikator, halaman PDF fisik dan halaman tercetak dipisahkan secara eksplisit.
 - Penyimpanan progres parsial dan ekspor JSON lengkap yang dapat diperiksa melalui importer CLI sebelum `--apply`; tidak ada koneksi eksternal atau promosi otomatis menjadi regulatory pack.
 - **Belum ada kriteria regulator yang ditambahkan atau diverifikasi (0/700).** Langkah berikutnya memeriksa PDF primer OJK dan memulai transkripsi per batch beserta review substansi dan teknis.
+
+## Maker–checker maturitas internal (Sprint #39)
+
+- Backend: submit hasil lengkap, persetujuan atau pengembalian reviewer yang berbeda dari maker, pembekuan hasil selama review, siklus pengajuan ulang, dan histori keputusan append-only.
+- Detail asesmen menyertakan status review; endpoint terproteksi sesi, permission, dan origin. Migrasi `0014` menambah status serta review event terpisah dari asesmen kontrol reguler.
+- Belum ada UI antrean reviewer dan belum diuji browser nyata; ini merupakan tahap backend, bukan kesiapan produksi.
+- Rubrik maturitas internal Level 0–5 tetap berbeda dengan **peringkat keamanan siber PADK 1–5**. Regulatory pack PADK masih belum lengkap (0/700 kriteria).
