@@ -42,7 +42,7 @@ BEGIN
   END IF;
   RETURN CASE WHEN TG_OP='DELETE' THEN OLD ELSE NEW END;
 END;
-$;
+$$;
 CREATE TRIGGER maturity_review_rating_guard
 BEFORE INSERT OR UPDATE OR DELETE ON maturity_domain_results
 FOR EACH ROW EXECUTE FUNCTION protect_submitted_maturity_results();
