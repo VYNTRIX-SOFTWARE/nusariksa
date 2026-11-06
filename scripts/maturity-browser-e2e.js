@@ -239,6 +239,7 @@ async function runBrowser(base,db,fixture){
     await evalJs("document.querySelector('#ma-review-queue [data-ma-review-id]').click()");
     await until("!document.getElementById('ma-review-form').hidden",'review form');
     assert.equal(await evalJs("document.getElementById('ma-submit').hidden"),true);
+    await evalJs("window.__e2eReviewSubmitted=0;document.getElementById('ma-review-form').addEventListener('submit',()=>window.__e2eReviewSubmitted++,{capture:true});");
     await evalJs("window.confirm=()=>true;"+
       "document.getElementById('ma-review-decision').value='request_changes';"+
       "document.getElementById('ma-review-note').value='Perjelas justifikasi domain pertama sebelum approval.';"+
@@ -246,9 +247,9 @@ async function runBrowser(base,db,fixture){
     try{
       await until("document.getElementById('ma-review-state').textContent.includes('Perlu perbaikan')",'changes requested');
     }catch(error){
-      const browserState=await evalJs("({message:document.getElementById('ma-message').textContent,reviewState:document.getElementById('ma-review-state').textContent,decision:document.getElementById('ma-review-decision').value,note:document.getElementById('ma-review-note').value,formHidden:document.getElementById('ma-review-form').hidden,formValid:document.getElementById('ma-review-form').checkValidity(),invalid:[...document.getElementById('ma-review-form').elements].filter(x=>x.validity&&!x.validity.valid).map(x=>({id:x.id,reason:x.validationMessage})),buttonDisabled:document.getElementById('ma-review-save').disabled})");
+      const browserState=await evalJs("({message:document.getElementById('ma-message').textContent,reviewState:document.getElementById('ma-review-state').textContent,decision:document.getElementById('ma-review-decision').value,note:document.getElementById('ma-review-note').value,formHidden:document.getElementById('ma-review-form').hidden,formValid:document.getElementById('ma-review-form').checkValidity(),invalid:[...document.getElementById('ma-review-form').elements].filter(x=>x.validity&&!x.validity.valid).map(x=>({id:x.id,reason:x.validationMessage})),buttonDisabled:document.getElementById('ma-review-save').disabled,submitEvents:window.__e2eReviewSubmitted})");
       const dbState=await db.query('SELECT status,submission_cycle FROM maturity_assessment_review_state WHERE assessment_id=$1',[fixture.assessmentId]);
-      throw new Error(error.message+' | browser: '+JSON.stringify(browserState)+' | db: '+JSON.stringify(dbState.rows));
+      throw new Error(error.message+' | browser: '+JSON.stringify(browserState)+' | db: '+JSON.stringify(dbState.rows)+' | console: '+c.errors.join(' | '));
     }
     await logout();
 
