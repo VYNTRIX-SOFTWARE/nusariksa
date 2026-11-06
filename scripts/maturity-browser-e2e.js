@@ -206,7 +206,12 @@ async function runBrowser(base,db,fixture){
       throw new Error(error.message+' | browser: '+JSON.stringify(diagnostic)+' | console: '+c.errors.join(' | '));
     }
     await evalJs("document.getElementById('maturity-assessments-menu').click()");
-    await until("document.getElementById('ma-detail') && !document.getElementById('ma-detail').hidden",'maturity details');
+    try{
+      await until("document.getElementById('ma-detail') && !document.getElementById('ma-detail').hidden",'maturity details');
+    }catch(error){
+      const info=await evalJs("(async()=>({pageHidden:document.getElementById('page-maturity-assessments').hidden,message:document.getElementById('ma-message').textContent,selected:document.getElementById('ma-assessment-select').value,options:[...document.getElementById('ma-assessment-select').options].map(x=>x.textContent),list:await fetch('/maturity-assessments').then(async r=>({status:r.status,body:await r.text()}))}))()");
+      throw new Error(error.message+' | maturity: '+JSON.stringify(info));
+    }
   }
   async function logout(){
     await evalJs("document.getElementById('logout-button').click()");
