@@ -228,3 +228,9 @@ Pemberitahuan tersebut bukan klaim bahwa seluruh hak cipta kontribusi telah dial
 ## Workbench review visual kriteria PADK (pengembangan)
 
 Alat lokal di [`tools/padk-review/`](tools/padk-review/) menampilkan PDF sumber berdampingan dengan form kriteria peringkat 1–5 dari template batch. Hasil transkripsi dapat disimpan sementara sebagai JSON dan diekspor ke importer `scripts/padk-rank-batch.js` setelah pemeriksaan visual. Tidak ada pengunggahan file atau penilaian otomatis; status regulatory pack tetap belum terverifikasi. Lihat [panduan workbench](tools/padk-review/README.md).
+
+## Review penilaian maturitas internal (pengembangan)
+
+Hasil asesmen maturitas internal sekarang memiliki alur maker–checker di backend, terpisah dari penilaian keamanan siber PADK. Pemilik dengan izin `assessments:write` dapat mengajukan asesmen **hanya jika semua domain sudah dinilai** melalui `POST /maturity-assessments/:id/submit`. Reviewer dengan izin `assessments:approve` yang **bukan pemilik** dapat memilih `approve` atau `request_changes` melalui `POST /maturity-assessments/:id/review`. Riwayat keputusan tersedia pada `GET /maturity-assessments/:id/reviews` dan status pada detail asesmen (`review`).
+
+Penilaian tidak bisa diubah dalam status `submitted` atau `approved`. Hasil yang dikembalikan dapat diperbaiki lalu diajukan ulang dengan nomor siklus meningkat dan audit event append-only. Ini belum dilengkapi antarmuka approval web, belum pengesahan regulator, dan tidak mengubah kalkulator PADK. Gunakan akun reviewer terpisah dan uji end-to-end sebelum produksi.
