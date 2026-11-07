@@ -47,6 +47,15 @@
           <p id="login-error" class="form-error" role="alert" hidden></p>
           <button id="login-submit" class="button button-primary" type="submit">Masuk <span aria-hidden="true">→</span></button>
         </form>
+        <form id="mfa-login-form" autocomplete="off" hidden>
+          <p class="supporting-copy">Masukkan kode 6 digit dari authenticator atau salah satu recovery code.</p>
+          <label for="mfa-login-code">Kode MFA</label>
+          <input id="mfa-login-code" name="mfa-code" type="text" inputmode="text"
+            autocomplete="one-time-code" autocapitalize="characters" maxlength="32" required>
+          <p id="mfa-login-error" class="form-error" role="alert" hidden></p>
+          <button id="mfa-login-submit" class="button button-primary" type="submit">Verifikasi</button>
+          <button id="mfa-login-cancel" class="button button-outline" type="button">Kembali</button>
+        </form>
         <div class="login-help">Belum memiliki akun? Hubungi administrator NusaRiksa di lembaga Anda.</div>
       </div>
       <p class="login-legal">Akses hanya untuk pengguna yang berwenang. Aktivitas tertentu dicatat dalam riwayat sistem.</p>
@@ -125,6 +134,7 @@
             <select id="period-select" aria-label="Filter tahun awal periode asesmen"><option value="all">Semua</option></select>
           </label>
           <span class="user-indicator" title="Nama dan email profil belum tersedia dalam API sesi"><span class="user-avatar">U</span><span id="user-label">Akun aktif</span></span>
+          <button type="button" id="mfa-open" class="button button-outline">Aktifkan MFA</button>
           <button type="button" id="change-password-open" class="button button-outline">Ganti password</button>
           <button type="button" id="logout-button" class="button button-outline">Keluar</button>
         </div>
@@ -734,6 +744,36 @@
     </form>
   </dialog>
 
+  <dialog id="mfa-dialog" class="create-dialog" aria-labelledby="mfa-title">
+    <div class="dialog-header">
+      <div><p class="eyebrow">KEAMANAN AKUN</p><h2 id="mfa-title">Aktifkan authenticator (TOTP)</h2></div>
+      <button id="mfa-close" type="button" class="icon-button" aria-label="Tutup">×</button>
+    </div>
+    <form id="mfa-setup-form" class="create-assessment-form">
+      <p class="workspace-help">Verifikasi password terlebih dahulu. Gunakan aplikasi authenticator yang mendukung TOTP.</p>
+      <label for="mfa-current-password">Password saat ini</label>
+      <input id="mfa-current-password" type="password" autocomplete="current-password" required>
+      <button id="mfa-setup-submit" class="button button-primary" type="submit">Siapkan authenticator</button>
+    </form>
+    <div id="mfa-enroll-step" hidden>
+      <p class="workspace-help">Tambahkan akun secara manual. Simpan kode ini di tempat aman; berlaku 10 menit.</p>
+      <p><strong>Secret TOTP:</strong> <code id="mfa-setup-secret"></code></p>
+      <p class="workspace-help">URI konfigurasi (bisa diimpor ke authenticator yang mendukung):</p>
+      <textarea id="mfa-setup-uri" rows="3" readonly aria-label="URI TOTP"></textarea>
+      <form id="mfa-confirm-form" class="create-assessment-form">
+        <label for="mfa-confirm-code">Kode 6 digit dari authenticator</label>
+        <input id="mfa-confirm-code" type="text" inputmode="numeric"
+          autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required>
+        <button id="mfa-confirm-submit" class="button button-primary" type="submit">Aktifkan MFA</button>
+      </form>
+    </div>
+    <div id="mfa-recovery-step" hidden>
+      <p class="workspace-help"><strong>Simpan 10 recovery code ini sekarang.</strong> Kode hanya ditampilkan sekali dan masing-masing bisa digunakan sekali untuk login. Jangan bagikan.</p>
+      <pre id="mfa-recovery-codes" aria-label="Recovery codes"></pre>
+      <button id="mfa-finish" type="button" class="button button-primary">Sudah disimpan</button>
+    </div>
+    <p id="mfa-error" class="form-error" role="alert" hidden></p>
+  </dialog>
   <dialog id="change-password-dialog" class="create-dialog" aria-labelledby="change-password-title">
     <div class="dialog-header">
       <div><p class="eyebrow">KEAMANAN AKUN</p><h2 id="change-password-title">Ganti password</h2></div>

@@ -84,3 +84,13 @@ Setiap tahap memerlukan implementasi dan pengujian yang dapat diulang sebelum di
 - API memerlukan cookie sesi valid, pemeriksaan origin, JSON yang ketat, dan pembatasan percobaan password salah melalui limiter in-memory. Penggunaan multiproses memerlukan limiter terpusat.
 - Cookie pengganti tetap `Secure; HttpOnly; SameSite=Strict` dan sesi lain langsung tidak valid.
 - Belum termasuk pemulihan password lupa, MFA, penyimpanan konfigurasi TLS/reverse proxy produksi, dan manajemen sesi lintas perangkat di UI. Kelayakan produksi tetap bergantung pada pengujian keamanan dan UAT.
+
+## Sprint #43 — MFA TOTP (Draft)
+
+- Login akun dengan TOTP aktif dipisah dua tahap: password benar hanya membuat challenge MFA 5 menit, tanpa sesi aplikasi; sesi dibuat setelah TOTP atau recovery code valid.
+- Enrollment meminta password saat ini, memberikan secret/otpauth URI untuk authenticator dan konfirmasi TOTP dalam 10 menit; secret disimpan terenkripsi AES-256-GCM dengan AAD terikat user ID.
+- Kunci `MFA_ENCRYPTION_KEY` wajib berupa base64 kanonis dari 32 byte acak, disimpan di konfigurasi server, bukan source control. Jika kunci tidak tersedia setelah MFA aktif, login gagal tertutup (503), **bukan** melewati MFA.
+- TOTP 6 digit SHA1 30 detik (jendela ±1) anti-replay per user; recovery code 128-bit, sekali pakai, 10 buah ditampilkan satu kali pada konfirmasi. Hash recovery disimpan dengan HMAC berbasis kunci server.
+- Challenge login 32 byte acak disimpan sebagai SHA-256, maksimal 5 percobaan, sekali pakai; audit events `MFA_ENABLE`, `MFA_LOGIN`, `MFA_RECOVERY_LOGIN`.
+- Aktivasi mencabut semua sesi lama dan menerbitkan sesi baru. MFA bersifat pilihan pengguna, belum dipaksakan berdasarkan role.
+- Batasan: belum ada reset MFA yang aman oleh admin, regenerasi recovery code, rate-limiter terdistribusi, kebijakan wajib MFA, dan uji pemulihan kunci; belum layak dipakai dengan data bank produksi tanpa prosedur operasional tersebut.

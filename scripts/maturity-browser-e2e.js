@@ -13,6 +13,11 @@ import {hashPassword} from '../apps/api/src/passwords.js';
 import {createServer} from '../apps/api/src/server.js';
 import {changePasswordInTransaction} from '../apps/api/src/change-password.js';
 import {
+  MfaError,base32Decode,totpForStep,mfaStatus,
+  startTotpEnrollment,confirmTotpEnrollmentInTransaction,
+  startMfaLogin,verifyMfaLoginInTransaction,
+} from '../apps/api/src/totp-mfa.js';
+import {
   createMaturityModelInTransaction,addMaturityDomainInTransaction,
   setMaturityLevelInTransaction,publishMaturityVersionInTransaction,
 } from '../apps/api/src/maturity-models.js';
@@ -318,7 +323,34 @@ async function runBrowser(base,db,fixture){
     await evalJs("document.getElementById('login-password').value='UpdatedViewerPass_2026';"+
       "document.getElementById('login-form').requestSubmit()");
     await until("!document.getElementById('app-screen').hidden",'new password accepted');
-    console.log('Browser E2E PASS: maturity maker-checker and password rotation UI');
+    // Enable MFA through the actual UI; check that password login no longer yields a session.
+    await until("!document.getElementById('mfa-open').disabled",'MFA status available');
+    await evalJs("document.getElementById('mfa-open').click()");
+    await until("document.getElementById('mfa-dialog').open",'MFA setup dialog');
+    await evalJs("document.getElementById('mfa-current-password').value='UpdatedViewerPass_2026';"+
+      "document.getElementById('mfa-setup-form').requestSubmit()");
+    await until("!document.getElementById('mfa-enroll-step').hidden",'TOTP enrollment secret');
+    const secret=await evalJs("document.getElementById('mfa-setup-secret').textContent");
+    assert.match(secret,/^[A-Z2-7]{32}$/);
+    const step=Math.floor(Date.now()/30000);
+    const totp=totpForStep(base32Decode(secret),step);
+    await evalJs("document.getElementById('mfa-confirm-code').value="+JSON.stringify(totp)+";"+
+      "document.getElementById('mfa-confirm-form').requestSubmit()");
+    await until("!document.getElementById('mfa-recovery-step').hidden",'recovery codes displayed');
+    const recovery=await evalJs("document.getElementById('mfa-recovery-codes').textContent");
+    const codes=recovery.trim().split(/\s+/);
+    assert.equal(codes.length,10);
+    await evalJs("document.getElementById('mfa-finish').click()");
+    await logout();
+    await evalJs("document.getElementById('login-email').value='browser-viewer@example.test';"+
+      "document.getElementById('login-password').value='UpdatedViewerPass_2026';"+
+      "document.getElementById('login-form').requestSubmit()");
+    await until("!document.getElementById('mfa-login-form').hidden",'MFA challenge after password');
+    assert.equal(await evalJs("document.getElementById('app-screen').hidden"),true);
+    await evalJs("document.getElementById('mfa-login-code').value="+JSON.stringify(codes[0])+";"+
+      "document.getElementById('mfa-login-form').requestSubmit()");
+    await until("!document.getElementById('app-screen').hidden",'recovery login accepted');
+    console.log('Browser E2E PASS: maturity, password rotation, TOTP enrollment and MFA recovery login');
   }finally{
     await stopChromium(browser);
   }
@@ -337,6 +369,16 @@ async function main(){
     server=createServer({
       authDb:client,appOrigin:origin,
       changeUserPassword:(db,args)=>changePasswordInTransaction(db,args),
+      mfaEncryptionKey:Buffer.alloc(32,9).toString('base64'),
+      mfaActions:{
+        status:mfaStatus,setup:startTotpEnrollment,beginLogin:startMfaLogin,
+        confirm:(db,args)=>confirmTotpEnrollmentInTransaction(db,args),
+        verifyLogin:async(db,args)=>{
+          const result=await verifyMfaLoginInTransaction(db,args);
+          if(result.status)throw new MfaError(result.status,result.error);
+          return result;
+        },
+      },
       maturityAssessmentHandlers:{
         create:(db,args)=>createMaturityAssessmentInTransaction(db,args),
         list:(db,args)=>listMaturityAssessments(db,args),

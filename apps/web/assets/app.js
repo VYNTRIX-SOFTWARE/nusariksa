@@ -1,5 +1,6 @@
 import {
   ApiError, requestJson, getSession, getPermissions, signIn, signOut, changePassword,
+  getMfaStatus,setupMfa,confirmMfa,verifyMfaLogin,
 } from './session.js';
 import {
   STATUS_LABELS, validAssessments, yearsForAssessments,
@@ -34,7 +35,18 @@ function loginError(message) {
   $('login-error').textContent = message ?? '';
   $('login-error').hidden = !message;
 }
+let pendingMfaChallenge=null;
+function resetMfaLogin(){
+  pendingMfaChallenge=null;
+  $('mfa-login-form').hidden=true;
+  $('login-form').hidden=false;
+  $('mfa-login-form').reset();
+  $('mfa-login-error').hidden=true;
+  $('mfa-login-error').textContent='';
+}
 function cleanSession() {
+  resetMfaLogin();
+  $('mfa-dialog').close?.();
   state.userId = null;
   state.permissions = [];
   state.assessments = [];
@@ -297,8 +309,16 @@ async function enterApp(userId) {
   show('app');
   navigate('overview');
   await loadWorkspace();
+  void getMfaStatus().then(status=>{
+    $('mfa-open').disabled=status.enabled;
+    $('mfa-open').textContent=status.enabled?'MFA aktif':'Aktifkan MFA';
+  }).catch(()=>{
+    $('mfa-open').disabled=true;
+    $('mfa-open').textContent='Status MFA tidak tersedia';
+  });
 }
 async function restoreSession() {
+  resetMfaLogin();
   try {
     const session=await getSession();
     if(!session?.authenticated || typeof session.userId!=='string') {
@@ -364,12 +384,101 @@ $('login-form').addEventListener('submit',async(event)=>{
   submit.disabled=true;submit.firstChild.textContent='Memeriksa akun ';
   try {
     const result=await signIn(email,password);$('login-password').value='';
+    if(result.mfaRequired){
+      pendingMfaChallenge=result.challengeToken;
+      $('login-form').hidden=true;
+      $('mfa-login-form').hidden=false;
+      $('mfa-login-code').focus();
+      return;
+    }
     await enterApp(result.userId);
   }catch(error) {
     if(error instanceof ApiError&&error.status===401)loginError('Email atau kata sandi tidak sesuai.');
     else if(error instanceof ApiError&&error.status===429)loginError('Terlalu banyak percobaan. Coba lagi beberapa saat.');
     else loginError('Masuk gagal. Periksa koneksi dan konfigurasi server.');
   }finally{submit.disabled=false;submit.firstChild.textContent='Masuk ';}
+});
+$('mfa-login-cancel').addEventListener('click',()=>{
+  resetMfaLogin();loginError('');$('login-email').focus();
+});
+$('mfa-login-form').addEventListener('submit',async event=>{
+  event.preventDefault();
+  if(!pendingMfaChallenge)return;
+  const code=$('mfa-login-code').value.trim();
+  const submit=$('mfa-login-submit'),error=$('mfa-login-error');
+  submit.disabled=true;error.hidden=true;error.textContent='';
+  try{
+    const result=await verifyMfaLogin(pendingMfaChallenge,code);
+    resetMfaLogin();
+    await enterApp(result.userId);
+    if(result.recoveryUsed)notice('Recovery code digunakan. Simpan sisa recovery code Anda.');
+  }catch(err){
+    error.textContent=err instanceof ApiError && err.status===401
+      ?'Kode salah, sudah dipakai, atau tantangan login berakhir. Ulangi login bila perlu.'
+      :'Verifikasi MFA gagal. Periksa koneksi dan coba lagi.';
+    error.hidden=false;
+  }finally{submit.disabled=false;}
+});
+const mfaDialog=$('mfa-dialog');
+const mfaError=message=>{
+  $('mfa-error').textContent=message??'';
+  $('mfa-error').hidden=!message;
+};
+const clearMfaDialog=()=>{
+  $('mfa-setup-form').reset();$('mfa-confirm-form').reset();
+  $('mfa-enroll-step').hidden=true;
+  $('mfa-recovery-step').hidden=true;
+  $('mfa-setup-form').hidden=false;
+  $('mfa-setup-secret').textContent='';
+  $('mfa-setup-uri').value='';
+  $('mfa-recovery-codes').textContent='';
+  mfaError('');
+};
+$('mfa-open').addEventListener('click',()=>{
+  clearMfaDialog();mfaDialog.showModal();$('mfa-current-password').focus();
+});
+$('mfa-close').addEventListener('click',()=>mfaDialog.close());
+$('mfa-finish').addEventListener('click',()=>mfaDialog.close());
+mfaDialog.addEventListener('close',clearMfaDialog);
+$('mfa-setup-form').addEventListener('submit',async event=>{
+  event.preventDefault();mfaError('');
+  const button=$('mfa-setup-submit');button.disabled=true;
+  try{
+    const result=await setupMfa($('mfa-current-password').value);
+    $('mfa-setup-form').reset();
+    $('mfa-setup-form').hidden=true;
+    $('mfa-enroll-step').hidden=false;
+    $('mfa-setup-secret').textContent=result.secret;
+    $('mfa-setup-uri').value=result.otpauthUrl;
+    $('mfa-confirm-code').focus();
+  }catch(err){
+    mfaError(err instanceof ApiError&&err.status===401
+      ?'Password lama tidak sesuai.'
+      :err instanceof ApiError&&err.status===503
+        ?'Kunci MFA server belum dikonfigurasi.'
+        :'Tidak dapat memulai pengaturan MFA.');
+  }finally{button.disabled=false;}
+});
+$('mfa-confirm-form').addEventListener('submit',async event=>{
+  event.preventDefault();mfaError('');
+  const button=$('mfa-confirm-submit');button.disabled=true;
+  try{
+    const result=await confirmMfa($('mfa-confirm-code').value);
+    $('mfa-enroll-step').hidden=true;
+    $('mfa-setup-secret').textContent='';
+    $('mfa-setup-uri').value='';
+    $('mfa-confirm-form').reset();
+    $('mfa-recovery-step').hidden=false;
+    $('mfa-recovery-codes').textContent=result.recoveryCodes.join('\n');
+    $('mfa-open').disabled=true;
+    $('mfa-open').textContent='MFA aktif';
+  }catch(err){
+    mfaError(err instanceof ApiError&&err.status===401
+      ?'Kode tidak cocok. Periksa waktu dan kode authenticator.'
+      :err instanceof ApiError&&err.status===409
+        ?'Pengaturan MFA berakhir. Tutup dialog dan mulai ulang.'
+        :'Tidak dapat mengaktifkan MFA.');
+  }finally{button.disabled=false;}
 });
 const passwordDialog=$('change-password-dialog');
 const closePasswordDialog=()=>{
