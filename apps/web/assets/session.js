@@ -33,3 +33,7 @@ export const signIn = (email, password) => requestJson('/auth/login', {
   method: 'POST', body: { email, password },
 });
 export const signOut = () => requestJson('/auth/logout', { method: 'POST' });
+
+export const changePassword=(currentPassword,newPassword)=>requestJson('/auth/change-password',{
+  method:'POST',body:{currentPassword,newPassword},
+});

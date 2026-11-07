@@ -125,6 +125,7 @@
             <select id="period-select" aria-label="Filter tahun awal periode asesmen"><option value="all">Semua</option></select>
           </label>
           <span class="user-indicator" title="Nama dan email profil belum tersedia dalam API sesi"><span class="user-avatar">U</span><span id="user-label">Akun aktif</span></span>
+          <button type="button" id="change-password-open" class="button button-outline">Ganti password</button>
           <button type="button" id="logout-button" class="button button-outline">Keluar</button>
         </div>
       </header>
@@ -733,5 +734,25 @@
     </form>
   </dialog>
 
+  <dialog id="change-password-dialog" class="create-dialog" aria-labelledby="change-password-title">
+    <div class="dialog-header">
+      <div><p class="eyebrow">KEAMANAN AKUN</p><h2 id="change-password-title">Ganti password</h2></div>
+      <button id="change-password-close" type="button" class="icon-button" aria-label="Tutup"><svg class="icon"><use href="#i-close"></use></svg></button>
+    </div>
+    <form id="change-password-form" class="create-assessment-form" autocomplete="on">
+      <label for="current-password">Password saat ini</label>
+      <input id="current-password" name="current-password" type="password" autocomplete="current-password" required>
+      <label for="new-password">Password baru</label>
+      <input id="new-password" name="new-password" type="password" autocomplete="new-password" minlength="12" maxlength="1024" required>
+      <label for="confirm-password">Ulangi password baru</label>
+      <input id="confirm-password" name="confirm-password" type="password" autocomplete="new-password" minlength="12" maxlength="1024" required>
+      <p class="workspace-help">Minimal 12 karakter. Semua sesi lain akan dikeluarkan setelah password diganti.</p>
+      <p id="change-password-error" class="form-error" role="alert" hidden></p>
+      <div class="create-actions">
+        <button id="change-password-cancel" type="button" class="button button-outline">Batal</button>
+        <button id="change-password-submit" type="submit" class="button button-primary">Simpan password baru</button>
+      </div>
+    </form>
+  </dialog>
 </body>
 </html>
