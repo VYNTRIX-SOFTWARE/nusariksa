@@ -98,6 +98,9 @@
         <button type="button" class="nav-link" data-page="catalogs" id="catalog-menu" title="Katalog Kontrol" hidden>
           <svg class="icon nav-icon"><use href="#i-clipboard"></use></svg><span class="nav-label">Katalog Kontrol</span>
         </button>
+        <button type="button" class="nav-link" data-page="padk-preparations" id="padk-preparations-menu" title="Persiapan PADK" hidden>
+          <svg class="icon nav-icon"><use href="#i-clipboard"></use></svg><span class="nav-label">Persiapan Penilaian PADK</span>
+        </button>
         <button type="button" class="nav-link" data-page="maturity-assessments" id="maturity-assessments-menu" title="Penilaian Maturitas" hidden>
           <svg class="icon nav-icon"><use href="#i-clipboard"></use></svg><span class="nav-label">Penilaian Maturitas</span>
         </button>
@@ -307,6 +310,67 @@
           </div>
         </section>
 
+        <section id="page-padk-preparations" class="page" aria-labelledby="pdk-heading" hidden>
+          <div class="page-intro">
+            <div>
+              <p class="eyebrow">PADK 43/2025 · LAMPIRAN IV</p>
+              <h1 id="pdk-heading">Persiapan Penilaian Keamanan Siber</h1>
+              <p class="supporting-copy">Mulai penilaian dengan memilih kategori dan periode. Simpan catatan kesiapan serta rencana bukti secara bertahap.</p>
+            </div>
+            <button id="pdk-refresh" type="button" class="button button-outline">Muat ulang</button>
+          </div>
+          <div class="info-message" role="status">
+            <strong>Belum dapat dinilai atau disahkan.</strong>
+            <p>Seluruh indikator dan kriteria Lampiran IV masih menunggu pemeriksaan sumber OJK serta review independen. Catatan di halaman ini bukan hasil asesmen, skor komposit, atau laporan resmi. Fitur pengisian peringkat, review, approval dan PDF final belum diaktifkan.</p>
+          </div>
+          <p id="pdk-message" class="workspace-message" role="status" aria-live="polite" hidden></p>
+          <div class="panel-card">
+            <div class="panel-heading">
+              <div><h2>Persiapan penilaian</h2><p id="pdk-count" class="panel-caption">Belum dimuat.</p></div>
+              <button id="pdk-create-toggle" class="button button-primary" type="button" hidden>Buat persiapan</button>
+            </div>
+            <label for="pdk-list">Pilih periode penilaian</label>
+            <select id="pdk-list"><option value="">Pilih persiapan…</option></select>
+            <form id="pdk-create-form" class="maturity-edit-form" hidden>
+              <h3>Persiapan baru</h3>
+              <label for="pdk-title">Nama penilaian</label>
+              <input id="pdk-title" type="text" minlength="3" maxlength="200" required placeholder="Penilaian keamanan siber tahun 2026">
+              <label for="pdk-category">Kategori penilaian</label>
+              <select id="pdk-category" required>
+                <option value="">Pilih kategori</option>
+                <option value="1">Kategori 1 (80 indikator — belum diverifikasi)</option>
+                <option value="2">Kategori 2 (60 indikator — belum diverifikasi)</option>
+              </select>
+              <div class="workspace-date-grid">
+                <div><label for="pdk-period-start">Awal periode</label><input id="pdk-period-start" type="date" required></div>
+                <div><label for="pdk-period-end">Akhir periode</label><input id="pdk-period-end" type="date" required></div>
+              </div>
+              <p class="workspace-help">Kategori dan periode dikunci setelah dibuat untuk menjaga jejak penilaian. Pilih sesuai kondisi institusi setelah dikonfirmasi oleh pejabat terkait.</p>
+              <button id="pdk-create-submit" type="submit" class="button button-primary">Buat dan buka</button>
+            </form>
+          </div>
+          <section id="pdk-detail" class="panel-card" aria-labelledby="pdk-detail-heading" hidden>
+            <div class="panel-heading">
+              <div>
+                <h2 id="pdk-detail-heading">Catatan persiapan</h2>
+                <p id="pdk-summary" class="panel-caption"></p>
+              </div>
+              <span class="status-chip" data-status="draft">Persiapan saja</span>
+            </div>
+            <form id="pdk-note-form" class="maturity-edit-form" hidden>
+              <label for="pdk-notes">Catatan kesiapan</label>
+              <textarea id="pdk-notes" rows="5" maxlength="4000" placeholder="Kondisi aktual, hambatan, dan rencana tindak lanjut."></textarea>
+              <label for="pdk-evidence-plan">Rencana bukti pendukung</label>
+              <textarea id="pdk-evidence-plan" rows="5" maxlength="4000" placeholder="Dokumen dan bukti yang perlu disiapkan; jangan menempel data nasabah atau rahasia dalam catatan."></textarea>
+              <button id="pdk-save" type="submit" class="button button-primary" hidden>Simpan perubahan</button>
+            </form>
+            <div class="maturity-rubric-heading">
+              <h3>Riwayat perubahan</h3>
+              <button id="pdk-history-refresh" class="button button-outline" type="button">Muat riwayat</button>
+            </div>
+            <div id="pdk-history" aria-live="polite"><p>Belum ada riwayat.</p></div>
+          </section>
+        </section>
         <section id="page-maturity-assessments" class="page" aria-labelledby="ma-heading" hidden>
           <div class="page-intro">
             <div><p class="eyebrow">ASESMEN TI / PENILAIAN MATURITAS</p>

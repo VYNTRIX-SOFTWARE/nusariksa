@@ -9,6 +9,7 @@ import { createAssessmentEvidenceHandler } from './assessment-evidence-http.js';
 import { createMaturityHandler } from './maturity-http.js';
 import { createMaturityAssessmentsHandler } from './maturity-assessments-http.js';
 import { createPadkCyberHandler } from './padk-cyber-http.js';
+import { createPadkPreparationsHandler } from './padk-preparations-http.js';
 import { createControlCatalogsHandler } from './control-catalogs-http.js';
 import { checkDatabase, createPool } from './database.js';
 import { createLoginLimiter } from './login-limiter.js';
@@ -41,6 +42,7 @@ export function createServer({
   maturityHandlers,
   maturityAssessmentHandlers,
   padkCyberHandlers,
+  padkPreparationHandlers,
   evidenceKey = process.env.EVIDENCE_ENCRYPTION_KEY,
 } = {}) {
   const handleAuth = createAuthHandler({
@@ -63,6 +65,9 @@ export function createServer({
   });
   const handlePadkCyber = createPadkCyberHandler({
     db: authDb, appOrigin, ...padkCyberHandlers,
+  });
+  const handlePadkPreparations = createPadkPreparationsHandler({
+    db: authDb, appOrigin, ...padkPreparationHandlers,
   });
   const handleEvidence = createAssessmentEvidenceHandler({
     db: authDb, appOrigin, evidenceKey, ...evidenceHandlers,
@@ -140,6 +145,18 @@ export function createServer({
         } else {
           response.destroy();
         }
+      }
+      return;
+    }
+
+    if (request.url?.startsWith('/regulatory/padk43/cyber/preparations')) {
+      try {
+        await handlePadkPreparations(request, response);
+      } catch {
+        if (!response.headersSent) {
+          response.writeHead(503);
+          response.end(JSON.stringify({ error: 'Unavailable' }));
+        } else response.destroy();
       }
       return;
     }

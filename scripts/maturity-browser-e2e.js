@@ -12,6 +12,7 @@ import {runMigrations} from '../apps/api/src/migrations.js';
 import {hashPassword} from '../apps/api/src/passwords.js';
 import {createServer} from '../apps/api/src/server.js';
 import {changePasswordInTransaction} from '../apps/api/src/change-password.js';
+import {createPadkPreparationInTransaction,savePadkPreparationInTransaction} from '../apps/api/src/padk-preparations.js';
 import {
   MfaError,base32Decode,totpForStep,mfaStatus,
   startTotpEnrollment,confirmTotpEnrollmentInTransaction,
@@ -224,6 +225,11 @@ async function runBrowser(base,db,fixture){
       throw new Error(error.message+' | maturity: '+JSON.stringify(info));
     }
   }
+  async function openPadk(){
+    await until("!document.getElementById('padk-preparations-menu').hidden",'PADK preparation navigation');
+    await evalJs("document.getElementById('padk-preparations-menu').click()");
+    await until("!document.getElementById('page-padk-preparations').hidden",'PADK preparation workspace');
+  }
   async function logout(){
     await evalJs("document.getElementById('logout-button').click()");
     await until("document.getElementById('login-screen') && !document.getElementById('login-screen').hidden",'logout');
@@ -231,6 +237,21 @@ async function runBrowser(base,db,fixture){
   try{
     await c.command('Page.navigate',{url:base+'/'});
     await login('maker');
+    await openPadk();
+    await until("!document.getElementById('pdk-create-toggle').hidden && !document.getElementById('pdk-create-toggle').disabled",'PADK create permission');
+    await evalJs("document.getElementById('pdk-create-toggle').click()");
+    await evalJs("document.getElementById('pdk-title').value='Persiapan PADK Browser 2026';"+
+      "document.getElementById('pdk-category').value='1';"+
+      "document.getElementById('pdk-period-start').value='2026-01-01';"+
+      "document.getElementById('pdk-period-end').value='2026-12-31';"+
+      "document.getElementById('pdk-create-form').requestSubmit()");
+    await until("!document.getElementById('pdk-detail').hidden",'PADK created through UI');
+    await evalJs("document.getElementById('pdk-notes').value='Inventarisasi perangkat dan pengelolaan risiko internal.';"+
+      "document.getElementById('pdk-evidence-plan').value='Siapkan dokumen kebijakan dan log pemantauan.';"+
+      "document.getElementById('pdk-notes').dispatchEvent(new Event('input',{bubbles:true}));"+
+      "document.getElementById('pdk-note-form').requestSubmit()");
+    await until("document.getElementById('pdk-message').textContent.includes('berhasil disimpan')",'PADK preparation persisted');
+    assert.equal((await db.query('SELECT revision FROM padk_assessment_preparations')).rows[0].revision,2);
     await openMaturity();
     assert.equal(await evalJs("document.getElementById('ma-submit').hidden"),false);
     assert.equal(await evalJs("document.getElementById('ma-review-form').hidden"),true);
@@ -260,6 +281,14 @@ async function runBrowser(base,db,fixture){
     await logout();
 
     await login('maker');
+    await openPadk();
+    await until("document.getElementById('pdk-list').options.length>1",'PADK previous preparation listed');
+    const preparation=(await db.query('SELECT id FROM padk_assessment_preparations LIMIT 1')).rows[0].id;
+    await evalJs("document.getElementById('pdk-list').value="+JSON.stringify(preparation)+";"+
+      "document.getElementById('pdk-list').dispatchEvent(new Event('change',{bubbles:true}))");
+    await until("!document.getElementById('pdk-detail').hidden",'PADK reopen from list');
+    assert.equal(await evalJs("document.getElementById('pdk-notes').value"),
+      'Inventarisasi perangkat dan pengelolaan risiko internal.');
     await openMaturity();
     assert.equal(await evalJs("document.getElementById('ma-rating-form').hidden"),false);
     await evalJs("document.getElementById('ma-rating-level').value='2';"+
@@ -298,6 +327,14 @@ async function runBrowser(base,db,fixture){
     await logout();
 
     await login('viewer');
+    await openPadk();
+    await until("document.getElementById('pdk-list').options.length>1",'viewer can list PADK preparations');
+    const id=await db.query('SELECT id FROM padk_assessment_preparations LIMIT 1');
+    await evalJs("document.getElementById('pdk-list').value="+JSON.stringify(id.rows[0].id)+";"+
+      "document.getElementById('pdk-list').dispatchEvent(new Event('change',{bubbles:true}))");
+    await until("!document.getElementById('pdk-detail').hidden",'viewer PADK details');
+    assert.equal(await evalJs("document.getElementById('pdk-save').hidden"),true);
+    assert.equal(await evalJs("document.getElementById('pdk-notes').readOnly"),true);
     await openMaturity();
     assert.equal(await evalJs("document.getElementById('ma-review-queue-panel').hidden"),true);
     assert.equal(await evalJs("document.getElementById('ma-rating-form').hidden"),true);
@@ -350,7 +387,7 @@ async function runBrowser(base,db,fixture){
     await evalJs("document.getElementById('mfa-login-code').value="+JSON.stringify(codes[0])+";"+
       "document.getElementById('mfa-login-form').requestSubmit()");
     await until("!document.getElementById('app-screen').hidden",'recovery login accepted');
-    console.log('Browser E2E PASS: maturity, password rotation, TOTP enrollment and MFA recovery login');
+    console.log('Browser E2E PASS: PADK preparation create/save/reopen/read-only, maturity, password rotation and MFA');
   }finally{
     await stopChromium(browser);
   }
@@ -378,6 +415,10 @@ async function main(){
           if(result.status)throw new MfaError(result.status,result.error);
           return result;
         },
+      },
+      padkPreparationHandlers:{
+        create:(db,args)=>createPadkPreparationInTransaction(db,args),
+        save:(db,args)=>savePadkPreparationInTransaction(db,args),
       },
       maturityAssessmentHandlers:{
         create:(db,args)=>createMaturityAssessmentInTransaction(db,args),
