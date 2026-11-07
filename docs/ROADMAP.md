@@ -75,3 +75,12 @@ Setiap tahap memerlukan implementasi dan pengujian yang dapat diulang sebelum di
 - Otorisasi, isolasi institusi, dan pembekuan penilaian ditentukan backend; penyembunyian kontrol UI bukan pengganti pemeriksaan server.
 - Ada uji unit validasi kontrol UI serta tambahan pengujian integrasi HTTP untuk antrean dan transisi status. Hasil CI dan pengujian browser nyata **harus diperiksa sebelum Ready for review**.
 - Batasan: bukan workflow peringkat keamanan siber resmi PADK, belum ada penugasan reviewer, pagination, ataupun audit kecukupan bukti secara manusia.
+
+## Sprint #42 — ganti password dan rotasi sesi
+
+- Pengguna aktif dapat mengganti password sendiri melalui `POST /auth/change-password` dan dialog web.
+- Password lama diverifikasi menggunakan Argon2id; password baru minimal 12 byte, maksimal 1024 byte dan wajib berbeda dari password sebelumnya.
+- Perubahan hash, pencabutan semua sesi lama, pembuatan sesi pengganti, dan event `PASSWORD_CHANGE` dijalankan secara atomik dalam transaksi PostgreSQL. Event audit tidak menyimpan password maupun hash.
+- API memerlukan cookie sesi valid, pemeriksaan origin, JSON yang ketat, dan pembatasan percobaan password salah melalui limiter in-memory. Penggunaan multiproses memerlukan limiter terpusat.
+- Cookie pengganti tetap `Secure; HttpOnly; SameSite=Strict` dan sesi lain langsung tidak valid.
+- Belum termasuk pemulihan password lupa, MFA, penyimpanan konfigurasi TLS/reverse proxy produksi, dan manajemen sesi lintas perangkat di UI. Kelayakan produksi tetap bergantung pada pengujian keamanan dan UAT.

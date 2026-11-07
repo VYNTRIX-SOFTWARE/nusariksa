@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import {
-  ApiError, requestJson, getSession, getPermissions, signIn, signOut,
+  ApiError, requestJson, getSession, getPermissions, signIn, signOut, changePassword,
 } from '../../web/assets/session.js';
 
 test('client API hanya menerima path pada origin yang sama', async () => {
@@ -32,10 +32,12 @@ test('login mengirim JSON dan credential same-origin tanpa menyimpan sesi di Jav
     await getSession();
     await getPermissions();
     await signOut();
+    await changePassword('old-password','new-long-password');
     assert.deepEqual(calls.slice(1).map((x) => [x.url, x.options.method]), [
       ['/auth/session', 'GET'],
       ['/auth/permissions', 'GET'],
       ['/auth/logout', 'POST'],
+      ['/auth/change-password', 'POST'],
     ]);
   } finally {
     globalThis.fetch = previousFetch;
@@ -54,4 +56,22 @@ test('kesalahan HTTP mempertahankan status untuk login dan sesi yang sudah habis
   } finally {
     globalThis.fetch = previousFetch;
   }
+});
+
+test('ganti password mengirim credential lewat same-origin JSON, bukan storage client',async()=>{
+  const previousFetch=globalThis.fetch;let request;
+  globalThis.fetch=async (url,options)=>{
+    request={url,options};
+    return {ok:true,json:async()=>({passwordChanged:true})};
+  };
+  try{
+    assert.equal((await changePassword('old-password','new-password-2026')).passwordChanged,true);
+    assert.equal(request.url,'/auth/change-password');
+    assert.equal(request.options.method,'POST');
+    assert.equal(request.options.credentials,'same-origin');
+    assert.equal(request.options.cache,'no-store');
+    assert.deepEqual(JSON.parse(request.options.body),{
+      currentPassword:'old-password',newPassword:'new-password-2026',
+    });
+  }finally{globalThis.fetch=previousFetch;}
 });

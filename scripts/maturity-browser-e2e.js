@@ -11,6 +11,7 @@ import {createPool} from '../apps/api/src/database.js';
 import {runMigrations} from '../apps/api/src/migrations.js';
 import {hashPassword} from '../apps/api/src/passwords.js';
 import {createServer} from '../apps/api/src/server.js';
+import {changePasswordInTransaction} from '../apps/api/src/change-password.js';
 import {
   createMaturityModelInTransaction,addMaturityDomainInTransaction,
   setMaturityLevelInTransaction,publishMaturityVersionInTransaction,
@@ -297,7 +298,27 @@ async function runBrowser(base,db,fixture){
     assert.equal(await evalJs("document.getElementById('ma-rating-form').hidden"),true);
     assert.equal(await evalJs("document.getElementById('ma-review-form').hidden"),true);
     assert.equal(await evalJs("document.getElementById('ma-submit').hidden"),true);
-    console.log('Browser E2E PASS: maker → review → revisi → resubmit → approve → viewer read-only');
+    await evalJs("document.getElementById('change-password-open').click()");
+    await until("document.getElementById('change-password-dialog').open",'password dialog');
+    await evalJs("document.getElementById('current-password').value="+JSON.stringify(fixture.password)+";"+
+      "document.getElementById('new-password').value='UpdatedViewerPass_2026';"+
+      "document.getElementById('confirm-password').value='UpdatedViewerPass_2026';"+
+      "document.getElementById('change-password-form').requestSubmit()");
+    await until("document.getElementById('app-notice').textContent.includes('Password berhasil diganti')",'password changed in browser');
+    assert.equal(await evalJs("document.getElementById('change-password-dialog').open"),false);
+    const changedAccount=await db.query(
+      "SELECT count(*)::int AS count FROM user_account_events WHERE action='PASSWORD_CHANGE'",
+    );
+    assert.equal(changedAccount.rows[0].count,1);
+    await logout();
+    await evalJs("document.getElementById('login-email').value='browser-viewer@example.test';"+
+      "document.getElementById('login-password').value="+JSON.stringify(fixture.password)+";"+
+      "document.getElementById('login-form').requestSubmit()");
+    await until("document.getElementById('login-error').textContent.includes('tidak sesuai')",'old password rejected');
+    await evalJs("document.getElementById('login-password').value='UpdatedViewerPass_2026';"+
+      "document.getElementById('login-form').requestSubmit()");
+    await until("!document.getElementById('app-screen').hidden",'new password accepted');
+    console.log('Browser E2E PASS: maturity maker-checker and password rotation UI');
   }finally{
     await stopChromium(browser);
   }
@@ -315,6 +336,7 @@ async function main(){
     const origin='http://localhost:'+port;
     server=createServer({
       authDb:client,appOrigin:origin,
+      changeUserPassword:(db,args)=>changePasswordInTransaction(db,args),
       maturityAssessmentHandlers:{
         create:(db,args)=>createMaturityAssessmentInTransaction(db,args),
         list:(db,args)=>listMaturityAssessments(db,args),

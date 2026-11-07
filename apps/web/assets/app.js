@@ -1,5 +1,5 @@
 import {
-  ApiError, requestJson, getSession, getPermissions, signIn, signOut,
+  ApiError, requestJson, getSession, getPermissions, signIn, signOut, changePassword,
 } from './session.js';
 import {
   STATUS_LABELS, validAssessments, yearsForAssessments,
@@ -44,6 +44,8 @@ function cleanSession() {
   state.search = '';
   state.sort = 'newest';
   $('login-password').value = '';
+  $('change-password-form').reset();
+  $('change-password-dialog').close?.();
   $('detail-dialog').close?.();
   $('assessment-create-dialog').close?.();
   state.page='overview';
@@ -368,6 +370,52 @@ $('login-form').addEventListener('submit',async(event)=>{
     else if(error instanceof ApiError&&error.status===429)loginError('Terlalu banyak percobaan. Coba lagi beberapa saat.');
     else loginError('Masuk gagal. Periksa koneksi dan konfigurasi server.');
   }finally{submit.disabled=false;submit.firstChild.textContent='Masuk ';}
+});
+const passwordDialog=$('change-password-dialog');
+const closePasswordDialog=()=>{
+  $('change-password-form').reset();
+  $('change-password-error').hidden=true;
+  $('change-password-error').textContent='';
+  passwordDialog.close();
+};
+$('change-password-open').addEventListener('click',()=>{
+  $('change-password-form').reset();
+  $('change-password-error').hidden=true;
+  passwordDialog.showModal();
+  $('current-password').focus();
+});
+$('change-password-close').addEventListener('click',closePasswordDialog);
+$('change-password-cancel').addEventListener('click',closePasswordDialog);
+passwordDialog.addEventListener('close',()=>{
+  $('change-password-form').reset();
+  $('change-password-error').textContent='';
+  $('change-password-error').hidden=true;
+});
+$('change-password-form').addEventListener('submit',async event=>{
+  event.preventDefault();
+  const current=$('current-password').value,newPassword=$('new-password').value;
+  const error=$('change-password-error'),submit=$('change-password-submit');
+  error.hidden=true;error.textContent='';
+  if(newPassword!==$('confirm-password').value){
+    error.textContent='Konfirmasi password baru tidak sama.';error.hidden=false;return;
+  }
+  if(current===newPassword){
+    error.textContent='Password baru harus berbeda dari password lama.';error.hidden=false;return;
+  }
+  submit.disabled=true;
+  try{
+    await changePassword(current,newPassword);
+    closePasswordDialog();
+    notice('Password berhasil diganti. Semua sesi lama telah dicabut.');
+  }catch(err){
+    if(authFailure(err))return;
+    error.textContent=err instanceof ApiError&&err.status===401
+      ?'Password lama tidak sesuai, atau sesi sudah berakhir.'
+      :err instanceof ApiError&&err.status===400
+        ?'Password baru tidak valid. Gunakan minimal 12 karakter yang berbeda dari sebelumnya.'
+        :'Tidak dapat mengganti password. Coba kembali.';
+    error.hidden=false;
+  }finally{submit.disabled=false;}
 });
 $('logout-button').addEventListener('click',async()=>{
   const btn=$('logout-button');btn.disabled=true;

@@ -21,6 +21,7 @@ export function createServer({
   authDb = null,
   appOrigin = null,
   loginLimiter = createLoginLimiter(),
+  changeUserPassword,
   changeRole,
   createUser,
   activateUser,
@@ -40,7 +41,7 @@ export function createServer({
   padkCyberHandlers,
   evidenceKey = process.env.EVIDENCE_ENCRYPTION_KEY,
 } = {}) {
-  const handleAuth = createAuthHandler({ db: authDb, appOrigin, limiter: loginLimiter });
+  const handleAuth = createAuthHandler({ db: authDb, appOrigin, limiter: loginLimiter, changeUserPassword });
   const handleAssessments = createAssessmentsHandler({
     db: authDb, appOrigin, create: createAssessment, list: listAssessments,
     get: getAssessment, start: startAssessment,
@@ -91,7 +92,7 @@ export function createServer({
     }
 
     if (request.url === '/auth/login' || request.url === '/auth/logout'
-      || request.url === '/auth/session' || request.url === '/auth/permissions') {
+      || request.url === '/auth/session' || request.url === '/auth/permissions' || request.url === '/auth/change-password') {
       try {
         await handleAuth(request, response);
       } catch {

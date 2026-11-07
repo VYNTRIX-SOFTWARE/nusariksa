@@ -1,6 +1,7 @@
 import { authenticateUser } from './authentication.js';
 import { getUserPermissions } from './authorization.js';
 import { createSession, findSession, revokeSession } from './sessions.js';
+import { changePassword, PasswordChangeError } from './change-password.js';
 
 const COOKIE_NAME = '__Host-nusariksa_session';
 const COOKIE_OPTIONS = '; Path=/; Secure; HttpOnly; SameSite=Strict';
@@ -24,6 +25,26 @@ export function originAccepted(request, appOrigin) {
   return typeof appOrigin === 'string'
     && request.headers.origin === appOrigin
     && request.headers['sec-fetch-site'] !== 'cross-site';
+}
+
+async function readChangePasswordPayload(request){
+  if(request.headers['content-type']?.split(';')[0].trim().toLowerCase()!=='application/json')
+    return {status:415};
+  let size=0,oversized=false;const chunks=[];
+  for await(const chunk of request){
+    size+=chunk.length;
+    if(size>MAX_BODY_BYTES)oversized=true;
+    else chunks.push(chunk);
+  }
+  if(oversized)return {status:413};
+  try{
+    const body=JSON.parse(Buffer.concat(chunks).toString('utf8'));
+    if(!body||typeof body!=='object'||Array.isArray(body)
+      ||Object.keys(body).length!==2
+      ||typeof body.currentPassword!=='string'||typeof body.newPassword!=='string')
+      return {status:400};
+    return {body};
+  }catch{return {status:400};}
 }
 
 async function readLoginPayload(request) {
@@ -60,7 +81,7 @@ async function readLoginPayload(request) {
   return { email: body.email.trim().toLowerCase(), password: body.password };
 }
 
-export function createAuthHandler({ db, appOrigin, limiter }) {
+export function createAuthHandler({ db, appOrigin, limiter, changeUserPassword=changePassword }) {
   return async function handleAuth(request, response) {
     if (!db || !appOrigin) {
       respond(response, 503, { error: 'Unavailable' });
@@ -100,6 +121,36 @@ export function createAuthHandler({ db, appOrigin, limiter }) {
       if (token) await revokeSession(db, token);
       response.setHeader('Set-Cookie', COOKIE_NAME + '=' + COOKIE_OPTIONS + '; Max-Age=0');
       respond(response, 200, { authenticated: false });
+      return;
+    }
+
+    if(request.method==='POST'&&request.url==='/auth/change-password'){
+      const token=tokenFromCookies(request.headers.cookie);
+      const session=token?await findSession(db,token):null;
+      if(!session){respond(response,401,{error:'Unauthorized'});return;}
+      const address=request.socket.remoteAddress??'unknown';
+      const limitKey='password-change:'+session.userId;
+      if(!limiter.allow(address,limitKey)){
+        response.setHeader('Retry-After','900');
+        respond(response,429,{error:'Too many attempts'});return;
+      }
+      const payload=await readChangePasswordPayload(request);
+      if(payload.status){
+        respond(response,payload.status,{error:'Invalid request'});return;
+      }
+      try{
+        const changed=await changeUserPassword(db,{
+          userId:session.userId,...payload.body,
+        });
+        limiter.success(address,limitKey);
+        response.setHeader('Set-Cookie',
+          COOKIE_NAME+'='+changed.token+COOKIE_OPTIONS+'; Max-Age=28800');
+        respond(response,200,{authenticated:true,userId:changed.userId,passwordChanged:true});
+      }catch(error){
+        if(!(error instanceof PasswordChangeError))throw error;
+        if(error.status===401)limiter.failure(address,limitKey);
+        respond(response,error.status,{error:error.message});
+      }
       return;
     }
 
