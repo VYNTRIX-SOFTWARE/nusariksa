@@ -1,3 +1,5 @@
+import {createPadkIndicatorNoteUI} from './padk-indicator-note-ui.js';
+
 const $=id=>document.getElementById(id);
 const ENDPOINT='/regulatory/padk43/cyber/preparations';
 const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -29,6 +31,9 @@ export function validatePreparationResponse(data){
 }
 export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFailure}){
   const state={items:[],detail:null,dirty:false,busy:false,request:0};
+  const indicatorUI=createPadkIndicatorNoteUI({
+    api,onAuthFailure,getUserId,getPermissions,
+  });
   const permitted=()=>getPermissions().includes('assessments:read');
   const writable=()=>getPermissions().includes('assessments:write');
   const owner=()=>state.detail&&writable()&&state.detail.ownerUserId===getUserId();
@@ -41,10 +46,11 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
     if(onAuthFailure(error))return;
     message(error?.message&&error instanceof TypeError?error.message:defaultMessage,'error');
   };
-  const confirmLeave=()=>!state.dirty||window.confirm(
-    'Catatan belum disimpan. Tinggalkan halaman dan abaikan perubahan?');
+  const confirmLeave=()=>!state.dirty&&!indicatorUI.isDirty()||window.confirm(
+    'Ada catatan yang belum disimpan. Tinggalkan halaman dan abaikan perubahan?');
   function clear(){
     state.request++;state.items=[];state.detail=null;state.dirty=false;state.busy=false;
+    indicatorUI.clear();
     $('pdk-create-form').hidden=true;$('pdk-create-form').reset();
     $('pdk-detail').hidden=true;$('pdk-note-form').reset();
     $('pdk-list').replaceChildren();
@@ -53,6 +59,7 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
     render();
   }
   function render(){
+    indicatorUI.sync();
     $('pdk-create-toggle').hidden=!writable();
     $('pdk-create-toggle').disabled=state.busy;
     $('pdk-detail').hidden=!state.detail;
@@ -85,7 +92,7 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
         throw new TypeError('Daftar persiapan PADK tidak valid.');
       state.items=data.preparations.map(validatePreparationResponse);
       state.detail=null;state.dirty=false;
-      $('pdk-note-form').reset();
+      indicatorUI.clear();$('pdk-note-form').reset();
       render();
       message('');
       if(preferredId)await open(preferredId);
@@ -116,6 +123,7 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
   async function open(id){
     if(!UUID.test(id))return;
     const request=++state.request;state.busy=true;state.detail=null;state.dirty=false;
+    indicatorUI.clear();
     $('pdk-note-form').reset();render();message('Memuat catatan…');
     try{
       const data=validatePreparationResponse(await api(ENDPOINT+'/'+encodeURIComponent(id)));
@@ -124,6 +132,7 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
       $('pdk-notes').value=data.preparationNotes;
       $('pdk-evidence-plan').value=data.evidencePlan;
       state.dirty=false;message('');render();
+      void indicatorUI.load(data);
       void history();
     }catch(error){if(request===state.request)fail(error,'Catatan gagal dibuka.');}
     finally{if(request===state.request){state.busy=false;render();}}
@@ -155,7 +164,7 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
   $('pdk-list').addEventListener('change',event=>{
     if(!confirmLeave()){event.target.value=state.detail?.id??'';return;}
     if(event.target.value)void open(event.target.value);
-    else{state.detail=null;state.dirty=false;render();}
+    else{state.detail=null;state.dirty=false;indicatorUI.clear();render();}
   });
   for(const id of ['pdk-notes','pdk-evidence-plan']){
     $(id).addEventListener('input',()=>{

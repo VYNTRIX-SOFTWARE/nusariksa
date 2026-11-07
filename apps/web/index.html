@@ -364,6 +364,37 @@
               <textarea id="pdk-evidence-plan" rows="5" maxlength="4000" placeholder="Dokumen dan bukti yang perlu disiapkan; jangan menempel data nasabah atau rahasia dalam catatan."></textarea>
               <button id="pdk-save" type="submit" class="button button-primary" hidden>Simpan perubahan</button>
             </form>
+            <section id="pdk-indicator-section" aria-labelledby="pdk-indicator-heading" hidden>
+              <div class="maturity-rubric-heading">
+                <h3 id="pdk-indicator-heading">Catatan kerja per indikator</h3>
+              </div>
+              <p class="workspace-disclaimer">
+                Ringkasan indikator di bawah masih DRAFT_UNVERIFIED, bukan teks resmi final.
+                Catatan ini hanya untuk inventarisasi bukti. Belum tersedia skor, pilihan peringkat,
+                review hasil, approval, atau laporan PADK.
+              </p>
+              <p id="pdk-indicator-count" class="workspace-help" aria-live="polite"></p>
+              <label for="pdk-indicator-list">Pilih indikator kategori penilaian</label>
+              <select id="pdk-indicator-list"><option value="">Pilih indikator…</option></select>
+              <p id="pdk-indicator-description" class="workspace-help"></p>
+              <p id="pdk-indicator-message" class="workspace-message" role="status" aria-live="polite" hidden></p>
+              <form id="pdk-indicator-form" class="maturity-edit-form" hidden>
+                <label for="pdk-indicator-notes">Catatan kerja indikator</label>
+                <textarea id="pdk-indicator-notes" rows="4" maxlength="4000"
+                  placeholder="Kondisi yang perlu diperiksa. Jangan mencantumkan data rahasia nasabah."></textarea>
+                <label for="pdk-indicator-evidence">Rencana dokumen bukti indikator</label>
+                <textarea id="pdk-indicator-evidence" rows="4" maxlength="4000"
+                  placeholder="Bukti dan dokumen yang akan dikumpulkan untuk indikator ini."></textarea>
+                <button type="submit" id="pdk-indicator-save" class="button button-primary" hidden>
+                  Simpan catatan indikator
+                </button>
+              </form>
+              <div class="maturity-rubric-heading">
+                <h3>Riwayat catatan indikator</h3>
+                <button id="pdk-indicator-history-refresh" type="button" class="button button-outline">Muat riwayat</button>
+              </div>
+              <div id="pdk-indicator-history" aria-live="polite"></div>
+            </section>
             <div class="maturity-rubric-heading">
               <h3>Riwayat perubahan</h3>
               <button id="pdk-history-refresh" class="button button-outline" type="button">Muat riwayat</button>
