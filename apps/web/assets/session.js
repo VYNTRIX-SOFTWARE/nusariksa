@@ -37,3 +37,14 @@ export const signOut = () => requestJson('/auth/logout', { method: 'POST' });
 export const changePassword=(currentPassword,newPassword)=>requestJson('/auth/change-password',{
   method:'POST',body:{currentPassword,newPassword},
 });
+
+export const getMfaStatus=()=>requestJson('/auth/mfa/status');
+export const setupMfa=currentPassword=>requestJson('/auth/mfa/setup',{
+  method:'POST',body:{currentPassword},
+});
+export const confirmMfa=code=>requestJson('/auth/mfa/confirm',{
+  method:'POST',body:{code},
+});
+export const verifyMfaLogin=(challengeToken,code)=>requestJson('/auth/mfa/login',{
+  method:'POST',body:{challengeToken,code},
+});

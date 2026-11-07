@@ -22,6 +22,8 @@ export function createServer({
   appOrigin = null,
   loginLimiter = createLoginLimiter(),
   changeUserPassword,
+  mfaEncryptionKey,
+  mfaActions,
   changeRole,
   createUser,
   activateUser,
@@ -41,7 +43,10 @@ export function createServer({
   padkCyberHandlers,
   evidenceKey = process.env.EVIDENCE_ENCRYPTION_KEY,
 } = {}) {
-  const handleAuth = createAuthHandler({ db: authDb, appOrigin, limiter: loginLimiter, changeUserPassword });
+  const handleAuth = createAuthHandler({
+    db:authDb,appOrigin,limiter:loginLimiter,changeUserPassword,
+    mfaEncryptionKey,mfaActions,
+  });
   const handleAssessments = createAssessmentsHandler({
     db: authDb, appOrigin, create: createAssessment, list: listAssessments,
     get: getAssessment, start: startAssessment,
@@ -92,7 +97,8 @@ export function createServer({
     }
 
     if (request.url === '/auth/login' || request.url === '/auth/logout'
-      || request.url === '/auth/session' || request.url === '/auth/permissions' || request.url === '/auth/change-password') {
+      || request.url === '/auth/session' || request.url === '/auth/permissions'
+      || request.url === '/auth/change-password' || request.url?.startsWith('/auth/mfa/')) {
       try {
         await handleAuth(request, response);
       } catch {
