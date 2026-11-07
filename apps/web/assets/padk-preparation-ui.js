@@ -1,0 +1,195 @@
+const $=id=>document.getElementById(id);
+const ENDPOINT='/regulatory/padk43/cyber/preparations';
+const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const control=/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/;
+const text=(tag,content,className)=>{
+  const element=document.createElement(tag);
+  element.textContent=String(content??'');
+  if(className)element.className=className;
+  return element;
+};
+export function validatePreparationInput({title,category,periodStart,periodEnd}){
+  if(typeof title!=='string'||title!==title.trim()||title.length<3||title.length>200
+    ||control.test(title)||![1,2].includes(category)
+    ||typeof periodStart!=='string'||typeof periodEnd!=='string'
+    ||!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(periodStart)
+    ||!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(periodEnd)
+    ||periodEnd<periodStart)throw new TypeError('Judul, kategori, atau periode belum valid.');
+  return {title,category,periodStart,periodEnd};
+}
+export function validatePreparationResponse(data){
+  if(!data||!UUID.test(data.id)||typeof data.title!=='string'
+    ||![1,2].includes(data.category)||!UUID.test(data.ownerUserId)
+    ||!Number.isSafeInteger(data.revision)||data.revision<1
+    ||data.status!=='PREPARATION_ONLY'||data.scoringAvailable!==false
+    ||data.submissionAvailable!==false||data.finalReportAvailable!==false
+    ||typeof data.preparationNotes!=='string'||typeof data.evidencePlan!=='string')
+    throw new TypeError('Respons persiapan PADK tidak valid.');
+  return data;
+}
+export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFailure}){
+  const state={items:[],detail:null,dirty:false,busy:false,request:0};
+  const permitted=()=>getPermissions().includes('assessments:read');
+  const writable=()=>getPermissions().includes('assessments:write');
+  const owner=()=>state.detail&&writable()&&state.detail.ownerUserId===getUserId();
+  const message=(value,kind)=>{
+    $('pdk-message').textContent=value??'';
+    $('pdk-message').hidden=!value;
+    $('pdk-message').dataset.kind=kind??'info';
+  };
+  const fail=(error,defaultMessage)=>{
+    if(onAuthFailure(error))return;
+    message(error?.message&&error instanceof TypeError?error.message:defaultMessage,'error');
+  };
+  const confirmLeave=()=>!state.dirty||window.confirm(
+    'Catatan belum disimpan. Tinggalkan halaman dan abaikan perubahan?');
+  function clear(){
+    state.request++;state.items=[];state.detail=null;state.dirty=false;state.busy=false;
+    $('pdk-create-form').hidden=true;$('pdk-create-form').reset();
+    $('pdk-detail').hidden=true;$('pdk-note-form').reset();
+    $('pdk-list').replaceChildren();
+    $('pdk-history').replaceChildren(text('p','Belum ada riwayat.'));
+    message('');
+    render();
+  }
+  function render(){
+    $('pdk-create-toggle').hidden=!writable();
+    $('pdk-create-toggle').disabled=state.busy;
+    $('pdk-detail').hidden=!state.detail;
+    $('pdk-note-form').hidden=!state.detail;
+    $('pdk-save').hidden=!owner();
+    $('pdk-save').disabled=state.busy||!state.dirty;
+    for(const id of ['pdk-notes','pdk-evidence-plan'])$(id).readOnly=!owner()||state.busy;
+    const sel=$('pdk-list');
+    const current=state.detail?.id??'';
+    sel.replaceChildren(new Option('Pilih persiapan…',''));
+    for(const item of state.items)sel.add(new Option(
+      item.title+' — Kategori '+item.category+' · '+item.periodStart,current===item.id?item.id:item.id));
+    sel.value=state.items.some(i=>i.id===current)?current:'';
+    if(state.detail){
+      $('pdk-summary').textContent=
+        state.detail.title+' · Kategori '+state.detail.category+
+        ' · '+state.detail.periodStart+' sampai '+state.detail.periodEnd+
+        ' · Revisi '+state.detail.revision;
+    }else $('pdk-summary').textContent='Pilih catatan persiapan untuk melanjutkan.';
+    $('pdk-count').textContent=state.items.length+' persiapan terbaru ditampilkan (maks. 50).';
+  }
+  async function list(preferredId){
+    if(!permitted())return;
+    const request=++state.request;state.busy=true;
+    message('Memuat daftar persiapan PADK…');render();
+    try{
+      const data=await api(ENDPOINT);
+      if(request!==state.request)return;
+      if(!Array.isArray(data.preparations)||data.regulatoryPackReady!==false)
+        throw new TypeError('Daftar persiapan PADK tidak valid.');
+      state.items=data.preparations.map(validatePreparationResponse);
+      state.detail=null;state.dirty=false;
+      $('pdk-note-form').reset();
+      render();
+      message('');
+      if(preferredId)await open(preferredId);
+    }catch(error){if(request===state.request)fail(error,'Gagal memuat persiapan PADK.');}
+    finally{if(request===state.request){state.busy=false;render();}}
+  }
+  async function history(){
+    if(!state.detail)return;
+    const id=state.detail.id,request=state.request;
+    const panel=$('pdk-history');
+    panel.replaceChildren(text('p','Memuat riwayat…'));
+    try{
+      const result=await api(ENDPOINT+'/'+encodeURIComponent(id)+'/history');
+      if(request!==state.request||state.detail?.id!==id)return;
+      panel.replaceChildren();
+      if(!Array.isArray(result.events))throw new TypeError('Riwayat tidak valid.');
+      for(const event of result.events){
+        const row=text('div','','workspace-history-item');
+        row.append(text('strong',event.action+' · Revisi '+event.revision),
+          text('p','Oleh '+event.actor_user_id+' · '+new Date(event.occurred_at).toLocaleString('id-ID')));
+        panel.append(row);
+      }
+      if(!result.events.length)panel.append(text('p','Belum ada aktivitas.'));
+    }catch(error){
+      if(request===state.request){panel.replaceChildren(text('p','Riwayat gagal dimuat.'));fail(error,'Riwayat gagal dimuat.');}
+    }
+  }
+  async function open(id){
+    if(!UUID.test(id))return;
+    const request=++state.request;state.busy=true;state.detail=null;state.dirty=false;
+    $('pdk-note-form').reset();render();message('Memuat catatan…');
+    try{
+      const data=validatePreparationResponse(await api(ENDPOINT+'/'+encodeURIComponent(id)));
+      if(request!==state.request)return;
+      state.detail=data;
+      $('pdk-notes').value=data.preparationNotes;
+      $('pdk-evidence-plan').value=data.evidencePlan;
+      state.dirty=false;message('');render();
+      void history();
+    }catch(error){if(request===state.request)fail(error,'Catatan gagal dibuka.');}
+    finally{if(request===state.request){state.busy=false;render();}}
+  }
+  $('pdk-refresh').addEventListener('click',()=>{if(confirmLeave())void list();});
+  $('pdk-create-toggle').addEventListener('click',()=>{
+    if(!writable())return;
+    $('pdk-create-form').hidden=!$('pdk-create-form').hidden;
+  });
+  $('pdk-create-form').addEventListener('submit',async event=>{
+    event.preventDefault();
+    if(!writable()||state.busy)return;
+    let data;
+    try{
+      data=validatePreparationInput({
+        title:$('pdk-title').value.trim(),category:Number($('pdk-category').value),
+        periodStart:$('pdk-period-start').value,periodEnd:$('pdk-period-end').value,
+      });
+    }catch(error){message(error.message,'error');return;}
+    state.busy=true;render();
+    try{
+      const created=validatePreparationResponse(await api(ENDPOINT,{method:'POST',body:data}));
+      $('pdk-create-form').reset();$('pdk-create-form').hidden=true;
+      await list(created.id);
+      message('Persiapan berhasil dibuat. Isi rencana kerja dan bukti yang perlu disiapkan.','success');
+    }catch(error){fail(error,'Gagal membuat persiapan PADK.');}
+    finally{state.busy=false;render();}
+  });
+  $('pdk-list').addEventListener('change',event=>{
+    if(!confirmLeave()){event.target.value=state.detail?.id??'';return;}
+    if(event.target.value)void open(event.target.value);
+    else{state.detail=null;state.dirty=false;render();}
+  });
+  for(const id of ['pdk-notes','pdk-evidence-plan']){
+    $(id).addEventListener('input',()=>{
+      if(!owner())return;
+      state.dirty=$('pdk-notes').value!==state.detail.preparationNotes
+        ||$('pdk-evidence-plan').value!==state.detail.evidencePlan;
+      render();
+    });
+  }
+  $('pdk-note-form').addEventListener('submit',async event=>{
+    event.preventDefault();
+    if(!owner()||!state.dirty||state.busy)return;
+    const id=state.detail.id;
+    const body={
+      preparationNotes:$('pdk-notes').value,
+      evidencePlan:$('pdk-evidence-plan').value,
+      expectedRevision:state.detail.revision,
+    };
+    if(body.preparationNotes.length>4000||body.evidencePlan.length>4000
+      ||control.test(body.preparationNotes)||control.test(body.evidencePlan)){
+      message('Catatan melebihi batas atau berisi karakter yang tidak valid.','error');return;
+    }
+    state.busy=true;render();
+    try{
+      state.detail=validatePreparationResponse(await api(
+        ENDPOINT+'/'+encodeURIComponent(id),{method:'PUT',body},
+      ));
+      state.dirty=false;render();
+      message('Catatan dan rencana bukti berhasil disimpan.','success');
+      void history();
+    }catch(error){fail(error,'Gagal menyimpan. Muat ulang jika data sudah berubah.');}
+    finally{state.busy=false;render();}
+  });
+  $('pdk-history-refresh').addEventListener('click',()=>void history());
+  render();
+  return {load:()=>list(),clear,sync:render,confirmLeave};
+}
