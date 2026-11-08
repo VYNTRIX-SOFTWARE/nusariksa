@@ -1,4 +1,5 @@
 import {createPadkEvidenceUI} from './padk-evidence-ui.js';
+import {createPadkCriteriaPanel} from './padk-criteria-panel.js';
 
 const $=id=>document.getElementById(id);
 const ENDPOINT='/regulatory/padk43/cyber/preparations';
@@ -41,6 +42,8 @@ export function createPadkIndicatorNoteUI({api,onAuthFailure,getUserId,getPermis
   const owner=()=>Boolean(state.preparation
     &&state.preparation.ownerUserId===getUserId()
     &&getPermissions().includes('assessments:write')&&canEditDraft());
+  const criteriaUI=createPadkCriteriaPanel({api,onAuthFailure,
+    canSelect:()=>owner()&&!state.busy});
   const message=(value,kind)=>{
     $('pdk-indicator-message').textContent=value??'';
     $('pdk-indicator-message').hidden=!value;
@@ -51,7 +54,7 @@ export function createPadkIndicatorNoteUI({api,onAuthFailure,getUserId,getPermis
     message(error instanceof TypeError?error.message:fallback,'error');
   };
   function render(){
-    evidenceUI.sync();
+    evidenceUI.sync();criteriaUI.sync();
     $('pdk-indicator-section').hidden=!state.preparation;
     $('pdk-indicator-form').hidden=!state.active;
     $('pdk-indicator-save').hidden=!owner();
@@ -71,7 +74,7 @@ export function createPadkIndicatorNoteUI({api,onAuthFailure,getUserId,getPermis
   function clear(){
     state.request++;state.preparation=null;state.items=[];state.active=null;
     state.dirty=false;state.busy=false;
-    evidenceUI.clear();
+    evidenceUI.clear();criteriaUI.clear();
     $('pdk-indicator-list').replaceChildren();
     $('pdk-indicator-form').reset();
     $('pdk-indicator-history').replaceChildren();
@@ -94,7 +97,7 @@ export function createPadkIndicatorNoteUI({api,onAuthFailure,getUserId,getPermis
     state.active=item??null;state.dirty=false;
     $('pdk-indicator-form').reset();message('');
     if(!item){
-      evidenceUI.clear();
+      evidenceUI.clear();criteriaUI.clear();
       $('pdk-indicator-description').textContent='';
       $('pdk-indicator-history').replaceChildren();render();return;
     }
@@ -105,7 +108,9 @@ export function createPadkIndicatorNoteUI({api,onAuthFailure,getUserId,getPermis
     $('pdk-indicator-evidence').value=item.evidencePlan;
     $('pdk-indicator-rank').value=item.provisionalRank===null?'':String(item.provisionalRank);
     $('pdk-indicator-justification').value=item.justification;
-    choices();evidenceUI.open(state.preparation,item);render();void history();
+    choices();evidenceUI.open(state.preparation,item);render();
+    void criteriaUI.load(state.preparation,item.number);
+    void history();
   }
   async function history(){
     if(!state.preparation||!state.active)return;

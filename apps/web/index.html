@@ -438,12 +438,22 @@
                   placeholder="Kondisi yang perlu diperiksa. Jangan mencantumkan data rahasia nasabah."></textarea>
                 <p class="workspace-help">
                   <strong>DRAFT — belum boleh dilaporkan.</strong> Baca dan bandingkan
-                  lima kriteria di Tabel 3 Lampiran IV PADK 43/PADK.03/2025 sebelum
-                  menentukan peringkat sementara. Teks kriteria belum terverifikasi di aplikasi;
+                  lima kriteria hasil ekstraksi Tabel 3 Lampiran IV PADK 43/PADK.03/2025 sebelum
+                  menentukan peringkat sementara. Teks ini belum diverifikasi secara independen;
                   pilihan ini tidak menghasilkan skor, komposit, atau persetujuan resmi.
                   <a href="https://ojk.go.id/id/regulasi/Pages/PADK-43-PADK03-2025-Penyelenggaraan-Teknologi-Informasi-oleh-BPR-BPRS.aspx"
                      target="_blank" rel="noopener noreferrer">Buka sumber regulasi OJK</a>.
                 </p>
+                <section id="pdk-criteria-panel" aria-label="Kriteria peringkat hasil ekstraksi PADK" hidden>
+                  <div class="maturity-rubric-heading"><h3>Kriteria peringkat Tabel 3 (belum diverifikasi)</h3></div>
+                  <p class="workspace-disclaimer"><strong>TEKS HASIL EKSTRAKSI — BUKAN SUMBER FINAL TERVALIDASI.</strong>
+                    Cocokkan setiap kriteria secara visual dengan PDF PADK sebelum memilih peringkat.
+                    Khusus Kategori 2, kecocokan nomor Tabel 2–Tabel 3 masih berupa kandidat.
+                  </p>
+                  <p id="pdk-criteria-status" role="status" aria-live="polite"></p>
+                  <p id="pdk-criteria-source" class="workspace-help"></p>
+                  <div id="pdk-criteria-list"></div>
+                </section>
                 <label for="pdk-indicator-rank">Peringkat sementara (bukan nilai final)</label>
                 <select id="pdk-indicator-rank">
                   <option value="">Belum dipilih</option>

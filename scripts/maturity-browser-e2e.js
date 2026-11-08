@@ -262,6 +262,12 @@ async function runBrowser(base,db,fixture){
     await until("document.getElementById('pdk-message').textContent.includes('berhasil disimpan')",'PADK preparation persisted');
     await until("document.getElementById('pdk-indicator-list').options.length===81",
       '80 draft indicators listed');
+    await until("document.querySelectorAll('#pdk-criteria-list .workspace-history-item').length===5",
+      'PADK extracted Table 3 criteria visible');
+    assert.equal(await evalJs("document.getElementById('pdk-criteria-source').textContent.includes('157')"),true);
+    assert.equal(await evalJs("document.getElementById('pdk-criteria-status').textContent.includes('belum diperiksa')"),true);
+    await evalJs("document.querySelector('#pdk-criteria-list button').click()");
+    assert.equal(await evalJs("document.getElementById('pdk-indicator-rank').value"),'1');
     await evalJs("document.getElementById('pdk-indicator-notes').value='Validasi pemilik kontrol dan kebijakan.';"+
       "document.getElementById('pdk-indicator-evidence').value='SOP TI dan notulen rapat manajemen.';"+
       "document.getElementById('pdk-indicator-rank').value='2';"+
@@ -531,7 +537,7 @@ async function runBrowser(base,db,fixture){
     await evalJs("document.getElementById('mfa-login-code').value="+JSON.stringify(codes[0])+";"+
       "document.getElementById('mfa-login-form').requestSubmit()");
     await until("!document.getElementById('app-screen').hidden",'recovery login accepted');
-    console.log('Browser E2E PASS: PADK draft submit/return/resubmit/accept + evidence + PDF, maturity, password and MFA');
+    console.log('Browser E2E PASS: PADK extracted criteria + submit/review/evidence + PDF, maturity, password and MFA');
   }finally{
     await stopChromium(browser);
   }
