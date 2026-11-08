@@ -13,6 +13,7 @@ import {hashPassword} from '../apps/api/src/passwords.js';
 import {createServer} from '../apps/api/src/server.js';
 import {changePasswordInTransaction} from '../apps/api/src/change-password.js';
 import {createPadkPreparationInTransaction,savePadkPreparationInTransaction} from '../apps/api/src/padk-preparations.js';
+import {savePadkIndicatorNoteInTransaction} from '../apps/api/src/padk-preparation-indicators.js';
 import {
   MfaError,base32Decode,totpForStep,mfaStatus,
   startTotpEnrollment,confirmTotpEnrollmentInTransaction,
@@ -251,6 +252,14 @@ async function runBrowser(base,db,fixture){
       "document.getElementById('pdk-notes').dispatchEvent(new Event('input',{bubbles:true}));"+
       "document.getElementById('pdk-note-form').requestSubmit()");
     await until("document.getElementById('pdk-message').textContent.includes('berhasil disimpan')",'PADK preparation persisted');
+    await until("document.getElementById('pdk-indicator-list').options.length===81",
+      '80 draft indicators listed');
+    await evalJs("document.getElementById('pdk-indicator-notes').value='Validasi pemilik kontrol dan kebijakan.';"+
+      "document.getElementById('pdk-indicator-evidence').value='SOP TI dan notulen rapat manajemen.';"+
+      "document.getElementById('pdk-indicator-notes').dispatchEvent(new Event('input',{bubbles:true}));"+
+      "document.getElementById('pdk-indicator-form').requestSubmit()");
+    await until("document.getElementById('pdk-indicator-message').textContent.includes('Catatan indikator tersimpan')",
+      'PADK draft item note persisted');
     assert.equal((await db.query('SELECT revision FROM padk_assessment_preparations')).rows[0].revision,2);
     await openMaturity();
     assert.equal(await evalJs("document.getElementById('ma-submit').hidden"),false);
@@ -289,6 +298,10 @@ async function runBrowser(base,db,fixture){
     await until("!document.getElementById('pdk-detail').hidden",'PADK reopen from list');
     assert.equal(await evalJs("document.getElementById('pdk-notes').value"),
       'Inventarisasi perangkat dan pengelolaan risiko internal.');
+    await until("document.getElementById('pdk-indicator-list').options.length===81",
+      'PADK draft indicators reopened');
+    assert.equal(await evalJs("document.getElementById('pdk-indicator-notes').value"),
+      'Validasi pemilik kontrol dan kebijakan.');
     await openMaturity();
     assert.equal(await evalJs("document.getElementById('ma-rating-form').hidden"),false);
     await evalJs("document.getElementById('ma-rating-level').value='2';"+
@@ -335,6 +348,10 @@ async function runBrowser(base,db,fixture){
     await until("!document.getElementById('pdk-detail').hidden",'viewer PADK details');
     assert.equal(await evalJs("document.getElementById('pdk-save').hidden"),true);
     assert.equal(await evalJs("document.getElementById('pdk-notes').readOnly"),true);
+    await until("document.getElementById('pdk-indicator-list').options.length===81",
+      'viewer sees PADK draft indicators');
+    assert.equal(await evalJs("document.getElementById('pdk-indicator-save').hidden"),true);
+    assert.equal(await evalJs("document.getElementById('pdk-indicator-notes').readOnly"),true);
     await openMaturity();
     assert.equal(await evalJs("document.getElementById('ma-review-queue-panel').hidden"),true);
     assert.equal(await evalJs("document.getElementById('ma-rating-form').hidden"),true);
@@ -387,7 +404,7 @@ async function runBrowser(base,db,fixture){
     await evalJs("document.getElementById('mfa-login-code').value="+JSON.stringify(codes[0])+";"+
       "document.getElementById('mfa-login-form').requestSubmit()");
     await until("!document.getElementById('app-screen').hidden",'recovery login accepted');
-    console.log('Browser E2E PASS: PADK preparation create/save/reopen/read-only, maturity, password rotation and MFA');
+    console.log('Browser E2E PASS: PADK per-indicator notes create/save/reopen/viewer read-only, maturity, password and MFA');
   }finally{
     await stopChromium(browser);
   }
@@ -419,6 +436,7 @@ async function main(){
       padkPreparationHandlers:{
         create:(db,args)=>createPadkPreparationInTransaction(db,args),
         save:(db,args)=>savePadkPreparationInTransaction(db,args),
+        saveIndicator:(db,args)=>savePadkIndicatorNoteInTransaction(db,args),
       },
       maturityAssessmentHandlers:{
         create:(db,args)=>createMaturityAssessmentInTransaction(db,args),

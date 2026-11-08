@@ -40,3 +40,11 @@ Persiapan PADK bisa dilakukan lewat web: petugas yang memiliki `assessments:writ
 **NO-GO** bila regulatory pack belum lolos pemeriksaan primer dan review independen, salah satu langkah input–approval–kalkulasi–PDF gagal E2E, ada isu kritikal/tinggi terbuka, atau prosedur backup/restore belum dibuktikan. Tanggal target bukan izin untuk mengubah preview menjadi skor resmi.
 
 Lisensi AGPL-3.0-only dan legal attribution VYNTRIX tidak diubah.
+
+## Vertical slice berikutnya — catatan persiapan per indikator (draft)
+
+Petugas sekarang dapat membuka 80 ringkasan kerja indikator Kategori 1 atau 60 Kategori 2 pada workspace persiapan, memilih indikator, menyimpan catatan situasi dan rencana bukti per indikator, lalu membuka ulang tanpa spreadsheet. Catatan memiliki revision check dan histori append-only serta hanya dapat diubah pembuat persiapan; viewer tetap read-only.
+
+**Keterbatasan sengaja:** label bersumber dari `regulations/padk43/cyber/drafts/kategori-*.json`, ditampilkan eksplisit sebagai **ringkasan draft**, bukan kutipan OJK terverifikasi atau materi untuk scoring. Tidak ada rank 1–5, rumus, review penilaian, approval, PDF final, atau upload dokumen evidence. Regulatory release gate tetap BLOCKED.
+
+Sumber primer PDF PADK sudah diterima dan transkripsi kandidat 140 indikator + 400 sel kriteria tersimpan dalam review pack privat. Keterkaitan Kategori 2 ke Tabel 3, proofreading, serta review independen masih harus diselesaikan sebelum kriteria resmi digunakan. Indikator #24, #29, dan #32 Kategori 2 memerlukan pemeriksaan khusus karena redaksinya menggabungkan beberapa subpersyaratan.
