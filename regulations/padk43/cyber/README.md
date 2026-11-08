@@ -1,101 +1,36 @@
-# PADK 43/PADK.03/2025 — Proses verifikasi regulatory pack
+# Data instrumen PADK
 
-**Status: BELUM ADA regulatory pack yang lengkap dan diperiksa untuk produksi.**
+Folder ini menampung data penilaian keamanan siber berdasarkan **Lampiran IV PADK 43/PADK.03/2025**. Data di `drafts/` masih bahan kerja dan belum boleh dipakai sebagai instrumen resmi.
 
-Pemeriksaan struktur tidak menggantikan validasi isi terhadap dokumen sumber. Data indikator tidak boleh diisi dengan placeholder, dan hasil pemeriksaan otomatis **bukan persetujuan atau pengesahan OJK**.
+Baca [panduan penilaian PADK](../../../docs/PADK.md) untuk kategori, bobot domain, kalkulasi, dan batasan penggunaan.
 
-## Sumber dan cakupan
+## Isi folder
 
-Rujukan utama: [PADK 43/PADK.03/2025 di situs OJK](https://ojk.go.id/id/regulasi/Pages/PADK-43-PADK03-2025-Penyelenggaraan-Teknologi-Informasi-oleh-BPR-BPRS.aspx), Lampiran IV Bab III.
-
-| Data | Sumber |
+| Lokasi | Kegunaan |
 | --- | --- |
-| Kategori 1, 80 indikator | Lampiran IV Bab III bagian B dan tabel 1 bagian C |
-| Kategori 2, 60 indikator | Lampiran IV Bab III bagian B dan tabel 2 bagian C |
-| Pemetaan domain, subdomain, dan parameter | Lampiran IV Bab III bagian C, halaman cetak 16–37 |
-| Deskripsi kriteria peringkat 1–5 | Lampiran IV Bab III bagian D, halaman cetak 38–80 |
-| Skala, bobot, dan nilai komposit | Lampiran IV Bab III bagian B dan E |
+| `drafts/kategori-1.json` | 80 indikator kerja Kategori 1 |
+| `drafts/kategori-2.json` | 60 indikator kerja Kategori 2 |
+| `drafts/table3-criteria-source.br` | 400 teks kriteria yang diekstrak dari Tabel 3 |
+| `review/category2-candidates.json` | Kandidat pemetaan 60 indikator Kategori 2 ke Tabel 3 |
+| `packs/` | Regulatory pack yang telah diperiksa; saat ini belum tersedia |
 
-`tablePage` dan `criteriaPage` menunjuk **nomor halaman tercetak Lampiran IV**, bukan indeks halaman PDF gabungan.
+## Menyusun regulatory pack
 
-Status sebuah BPR/BPRS sebagai kategori 1 atau 2 harus ditetapkan berdasarkan karakteristik layanan yang sebenarnya: kategori 1 mencakup penyelenggara layanan digital dan/atau yang terhubung ke sistem aplikasi/infrastruktur TI mitra kerja, sedangkan kategori 2 menyelenggarakan layanan perbankan dasar. Jangan pilih kategori karena skor yang lebih menguntungkan.
+1. Ambil PDF langsung dari [situs OJK](https://ojk.go.id/id/regulasi/Pages/PADK-43-PADK03-2025-Penyelenggaraan-Teknologi-Informasi-oleh-BPR-BPRS.aspx). Catat URL, tanggal akses, dan SHA-256 file. Hash saja tidak membuktikan keaslian penerbit.
+2. Bandingkan teks parameter, domain, halaman tabel, kriteria peringkat 1–5, dan halaman kriteria dengan PDF. Jangan menyalin parafrasa `workingSummary` sebagai kutipan regulasi.
+3. Verifikasi pemetaan Kategori 2 berdasarkan substansi, bukan sekadar kemiripan istilah.
+4. Susun `packs/kategori-1.json` dan `packs/kategori-2.json` sesuai skema yang diperiksa validator.
+5. Lakukan pemeriksaan substansi dan teknis oleh dua orang berbeda yang bukan penyusun. Simpan rujukan halaman dan attestasi yang terikat pada fingerprint pack. Attestasi JSON bukan tanda tangan digital atau persetujuan OJK.
+6. Jalankan pemeriksaan dan review perubahan kode sebelum data dipakai aplikasi.
 
-## Alur kerja verifikasi manual
-
-1. Unduh **dokumen PADK lengkap dari OJK** dan catat SHA-256 byte PDF persis yang dipakai untuk menyalin. Misalnya `sha256sum PADK43.pdf` di Linux atau `Get-FileHash PADK43.pdf -Algorithm SHA256` di PowerShell. Gunakan identitas tersebut sebagai `source.pdfSha256`. Hash bukan bukti bahwa file itu dokumen asli; URL, penerbit, dan integritas dokumennya juga harus diperiksa.
-2. Susun dua berkas JSON: `packs/kategori-1.json` dan `packs/kategori-2.json`. Setiap berkas memuat `pack`, `compiledBy`, dan `attestations`.
-3. Untuk setiap indikator, transkripsikan nomor, domain, subdomain, parameter, dan halaman tabel. Tambahkan **semua kriteria rank 1–5 beserta halaman rujukannya** dari bagian D. Jangan mengisi data tebakan, ringkasan yang mengubah makna, contoh generator, atau kriteria yang sama untuk lima rank.
-4. Jalankan `node scripts/check-padk-regulatory-packs.js`. Validator memeriksa struktur, cakupan dan sidik jari, **bukan kesesuaian kata per kata dengan PDF**.
-5. Lakukan review substantif dan teknis oleh dua orang berbeda yang bukan penyusun. Attestasi harus mengacu pada SHA-256 canonical regulatory pack yang dihasilkan validator. Jika ada perubahan satu karakter saja, sidik jari berubah dan attestasi harus diperbarui.
-6. Buka PR khusus untuk kedua pack. Reviewer lain yang independen harus memeriksa terhadap PDF OJK yang sama dan meninggalkan approval pada GitHub. **Attestasi JSON adalah pernyataan biasa, bukan tanda tangan kriptografis atau persetujuan regulator.**
-7. Jalankan `npm run regulatory:release-gate`. Gate ini gagal saat file belum ada atau tidak lolos pemeriksaan; walaupun hasilnya lulus, pemeriksaan manusia dan seluruh release gate keamanan aplikasi tetap terpisah.
-
-## Skema JSON per kategori (bentuk, bukan konten)
-
-```json
-{
-  "pack": {
-    "schemaVersion": 1,
-    "reference": "43/PADK.03/2025:LAMPIRAN_IV",
-    "category": 1,
-    "source": {
-      "authority": "OJK",
-      "regulation": "43/PADK.03/2025",
-      "annex": "IV",
-      "table": "TABEL_1",
-      "url": "https://ojk.go.id/id/regulasi/Pages/PADK-43-PADK03-2025-Penyelenggaraan-Teknologi-Informasi-oleh-BPR-BPRS.aspx",
-      "pdfSha256": "<64 digit SHA-256 dari file PDF yang diperiksa>"
-    },
-    "indicators": [
-      {
-        "number": 1,
-        "domain": "TK",
-        "subdomain": "<kode internal subdomain yang dipetakan ke teks sumber>",
-        "title": "<teks parameter dari tabel C>",
-        "tablePage": 16,
-        "rankCriteria": [
-          { "rank": 1, "criterion": "<kriteria rank 1>", "criteriaPage": 38 },
-          { "rank": 2, "criterion": "<kriteria rank 2>", "criteriaPage": 38 },
-          { "rank": 3, "criterion": "<kriteria rank 3>", "criteriaPage": 38 },
-          { "rank": 4, "criterion": "<kriteria rank 4>", "criteriaPage": 38 },
-          { "rank": 5, "criterion": "<kriteria rank 5>", "criteriaPage": 38 }
-        ]
-      }
-    ]
-  },
-  "compiledBy": "<identitas penyusun>",
-  "attestations": [
-    {
-      "reviewerId": "<reviewer substansi>",
-      "role": "substance",
-      "reviewedAt": "2026-11-05",
-      "packSha256": "<SHA-256 canonical pack dari validator>"
-    },
-    {
-      "reviewerId": "<reviewer teknis>",
-      "role": "technical",
-      "reviewedAt": "2026-11-05",
-      "packSha256": "<SHA-256 canonical pack dari validator>"
-    }
-  ]
-}
+```bash
+npm run regulatory:draft-status
+npm run regulatory:check
+npm run regulatory:release-gate
 ```
 
-Contoh di atas **tidak dapat lolos validator**: hanya ada satu indikator, teks menggunakan placeholder, dan checksum tidak diisi. Tidak ada regulatory pack sintetis yang dimuat aplikasi.
+`regulatory:check` memeriksa struktur, **bukan** memastikan seluruh redaksi benar. `regulatory:release-gate` harus menolak pack yang belum memenuhi syarat. Rincian opsi dapat dilihat pada `scripts/check-padk-regulatory-packs.js`.
 
-## Status implementasi
+Setiap pack wajib memuat identitas sumber (`source.url` dan `source.pdfSha256`), kategori, daftar indikator lengkap, kriteria rank, nomor halaman, penyusun, dan attestasi reviewer yang berbeda.
 
-- `npm run regulatory:check` memeriksa pack yang ada; jika belum ada pack pada pengembangan, perintah tetap dapat lulus tetapi mencetak pesan release gate belum terpenuhi.
-- `npm run regulatory:release-gate` mensyaratkan **kedua** pack lolos struktur serta attestasi terikat SHA-256 yang berbeda per role.
-- Belum ada endpoint yang secara otomatis menggunakan pack dari direktori ini. Endpoint preview PR #27 masih menerima manifest yang diberikan pemanggil, menghitung simulasi dengan label `PREVIEW_UNVERIFIED`, dan tidak menghasilkan penilaian resmi.
-- **Tidak** ada jaminan keakuratan isi hanya karena 80/60 indikator dan 400/300 kriteria sudah terisi; kualitas isi memerlukan source review independen.
-- Tidak ada bukti persetujuan OJK maupun legitimasi untuk penggunaan operasional hanya dari status review internal.
-
-Perlu dilanjutkan dengan pencocokan seluruh butir kategori 1/2 terhadap Lampiran IV, kasus uji contoh perhitungan resmi, UAT praktisi, dan approval PR substansi/regulasi yang didokumentasikan.
-
-## Catatan draft per nomor (PR #29)
-
-Direktori [drafts/](drafts/README.md) menyediakan workbench **yang tidak dapat dipromosikan menjadi regulatory pack**. Isinya baru ringkasan kerja indikator 1–20 per kategori, bukan 80/60 indikator yang sudah diverifikasi. Progres dapat dibaca lewat `npm run regulatory:draft-status`; total draft 40/140 indikator dan 0/700 kriteria. Nomor 18–20 tidak identik antar kategori.
-
-Saat menjalankan `npm run regulatory:release-gate -- --source-pdf=/path/ke/PADK43.pdf`, sumber PDF harus tersedia di disk dengan byte yang cocok terhadap `source.pdfSha256` pada kedua pack. Pemegang akun tetap harus memastikan PDF itu memang diterbitkan OJK dan approval konten dilakukan secara independen sebelum release.
-
+**Jangan mengisi placeholder agar pemeriksaan lulus.** Data yang belum diperiksa harus tetap berstatus draft. Alat pembanding PDF lokal dijelaskan di [panduan review](../../../tools/padk-review/README.md).

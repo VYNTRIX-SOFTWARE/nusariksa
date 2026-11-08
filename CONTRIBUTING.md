@@ -1,22 +1,40 @@
-# Berkontribusi
+# Berkontribusi pada NusaRiksa
 
-Kontribusi perbaikan kode, pengujian, dokumentasi, dan telaah regulasi diterima.
+Kontribusi kode, pengujian, dokumentasi, dan pemeriksaan akurasi instrumen PADK diterima.
 
-1. Buat atau pilih isu yang menjelaskan masalah nyata.
-2. Kerjakan perubahan pada branch `development`. Gunakan `main` hanya untuk perubahan yang sudah ditinjau.
-3. Jalankan `npm run check` dan pastikan CI berhasil.
-4. Setelah perubahan siap, ajukan pull request dari `development` ke `main`. Jelaskan secara singkat alasan perubahan, bagian yang terdampak, dan hasil pengujian yang benar-benar dijalankan.
-5. Tulis pesan commit, judul, dan deskripsi PR dalam Bahasa Indonesia. Nama fungsi, variabel, endpoint, dan perintah teknis tetap dalam bahasa Inggris.
-6. Gunakan squash merge setelah peninjauan. Sinkronkan kembali `development` dengan `main` sebelum melanjutkan pekerjaan.
+## Sebelum mulai
 
-Contoh pesan commit: `Tambahkan pengujian untuk respons rute tidak dikenal`.
+1. Cari issue yang sudah ada. Jika belum ada, jelaskan masalah, cara mengulang, dan hasil yang diharapkan.
+2. Siapkan lingkungan sesuai [panduan pengembangan](docs/DEVELOPMENT.md). Jangan gunakan data nasabah atau dokumen bank untuk tes.
+3. Untuk perubahan PADK, baca [panduan PADK](docs/PADK.md). Data draft tidak boleh ditandai terverifikasi tanpa bukti pemeriksaan sumber dan reviewer independen.
 
-Jangan memasukkan dokumen internal bank, informasi nasabah, kredensial, atau kunci enkripsi. Jangan mengarang hasil tes atau mengklaim kepatuhan terhadap peraturan sebelum ketentuannya diverifikasi dari sumber resmi.
+## Pull Request
 
-## Hak cipta, lisensi kontribusi, dan sumber pihak ketiga
+Gunakan branch `development` untuk pekerjaan yang akan ditinjau dan `main` untuk perubahan yang sudah diterima. Hindari mencampur perubahan yang tidak berkaitan. Pengelola proyek menentukan kapan PR di-merge.
 
-- Dengan mengirim kontribusi untuk digabungkan ke repositori, pastikan Anda berhak menyerahkan kode, teks, atau aset tersebut berdasarkan **AGPL-3.0-only** atau izin yang kompatibel. Kontribusi yang digabungkan didistribusikan di bawah lisensi proyek kecuali dinyatakan lain secara sah dan ditinjau.
-- Hak cipta kontribusi **tidak otomatis dialihkan ke VYNTRIX** hanya karena PR dibuat atau di-*merge*. Jika ada perjanjian pengalihan atau lisensi tambahan yang terpisah, dokumentasikan secara benar.
-- Jangan menghapus atau mengganti pemberitahuan hak cipta pihak lain tanpa dasar yang sah. Jelaskan asal kode/aset pihak ketiga dan lisensinya dalam PR; jangan menyalin materi proprietary tanpa izin.
-- Jangan mengklaim sebagai rilis resmi VYNTRIX apabila menerbitkan versi modifikasi sendiri. Baca [NOTICE.md](NOTICE.md) dan [TRADEMARKS.md](TRADEMARKS.md).
-- Tidak diperlukan *Contributor License Agreement* atau pengalihan hak cipta tambahan sebagai syarat kontribusi berdasarkan panduan ini.
+Jalankan pemeriksaan berikut sebelum mengajukan PR:
+
+```bash
+npm ci
+npm run check
+npm run test:browser
+```
+
+Tes integrasi dan browser memerlukan PostgreSQL serta lingkungan yang sesuai. Jangan mengklaim tes berhasil jika belum dijalankan atau terlewat.
+
+Gunakan empat bagian dalam deskripsi PR:
+
+- **Summary:** masalah yang diselesaikan.
+- **Changes:** perubahan yang dilakukan.
+- **Testing:** perintah dan hasil pengujian sebenarnya.
+- **Limitations:** risiko atau batasan yang relevan.
+
+Roadmap dan daftar pekerjaan berikutnya tidak perlu dimasukkan ke PR. Tulis judul, pesan commit, dan penjelasan singkat dalam bahasa Indonesia; nama fungsi, API, dan variabel tetap mengikuti konvensi kode.
+
+## Keamanan dan data
+
+Jangan commit password, token, kunci, data nasabah, dokumen internal BPR/BPRS, atau laporan pemeriksaan yang bersifat rahasia. Laporkan kerentanan melalui jalur privat sesuai [SECURITY.md](SECURITY.md), bukan issue publik yang memuat detail eksploitasi.
+
+## Lisensi dan atribusi
+
+Kontribusi harus dapat didistribusikan menurut **AGPL-3.0-only** atau lisensi yang kompatibel. Hak cipta kontributor tidak otomatis dialihkan ke VYNTRIX ketika PR di-merge. Pertahankan pemberitahuan hak cipta pihak ketiga. Lihat [LICENSE](LICENSE), [NOTICE.md](NOTICE.md), dan [TRADEMARKS.md](TRADEMARKS.md).

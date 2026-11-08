@@ -1,0 +1,67 @@
+# Panduan pengembangan
+
+Panduan ini untuk pengembang yang ingin menjalankan, menguji, atau memperbaiki NusaRiksa. Untuk pengenalan aplikasi dan instalasi singkat, mulai dari [README](../README.md).
+
+## Lingkungan lokal
+
+Gunakan Node.js `>=24.7.0 <27`, npm, dan PostgreSQL 17. Buat database kosong, lalu atur `DATABASE_URL` dan `APP_ORIGIN` sebagaimana dijelaskan di README.
+
+```bash
+npm ci
+npm run db:migrate
+npm run admin:bootstrap -- --name "BPR Contoh" --kind BPR --email admin@example.test
+npm start
+```
+
+Bootstrap pertama meminta password melalui terminal. Gunakan data contoh, bukan akun karyawan bank yang sebenarnya.
+
+| Variabel | Kegunaan |
+| --- | --- |
+| `DATABASE_URL` | Koneksi PostgreSQL |
+| `APP_ORIGIN` | Origin browser yang diizinkan, misalnya `http://localhost:3000` |
+| `PORT` | Port server pengembangan; default 3000 |
+| `EVIDENCE_ENCRYPTION_KEY` | Kunci bukti AES-256-GCM: 64 digit heksadesimal |
+
+Simpan kunci di luar repositori. Kehilangan kunci dapat menyebabkan dokumen terenkripsi tidak dapat dibaca kembali.
+
+## Struktur kode
+
+- `apps/api/src/`: handler HTTP, aturan bisnis, autentikasi, dan otorisasi.
+- `apps/api/test/`: pengujian unit dan integrasi.
+- `apps/web/`: HTML dan JavaScript antarmuka.
+- `database/migrations/`: perubahan struktur database. Buat migrasi baru; jangan mengedit migrasi yang sudah digabung ke `main`.
+- `scripts/`: migrasi, bootstrap, tes browser, dan validasi PADK.
+- `regulations/padk43/cyber/`: data draft instrumen, calon pemetaan, dan pemeriksaan sumber.
+
+Backend harus memeriksa peran, izin, institusi, dan status asesmen pada setiap permintaan. Menyembunyikan tombol dari pengguna tidak menggantikan otorisasi API. Sesi menggunakan cookie HttpOnly.
+
+## Pengujian
+
+```bash
+npm run check
+npm run test:browser
+```
+
+`npm run check` menjalankan pemeriksaan sintaks, tes Node.js, dan validasi data PADK tahap pengembangan. Tes integrasi membutuhkan `DATABASE_URL`. Tes browser memerlukan PostgreSQL dan browser yang sesuai dengan skrip tes. Periksa hasil dan jumlah tes yang benar-benar dijalankan sebelum membuat PR.
+
+Perubahan API atau database harus diuji untuk akses tanpa izin, input tidak valid, konflik revisi, dan kegagalan transaksi. Untuk UI, uji tindakan menyimpan dan membaca kembali, bukan hanya tampilannya.
+
+Pemeriksaan instrumen PADK:
+
+```bash
+npm run regulatory:draft-status
+npm run regulatory:check
+npm run regulatory:release-gate
+```
+
+`regulatory:check` bukan tanda aplikasi boleh dipakai untuk pelaporan resmi. `regulatory:release-gate` harus tetap menolak paket yang belum lengkap atau belum diperiksa. Lihat [panduan PADK](PADK.md).
+
+## Aturan kontribusi
+
+Satu PR sebaiknya membahas satu perubahan yang jelas. Kerjakan perubahan di `development` dan gunakan `main` sebagai referensi kode yang sudah diterima. Setelah squash merge, sinkronkan kembali `development` dengan `main` sebelum melanjutkan.
+
+Jelaskan PR menggunakan **Summary, Changes, Testing, Limitations**. Issue dipakai untuk pekerjaan yang belum dikerjakan; PR tidak perlu memuat rencana sprint atau catatan pribadi. Baca [CONTRIBUTING.md](../CONTRIBUTING.md).
+
+## Sebelum menggunakan data produksi
+
+NusaRiksa masih dalam pengembangan. Penerapan produksi memerlukan review otorisasi, manajemen dan pemulihan kunci, keamanan unggahan, backup–restore, pengujian operasional, serta pemeriksaan independen atas instrumen PADK. CI yang lulus tidak membuktikan aplikasi aman untuk data bank.

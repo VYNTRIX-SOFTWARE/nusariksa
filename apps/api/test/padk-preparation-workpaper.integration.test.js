@@ -8,8 +8,12 @@ import {createServer} from '../src/server.js';
 import {createPadkPreparationInTransaction} from '../src/padk-preparations.js';
 import {savePadkIndicatorNoteInTransaction} from '../src/padk-preparation-indicators.js';
 import {uploadPadkEvidenceInTransaction} from '../src/padk-evidence.js';
+import {getPadkPreparationWorkpaper} from '../src/padk-preparation-workpaper.js';
+import {
+  submitPadkDraftInTransaction,reviewPadkDraftInTransaction,
+} from '../src/padk-draft-review.js';
 
-test('PADK workpaper PDF exports saved data with read permissions, not scores', {
+test('PADK report draft includes provisional domain/composite and review but never official values', {
   skip:!process.env.DATABASE_URL,
 },async()=>{
   const pool=createPool();
@@ -23,13 +27,15 @@ test('PADK workpaper PDF exports saved data with read permissions, not scores', 
         "INSERT INTO users(email,status,password_hash) VALUES "+
         "('pdf-maker@example.test','active','test-hash'),"+
         "('pdf-reader@example.test','active','test-hash'),"+
-        "('pdf-no-role@example.test','active','test-hash') RETURNING id,email",
+        "('pdf-no-role@example.test','active','test-hash'),"+
+        "('pdf-reviewer@example.test','active','test-hash') RETURNING id,email",
       );
       const users=Object.fromEntries(u.rows.map(row=>[row.email,row.id]));
       const maker=users['pdf-maker@example.test'];
       await db.query(
-        "INSERT INTO user_roles(user_id,role) VALUES ($1,'IT_OFFICER'),($2,'VIEWER')",
-        [maker,users['pdf-reader@example.test']],
+        "INSERT INTO user_roles(user_id,role) VALUES "+
+        "($1,'IT_OFFICER'),($2,'VIEWER'),($3,'REVIEWER')",
+        [maker,users['pdf-reader@example.test'],users['pdf-reviewer@example.test']],
       );
       const preparation=await createPadkPreparationInTransaction(db,{
         actorId:maker,title:'Persiapan Keamanan Siber 2026',category:2,
@@ -54,6 +60,8 @@ test('PADK workpaper PDF exports saved data with read permissions, not scores', 
         cookies[user.email]='__Host-nusariksa_session='+
           (await createSession(db,user.id)).token;
       }
+      const direct=await getPadkPreparationWorkpaper(db,{actorId:maker,id:preparation.id});
+      assert.ok(direct.pdf.subarray(0,8).toString('latin1').startsWith('%PDF-1.4'));
       const server=createServer({authDb:db,appOrigin:'http://127.0.0.1:3000'});
       server.listen(0,'127.0.0.1');await once(server,'listening');
       const base='http://127.0.0.1:'+server.address().port;
@@ -65,7 +73,7 @@ test('PADK workpaper PDF exports saved data with read permissions, not scores', 
         assert.equal((await req()).status,401);
         assert.equal((await req(cookies['pdf-no-role@example.test'])).status,403);
         const response=await req(cookies['pdf-reader@example.test']);
-        assert.equal(response.status,200);
+        assert.equal(response.status,200,response.status===200?'PDF accepted':await response.clone().text());
         assert.equal(response.headers.get('content-type'),'application/pdf');
         assert.match(response.headers.get('content-disposition'),/attachment;/);
         assert.equal(response.headers.get('cache-control'),'no-store');
@@ -77,9 +85,34 @@ test('PADK workpaper PDF exports saved data with read permissions, not scores', 
         assert.match(source,/Dokumen SOP dan catatan uji restore/);
         assert.match(source,/Peringkat sementara: 3/);
         assert.match(source,/Jumlah dokumen bukti aktual: 1 file/);
+        assert.match(source,/sop-bukti.pdf/);
+        assert.match(source,/SHA-256/);
+        assert.match(source,/Progres: 1 \/ 60 indikator/);
+        assert.match(source,/Komposit SIMULASI: BELUM TERSEDIA/);
+        assert.match(source,/Status: in_progress/);
         assert.match(source,/Proses pemulihan teridentifikasi/);
         assert.match(source,/DRAFT - BUKAN HASIL PENILAIAN PADK/);
         assert.doesNotMatch(source,/Composite Rank|Nilai Komposit|Disetujui OJK/i);
+        await db.query(
+          "INSERT INTO padk_preparation_indicator_notes "+
+          "(preparation_id,indicator_number,provisional_rank,justification) "+
+          "SELECT $1,n,2,'Dasar kerja sementara dari bukti yang tersedia di BPR.' "+
+          "FROM generate_series(2,60) AS n",[preparation.id],
+        );
+        await submitPadkDraftInTransaction(db,{actorId:maker,id:preparation.id});
+        await reviewPadkDraftInTransaction(db,{
+          actorId:users['pdf-reviewer@example.test'],id:preparation.id,
+          decision:'accept_draft',note:'Pemeriksaan kelengkapan draft saja, bukan hasil resmi.',
+        });
+        const complete=await req(cookies['pdf-reader@example.test']);
+        assert.equal(complete.status,200);
+        const full=Buffer.from(await complete.arrayBuffer()).toString('latin1');
+        assert.match(full,/Progres: 60 \/ 60 indikator/);
+        assert.match(full,/Komposit SIMULASI: 2\.01/);
+        assert.match(full,/Status: draft_accepted/);
+        assert.match(full,/DRAFT_ACCEPTED/);
+        assert.match(full,/BUKAN HASIL PENILAIAN PADK/);
+        assert.doesNotMatch(full,/DISAHKAN SEBAGAI HASIL RESMI|DISETUJUI OJK/i);
         assert.equal((await req(cookies['pdf-maker@example.test'],
           '/regulatory/padk43/cyber/preparations/not-an-id/workpaper.pdf')).status,404);
       }finally{server.close();await once(server,'close');}
