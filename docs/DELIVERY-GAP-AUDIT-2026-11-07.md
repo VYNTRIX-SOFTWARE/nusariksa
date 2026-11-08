@@ -82,3 +82,11 @@ Workspace PADK sekarang mendukung siklus maker-checker secara **terbatas untuk d
 Status: `in_progress`, `submitted`, `changes_requested`, `draft_accepted`. Status `draft_accepted` hanya berarti pengecekan internal terhadap draft sementara, **bukan** `approved`, bukan penilaian PADK sah, dan **tidak** membuka kalkulasi resmi/PDF final. Respons menyertakan `officialApprovalAvailable:false`, `regulatoryPackVerified:false`, `finalReportAvailable:false`.
 
 Keterbatasan sebelum rilis: seluruh teks 140 parameter/400 kriteria, crosswalk Kategori 2, metode kalkulasi dan aturan pembulatan membutuhkan validasi regulasi dan review independen; hasil resmi, komposit, dan laporan final tetap BLOCKED. Setelah regulatory pack disahkan, perlu jalur approval hasil resmi baru yang menggunakan snapshot input dan evidence yang terlacak, bukan mengubah label `draft_accepted`.
+
+## MVP — tampilan simulasi nilai domain dan komposit dari jawaban yang tersimpan
+
+Pada workspace PADK yang sama, modul kini mengakses peringkat sementara **langsung dari PostgreSQL** berdasarkan preparation milik institusi. Backend menyusun manifest 80/60 dari draft kategori di repository, memvalidasi jumlah, nomor, lima domain, status `DRAFT_UNVERIFIED`, dan menghitung rata-rata peringkat tiap domain serta kontribusi 25%/15%/25%/15%/20% memakai engine `padk-cyber-maturity.js` yang sudah ada.
+
+UI menampilkan progres per domain. **Jika satu indikator belum dinilai, komposit tidak dihitung**. Jika lengkap, angka dua desimal dan peringkat ditampilkan sangat jelas sebagai **SIMULASI SAJA** dan **BELUM SAH UNTUK PELAPORAN**. Setiap respon server membawa `mappingVerified=false`, `criteriaVerified=false`, `roundingPolicyVerified=false`, `officialScoreAvailable=false`, dan `finalReportAvailable=false`. Hasil pratinjau tidak dicetak sebagai nilai resmi dalam PDF dan tidak membuka approval penilaian resmi.
+
+Batas penting: kelompok domain pada daftar kerja masih `DRAFT_UNVERIFIED`; transkripsi kriteria 400 sel belum direview independen; pembulatan half-up dua desimal adalah kebijakan simulasi, **bukan ketentuan resmi yang telah dikonfirmasi**. Sebelum rilis final diperlukan verifikasi teks 140 indikator, 400 sel kriteria, crosswalk 60 indikator Kategori 2, metode pembulatan, alur approval hasil final, serta UAT produksi.

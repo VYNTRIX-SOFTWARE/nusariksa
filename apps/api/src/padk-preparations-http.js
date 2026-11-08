@@ -9,6 +9,7 @@ import {
   listPadkIndicatorNotes,savePadkIndicatorNote,historyPadkIndicatorNote,
 } from './padk-preparation-indicators.js';
 import {getPadkPreparationWorkpaper} from './padk-preparation-workpaper.js';
+import {getPadkSavedScorePreview} from './padk-saved-score-preview.js';
 
 const BASE='/regulatory/padk43/cyber/preparations';
 const UUID='([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})';
@@ -18,6 +19,7 @@ const INDICATORS=new RegExp('^'+BASE+'/'+UUID+'/indicators$','i');
 const INDICATOR=new RegExp('^'+BASE+'/'+UUID+'/indicators/([1-9][0-9]?)$','i');
 const INDICATOR_HISTORY=new RegExp('^'+BASE+'/'+UUID+'/indicators/([1-9][0-9]?)/history$','i');
 const WORKPAPER=new RegExp('^'+BASE+'/'+UUID+'/workpaper\\.pdf$','i');
+const SCORE_PREVIEW=new RegExp('^'+BASE+'/'+UUID+'/score-preview$','i');
 const LIMIT=18000;
 function respond(response,status,data){response.writeHead(status);response.end(JSON.stringify(data));}
 async function readJson(request,fields,optional=[]){
@@ -49,12 +51,14 @@ export function createPadkPreparationsHandler({
   indicators=listPadkIndicatorNotes,saveIndicator=savePadkIndicatorNote,
   indicatorHistory=historyPadkIndicatorNote,
   workpaper=getPadkPreparationWorkpaper,
+  scorePreview=getPadkSavedScorePreview,
 }){
   return async function handlePadkPreparations(request,response){
     const path=request.url??'',method=request.method;
     const id=DETAIL.exec(path),audit=HISTORY.exec(path);
     const indicatorList=INDICATORS.exec(path),singleIndicator=INDICATOR.exec(path),
-      indicatorAudit=INDICATOR_HISTORY.exec(path),workpaperMatch=WORKPAPER.exec(path);
+      indicatorAudit=INDICATOR_HISTORY.exec(path),workpaperMatch=WORKPAPER.exec(path),
+      scoreMatch=SCORE_PREVIEW.exec(path);
     const listing=path===BASE&&method==='GET';
     const creation=path===BASE&&method==='POST';
     const fetching=id&&method==='GET';
@@ -64,8 +68,10 @@ export function createPadkPreparationsHandler({
     const updatingIndicator=singleIndicator&&method==='PUT';
     const listingIndicatorEvents=indicatorAudit&&method==='GET';
     const downloadingWorkpaper=workpaperMatch&&method==='GET';
+    const readingScorePreview=scoreMatch&&method==='GET';
     if(!listing&&!creation&&!fetching&&!saving&&!events
-      &&!listingIndicators&&!updatingIndicator&&!listingIndicatorEvents&&!downloadingWorkpaper){
+      &&!listingIndicators&&!updatingIndicator&&!listingIndicatorEvents
+      &&!downloadingWorkpaper&&!readingScorePreview){
       respond(response,404,{error:'Not found'});return;
     }
     if(!db||!appOrigin){respond(response,503,{error:'Unavailable'});return;}
@@ -88,6 +94,9 @@ export function createPadkPreparationsHandler({
           'attachment; filename="'+result.filename+'"');
         response.setHeader('X-Content-Type-Options','nosniff');
         response.writeHead(200);response.end(result.pdf);return;
+      }
+      if(readingScorePreview){
+        respond(response,200,await scorePreview(db,{actorId:session.userId,id:scoreMatch[1]}));return;
       }
       if(listing){respond(response,200,await list(db,{actorId:session.userId}));return;}
       if(fetching){respond(response,200,await detail(db,{actorId:session.userId,id:id[1]}));return;}

@@ -252,6 +252,9 @@ async function runBrowser(base,db,fixture){
     await until("!document.getElementById('pdk-detail').hidden",'PADK created through UI');
     await until("document.getElementById('pdk-review-state').textContent.includes('Sedang dikerjakan')",
       'PADK draft status loaded');
+    await until("document.getElementById('pdk-score-status').textContent.includes('Terisi 0 dari 80')",
+      'PADK zero-rating preview loaded');
+    assert.equal(await evalJs("document.getElementById('pdk-score-composite').textContent.includes('belum dihitung')"),true);
     await evalJs("document.getElementById('pdk-notes').value='Inventarisasi perangkat dan pengelolaan risiko internal.';"+
       "document.getElementById('pdk-evidence-plan').value='Siapkan dokumen kebijakan dan log pemantauan.';"+
       "document.getElementById('pdk-notes').dispatchEvent(new Event('input',{bubbles:true}));"+
@@ -267,6 +270,9 @@ async function runBrowser(base,db,fixture){
       "document.getElementById('pdk-indicator-form').requestSubmit()");
     await until("document.getElementById('pdk-indicator-message').textContent.includes('Draft indikator tersimpan')",
       'PADK draft item note persisted');
+    await until("document.getElementById('pdk-score-status').textContent.includes('Terisi 1 dari 80')",
+      'PADK preview refreshed on saved rank');
+    assert.equal(await evalJs("document.getElementById('pdk-score-composite').textContent.includes('belum dihitung')"),true);
     await until("!document.getElementById('pdk-evidence-upload').hidden",
       'PADK evidence upload enabled after saving indicator');
     await evalJs("(()=>{const file=new File(['%PDF-1.4\\n1 0 obj\\n<<>>\\nendobj\\n%%EOF'], "+
@@ -308,6 +314,10 @@ async function runBrowser(base,db,fixture){
       "SELECT $1,n,2,'Justifikasi sementara berdasarkan pemeriksaan dokumen internal.' "+
       "FROM generate_series(2,80) AS n",[padkId],
     );
+    await evalJs("document.getElementById('pdk-score-refresh').click()");
+    await until("document.getElementById('pdk-score-composite').textContent.includes('Komposit 2.00')",
+      'PADK five-domain composite preview from saved ranks');
+    assert.equal(await evalJs("document.getElementById('pdk-score-composite').textContent.includes('BELUM SAH')"),true);
     await evalJs("document.getElementById('pdk-review-submit').click()");
     await until("document.getElementById('pdk-review-state').textContent.includes('Menunggu pemeriksa')",
       'PADK provisional draft submitted in maker UI');
