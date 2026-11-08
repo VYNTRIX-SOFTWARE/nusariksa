@@ -87,12 +87,17 @@ function linesOfWorkpaper({institution,preparation,items,generatedAt}){
     '',
     'PENTING: Teks indikator, kriteria peringkat, dan metode komposit belum disahkan.',
     'Dokumen ini HANYA memuat catatan kerja dan rencana bukti yang sudah tersimpan.',
-    'Tidak ada skor, persetujuan, klaim kesesuaian OJK, atau bukti lampiran di PDF ini.',
+    'Peringkat sementara tidak dihitung sebagai komposit, approval, atau hasil resmi.',
+    'Tidak ada skor final, klaim kesesuaian OJK, atau bukti lampiran di PDF ini.',
     '',
   ];
   for(const item of items){
     lines.push('-'.repeat(90));
     lines.push('INDIKATOR '+String(item.indicator_number).padStart(2,'0')+'  |  Revisi '+item.revision);
+    lines.push('Peringkat sementara: '+(item.provisional_rank??'belum dipilih')+
+      ' (DRAFT, tidak dihitung sebagai nilai resmi)');
+    lines.push('Justifikasi sementara:');
+    lines.push(...wrap(item.justification));
     lines.push('Catatan kerja:');
     lines.push(...wrap(item.preparation_notes));
     lines.push('Rencana bukti:');
@@ -113,7 +118,8 @@ export async function getPadkPreparationWorkpaper(db,{actorId,id}){
   if(institution.rowCount!==1)
     throw new PadkPreparationError(404,'Preparation not found');
   const rows=await db.query(
-    'SELECT indicator_number,preparation_notes,evidence_plan,revision '+
+    'SELECT indicator_number,preparation_notes,evidence_plan,revision,'+
+    'provisional_rank,justification '+
     'FROM padk_preparation_indicator_notes WHERE preparation_id=$1 ORDER BY indicator_number',[id],
   );
   const pdf=makeDraftWorkpaperPdf(linesOfWorkpaper({
