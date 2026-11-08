@@ -1,0 +1,433 @@
+{
+  "schemaVersion": "1.0-draft",
+  "status": "DRAFT_UNVERIFIED",
+  "regulation": "43/PADK.03/2025",
+  "annex": "IV",
+  "sourcePdfSha256": "63868e2fe99a48485b17646618934c1fffb27b125811929e12bd70d170081e1b",
+  "sourceAuthenticityVerified": false,
+  "fullCriteriaVerified": false,
+  "productionScoringAvailable": false,
+  "reviewScope": "Candidate mapping of category-2 parameters to Table 3; NOT verification of all rank texts",
+  "candidateMappings": [
+    {
+      "category2Number": 1,
+      "table3CandidateNumber": 1,
+      "category2PdfPage": 147,
+      "table3PdfPage": 157,
+      "risk": "CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "category2Number": 2,
+      "table3CandidateNumber": 2,
+      "category2PdfPage": 147,
+      "table3PdfPage": 157,
+      "risk": "CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "category2Number": 3,
+      "table3CandidateNumber": 3,
+      "category2PdfPage": 147,
+      "table3PdfPage": 158,
+      "risk": "SOURCE_REVIEW_REQUIRED"
+    },
+    {
+      "category2Number": 4,
+      "table3CandidateNumber": 4,
+      "category2PdfPage": 147,
+      "table3PdfPage": 158,
+      "risk": "CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "category2Number": 5,
+      "table3CandidateNumber": 5,
+      "category2PdfPage": 147,
+      "table3PdfPage": 159,
+      "risk": "CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "category2Number": 6,
+      "table3CandidateNumber": 6,
+      "category2PdfPage": 147,
+      "table3PdfPage": 159,
+      "risk": "CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "category2Number": 7,
+      "table3CandidateNumber": 7,
+      "category2PdfPage": 147,
+      "table3PdfPage": 160,
+      "risk": "CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "category2Number": 8,
+      "table3CandidateNumber": 8,
+      "category2PdfPage": 148,
+      "table3PdfPage": 160,
+      "risk": "CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "category2Number": 9,
+      "table3CandidateNumber": 9,
+      "category2PdfPage": 148,
+      "table3PdfPage": 161,
+      "risk": "CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "category2Number": 10,
+      "table3CandidateNumber": 10,
+      "category2PdfPage": 148,
+      "table3PdfPage": 162,
+      "risk": "CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "category2Number": 11,
+      "table3CandidateNumber": 11,
+      "category2PdfPage": 148,
+      "table3PdfPage": 162,
+      "risk": "CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "category2Number": 12,
+      "table3CandidateNumber": 12,
+      "category2PdfPage": 148,
+      "table3PdfPage": 162,
+      "risk": "CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "category2Number": 13,
+      "table3CandidateNumber": 13,
+      "category2PdfPage": 149,
+      "table3PdfPage": 163,
+      "risk": "CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "category2Number": 14,
+      "table3CandidateNumber": 14,
+      "category2PdfPage": 149,
+      "table3PdfPage": 164,
+      "risk": "CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "category2Number": 15,
+      "table3CandidateNumber": 15,
+      "category2PdfPage": 149,
+      "table3PdfPage": 164,
+      "risk": "CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "category2Number": 16,
+      "table3CandidateNumber": 16,
+      "category2PdfPage": 149,
+      "table3PdfPage": 165,
+      "risk": "CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "category2Number": 17,
+      "table3CandidateNumber": 17,
+      "category2PdfPage": 149,
+      "table3PdfPage": 165,
+      "risk": "CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "category2Number": 18,
+      "table3CandidateNumber": 18,
+      "category2PdfPage": 149,
+      "table3PdfPage": 166,
+      "risk": "SOURCE_REVIEW_REQUIRED"
+    },
+    {
+      "category2Number": 19,
+      "table3CandidateNumber": 20,
+      "category2PdfPage": 149,
+      "table3PdfPage": 167,
+      "risk": "SOURCE_REVIEW_REQUIRED"
+    },
+    {
+      "category2Number": 20,
+      "table3CandidateNumber": 21,
+      "category2PdfPage": 150,
+      "table3PdfPage": 167,
+      "risk": "SOURCE_REVIEW_REQUIRED"
+    },
+    {
+      "category2Number": 21,
+      "table3CandidateNumber": 22,
+      "category2PdfPage": 150,
+      "table3PdfPage": 167,
+      "risk": "CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "category2Number": 22,
+      "table3CandidateNumber": 23,
+      "category2PdfPage": 150,
+      "table3PdfPage": 168,
+      "risk": "CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "category2Number": 23,
+      "table3CandidateNumber": 24,
+      "category2PdfPage": 150,
+      "table3PdfPage": 168,
+      "risk": "CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "category2Number": 24,
+      "table3CandidateNumber": 25,
+      "category2PdfPage": 150,
+      "table3PdfPage": 169,
+      "risk": "SOURCE_REVIEW_REQUIRED"
+    },
+    {
+      "category2Number": 25,
+      "table3CandidateNumber": 27,
+      "category2PdfPage": 150,
+      "table3PdfPage": 170,
+      "risk": "CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "category2Number": 26,
+      "table3CandidateNumber": 28,
+      "category2PdfPage": 150,
+      "table3PdfPage": 170,
+      "risk": "CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "category2Number": 27,
+      "table3CandidateNumber": 29,
+      "category2PdfPage": 150,
+      "table3PdfPage": 171,
+      "risk": "CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "category2Number": 28,
+      "table3CandidateNumber": 31,
+      "category2PdfPage": 151,
+      "table3PdfPage": 172,
+      "risk": "CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "category2Number": 29,
+      "table3CandidateNumber": 35,
+      "category2PdfPage": 151,
+      "table3PdfPage": 174,
+      "risk": "SOURCE_REVIEW_REQUIRED"
+    },
+    {
+      "category2Number": 30,
+      "table3CandidateNumber": 33,
+      "category2PdfPage": 151,
+      "table3PdfPage": 173,
+      "risk": "CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "category2Number": 31,
+      "table3CandidateNumber": 34,
+      "category2PdfPage": 151,
+      "table3PdfPage": 174,
+      "risk": "CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "category2Number": 32,
+      "table3CandidateNumber": 36,
+      "category2PdfPage": 151,
+      "table3PdfPage": 174,
+      "risk": "SOURCE_REVIEW_REQUIRED"
+    },
+    {
+      "category2Number": 33,
+      "table3CandidateNumber": 39,
+      "category2PdfPage": 152,
+      "table3PdfPage": 176,
+      "risk": "CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "category2Number": 34,
+      "table3CandidateNumber": 40,
+      "category2PdfPage": 152,
+      "table3PdfPage": 176,
+      "risk": "CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "category2Number": 35,
+      "table3CandidateNumber": 41,
+      "category2PdfPage": 152,
+      "table3PdfPage": 177,
+      "risk": "CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "category2Number": 36,
+      "table3CandidateNumber": 42,
+      "category2PdfPage": 152,
+      "table3PdfPage": 178,
+      "risk": "CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "category2Number": 37,
+      "table3CandidateNumber": 43,
+      "category2PdfPage": 152,
+      "table3PdfPage": 178,
+      "risk": "CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "category2Number": 38,
+      "table3CandidateNumber": 46,
+      "category2PdfPage": 153,
+      "table3PdfPage": 180,
+      "risk": "CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "category2Number": 39,
+      "table3CandidateNumber": 49,
+      "category2PdfPage": 153,
+      "table3PdfPage": 181,
+      "risk": "CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "category2Number": 40,
+      "table3CandidateNumber": 50,
+      "category2PdfPage": 153,
+      "table3PdfPage": 182,
+      "risk": "CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "category2Number": 41,
+      "table3CandidateNumber": 54,
+      "category2PdfPage": 153,
+      "table3PdfPage": 183,
+      "risk": "CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "category2Number": 42,
+      "table3CandidateNumber": 57,
+      "category2PdfPage": 153,
+      "table3PdfPage": 185,
+      "risk": "CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "category2Number": 43,
+      "table3CandidateNumber": 58,
+      "category2PdfPage": 153,
+      "table3PdfPage": 185,
+      "risk": "CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "category2Number": 44,
+      "table3CandidateNumber": 59,
+      "category2PdfPage": 153,
+      "table3PdfPage": 186,
+      "risk": "CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "category2Number": 45,
+      "table3CandidateNumber": 60,
+      "category2PdfPage": 153,
+      "table3PdfPage": 187,
+      "risk": "CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "category2Number": 46,
+      "table3CandidateNumber": 62,
+      "category2PdfPage": 154,
+      "table3PdfPage": 188,
+      "risk": "CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "category2Number": 47,
+      "table3CandidateNumber": 63,
+      "category2PdfPage": 154,
+      "table3PdfPage": 188,
+      "risk": "CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "category2Number": 48,
+      "table3CandidateNumber": 66,
+      "category2PdfPage": 154,
+      "table3PdfPage": 190,
+      "risk": "CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "category2Number": 49,
+      "table3CandidateNumber": 67,
+      "category2PdfPage": 154,
+      "table3PdfPage": 190,
+      "risk": "CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "category2Number": 50,
+      "table3CandidateNumber": 68,
+      "category2PdfPage": 154,
+      "table3PdfPage": 191,
+      "risk": "CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "category2Number": 51,
+      "table3CandidateNumber": 69,
+      "category2PdfPage": 154,
+      "table3PdfPage": 191,
+      "risk": "CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "category2Number": 52,
+      "table3CandidateNumber": 70,
+      "category2PdfPage": 155,
+      "table3PdfPage": 192,
+      "risk": "CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "category2Number": 53,
+      "table3CandidateNumber": 71,
+      "category2PdfPage": 155,
+      "table3PdfPage": 192,
+      "risk": "CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "category2Number": 54,
+      "table3CandidateNumber": 74,
+      "category2PdfPage": 155,
+      "table3PdfPage": 194,
+      "risk": "CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "category2Number": 55,
+      "table3CandidateNumber": 75,
+      "category2PdfPage": 155,
+      "table3PdfPage": 194,
+      "risk": "CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "category2Number": 56,
+      "table3CandidateNumber": 76,
+      "category2PdfPage": 155,
+      "table3PdfPage": 195,
+      "risk": "CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "category2Number": 57,
+      "table3CandidateNumber": 77,
+      "category2PdfPage": 155,
+      "table3PdfPage": 195,
+      "risk": "CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "category2Number": 58,
+      "table3CandidateNumber": 78,
+      "category2PdfPage": 155,
+      "table3PdfPage": 196,
+      "risk": "CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "category2Number": 59,
+      "table3CandidateNumber": 79,
+      "category2PdfPage": 156,
+      "table3PdfPage": 197,
+      "risk": "CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "category2Number": 60,
+      "table3CandidateNumber": 80,
+      "category2PdfPage": 156,
+      "table3PdfPage": 197,
+      "risk": "CANDIDATE_NOT_APPROVED"
+    }
+  ]
+}

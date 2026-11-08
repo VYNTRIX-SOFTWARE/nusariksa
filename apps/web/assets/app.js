@@ -13,6 +13,7 @@ import { createControlCatalogManagement } from './control-catalog.js';
 import { createMaturityManagement } from './maturity-ui.js';
 import { createMaturityAssessmentUI } from './maturity-assessment-ui.js';
 import {createPadkPreparationUI} from './padk-preparation-ui.js';
+import {createCrosswalkReviewUI} from './padk-crosswalk-review-ui.js';
 
 const $ = (id) => document.getElementById(id);
 const screens = {
@@ -22,7 +23,7 @@ const state = {
   userId: null, permissions: [], assessments: [], load: 'loading', page: 'overview',
   year: 'all', status: 'all', search: '', sort: 'newest', workspaceOrigin:'assessments',
 };
-const pages = {overview: 'Dashboard', assessments: 'Daftar Asesmen', reviews: 'Review & Persetujuan', reports: 'Laporan Asesmen', catalogs: 'Katalog Kontrol', maturity: 'Metodologi Maturitas', 'maturity-assessments': 'Penilaian Maturitas', 'padk-preparations':'Persiapan PADK', workspace: 'Assessment Workspace'};
+const pages = {overview: 'Dashboard', assessments: 'Daftar Asesmen', reviews: 'Review & Persetujuan', reports: 'Laporan Asesmen', catalogs: 'Katalog Kontrol', maturity: 'Metodologi Maturitas', 'maturity-assessments': 'Penilaian Maturitas', 'padk-preparations':'Persiapan PADK', 'padk-crosswalk':'QA Pemetaan PADK', workspace: 'Assessment Workspace'};
 
 function show(screen) {
   for (const [name, element] of Object.entries(screens)) element.hidden = name !== screen;
@@ -68,6 +69,7 @@ function cleanSession() {
   maturity.clear();
   maturityAssessments.clear();
   padkPreparations.clear();
+  padkCrosswalk.clear();
   notice('');
 }
 function authFailure(error) {
@@ -120,6 +122,8 @@ function renderPermissions() {
   maturity.sync();
   maturityAssessments.sync();
   padkPreparations.sync();
+  padkCrosswalk.sync();
+  $('padk-crosswalk-menu').hidden=!state.permissions.includes('assessments:approve');
   $('padk-preparations-menu').hidden=!state.permissions.includes('assessments:read');
   const hasRead=state.permissions.includes('assessments:read');
   $('assessment-menu').hidden=!hasRead;
@@ -130,7 +134,7 @@ function renderPermissions() {
   $('dashboard-access').hidden=state.load!=='forbidden';
   $('dashboard-content').hidden=state.load==='forbidden';
   if (!hasRead && ['assessments','workspace','catalogs','maturity','maturity-assessments','padk-preparations'].includes(state.page)) navigate('overview');
-  if (!canReview && state.page==='reviews') navigate('overview');
+  if (!canReview && ['reviews','padk-crosswalk'].includes(state.page)) navigate('overview');
   if (!state.permissions.includes('reports:read') && state.page==='reports') navigate('overview');
 }
 function renderMetrics() {
@@ -263,11 +267,12 @@ function navigate(page) {
   if (!(page in pages)) return false;
   if(['assessments','workspace','reviews','catalogs','maturity','maturity-assessments','padk-preparations'].includes(page)&&!state.permissions.includes('assessments:read'))return false;
   if(page==='reports'&&!state.permissions.includes('reports:read'))return false;
-  if(page==='reviews'&&!state.permissions.includes('assessments:approve'))return false;
+  if(['reviews','padk-crosswalk'].includes(page)&&!state.permissions.includes('assessments:approve'))return false;
   if(state.page==='workspace' && page!=='workspace' && !workspace.confirmLeave())return false;
   if(state.page==='maturity' && page!=='maturity' && !maturity.confirmLeave())return false;
   if(state.page==='maturity-assessments' && page!=='maturity-assessments' && !maturityAssessments.confirmLeave())return false;
   if(state.page==='padk-preparations' && page!=='padk-preparations' && !padkPreparations.confirmLeave())return false;
+  if(state.page==='padk-crosswalk' && page!=='padk-crosswalk' && !padkCrosswalk.confirmLeave())return false;
   if(state.page==='workspace' && page!=='workspace')workspace.close();
   state.page=page;
   for(const section of document.querySelectorAll('.page'))section.hidden=section.id!=='page-'+page;
@@ -283,6 +288,7 @@ function navigate(page) {
   if(page==='maturity') void maturity.load();
   if(page==='maturity-assessments') void maturityAssessments.load();
   if(page==='padk-preparations') void padkPreparations.load();
+  if(page==='padk-crosswalk') void padkCrosswalk.load();
   return true;
 }
 async function loadWorkspace() {
@@ -594,6 +600,10 @@ $('detail-dialog').addEventListener('click',(event)=>{
   if(event.target===$('detail-dialog'))$('detail-dialog').close();
 });
 
+const padkCrosswalk=createCrosswalkReviewUI({
+  api:requestJson,getPermissions:()=>state.permissions,
+  getUserId:()=>state.userId,onAuthFailure:authFailure,
+});
 const padkPreparations=createPadkPreparationUI({
   api:requestJson,
   getPermissions:()=>state.permissions,
