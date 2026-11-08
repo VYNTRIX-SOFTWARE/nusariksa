@@ -48,7 +48,7 @@ npm start
 
 Bootstrap pertama meminta password melalui terminal interaktif. Buka **http://localhost:3000**. Server pengembangan hanya mendengarkan di `127.0.0.1` dan menggunakan port 3000 secara default. Atur `PORT` jika diperlukan; `APP_ORIGIN` harus sama dengan alamat yang dipakai browser.
 
-Unggah bukti membutuhkan `EVIDENCE_ENCRYPTION_KEY` berupa **64 karakter heksadesimal** (32 byte). Simpan kunci di luar Git. Jangan gunakan dokumen atau data nasabah untuk pengujian.
+Mode lama membutuhkan `EVIDENCE_ENCRYPTION_KEY` berupa **64 karakter heksadesimal** (32 byte). Rotasi menggunakan `EVIDENCE_KEYRING` (JSON berisi key ID dan kunci) bersama `EVIDENCE_ACTIVE_KEY_ID`; pertahankan kunci lama untuk mengakses bukti historis. Simpan kunci di luar Git; jangan gunakan dokumen nasabah untuk pengujian. Baca [panduan rotasi](docs/DEVELOPMENT.md).
 
 ## Mengisi penilaian PADK
 

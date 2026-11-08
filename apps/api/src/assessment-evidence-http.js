@@ -2,8 +2,9 @@ import { originAccepted, tokenFromCookies } from './auth-http.js';
 import { userHasPermission } from './authorization.js';
 import { findSession } from './sessions.js';
 import {
-  EvidenceError, getEvidence, listEvidence, parseEvidenceKey, uploadEvidence,
+  EvidenceError, getEvidence, listEvidence, uploadEvidence,
 } from './assessment-evidence.js';
+import {configureEvidenceKeys} from './evidence-keyring.js';
 
 const ID = '([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})';
 const LIST = new RegExp('^/assessments/' + ID + '/controls/' + ID + '/evidence$', 'i');
@@ -42,10 +43,10 @@ async function parseUpload(request) {
 }
 
 export function createAssessmentEvidenceHandler({
-  db, appOrigin, evidenceKey,
+  db, appOrigin, evidenceKey,evidenceKeyring,evidenceActiveKeyId,
   list = listEvidence, upload = uploadEvidence, download = getEvidence,
 }) {
-  const key = parseEvidenceKey(evidenceKey);
+  const key = configureEvidenceKeys({legacyKey:evidenceKey,keysJson:evidenceKeyring,activeId:evidenceActiveKeyId});
   return async function handleEvidence(request, response) {
     const path = request.url ?? '';
     const listMatch = LIST.exec(path);

@@ -1,7 +1,8 @@
 import {originAccepted,tokenFromCookies} from './auth-http.js';
 import {userHasPermission} from './authorization.js';
 import {findSession} from './sessions.js';
-import {EvidenceError,parseEvidenceKey} from './assessment-evidence.js';
+import {EvidenceError} from './assessment-evidence.js';
+import {configureEvidenceKeys} from './evidence-keyring.js';
 import {PadkPreparationError} from './padk-preparations.js';
 import {
   listPadkEvidence,uploadPadkEvidence,downloadPadkEvidence,
@@ -32,10 +33,10 @@ async function parseUpload(req){
   }catch{return {status:400};}
 }
 export function createPadkEvidenceHandler({
-  db,appOrigin,evidenceKey,
+  db,appOrigin,evidenceKey,evidenceKeyring,evidenceActiveKeyId,
   list=listPadkEvidence,upload=uploadPadkEvidence,download=downloadPadkEvidence,
 }){
-  const key=parseEvidenceKey(evidenceKey);
+  const key=configureEvidenceKeys({legacyKey:evidenceKey,keysJson:evidenceKeyring,activeId:evidenceActiveKeyId});
   return async function handlePadkEvidence(req,res){
     const path=req.url??'',method=req.method;
     const indicator=LIST.exec(path),file=FILE.exec(path);

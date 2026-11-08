@@ -2,6 +2,7 @@ import {
   createCipheriv, createDecipheriv, createHash, randomBytes, randomUUID,
 } from 'node:crypto';
 import { userHasPermission } from './authorization.js';
+import {encryptionKeyFor,decryptionKeyFor} from './evidence-keyring.js';
 
 export const EVIDENCE_MAX_BYTES = 1024 * 1024;
 export const EVIDENCE_MAX_FILES_PER_CONTROL = 10;
@@ -53,23 +54,23 @@ export function validateEvidence({ fileName, mediaType, contentBase64 } = {}) {
 }
 
 function aad(row) {
-  return Buffer.from([
-    row.id, row.assessment_id, row.control_id, row.file_name,
-    row.media_type, String(row.size_bytes),
-  ].join('\u0000'), 'utf8');
+  const fields=[row.id,row.assessment_id,row.control_id,row.file_name,
+    row.media_type,String(row.size_bytes)];
+  // Preserve legacy authenticated metadata for records without key_id.
+  if(row.key_id!==null&&row.key_id!==undefined)fields.push(row.key_id);
+  return Buffer.from(fields.join('\u0000'),'utf8');
 }
 
 export function encryptEvidence(args, key) {
-  if (!Buffer.isBuffer(key) || key.length !== 32) {
-    throw new EvidenceError(503, 'Evidence encryption is not configured');
-  }
+  const material=encryptionKeyFor(key);
   const { fileName, mediaType, bytes, assessmentId, controlId } = args;
   const row = {
     id: randomUUID(), assessment_id: assessmentId, control_id: controlId,
     file_name: fileName, media_type: mediaType, size_bytes: bytes.length,
+    key_id:material.keyId,
   };
   const nonce = randomBytes(12);
-  const cipher = createCipheriv('aes-256-gcm', key, nonce);
+  const cipher = createCipheriv('aes-256-gcm', material.key, nonce);
   cipher.setAAD(aad(row));
   return {
     ...row, nonce,
@@ -84,11 +85,9 @@ export function encryptEvidence(args, key) {
 }
 
 export function decryptEvidence(row, key) {
-  if (!Buffer.isBuffer(key) || key.length !== 32) {
-    throw new EvidenceError(503, 'Evidence encryption is not configured');
-  }
+  const material=decryptionKeyFor(key,row.key_id);
   try {
-    const decoder = createDecipheriv('aes-256-gcm', key, row.nonce);
+    const decoder = createDecipheriv('aes-256-gcm', material, row.nonce);
     decoder.setAAD(aad(row));
     decoder.setAuthTag(row.auth_tag);
     const bytes = Buffer.concat([decoder.update(row.ciphertext), decoder.final()]);
@@ -179,14 +178,14 @@ export async function uploadEvidenceInTransaction(db, {
   const encrypted = encryptEvidence({ ...input, assessmentId, controlId }, key);
   const inserted = await db.query(
     'INSERT INTO assessment_evidence (id, assessment_id, catalog_version_id, control_id, ' +
-    'file_name, media_type, size_bytes, sha256, nonce, auth_tag, ciphertext, uploaded_by) ' +
-    'VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) RETURNING ' +
+    'file_name, media_type, size_bytes, sha256, nonce, auth_tag, ciphertext, uploaded_by,key_id) ' +
+    'VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13) RETURNING ' +
     'id, assessment_id, control_id, file_name, media_type, size_bytes, sha256, ' +
     'uploaded_by, uploaded_at',
     [encrypted.id, assessmentId, target.catalog_version_id, controlId,
       encrypted.file_name, encrypted.media_type, encrypted.size_bytes,
       encrypted.sha256, encrypted.nonce, encrypted.auth_tag,
-      encrypted.ciphertext, actorId],
+      encrypted.ciphertext, actorId,encrypted.key_id],
   );
   return metadata(inserted.rows[0]);
 }
@@ -213,7 +212,7 @@ export async function getEvidence(db, { actorId, assessmentId, evidenceId, key }
   await permitted(db, actorId, 'evidence:read');
   const found = await db.query(
     'SELECT e.id, e.assessment_id, e.control_id, e.file_name, e.media_type, ' +
-    'e.size_bytes, e.sha256, e.nonce, e.auth_tag, e.ciphertext ' +
+    'e.size_bytes, e.sha256, e.nonce, e.auth_tag, e.ciphertext,e.key_id ' +
     'FROM assessment_evidence e ' +
     'JOIN assessments a ON a.id = e.assessment_id ' +
     'JOIN users u ON u.id = $1 AND u.institution_id = a.institution_id ' +
