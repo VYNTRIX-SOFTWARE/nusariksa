@@ -21,6 +21,8 @@ test('PADK preparation page and module are served with CSP',async()=>{
       'pdk-note-form','pdk-notes','pdk-evidence-plan','pdk-save','pdk-history',
       'pdk-evidence-panel','pdk-evidence-upload','pdk-evidence-file',
       'pdk-evidence-list','pdk-evidence-message',
+      'pdk-draft-review-panel','pdk-review-submit','pdk-review-state',
+      'pdk-review-form','pdk-review-decision','pdk-review-note',
     ])assert.ok(html.includes('id="'+id+'"'),id+' missing');
     assert.match(html,/Belum dapat dinilai atau disahkan/);
     const module=await fetch(base+'/assets/padk-preparation-ui.js');

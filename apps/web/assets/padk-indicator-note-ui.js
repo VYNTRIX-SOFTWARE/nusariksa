@@ -35,12 +35,12 @@ export function validateDraftIndicatorList(data,category){
   }
   return data.indicators;
 }
-export function createPadkIndicatorNoteUI({api,onAuthFailure,getUserId,getPermissions}){
+export function createPadkIndicatorNoteUI({api,onAuthFailure,getUserId,getPermissions,canEditDraft=()=>true}){
   const state={preparation:null,items:[],active:null,dirty:false,busy:false,request:0};
-  const evidenceUI=createPadkEvidenceUI({api,onAuthFailure,getUserId,getPermissions});
+  const evidenceUI=createPadkEvidenceUI({api,onAuthFailure,getUserId,getPermissions,canEditDraft});
   const owner=()=>Boolean(state.preparation
     &&state.preparation.ownerUserId===getUserId()
-    &&getPermissions().includes('assessments:write'));
+    &&getPermissions().includes('assessments:write')&&canEditDraft());
   const message=(value,kind)=>{
     $('pdk-indicator-message').textContent=value??'';
     $('pdk-indicator-message').hidden=!value;

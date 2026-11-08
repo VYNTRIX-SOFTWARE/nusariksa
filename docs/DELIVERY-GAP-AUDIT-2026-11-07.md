@@ -74,3 +74,11 @@ Petugas berizin `evidence:read` bisa melihat metadata dan mengunduh konten yang 
 Catatan keamanan: magic bytes dan ekstensi hanya validasi awal, **bukan antivirus**; key lifecycle, backup–restore, content scanning dan bukti keamanan operasional tetap P0 untuk deployment bank.
 
 **Regulatory release gate tetap BLOCKED**. Bukti aktual ini tidak membuat teks kriteria, peringkat provisional atau metodologi menjadi verified. Jalur berikutnya harus menyelesaikan kriteria peringkat yang terverifikasi, submit/revise/approve PADK, kalkulasi komposit resmi, PDF final dan UAT.
+
+## MVP — alur submit, pengembalian, pengajuan ulang, dan pemeriksaan kelengkapan draft PADK
+
+Workspace PADK sekarang mendukung siklus maker-checker secara **terbatas untuk draft**, tanpa membuka approval regulasi resmi. Setelah semua 80/60 parameter kategori memiliki `provisional_rank` dan justifikasi, maker dapat mengajukan draft. Peringkat, justifikasi, catatan persiapan, dan file bukti terkunci selama `submitted`. Reviewer berizin `assessments:approve` yang berbeda dari maker dapat mengembalikan dengan alasan atau menyetujui **kelengkapan draft internal**. Draft yang dikembalikan dapat diperbaiki dan diajukan ulang. Semua transisi terekam dalam event append-only dan dilindungi guard PostgreSQL.
+
+Status: `in_progress`, `submitted`, `changes_requested`, `draft_accepted`. Status `draft_accepted` hanya berarti pengecekan internal terhadap draft sementara, **bukan** `approved`, bukan penilaian PADK sah, dan **tidak** membuka kalkulasi resmi/PDF final. Respons menyertakan `officialApprovalAvailable:false`, `regulatoryPackVerified:false`, `finalReportAvailable:false`.
+
+Keterbatasan sebelum rilis: seluruh teks 140 parameter/400 kriteria, crosswalk Kategori 2, metode kalkulasi dan aturan pembulatan membutuhkan validasi regulasi dan review independen; hasil resmi, komposit, dan laporan final tetap BLOCKED. Setelah regulatory pack disahkan, perlu jalur approval hasil resmi baru yang menggunakan snapshot input dan evidence yang terlacak, bukan mengubah label `draft_accepted`.

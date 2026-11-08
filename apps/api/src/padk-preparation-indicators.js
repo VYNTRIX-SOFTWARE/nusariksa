@@ -109,6 +109,9 @@ export async function savePadkIndicatorNoteInTransaction(db,{actorId,id,number,.
   if(found.rowCount!==1)reject(404,'Preparation not found');
   const prep=found.rows[0];
   if(prep.owner_user_id!==actorId)reject(403,'Only the maker can edit working notes');
+  const review=await db.query('SELECT status FROM padk_draft_review_state WHERE preparation_id=$1',[id]);
+  if(['submitted','draft_accepted'].includes(review.rows[0]?.status))
+    reject(409,'Draft is locked during review or after acceptance');
   const indicator=parseIndicatorNumber(number,prep.category);
   const existing=await db.query(
     'SELECT revision,preparation_notes,evidence_plan,provisional_rank,justification '+

@@ -11,6 +11,7 @@ import { createMaturityAssessmentsHandler } from './maturity-assessments-http.js
 import { createPadkCyberHandler } from './padk-cyber-http.js';
 import { createPadkPreparationsHandler } from './padk-preparations-http.js';
 import {createPadkEvidenceHandler} from './padk-evidence-http.js';
+import {createPadkDraftReviewHandler} from './padk-draft-review-http.js';
 import {createCrosswalkReviewHandler} from './padk-crosswalk-reviews-http.js';
 import { createControlCatalogsHandler } from './control-catalogs-http.js';
 import { checkDatabase, createPool } from './database.js';
@@ -46,6 +47,7 @@ export function createServer({
   padkCyberHandlers,
   padkPreparationHandlers,
   padkEvidenceHandlers,
+  padkDraftReviewHandlers,
   crosswalkHandlers,
   evidenceKey = process.env.EVIDENCE_ENCRYPTION_KEY,
 } = {}) {
@@ -75,6 +77,9 @@ export function createServer({
   });
   const handlePadkEvidence = createPadkEvidenceHandler({
     db:authDb,appOrigin,evidenceKey,...padkEvidenceHandlers,
+  });
+  const handlePadkDraftReview = createPadkDraftReviewHandler({
+    db:authDb,appOrigin,...padkDraftReviewHandlers,
   });
   const handleCrosswalk = createCrosswalkReviewHandler({
     db:authDb,appOrigin,...crosswalkHandlers,
@@ -171,7 +176,8 @@ export function createServer({
 
     if (request.url?.startsWith('/regulatory/padk43/cyber/preparations')) {
       try {
-        if(request.url?.includes('/evidence'))await handlePadkEvidence(request,response);
+        if(request.url?.includes('/draft-review'))await handlePadkDraftReview(request,response);
+        else if(request.url?.includes('/evidence'))await handlePadkEvidence(request,response);
         else await handlePadkPreparations(request, response);
       } catch {
         if (!response.headersSent) {

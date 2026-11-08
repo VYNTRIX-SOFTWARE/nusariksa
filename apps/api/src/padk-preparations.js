@@ -115,6 +115,9 @@ export async function savePadkPreparationInTransaction(db,{actorId,id,...input})
   );
   if(target.rowCount!==1)fail(404,'Preparation not found');
   if(target.rows[0].owner_user_id!==actorId)fail(403,'Only the maker can edit preparation');
+  const review=await db.query('SELECT status FROM padk_draft_review_state WHERE preparation_id=$1',[id]);
+  if(['submitted','draft_accepted'].includes(review.rows[0]?.status))
+    fail(409,'Draft preparation is locked during review');
   if(target.rows[0].revision!==data.expectedRevision)
     fail(409,'Preparation changed; reload before saving');
   const updated=await db.query(
