@@ -112,6 +112,9 @@
           <svg class="icon nav-icon"><use href="#i-clipboard"></use></svg><span class="nav-label">Laporan Asesmen</span>
         </button>
         <div class="sidebar-section-label sidebar-gap" id="review-menu-group" hidden>PEMERIKSAAN</div>
+        <button type="button" class="nav-link" data-page="padk-crosswalk" id="padk-crosswalk-menu" title="Review Pemetaan PADK" hidden>
+          <svg class="icon nav-icon"><use href="#i-clipboard"></use></svg><span class="nav-label">QA Pemetaan PADK</span>
+        </button>
         <button type="button" class="nav-link" data-page="reviews" id="review-menu" title="Review & Persetujuan" hidden>
           <svg class="icon nav-icon"><use href="#i-clipboard"></use></svg><span class="nav-label">Review & Persetujuan</span>
         </button>
@@ -401,6 +404,58 @@
             </div>
             <div id="pdk-history" aria-live="polite"><p>Belum ada riwayat.</p></div>
           </section>
+        </section>
+        <section id="page-padk-crosswalk" class="page" aria-labelledby="padk-crosswalk-title" hidden>
+          <div class="page-intro">
+            <div>
+              <p class="eyebrow">REVIEW TEKS REGULASI / BUKAN PENILAIAN BANK</p>
+              <h1 id="padk-crosswalk-title">Review Pemetaan PADK Kategori 2</h1>
+              <p class="supporting-copy">Pemeriksaan kandidat hubungan 60 indikator Kategori 2 dengan baris kriteria Tabel 3. Reviewer wajib membandingkan sumber PDF sebelum mencatat keputusan.</p>
+            </div>
+            <button id="padk-crosswalk-reload" type="button" class="button button-outline">Muat ulang</button>
+          </div>
+          <div class="info-message" role="status">
+            <strong>Dokumen kerja belum diverifikasi.</strong>
+            <p>SHA-256 PDF sumber: <code>63868e2fe99a48485b17646618934c1fffb27b125811929e12bd70d170081e1b</code>.</p>
+            <p>Persetujuan dua reviewer atas sebuah pasangan tetap <strong>bukan</strong> verifikasi isi 5 kriteria, metode kalkulasi, autentisitas berkas, atau regulatory pack siap produksi. Nilai dan laporan PADK tetap terkunci.</p>
+            <p>PDF sumber harus diperiksa secara visual, khususnya gabungan persyaratan pada #24, #29, dan #32. Reviewer substansi dan teknis harus dua pengguna berbeda; kredensial aplikasi tidak membuktikan kualifikasi substantif.</p>
+          </div>
+          <p id="padk-crosswalk-message" class="workspace-message" role="status" hidden></p>
+          <div class="panel-card">
+            <label for="padk-crosswalk-list">Nomor indikator Kategori 2</label>
+            <select id="padk-crosswalk-list"><option value="">Muat data…</option></select>
+            <section id="padk-crosswalk-detail" hidden>
+              <h2 id="padk-crosswalk-detail-title">Pemetaan belum dipilih</h2>
+              <p id="padk-crosswalk-description" class="workspace-help"></p>
+              <p id="padk-crosswalk-pages" class="workspace-help"></p>
+              <p id="padk-crosswalk-risk" class="workspace-help"></p>
+              <p id="padk-crosswalk-status" class="workspace-help"></p>
+              <form id="padk-crosswalk-form" class="maturity-edit-form">
+                <label for="padk-crosswalk-track">Jalur reviewer</label>
+                <select id="padk-crosswalk-track" required>
+                  <option value="SUBSTANCE">Substansi ketentuan</option>
+                  <option value="TECHNICAL">Konsistensi pemetaan teknis</option>
+                </select>
+                <label for="padk-crosswalk-decision">Keputusan berdasarkan PDF</label>
+                <select id="padk-crosswalk-decision" required>
+                  <option value="ACCEPT_CANDIDATE">Setuju kandidat untuk pemeriksaan lanjutan</option>
+                  <option value="REMAP_PROPOSAL">Usulkan baris Tabel 3 berbeda</option>
+                  <option value="ESCALATE">Eskalasi — tidak dapat dipastikan</option>
+                </select>
+                <label for="padk-crosswalk-target">Usulan nomor baris Tabel 3 (jika revisi)</label>
+                <input id="padk-crosswalk-target" type="number" min="1" max="80" step="1">
+                <label for="padk-crosswalk-target-page">Halaman PDF baris usulan (jika revisi)</label>
+                <input id="padk-crosswalk-target-page" type="number" min="157" max="198" step="1">
+                <label for="padk-crosswalk-basis">Alasan dan kutipan lokasi halaman sumber</label>
+                <textarea id="padk-crosswalk-basis" rows="5" minlength="20" maxlength="2000" required
+                  placeholder="Contoh: PDF halaman 151 dan 174; perbedaan cakupan kata yang ditemukan…"></textarea>
+                <p id="padk-crosswalk-reviewer-warning" class="workspace-help" role="status"></p>
+                <button id="padk-crosswalk-submit" class="button button-primary" type="submit">Catat keputusan reviewer</button>
+              </form>
+              <h3>Jejak keputusan reviewer</h3>
+              <div id="padk-crosswalk-history" aria-live="polite"></div>
+            </section>
+          </div>
         </section>
         <section id="page-maturity-assessments" class="page" aria-labelledby="ma-heading" hidden>
           <div class="page-intro">

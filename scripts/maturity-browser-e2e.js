@@ -14,6 +14,7 @@ import {createServer} from '../apps/api/src/server.js';
 import {changePasswordInTransaction} from '../apps/api/src/change-password.js';
 import {createPadkPreparationInTransaction,savePadkPreparationInTransaction} from '../apps/api/src/padk-preparations.js';
 import {savePadkIndicatorNoteInTransaction} from '../apps/api/src/padk-preparation-indicators.js';
+import {recordMappingReviewInTransaction} from '../apps/api/src/padk-crosswalk-reviews.js';
 import {
   MfaError,base32Decode,totpForStep,mfaStatus,
   startTotpEnrollment,confirmTotpEnrollmentInTransaction,
@@ -270,6 +271,25 @@ async function runBrowser(base,db,fixture){
     await logout();
 
     await login('reviewer');
+    await until("!document.getElementById('padk-crosswalk-menu').hidden",'regulatory QA menu');
+    await evalJs("document.getElementById('padk-crosswalk-menu').click()");
+    await until("!document.getElementById('page-padk-crosswalk').hidden",'regulatory QA page');
+    await until("document.getElementById('padk-crosswalk-list').options.length===60"+
+      " && !document.getElementById('padk-crosswalk-submit').disabled",'mapping candidates loaded');
+    await evalJs("document.getElementById('padk-crosswalk-list').value='24';"+
+      "document.getElementById('padk-crosswalk-list').dispatchEvent(new Event('change',{bubbles:true}));");
+    await until("document.getElementById('padk-crosswalk-detail-title').textContent.includes('#24')",
+      'mapping 24 open');
+    await evalJs("document.getElementById('padk-crosswalk-basis').value="+
+      JSON.stringify('Halaman PDF 150 dan 169 telah dibandingkan, perlu verifikasi independen atas semua kriteria.')+";"+
+      "document.getElementById('padk-crosswalk-form').requestSubmit()");
+    await until("document.getElementById('padk-crosswalk-message').textContent.includes('tersimpan')",
+      'review event saved through Chromium UI');
+    const audit=await db.query(
+      "SELECT review_track,decision FROM padk_category2_mapping_review_events WHERE category2_number=24",
+    );
+    assert.equal(audit.rowCount,1);
+    assert.equal(audit.rows[0].review_track,'SUBSTANCE');
     await openMaturity();
     await until("Boolean(document.querySelector('#ma-review-queue [data-ma-review-id]'))",'review queue item');
     await evalJs("document.querySelector('#ma-review-queue [data-ma-review-id]').click()");
@@ -404,7 +424,7 @@ async function runBrowser(base,db,fixture){
     await evalJs("document.getElementById('mfa-login-code').value="+JSON.stringify(codes[0])+";"+
       "document.getElementById('mfa-login-form').requestSubmit()");
     await until("!document.getElementById('app-screen').hidden",'recovery login accepted');
-    console.log('Browser E2E PASS: PADK per-indicator notes create/save/reopen/viewer read-only, maturity, password and MFA');
+    console.log('Browser E2E PASS: PADK review mapping (unverified), indicator notes, maturity, password and MFA');
   }finally{
     await stopChromium(browser);
   }
@@ -432,6 +452,9 @@ async function main(){
           if(result.status)throw new MfaError(result.status,result.error);
           return result;
         },
+      },
+      crosswalkHandlers:{
+        submit:(db,args)=>recordMappingReviewInTransaction(db,args),
       },
       padkPreparationHandlers:{
         create:(db,args)=>createPadkPreparationInTransaction(db,args),

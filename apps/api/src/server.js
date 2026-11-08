@@ -10,6 +10,7 @@ import { createMaturityHandler } from './maturity-http.js';
 import { createMaturityAssessmentsHandler } from './maturity-assessments-http.js';
 import { createPadkCyberHandler } from './padk-cyber-http.js';
 import { createPadkPreparationsHandler } from './padk-preparations-http.js';
+import {createCrosswalkReviewHandler} from './padk-crosswalk-reviews-http.js';
 import { createControlCatalogsHandler } from './control-catalogs-http.js';
 import { checkDatabase, createPool } from './database.js';
 import { createLoginLimiter } from './login-limiter.js';
@@ -43,6 +44,7 @@ export function createServer({
   maturityAssessmentHandlers,
   padkCyberHandlers,
   padkPreparationHandlers,
+  crosswalkHandlers,
   evidenceKey = process.env.EVIDENCE_ENCRYPTION_KEY,
 } = {}) {
   const handleAuth = createAuthHandler({
@@ -68,6 +70,9 @@ export function createServer({
   });
   const handlePadkPreparations = createPadkPreparationsHandler({
     db: authDb, appOrigin, ...padkPreparationHandlers,
+  });
+  const handleCrosswalk = createCrosswalkReviewHandler({
+    db:authDb,appOrigin,...crosswalkHandlers,
   });
   const handleEvidence = createAssessmentEvidenceHandler({
     db: authDb, appOrigin, evidenceKey, ...evidenceHandlers,
@@ -145,6 +150,16 @@ export function createServer({
         } else {
           response.destroy();
         }
+      }
+      return;
+    }
+
+    if(request.url?.startsWith('/regulatory/padk43/cyber/crosswalk')){
+      try{await handleCrosswalk(request,response);}
+      catch{
+        if(!response.headersSent){
+          response.writeHead(503);response.end(JSON.stringify({error:'Unavailable'}));
+        }else response.destroy();
       }
       return;
     }
