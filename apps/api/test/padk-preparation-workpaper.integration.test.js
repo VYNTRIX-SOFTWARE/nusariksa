@@ -38,6 +38,8 @@ test('PADK workpaper PDF exports saved data with read permissions, not scores', 
         actorId:maker,id:preparation.id,number:1,
         preparationNotes:'SOP backup dan pemulihan data sedang ditinjau.',
         evidencePlan:'Dokumen SOP dan catatan uji restore.',
+        provisionalRank:3,
+        justification:'Proses pemulihan teridentifikasi, tetapi uji belum terdokumentasi.',
         expectedRevision:0,
       });
       const cookies={};
@@ -66,6 +68,8 @@ test('PADK workpaper PDF exports saved data with read permissions, not scores', 
         assert.match(source,/Bank PDF Uji/);
         assert.match(source,/SOP backup dan pemulihan data sedang ditinjau/);
         assert.match(source,/Dokumen SOP dan catatan uji restore/);
+        assert.match(source,/Peringkat sementara: 3/);
+        assert.match(source,/Proses pemulihan teridentifikasi/);
         assert.match(source,/DRAFT - BUKAN HASIL PENILAIAN PADK/);
         assert.doesNotMatch(source,/Composite Rank|Nilai Komposit|Disetujui OJK/i);
         assert.equal((await req(cookies['pdf-maker@example.test'],

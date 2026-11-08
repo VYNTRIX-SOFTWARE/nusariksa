@@ -389,11 +389,31 @@
                 <label for="pdk-indicator-notes">Catatan kerja indikator</label>
                 <textarea id="pdk-indicator-notes" rows="4" maxlength="4000"
                   placeholder="Kondisi yang perlu diperiksa. Jangan mencantumkan data rahasia nasabah."></textarea>
+                <p class="workspace-help">
+                  <strong>DRAFT — belum boleh dilaporkan.</strong> Baca dan bandingkan
+                  lima kriteria di Tabel 3 Lampiran IV PADK 43/PADK.03/2025 sebelum
+                  menentukan peringkat sementara. Teks kriteria belum terverifikasi di aplikasi;
+                  pilihan ini tidak menghasilkan skor, komposit, atau persetujuan resmi.
+                  <a href="https://ojk.go.id/id/regulasi/Pages/PADK-43-PADK03-2025-Penyelenggaraan-Teknologi-Informasi-oleh-BPR-BPRS.aspx"
+                     target="_blank" rel="noopener noreferrer">Buka sumber regulasi OJK</a>.
+                </p>
+                <label for="pdk-indicator-rank">Peringkat sementara (bukan nilai final)</label>
+                <select id="pdk-indicator-rank">
+                  <option value="">Belum dipilih</option>
+                  <option value="1">1 — Sangat Memadai</option>
+                  <option value="2">2 — Memadai</option>
+                  <option value="3">3 — Cukup Memadai</option>
+                  <option value="4">4 — Kurang Memadai</option>
+                  <option value="5">5 — Tidak Memadai</option>
+                </select>
+                <label for="pdk-indicator-justification">Justifikasi peringkat sementara</label>
+                <textarea id="pdk-indicator-justification" rows="5" maxlength="4000"
+                  placeholder="Dasar pemeriksaan terhadap kriteria Tabel 3 dan kondisi BPR; minimal 20 karakter jika memilih peringkat."></textarea>
                 <label for="pdk-indicator-evidence">Rencana dokumen bukti indikator</label>
                 <textarea id="pdk-indicator-evidence" rows="4" maxlength="4000"
                   placeholder="Bukti dan dokumen yang akan dikumpulkan untuk indikator ini."></textarea>
                 <button type="submit" id="pdk-indicator-save" class="button button-primary" hidden>
-                  Simpan catatan indikator
+                  Simpan draft indikator
                 </button>
               </form>
               <div class="maturity-rubric-heading">

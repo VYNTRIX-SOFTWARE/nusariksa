@@ -16,13 +16,29 @@ export function parseIndicatorNumber(raw,category){
     reject(400,'Indicator not valid for selected PADK category');
   return number;
 }
-export function validateIndicatorWorkingNotes({preparationNotes,evidencePlan,expectedRevision}={}){
-  if(typeof preparationNotes!=='string'||preparationNotes.length>4000
+export function validateIndicatorWorkingNotes(body={}){
+  const {preparationNotes,evidencePlan,expectedRevision}=body;
+  if(!body||typeof body!=='object'||Array.isArray(body)
+    ||typeof preparationNotes!=='string'||preparationNotes.length>4000
     ||typeof evidencePlan!=='string'||evidencePlan.length>4000
     ||INVALID.test(preparationNotes)||INVALID.test(evidencePlan)
     ||!Number.isSafeInteger(expectedRevision)||expectedRevision<0)
     reject(400,'Invalid indicator working notes');
-  return {preparationNotes,evidencePlan,expectedRevision};
+  const hasRank=Object.hasOwn(body,'provisionalRank');
+  const hasJustification=Object.hasOwn(body,'justification');
+  if(hasRank!==hasJustification)reject(400,'Rank and justification must be provided together');
+  if(hasRank){
+    const rank=body.provisionalRank,reason=body.justification;
+    if(!(rank===null||(Number.isInteger(rank)&&rank>=1&&rank<=5))
+      ||typeof reason!=='string'||reason.length>4000||INVALID.test(reason)
+      ||(rank===null&&reason!=='')
+      ||(rank!==null&&(reason!==reason.trim()||reason.trim().length<20)))
+      reject(400,'Invalid provisional rank or justification');
+  }
+  return hasRank
+    ?{preparationNotes,evidencePlan,expectedRevision,
+      provisionalRank:body.provisionalRank,justification:body.justification}
+    :{preparationNotes,evidencePlan,expectedRevision};
 }
 async function draftIndicators(category){
   const path=CATALOG.get(category);
@@ -47,13 +63,16 @@ async function draftIndicators(category){
 function noteRecord(row){
   return {number:Number(row.indicator_number),preparationNotes:row.preparation_notes,
     evidencePlan:row.evidence_plan,revision:Number(row.revision),updatedAt:row.updated_at,
+    provisionalRank:row.provisional_rank??null,justification:row.justification??'',
+    rankIsOfficial:false,criteriaVerified:false,
     status:'WORKING_NOTES_UNVERIFIED',scoringAvailable:false};
 }
 export async function listPadkIndicatorNotes(db,{actorId,id}){
   const preparation=await getPadkPreparation(db,{actorId,id});
   const draft=await draftIndicators(preparation.category);
   const rows=await db.query(
-    'SELECT indicator_number,preparation_notes,evidence_plan,revision,updated_at '+
+    'SELECT indicator_number,preparation_notes,evidence_plan,revision,updated_at,'+
+    'provisional_rank,justification '+
     'FROM padk_preparation_indicator_notes WHERE preparation_id=$1',[id],
   );
   const byNumber=new Map(rows.rows.map(r=>[Number(r.indicator_number),noteRecord(r)]));
@@ -62,7 +81,9 @@ export async function listPadkIndicatorNotes(db,{actorId,id}){
     indicators:draft.map(item=>({...item,
       ...(byNumber.get(item.number)??{
         preparationNotes:'',evidencePlan:'',revision:0,
-        updatedAt:null,status:'WORKING_NOTES_UNVERIFIED',scoringAvailable:false,
+        updatedAt:null,provisionalRank:null,justification:'',
+        rankIsOfficial:false,criteriaVerified:false,
+        status:'WORKING_NOTES_UNVERIFIED',scoringAvailable:false,
       }),
     }))};
 }
@@ -90,30 +111,40 @@ export async function savePadkIndicatorNoteInTransaction(db,{actorId,id,number,.
   if(prep.owner_user_id!==actorId)reject(403,'Only the maker can edit working notes');
   const indicator=parseIndicatorNumber(number,prep.category);
   const existing=await db.query(
-    'SELECT revision,preparation_notes,evidence_plan FROM padk_preparation_indicator_notes '+
+    'SELECT revision,preparation_notes,evidence_plan,provisional_rank,justification '+
+    'FROM padk_preparation_indicator_notes '+
     'WHERE preparation_id=$1 AND indicator_number=$2',[id,indicator],
   );
   const current=existing.rows[0];
   if((current?.revision??0)!==data.expectedRevision)
     reject(409,'Indicator notes changed; reload before saving');
+  const provisionalRank=Object.hasOwn(data,'provisionalRank')
+    ?data.provisionalRank:current?.provisional_rank??null;
+  const justification=Object.hasOwn(data,'justification')
+    ?data.justification:current?.justification??'';
   if(current&&current.preparation_notes===data.preparationNotes
-    &&current.evidence_plan===data.evidencePlan)
+    &&current.evidence_plan===data.evidencePlan
+    &&current.provisional_rank===provisionalRank
+    &&current.justification===justification)
     return {...noteRecord({...current,indicator_number:indicator,updated_at:null}),
       unchanged:true};
   const updated=await db.query(current?
     'UPDATE padk_preparation_indicator_notes SET preparation_notes=$3,evidence_plan=$4,'+
-    'revision=revision+1,updated_at=now() WHERE preparation_id=$1 AND indicator_number=$2 RETURNING *'
+    'provisional_rank=$5,justification=$6,revision=revision+1,updated_at=now() '+
+    'WHERE preparation_id=$1 AND indicator_number=$2 RETURNING *'
     :'INSERT INTO padk_preparation_indicator_notes '+
-    '(preparation_id,indicator_number,preparation_notes,evidence_plan) '+
-    'VALUES($1,$2,$3,$4) RETURNING *',
-    [id,indicator,data.preparationNotes,data.evidencePlan],
+    '(preparation_id,indicator_number,preparation_notes,evidence_plan,provisional_rank,justification) '+
+    'VALUES($1,$2,$3,$4,$5,$6) RETURNING *',
+    [id,indicator,data.preparationNotes,data.evidencePlan,provisionalRank,justification],
   );
   const row=updated.rows[0];
   await db.query(
     'INSERT INTO padk_preparation_indicator_events '+
-    '(preparation_id,indicator_number,revision,actor_user_id,preparation_notes,evidence_plan) '+
-    'VALUES($1,$2,$3,$4,$5,$6)',
-    [id,indicator,row.revision,actorId,row.preparation_notes,row.evidence_plan],
+    '(preparation_id,indicator_number,revision,actor_user_id,preparation_notes,'+
+    'evidence_plan,provisional_rank,justification) '+
+    'VALUES($1,$2,$3,$4,$5,$6,$7,$8)',
+    [id,indicator,row.revision,actorId,row.preparation_notes,row.evidence_plan,
+      row.provisional_rank,row.justification],
   );
   return noteRecord(row);
 }
@@ -123,7 +154,8 @@ export async function historyPadkIndicatorNote(db,{actorId,id,number}){
   const preparation=await getPadkPreparation(db,{actorId,id});
   const indicator=parseIndicatorNumber(number,preparation.category);
   const events=await db.query(
-    'SELECT revision,actor_user_id,preparation_notes,evidence_plan,occurred_at '+
+    'SELECT revision,actor_user_id,preparation_notes,evidence_plan,'+
+    'provisional_rank,justification,occurred_at '+
     'FROM padk_preparation_indicator_events WHERE preparation_id=$1 '+
     'AND indicator_number=$2 ORDER BY revision DESC',[id,indicator],
   );

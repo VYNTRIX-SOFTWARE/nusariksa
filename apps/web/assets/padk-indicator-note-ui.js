@@ -20,6 +20,11 @@ export function validateDraftIndicatorList(data,category){
       ||!Number.isSafeInteger(item.revision)||item.revision<0
       ||typeof item.preparationNotes!=='string'
       ||typeof item.evidencePlan!=='string'
+      ||typeof item.justification!=='string'
+      ||!(item.provisionalRank===null||(Number.isInteger(item.provisionalRank)
+        &&item.provisionalRank>=1&&item.provisionalRank<=5))
+      ||(item.provisionalRank!==null&&item.justification.trim().length<20)
+      ||item.rankIsOfficial!==false||item.criteriaVerified!==false
       ||item.status!=='WORKING_NOTES_UNVERIFIED'
       ||item.scoringAvailable!==false
       ||Object.hasOwn(item,'rank')||Object.hasOwn(item,'rating')
@@ -48,12 +53,15 @@ export function createPadkIndicatorNoteUI({api,onAuthFailure,getUserId,getPermis
     $('pdk-indicator-save').hidden=!owner();
     $('pdk-indicator-save').disabled=state.busy||!state.dirty;
     $('pdk-indicator-list').disabled=state.busy||!state.items.length;
-    for(const id of ['pdk-indicator-notes','pdk-indicator-evidence']){
+    $('pdk-indicator-rank').disabled=!owner()||state.busy;
+    for(const id of ['pdk-indicator-notes','pdk-indicator-evidence','pdk-indicator-justification']){
       $(id).readOnly=!owner()||state.busy;
     }
     const filled=state.items.filter(x=>x.revision>0).length;
+    const ranked=state.items.filter(x=>x.provisionalRank!==null).length;
     $('pdk-indicator-count').textContent=state.items.length
-      ?filled+' dari '+state.items.length+' indikator punya catatan kerja.'
+      ?filled+' dari '+state.items.length+' punya catatan; '+ranked+
+        ' peringkat sementara tersimpan. Belum dihitung sebagai skor PADK.'
       :'Memuat daftar indikator…';
   }
   function clear(){
@@ -70,7 +78,8 @@ export function createPadkIndicatorNoteUI({api,onAuthFailure,getUserId,getPermis
     list.replaceChildren(new Option('Pilih indikator…',''));
     for(const item of state.items){
       const label='No. '+item.number+' · '+item.workingSummary.slice(0,115)
-        +(item.revision>0?' · Catatan tersimpan':'');
+        +(item.provisionalRank!==null?' · Peringkat draft '+item.provisionalRank
+          :item.revision>0?' · Catatan tersimpan':'');
       list.add(new Option(label,String(item.number)));
     }
     list.value=selected?String(selected):'';
@@ -88,6 +97,8 @@ export function createPadkIndicatorNoteUI({api,onAuthFailure,getUserId,getPermis
       ' (halaman cetak Lampiran IV '+item.printedPage+').';
     $('pdk-indicator-notes').value=item.preparationNotes;
     $('pdk-indicator-evidence').value=item.evidencePlan;
+    $('pdk-indicator-rank').value=item.provisionalRank===null?'':String(item.provisionalRank);
+    $('pdk-indicator-justification').value=item.justification;
     choices();render();void history();
   }
   async function history(){
@@ -103,7 +114,8 @@ export function createPadkIndicatorNoteUI({api,onAuthFailure,getUserId,getPermis
       const root=$('pdk-indicator-history');root.replaceChildren();
       for(const entry of result.events){
         const row=element('div','');row.className='workspace-history-item';
-        row.append(element('strong','Revisi '+entry.revision),
+        row.append(element('strong','Revisi '+entry.revision+
+          (entry.provisional_rank==null?'':' · Peringkat draft '+entry.provisional_rank)),
           element('p',new Date(entry.occurred_at).toLocaleString('id-ID')+
             ' · Pengguna '+entry.actor_user_id));
         root.append(row);
@@ -140,23 +152,40 @@ export function createPadkIndicatorNoteUI({api,onAuthFailure,getUserId,getPermis
     }
     selectIndicator(event.target.value);
   });
-  for(const id of ['pdk-indicator-notes','pdk-indicator-evidence']){
-    $(id).addEventListener('input',()=>{
-      if(!owner()||!state.active)return;
-      state.dirty=$('pdk-indicator-notes').value!==state.active.preparationNotes
-        ||$('pdk-indicator-evidence').value!==state.active.evidencePlan;
-      render();
-    });
+  const onInput=()=>{
+    if(!owner()||!state.active)return;
+    const rank=$('pdk-indicator-rank').value;
+    state.dirty=$('pdk-indicator-notes').value!==state.active.preparationNotes
+      ||$('pdk-indicator-evidence').value!==state.active.evidencePlan
+      ||(rank===''?null:Number(rank))!==state.active.provisionalRank
+      ||$('pdk-indicator-justification').value!==state.active.justification;
+    render();
+  };
+  for(const id of ['pdk-indicator-notes','pdk-indicator-evidence',
+    'pdk-indicator-justification']){
+    $(id).addEventListener('input',onInput);
   }
+  $('pdk-indicator-rank').addEventListener('change',onInput);
   $('pdk-indicator-form').addEventListener('submit',async event=>{
     event.preventDefault();
     if(!state.active||!owner()||state.busy||!state.dirty)return;
     const active=state.active,id=state.preparation.id,request=state.request;
+    const rawRank=$('pdk-indicator-rank').value;
+    const rank=rawRank===''?null:Number(rawRank);
     const body={preparationNotes:$('pdk-indicator-notes').value,
-      evidencePlan:$('pdk-indicator-evidence').value,expectedRevision:active.revision};
+      evidencePlan:$('pdk-indicator-evidence').value,
+      provisionalRank:rank,justification:$('pdk-indicator-justification').value,
+      expectedRevision:active.revision};
     if(body.preparationNotes.length>4000||body.evidencePlan.length>4000
-      ||CONTROL.test(body.preparationNotes)||CONTROL.test(body.evidencePlan)){
-      message('Catatan terlalu panjang atau mengandung karakter tidak valid.','error');return;
+      ||body.justification.length>4000
+      ||CONTROL.test(body.preparationNotes)||CONTROL.test(body.evidencePlan)
+      ||CONTROL.test(body.justification)
+      ||!(rank===null||(Number.isInteger(rank)&&rank>=1&&rank<=5))
+      ||(rank===null&&body.justification!=='')
+      ||(rank!==null&&(body.justification.trim().length<20
+        ||body.justification!==body.justification.trim()))){
+      message('Isian tidak valid. Peringkat sementara wajib memiliki justifikasi minimal 20 karakter.','error');
+      return;
     }
     state.busy=true;render();
     try{
@@ -164,10 +193,11 @@ export function createPadkIndicatorNoteUI({api,onAuthFailure,getUserId,getPermis
         {method:'PUT',body});
       if(request!==state.request||state.active?.number!==active.number)return;
       if(saved.status!=='WORKING_NOTES_UNVERIFIED'||saved.scoringAvailable!==false
+        ||saved.rankIsOfficial!==false||saved.criteriaVerified!==false
         ||saved.number!==active.number||saved.revision<=active.revision)
         throw new TypeError('Respons penyimpanan indikator tidak valid.');
       Object.assign(active,saved);state.dirty=false;
-      choices();render();message('Catatan indikator tersimpan. Ini belum skor PADK.','success');
+      choices();render();message('Draft indikator tersimpan. Belum menjadi nilai PADK final.','success');
       void history();
     }catch(error){if(request===state.request)fail(error,'Catatan gagal disimpan. Coba muat ulang.');}
     finally{if(request===state.request){state.busy=false;render();}}

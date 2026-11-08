@@ -21,6 +21,16 @@ test('working notes allow revision zero only for initial write',()=>{
   assert.deepEqual(validateIndicatorWorkingNotes({
     preparationNotes:'Kebijakan sedang ditinjau',evidencePlan:'SOP TI',expectedRevision:0,
   }),{preparationNotes:'Kebijakan sedang ditinjau',evidencePlan:'SOP TI',expectedRevision:0});
+  const withRank={preparationNotes:'Catatan pemeriksaan',evidencePlan:'SOP TI',
+    expectedRevision:0,provisionalRank:2,
+    justification:'Memenuhi sebagian persyaratan menurut pembacaan sementara.'};
+  assert.deepEqual(validateIndicatorWorkingNotes(withRank),withRank);
+  for(const invalid of [
+    {...withRank,provisionalRank:0},{...withRank,provisionalRank:6},
+    {...withRank,provisionalRank:2.5},{...withRank,justification:'terlalu singkat'},
+    {...withRank,provisionalRank:null},
+    {...withRank,justification:'\u0001'.replace('\\u0001','\u0001')},
+  ])assert.throws(()=>validateIndicatorWorkingNotes(invalid),PadkPreparationError);
   for(const x of [
     {preparationNotes:'x',evidencePlan:'',expectedRevision:-1},
     {preparationNotes:'x',evidencePlan:'',expectedRevision:1.5},
@@ -35,6 +45,7 @@ test('UI must reject authoritative-looking or scored draft indicator payload',()
     indicators:Array.from({length:60},(_,i)=>({
       number:i+1,workingSummary:'Ringkasan kerja draft, belum diverifikasi',
       printedPage:28,revision:0,preparationNotes:'',evidencePlan:'',
+      provisionalRank:null,justification:'',rankIsOfficial:false,criteriaVerified:false,
       status:'WORKING_NOTES_UNVERIFIED',scoringAvailable:false,
     })),
   };

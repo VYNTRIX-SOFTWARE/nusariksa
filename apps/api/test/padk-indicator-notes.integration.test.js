@@ -75,6 +75,8 @@ test('category 2: per-indicator notes persist and audit, maker-only write, no sc
         assert.equal(value.sourcePdfVerified,false);
         assert.equal(value.indicators.length,60);
         assert.equal(value.indicators[0].revision,0);
+        assert.equal(value.indicators[0].provisionalRank,null);
+        assert.equal(value.indicators[0].criteriaVerified,false);
         assert.equal((await send(url+'/61','PUT',cookies.maker,note)).status,400);
         assert.equal((await send(url+'/1','PUT',cookies.viewer,note)).status,403);
         assert.equal((await send(url+'/1','PUT',cookies.writer,note)).status,403);
@@ -89,18 +91,48 @@ test('category 2: per-indicator notes persist and audit, maker-only write, no sc
         });
         assert.equal(updated.status,200);
         assert.equal((await updated.json()).revision,2);
+        const draftAnswer=await send(url+'/1','PUT',cookies.maker,{
+          ...note,preparationNotes:'Catatan setelah inventarisasi bukti',
+          provisionalRank:2,
+          justification:'SOP sudah diterapkan, tetapi belum dievaluasi berkala.',
+          expectedRevision:2,
+        });
+        assert.equal(draftAnswer.status,200);
+        const answer=await draftAnswer.json();
+        assert.equal(answer.revision,3);
+        assert.equal(answer.provisionalRank,2);
+        assert.equal(answer.rankIsOfficial,false);
+        assert.equal(answer.scoringAvailable,false);
+        assert.equal((await send(url+'/1','PUT',cookies.maker,{
+          ...note,provisionalRank:1,justification:'Terlalu pendek',
+          expectedRevision:3,
+        })).status,400);
+        assert.equal((await send(url+'/1','PUT',cookies.maker,{
+          ...note,provisionalRank:9,
+          justification:'Uji input peringkat tidak valid harus ditolak.',
+          expectedRevision:3,
+        })).status,400);
+        assert.equal((await send(url+'/1','PUT',cookies.maker,{
+          ...note,provisionalRank:1,
+          justification:'Uji perubahan bersamaan dengan revisi lama.',
+          expectedRevision:2,
+        })).status,409);
         const reopened=await(await send(url,'GET',cookies.viewer)).json();
-        assert.equal(reopened.indicators[0].revision,2);
+        assert.equal(reopened.indicators[0].revision,3);
+        assert.equal(reopened.indicators[0].provisionalRank,2);
+        assert.equal(reopened.indicators[0].justification,
+          'SOP sudah diterapkan, tetapi belum dievaluasi berkala.');
         assert.equal(reopened.indicators[0].preparationNotes,'Catatan setelah inventarisasi bukti');
         assert.equal(reopened.indicators[1].revision,0);
         const hist=await(await send(url+'/1/history','GET',cookies.viewer)).json();
-        assert.deepEqual(hist.events.map(x=>x.revision),[2,1]);
+        assert.deepEqual(hist.events.map(x=>x.revision),[3,2,1]);
+        assert.equal(hist.events[0].provisional_rank,2);
         assert.equal((await send(url+'/1/submit','POST',cookies.maker,{})).status,404);
         assert.equal((await send(url+'/1/score','GET',cookies.viewer)).status,404);
         const raw=await db.query(
           'SELECT revision FROM padk_preparation_indicator_notes WHERE preparation_id=$1',[prep.id],
         );
-        assert.equal(raw.rows[0].revision,2);
+        assert.equal(raw.rows[0].revision,3);
       }finally{server.close();await once(server,'close');}
       await db.query('ROLLBACK');
     }finally{db.release();}

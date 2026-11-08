@@ -257,17 +257,21 @@ async function runBrowser(base,db,fixture){
       '80 draft indicators listed');
     await evalJs("document.getElementById('pdk-indicator-notes').value='Validasi pemilik kontrol dan kebijakan.';"+
       "document.getElementById('pdk-indicator-evidence').value='SOP TI dan notulen rapat manajemen.';"+
-      "document.getElementById('pdk-indicator-notes').dispatchEvent(new Event('input',{bubbles:true}));"+
+      "document.getElementById('pdk-indicator-rank').value='2';"+
+      "document.getElementById('pdk-indicator-justification').value='Penilaian sementara: dokumen ada tetapi pelaksanaan belum dievaluasi menyeluruh.';"+
+      "document.getElementById('pdk-indicator-rank').dispatchEvent(new Event('change',{bubbles:true}));"+
       "document.getElementById('pdk-indicator-form').requestSubmit()");
-    await until("document.getElementById('pdk-indicator-message').textContent.includes('Catatan indikator tersimpan')",
+    await until("document.getElementById('pdk-indicator-message').textContent.includes('Draft indikator tersimpan')",
       'PADK draft item note persisted');
-    const workpaper=await evalJs("(async()=>{const link=document.getElementById('pdk-workpaper-download');const r=await fetch(link.href);const pdf=await r.text();return {visible:!link.hidden,status:r.status,type:r.headers.get('content-type'),disposition:r.headers.get('content-disposition'),hasPdf:pdf.startsWith('%PDF-1.4'),hasSavedNote:pdf.includes('Validasi pemilik kontrol dan kebijakan.'),hasDraftMark:pdf.includes('BUKAN HASIL PENILAIAN PADK')}})()");
+    const workpaper=await evalJs("(async()=>{const link=document.getElementById('pdk-workpaper-download');const r=await fetch(link.href);const pdf=await r.text();return {visible:!link.hidden,status:r.status,type:r.headers.get('content-type'),disposition:r.headers.get('content-disposition'),hasPdf:pdf.startsWith('%PDF-1.4'),hasSavedNote:pdf.includes('Validasi pemilik kontrol dan kebijakan.'),hasDraftRank:pdf.includes('Peringkat sementara: 2'),hasReason:pdf.includes('Penilaian sementara: dokumen ada'),hasDraftMark:pdf.includes('BUKAN HASIL PENILAIAN PADK')}})()");
     assert.equal(workpaper.visible,true);
     assert.equal(workpaper.status,200);
     assert.equal(workpaper.type,'application/pdf');
     assert.match(workpaper.disposition,/attachment/);
     assert.equal(workpaper.hasPdf,true);
     assert.equal(workpaper.hasSavedNote,true);
+    assert.equal(workpaper.hasDraftRank,true);
+    assert.equal(workpaper.hasReason,true);
     assert.equal(workpaper.hasDraftMark,true);
     assert.equal((await db.query('SELECT revision FROM padk_assessment_preparations')).rows[0].revision,2);
     await openMaturity();
@@ -330,6 +334,9 @@ async function runBrowser(base,db,fixture){
       'PADK draft indicators reopened');
     assert.equal(await evalJs("document.getElementById('pdk-indicator-notes').value"),
       'Validasi pemilik kontrol dan kebijakan.');
+    assert.equal(await evalJs("document.getElementById('pdk-indicator-rank').value"),'2');
+    assert.equal(await evalJs("document.getElementById('pdk-indicator-justification').value"),
+      'Penilaian sementara: dokumen ada tetapi pelaksanaan belum dievaluasi menyeluruh.');
     await openMaturity();
     assert.equal(await evalJs("document.getElementById('ma-rating-form').hidden"),false);
     await evalJs("document.getElementById('ma-rating-level').value='2';"+
@@ -380,6 +387,8 @@ async function runBrowser(base,db,fixture){
       'viewer sees PADK draft indicators');
     assert.equal(await evalJs("document.getElementById('pdk-indicator-save').hidden"),true);
     assert.equal(await evalJs("document.getElementById('pdk-indicator-notes').readOnly"),true);
+    assert.equal(await evalJs("document.getElementById('pdk-indicator-rank').disabled"),true);
+    assert.equal(await evalJs("document.getElementById('pdk-indicator-justification').readOnly"),true);
     await openMaturity();
     assert.equal(await evalJs("document.getElementById('ma-review-queue-panel').hidden"),true);
     assert.equal(await evalJs("document.getElementById('ma-rating-form').hidden"),true);
@@ -432,7 +441,7 @@ async function runBrowser(base,db,fixture){
     await evalJs("document.getElementById('mfa-login-code').value="+JSON.stringify(codes[0])+";"+
       "document.getElementById('mfa-login-form').requestSubmit()");
     await until("!document.getElementById('app-screen').hidden",'recovery login accepted');
-    console.log('Browser E2E PASS: PADK review mapping (unverified), indicator notes, maturity, password and MFA');
+    console.log('Browser E2E PASS: PADK provisional rank + justification save/reopen + draft PDF, maturity, password and MFA');
   }finally{
     await stopChromium(browser);
   }

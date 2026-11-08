@@ -56,3 +56,11 @@ Petugas dengan izin baca laporan dapat mengunduh PDF dari workspace persiapan PA
 **Produk ini belum menghasilkan laporan final PADK.** PDF memuat penanda `DRAFT - BUKAN HASIL PENILAIAN PADK / BUKAN LAPORAN FINAL` pada setiap halaman, tidak mengarang skor, kriteria, approval, maupun bukti lampiran. Jika tidak ada catatan tersimpan, PDF menampilkan status kosong dengan jujur.
 
 Critical path MVP yang belum boleh dihilangkan: verifikasi independen regulatory pack, input rank 1–5 berdasarkan kriteria terverifikasi, penyimpanan bukti aktual, approval PADK tersendiri, perhitungan komposit valid, lalu **PDF final**. PDF persiapan ini tidak menggantikan salah satu gate tersebut.
+
+## MVP slice — rank 1–5 sementara, justifikasi, reopen, dan PDF draft
+
+UI persiapan indikator kini memiliki pilihan peringkat 1–5 dan justifikasi yang tersimpan langsung dalam catatan indikator dengan nomor revisi. Backend memeriksa domain nilai, panjang alasan, permission maker, kategori dan konflik revisi; semua perubahan tercatat append-only. Viewer dapat membaca. PDF kertas kerja draft juga menampilkan nilai sementara serta justifikasinya yang tersimpan.
+
+**Regulatory safety:** Kolom dinamai `provisional_rank`, respons menyertakan `rankIsOfficial=false`, `criteriaVerified=false` dan `scoringAvailable=false`. Laporan tetap diberi penanda DRAFT di setiap halaman, tanpa komposit atau approval. Pembacaan manual Tabel 3 dari PDF adalah prasyarat sebelum memilih nilai sementara karena redaksi kriteria belum verified dalam aplikasi. **TIDAK** ada endpoint untuk merilis skor final dari field provisional ini.
+
+Belum MVP selesai: kriteria 400 sel harus diverifikasi; khusus Kategori 2, pairing 60 indikator ke 80 baris Tabel 3 perlu review; evidence file, maker–checker PADK, calculation engine resmi, laporan PDF final approved dan UAT/restore masih P0. Jangan mempromosikan provisional rank menjadi hasil sah hanya karena semua indikator terisi.

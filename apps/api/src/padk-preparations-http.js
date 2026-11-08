@@ -18,9 +18,9 @@ const INDICATORS=new RegExp('^'+BASE+'/'+UUID+'/indicators$','i');
 const INDICATOR=new RegExp('^'+BASE+'/'+UUID+'/indicators/([1-9][0-9]?)$','i');
 const INDICATOR_HISTORY=new RegExp('^'+BASE+'/'+UUID+'/indicators/([1-9][0-9]?)/history$','i');
 const WORKPAPER=new RegExp('^'+BASE+'/'+UUID+'/workpaper\\.pdf$','i');
-const LIMIT=12288;
+const LIMIT=18000;
 function respond(response,status,data){response.writeHead(status);response.end(JSON.stringify(data));}
-async function readJson(request,fields){
+async function readJson(request,fields,optional=[]){
   if(request.headers['content-type']?.split(';')[0].trim().toLowerCase()!=='application/json')
     return {error:415};
   const chunks=[];let total=0,oversized=false;
@@ -32,8 +32,11 @@ async function readJson(request,fields){
   try{
     const value=JSON.parse(Buffer.concat(chunks).toString('utf8'));
     if(!value||typeof value!=='object'||Array.isArray(value)
-      ||Object.keys(value).length!==fields.length
-      ||!fields.every(key=>Object.hasOwn(value,key)))
+      ||!fields.every(key=>Object.hasOwn(value,key))
+      ||!Object.keys(value).every(key=>fields.includes(key)||optional.includes(key)))
+      return {error:400};
+    if(optional.length>0&&optional.some(key=>Object.hasOwn(value,key))
+      &&!optional.every(key=>Object.hasOwn(value,key)))
       return {error:400};
     return {body:value};
   }catch{return {error:400};}
@@ -100,7 +103,8 @@ export function createPadkPreparationsHandler({
       }
       const fields=creation?['title','category','periodStart','periodEnd']
         :['preparationNotes','evidencePlan','expectedRevision'];
-      const input=await readJson(request,fields);
+      const input=await readJson(request,fields,
+        updatingIndicator?['provisionalRank','justification']:[]);
       if(input.error){respond(response,input.error,{error:'Invalid request'});return;}
       if(updatingIndicator){
         respond(response,200,await saveIndicator(db,{
