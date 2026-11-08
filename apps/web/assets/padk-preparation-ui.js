@@ -30,13 +30,15 @@ export function validatePreparationResponse(data){
   return data;
 }
 export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFailure}){
-  const state={items:[],detail:null,dirty:false,busy:false,request:0};
+  const state={items:[],detail:null,workflow:null,dirty:false,busy:false,request:0};
+  const canEditDraft=()=>Boolean(state.workflow&&
+    ['in_progress','changes_requested'].includes(state.workflow.status));
   const indicatorUI=createPadkIndicatorNoteUI({
-    api,onAuthFailure,getUserId,getPermissions,
+    api,onAuthFailure,getUserId,getPermissions,canEditDraft,
   });
   const permitted=()=>getPermissions().includes('assessments:read');
   const writable=()=>getPermissions().includes('assessments:write');
-  const owner=()=>state.detail&&writable()&&state.detail.ownerUserId===getUserId();
+  const owner=()=>state.detail&&writable()&&state.detail.ownerUserId===getUserId()&&canEditDraft();
   const message=(value,kind)=>{
     $('pdk-message').textContent=value??'';
     $('pdk-message').hidden=!value;
@@ -49,8 +51,11 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
   const confirmLeave=()=>!state.dirty&&!indicatorUI.isDirty()||window.confirm(
     'Ada catatan yang belum disimpan. Tinggalkan halaman dan abaikan perubahan?');
   function clear(){
-    state.request++;state.items=[];state.detail=null;state.dirty=false;state.busy=false;
+    state.request++;state.items=[];state.detail=null;state.workflow=null;state.dirty=false;state.busy=false;
     indicatorUI.clear();
+    $('pdk-draft-review-panel').hidden=true;
+    $('pdk-review-form').reset();
+    $('pdk-review-events').replaceChildren();
     $('pdk-create-form').hidden=true;$('pdk-create-form').reset();
     $('pdk-detail').hidden=true;$('pdk-note-form').reset();
     $('pdk-list').replaceChildren();
@@ -60,6 +65,24 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
   }
   function render(){
     indicatorUI.sync();
+    const review=$('pdk-draft-review-panel'),workflow=state.workflow;
+    review.hidden=!state.detail;
+    const phase=workflow?.status??'loading';
+    const names={in_progress:'Sedang dikerjakan',submitted:'Menunggu pemeriksa',
+      changes_requested:'Dikembalikan untuk perbaikan',
+      draft_accepted:'Draft internal diterima, bukan approval PADK',
+      loading:'Memuat status pemeriksaan…'};
+    $('pdk-review-state').textContent=(names[phase]??phase)+
+      (workflow?' · Siklus '+workflow.submissionCycle:'')+
+      ' · Skor resmi dan laporan final belum tersedia.';
+    const allowedSubmit=owner()&&!state.dirty&&!indicatorUI.isDirty()&&!state.busy;
+    $('pdk-review-submit').hidden=!allowedSubmit;
+    $('pdk-review-submit').disabled=!allowedSubmit;
+    const allowedReview=Boolean(state.detail&&workflow&&phase==='submitted'
+      &&getPermissions().includes('assessments:approve')
+      &&state.detail.ownerUserId!==getUserId());
+    $('pdk-review-form').hidden=!allowedReview;
+    $('pdk-review-decision-submit').disabled=!allowedReview||state.busy;
     const report=$('pdk-workpaper-download');
     report.hidden=!state.detail;
     report.href=state.detail
@@ -95,7 +118,7 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
       if(!Array.isArray(data.preparations)||data.regulatoryPackReady!==false)
         throw new TypeError('Daftar persiapan PADK tidak valid.');
       state.items=data.preparations.map(validatePreparationResponse);
-      state.detail=null;state.dirty=false;
+      state.detail=null;state.workflow=null;state.dirty=false;
       indicatorUI.clear();$('pdk-note-form').reset();
       render();
       message('');
@@ -126,7 +149,7 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
   }
   async function open(id){
     if(!UUID.test(id))return;
-    const request=++state.request;state.busy=true;state.detail=null;state.dirty=false;
+    const request=++state.request;state.busy=true;state.detail=null;state.workflow=null;state.dirty=false;
     indicatorUI.clear();
     $('pdk-note-form').reset();render();message('Memuat catatan…');
     try{
@@ -136,11 +159,90 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
       $('pdk-notes').value=data.preparationNotes;
       $('pdk-evidence-plan').value=data.evidencePlan;
       state.dirty=false;message('');render();
+      await reviewStatus();
+      if(request!==state.request)return;
       void indicatorUI.load(data);
       void history();
     }catch(error){if(request===state.request)fail(error,'Catatan gagal dibuka.');}
     finally{if(request===state.request){state.busy=false;render();}}
   }
+  const reviewPath=()=>ENDPOINT+'/'+encodeURIComponent(state.detail.id)+'/draft-review';
+  function reviewMessage(value,kind='info'){
+    const panel=$('pdk-review-message');
+    panel.textContent=value??'';panel.hidden=!value;panel.dataset.kind=kind;
+  }
+  async function reviewStatus(){
+    if(!state.detail)return;
+    const id=state.detail.id,request=state.request;
+    const workflow=await api(reviewPath());
+    if(request!==state.request||state.detail?.id!==id)return;
+    if(!workflow||workflow.preparationId!==id
+      ||!['in_progress','submitted','changes_requested','draft_accepted'].includes(workflow.status)
+      ||workflow.officialApprovalAvailable!==false||workflow.regulatoryPackVerified!==false
+      ||workflow.finalReportAvailable!==false)
+      throw new TypeError('Status review draft tidak valid.');
+    state.workflow=workflow;
+    render();void reviewHistory();
+  }
+  async function reviewHistory(){
+    if(!state.detail||!state.workflow)return;
+    const id=state.detail.id,request=state.request;
+    try{
+      const res=await api(reviewPath()+'/history');
+      if(request!==state.request||state.detail?.id!==id)return;
+      if(!Array.isArray(res.events)||res.officialApprovalAvailable!==false)
+        throw new TypeError('Histori draft tidak valid.');
+      const panel=$('pdk-review-events');panel.replaceChildren();
+      for(const row of res.events){
+        const item=text('p',row.action+' · Siklus '+row.submission_cycle+
+          ' · '+new Date(row.occurred_at).toLocaleString('id-ID')+
+          (row.note?' · '+row.note:''),'workspace-help');
+        panel.append(item);
+      }
+      if(!res.events.length)panel.append(text('p','Belum ada review draft.'));
+    }catch(error){
+      if(request===state.request)reviewMessage('Gagal memuat riwayat pemeriksaan.','error');
+    }
+  }
+  $('pdk-review-refresh').addEventListener('click',()=>{void reviewStatus().catch(
+    error=>fail(error,'Gagal memuat status pemeriksaan.'));});
+  $('pdk-review-submit').addEventListener('click',async()=>{
+    if(!owner()||state.busy||state.dirty||indicatorUI.isDirty())return;
+    state.busy=true;render();reviewMessage('');
+    try{
+      await api(reviewPath()+'/submit',{method:'POST'});
+      await reviewStatus();
+      reviewMessage('Draft dikirim ke pemeriksa. Jawaban dan bukti dikunci sementara.','success');
+    }catch(error){
+      if(onAuthFailure(error))return;
+      reviewMessage(error?.status===409?
+        'Lengkapi seluruh indikator dan justifikasinya sebelum mengajukan draft.':
+        'Gagal mengajukan draft. Periksa data dan izin.','error');
+    }finally{state.busy=false;render();}
+  });
+  $('pdk-review-form').addEventListener('submit',async event=>{
+    event.preventDefault();
+    if(!state.detail||state.busy||state.workflow?.status!=='submitted'
+      ||!getPermissions().includes('assessments:approve')
+      ||state.detail.ownerUserId===getUserId())return;
+    const decision=$('pdk-review-decision').value,note=$('pdk-review-note').value;
+    if(!['request_changes','accept_draft'].includes(decision)||note.length>2000
+      ||control.test(note)||(decision==='request_changes'&&note.trim().length<10)){
+      reviewMessage('Alasan pengembalian wajib minimal 10 karakter.','error');return;
+    }
+    state.busy=true;render();reviewMessage('');
+    try{
+      await api(reviewPath()+'/decision',{method:'POST',body:{decision,note}});
+      $('pdk-review-form').reset();
+      await reviewStatus();
+      reviewMessage(decision==='accept_draft'
+        ?'Kelengkapan draft internal diterima; ini BUKAN approval resmi PADK.'
+        :'Draft dikembalikan. Maker boleh memperbaiki dan mengajukan lagi.','success');
+    }catch(error){
+      if(onAuthFailure(error))return;
+      reviewMessage('Keputusan pemeriksa gagal disimpan. Muat ulang status.','error');
+    }finally{state.busy=false;render();}
+  });
   $('pdk-refresh').addEventListener('click',()=>{if(confirmLeave())void list();});
   $('pdk-create-toggle').addEventListener('click',()=>{
     if(!writable())return;
@@ -168,7 +270,7 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
   $('pdk-list').addEventListener('change',event=>{
     if(!confirmLeave()){event.target.value=state.detail?.id??'';return;}
     if(event.target.value)void open(event.target.value);
-    else{state.detail=null;state.dirty=false;indicatorUI.clear();render();}
+    else{state.detail=null;state.workflow=null;state.dirty=false;indicatorUI.clear();render();}
   });
   for(const id of ['pdk-notes','pdk-evidence-plan']){
     $(id).addEventListener('input',()=>{

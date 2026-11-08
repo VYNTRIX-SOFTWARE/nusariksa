@@ -14,6 +14,7 @@ import {createServer} from '../apps/api/src/server.js';
 import {changePasswordInTransaction} from '../apps/api/src/change-password.js';
 import {createPadkPreparationInTransaction,savePadkPreparationInTransaction} from '../apps/api/src/padk-preparations.js';
 import {savePadkIndicatorNoteInTransaction} from '../apps/api/src/padk-preparation-indicators.js';
+import {submitPadkDraftInTransaction,reviewPadkDraftInTransaction} from '../apps/api/src/padk-draft-review.js';
 import {uploadPadkEvidenceInTransaction} from '../apps/api/src/padk-evidence.js';
 import {recordMappingReviewInTransaction} from '../apps/api/src/padk-crosswalk-reviews.js';
 import {
@@ -249,6 +250,8 @@ async function runBrowser(base,db,fixture){
       "document.getElementById('pdk-period-end').value='2026-12-31';"+
       "document.getElementById('pdk-create-form').requestSubmit()");
     await until("!document.getElementById('pdk-detail').hidden",'PADK created through UI');
+    await until("document.getElementById('pdk-review-state').textContent.includes('Sedang dikerjakan')",
+      'PADK draft status loaded');
     await evalJs("document.getElementById('pdk-notes').value='Inventarisasi perangkat dan pengelolaan risiko internal.';"+
       "document.getElementById('pdk-evidence-plan').value='Siapkan dokumen kebijakan dan log pemantauan.';"+
       "document.getElementById('pdk-notes').dispatchEvent(new Event('input',{bubbles:true}));"+
@@ -295,6 +298,21 @@ async function runBrowser(base,db,fixture){
     assert.equal(workpaper.hasReason,true);
     assert.equal(workpaper.hasDraftMark,true);
     assert.equal((await db.query('SELECT revision FROM padk_assessment_preparations')).rows[0].revision,2);
+    await evalJs("document.getElementById('pdk-review-submit').click()");
+    await until("document.getElementById('pdk-review-message').textContent.includes('Lengkapi')",
+      'PADK incomplete draft submission blocked');
+    const padkId=(await db.query('SELECT id FROM padk_assessment_preparations LIMIT 1')).rows[0].id;
+    await db.query(
+      "INSERT INTO padk_preparation_indicator_notes "+
+      "(preparation_id,indicator_number,provisional_rank,justification) "+
+      "SELECT $1,n,2,'Justifikasi sementara berdasarkan pemeriksaan dokumen internal.' "+
+      "FROM generate_series(2,80) AS n",[padkId],
+    );
+    await evalJs("document.getElementById('pdk-review-submit').click()");
+    await until("document.getElementById('pdk-review-state').textContent.includes('Menunggu pemeriksa')",
+      'PADK provisional draft submitted in maker UI');
+    assert.equal(await evalJs("document.getElementById('pdk-indicator-rank').disabled"),true);
+    assert.equal(await evalJs("document.getElementById('pdk-evidence-upload').hidden"),true);
     await openMaturity();
     assert.equal(await evalJs("document.getElementById('ma-submit').hidden"),false);
     assert.equal(await evalJs("document.getElementById('ma-review-form').hidden"),true);
@@ -323,6 +341,19 @@ async function runBrowser(base,db,fixture){
     );
     assert.equal(audit.rowCount,1);
     assert.equal(audit.rows[0].review_track,'SUBSTANCE');
+    await openPadk();
+    await until("document.getElementById('pdk-list').options.length>1",
+      'PADK reviewer can list same-institution preparations');
+    const padkForReview=(await db.query('SELECT id FROM padk_assessment_preparations LIMIT 1')).rows[0].id;
+    await evalJs("document.getElementById('pdk-list').value="+JSON.stringify(padkForReview)+";"+
+      "document.getElementById('pdk-list').dispatchEvent(new Event('change',{bubbles:true}))");
+    await until("!document.getElementById('pdk-review-form').hidden",
+      'PADK provisional draft reviewer form');
+    await evalJs("document.getElementById('pdk-review-decision').value='request_changes';"+
+      "document.getElementById('pdk-review-note').value='Mohon periksa kembali bukti dan justifikasi.';"+
+      "document.getElementById('pdk-review-form').requestSubmit()");
+    await until("document.getElementById('pdk-review-state').textContent.includes('Dikembalikan')",
+      'PADK draft returned in reviewer UI');
     await openMaturity();
     await until("Boolean(document.querySelector('#ma-review-queue [data-ma-review-id]'))",'review queue item');
     await evalJs("document.querySelector('#ma-review-queue [data-ma-review-id]').click()");
@@ -349,6 +380,8 @@ async function runBrowser(base,db,fixture){
     await evalJs("document.getElementById('pdk-list').value="+JSON.stringify(preparation)+";"+
       "document.getElementById('pdk-list').dispatchEvent(new Event('change',{bubbles:true}))");
     await until("!document.getElementById('pdk-detail').hidden",'PADK reopen from list');
+    await until("document.getElementById('pdk-review-state').textContent.includes('Dikembalikan')",
+      'PADK maker can edit returned draft');
     assert.equal(await evalJs("document.getElementById('pdk-notes').value"),
       'Inventarisasi perangkat dan pengelolaan risiko internal.');
     await until("document.getElementById('pdk-indicator-list').options.length===81",
@@ -358,6 +391,10 @@ async function runBrowser(base,db,fixture){
     assert.equal(await evalJs("document.getElementById('pdk-indicator-rank').value"),'2');
     assert.equal(await evalJs("document.getElementById('pdk-indicator-justification').value"),
       'Penilaian sementara: dokumen ada tetapi pelaksanaan belum dievaluasi menyeluruh.');
+    assert.equal(await evalJs("document.getElementById('pdk-indicator-rank').disabled"),false);
+    await evalJs("document.getElementById('pdk-review-submit').click()");
+    await until("document.getElementById('pdk-review-state').textContent.includes('Menunggu pemeriksa')",
+      'PADK draft resubmitted by maker');
     await openMaturity();
     assert.equal(await evalJs("document.getElementById('ma-rating-form').hidden"),false);
     await evalJs("document.getElementById('ma-rating-level').value='2';"+
@@ -371,6 +408,25 @@ async function runBrowser(base,db,fixture){
     await logout();
 
     await login('reviewer');
+    await openPadk();
+    await until("document.getElementById('pdk-list').options.length>1",
+      'PADK reviewer can reopen resubmitted draft');
+    const padkDecision=(await db.query('SELECT id FROM padk_assessment_preparations LIMIT 1')).rows[0].id;
+    await evalJs("document.getElementById('pdk-list').value="+JSON.stringify(padkDecision)+";"+
+      "document.getElementById('pdk-list').dispatchEvent(new Event('change',{bubbles:true}))");
+    await until("!document.getElementById('pdk-review-form').hidden",
+      'PADK reviewer can accept resubmitted draft');
+    await evalJs("document.getElementById('pdk-review-decision').value='accept_draft';"+
+      "document.getElementById('pdk-review-note').value='Kelengkapan draft ditinjau, belum approval PADK resmi.';"+
+      "document.getElementById('pdk-review-form').requestSubmit()");
+    await until("document.getElementById('pdk-review-state').textContent.includes('Draft internal diterima')",
+      'PADK draft internally accepted only');
+    const padkState=await db.query(
+      'SELECT status,submission_cycle FROM padk_draft_review_state WHERE preparation_id=$1',
+      [padkDecision],
+    );
+    assert.equal(padkState.rows[0].status,'draft_accepted');
+    assert.equal(padkState.rows[0].submission_cycle,2);
     await openMaturity();
     await until("Boolean(document.querySelector('#ma-review-queue [data-ma-review-id]'))",'second review queue item');
     await evalJs("document.querySelector('#ma-review-queue [data-ma-review-id]').click()");
@@ -465,7 +521,7 @@ async function runBrowser(base,db,fixture){
     await evalJs("document.getElementById('mfa-login-code').value="+JSON.stringify(codes[0])+";"+
       "document.getElementById('mfa-login-form').requestSubmit()");
     await until("!document.getElementById('app-screen').hidden",'recovery login accepted');
-    console.log('Browser E2E PASS: PADK encrypted evidence upload/download + provisional ranks + draft PDF, maturity, password and MFA');
+    console.log('Browser E2E PASS: PADK draft submit/return/resubmit/accept + evidence + PDF, maturity, password and MFA');
   }finally{
     await stopChromium(browser);
   }
@@ -500,6 +556,10 @@ async function main(){
       },
       crosswalkHandlers:{
         submit:(db,args)=>recordMappingReviewInTransaction(db,args),
+      },
+      padkDraftReviewHandlers:{
+        submit:(db,args)=>submitPadkDraftInTransaction(db,args),
+        review:(db,args)=>reviewPadkDraftInTransaction(db,args),
       },
       padkPreparationHandlers:{
         create:(db,args)=>createPadkPreparationInTransaction(db,args),

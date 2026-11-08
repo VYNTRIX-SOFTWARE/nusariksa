@@ -15,12 +15,12 @@ export function validatePadkEvidenceListing(payload,id,number){
     throw new TypeError('Daftar bukti PADK tidak valid.');
   return payload.evidence;
 }
-export function createPadkEvidenceUI({api,onAuthFailure,getUserId,getPermissions}){
+export function createPadkEvidenceUI({api,onAuthFailure,getUserId,getPermissions,canEditDraft=()=>true}){
   let context=null,nonce=0,busy=false;
   const canRead=()=>Boolean(context&&getPermissions().includes('evidence:read'));
   const canWrite=()=>Boolean(canRead()&&context.noteRevision>0
     &&context.ownerUserId===getUserId()
-    &&getPermissions().includes('evidence:write'));
+    &&getPermissions().includes('evidence:write')&&canEditDraft());
   const path=()=>BASE+'/'+encodeURIComponent(context.id)+
     '/indicators/'+context.number+'/evidence';
   function inform(value,kind='info'){

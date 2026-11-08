@@ -364,6 +364,37 @@
             <a id="pdk-workpaper-download" class="button button-outline" href="#" download hidden>
               Unduh PDF kertas kerja (draft)
             </a>
+            <section id="pdk-draft-review-panel" aria-label="Pemeriksaan draft penilaian PADK" hidden>
+              <div class="maturity-rubric-heading">
+                <h3>Alur pemeriksaan draft PADK</h3>
+                <button id="pdk-review-refresh" type="button" class="button button-outline">Muat status</button>
+              </div>
+              <p class="workspace-disclaimer">Pemeriksaan ini hanya menerima kelengkapan draft internal; BUKAN
+                persetujuan hasil PADK, skor komposit resmi, ataupun laporan final untuk OJK.
+                Semua indikator kategori yang dipilih harus punya peringkat sementara dan justifikasi
+                sebelum draft dapat diajukan.
+              </p>
+              <p id="pdk-review-state" role="status" aria-live="polite"></p>
+              <p id="pdk-review-message" class="workspace-message" role="status" hidden></p>
+              <button type="button" id="pdk-review-submit" class="button button-primary" hidden>
+                Ajukan pemeriksaan draft
+              </button>
+              <form id="pdk-review-form" class="maturity-edit-form" hidden>
+                <label for="pdk-review-decision">Keputusan pemeriksa</label>
+                <select id="pdk-review-decision" required>
+                  <option value="request_changes">Kembalikan untuk perbaikan</option>
+                  <option value="accept_draft">Terima kelengkapan draft internal (bukan approval PADK)</option>
+                </select>
+                <label for="pdk-review-note">Catatan pemeriksaan</label>
+                <textarea id="pdk-review-note" rows="3" maxlength="2000"
+                  placeholder="Wajib minimal 10 karakter saat dikembalikan"></textarea>
+                <button id="pdk-review-decision-submit" type="submit" class="button button-primary">
+                  Simpan keputusan draft
+                </button>
+              </form>
+              <h3>Riwayat pemeriksaan draft</h3>
+              <div id="pdk-review-events" aria-live="polite"></div>
+            </section>
             <form id="pdk-note-form" class="maturity-edit-form" hidden>
               <label for="pdk-notes">Catatan kesiapan</label>
               <textarea id="pdk-notes" rows="5" maxlength="4000" placeholder="Kondisi aktual, hambatan, dan rencana tindak lanjut."></textarea>
@@ -377,8 +408,8 @@
               </div>
               <p class="workspace-disclaimer">
                 Ringkasan indikator di bawah masih DRAFT_UNVERIFIED, bukan teks resmi final.
-                Catatan ini hanya untuk inventarisasi bukti. Belum tersedia skor, pilihan peringkat,
-                review hasil, approval, atau laporan PADK.
+                Peringkat sementara, bukti aktual, dan review kelengkapan draft tidak berarti
+                penilaian, approval, atau laporan PADK resmi sudah tersedia.
               </p>
               <p id="pdk-indicator-count" class="workspace-help" aria-live="polite"></p>
               <label for="pdk-indicator-list">Pilih indikator kategori penilaian</label>

@@ -51,6 +51,9 @@ export async function uploadPadkEvidenceInTransaction(db,{
   if(found.rowCount!==1)reject(404,'PADK preparation not found');
   if(found.rows[0].owner_user_id!==actorId)
     reject(403,'Only the PADK maker can upload evidence');
+  const review=await db.query('SELECT status FROM padk_draft_review_state WHERE preparation_id=$1',[id]);
+  if(['submitted','draft_accepted'].includes(review.rows[0]?.status))
+    reject(409,'PADK draft evidence is locked during review');
   const indicator=parseIndicatorNumber(number,found.rows[0].category);
   const note=await db.query(
     'SELECT 1 FROM padk_preparation_indicator_notes '+
