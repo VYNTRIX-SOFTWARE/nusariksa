@@ -64,3 +64,13 @@ UI persiapan indikator kini memiliki pilihan peringkat 1–5 dan justifikasi yan
 **Regulatory safety:** Kolom dinamai `provisional_rank`, respons menyertakan `rankIsOfficial=false`, `criteriaVerified=false` dan `scoringAvailable=false`. Laporan tetap diberi penanda DRAFT di setiap halaman, tanpa komposit atau approval. Pembacaan manual Tabel 3 dari PDF adalah prasyarat sebelum memilih nilai sementara karena redaksi kriteria belum verified dalam aplikasi. **TIDAK** ada endpoint untuk merilis skor final dari field provisional ini.
 
 Belum MVP selesai: kriteria 400 sel harus diverifikasi; khusus Kategori 2, pairing 60 indikator ke 80 baris Tabel 3 perlu review; evidence file, maker–checker PADK, calculation engine resmi, laporan PDF final approved dan UAT/restore masih P0. Jangan mempromosikan provisional rank menjadi hasil sah hanya karena semua indikator terisi.
+
+## MVP vertical slice — bukti aktual per indikator PADK
+
+Pada halaman input PADK yang sama, maker bisa melampirkan maksimal 10 berkas PDF/PNG/JPEG (maksimal 1 MiB per berkas) setelah menyimpan indikator. Berkas dienkripsi AES-256-GCM sebelum ditulis ke PostgreSQL, dengan autentikasi metadata yang mengikat file pada preparation ID dan nomor indikator. Riwayat bukti bersifat append-only: tidak dapat diganti/dihapus lewat aplikasi maupun UPDATE/DELETE/TRUNCATE SQL.
+
+Petugas berizin `evidence:read` bisa melihat metadata dan mengunduh konten yang diverifikasi dekripsi dan SHA-256; hanya owner/maker yang berizin `evidence:write` dapat unggah. Endpoint memverifikasi session cookie, Origin pada unggahan, keanggotaan institusi, kategori 1/2, dan key `EVIDENCE_ENCRYPTION_KEY`; tanpa key, unggah/unduh sengaja gagal 503. PDF kertas kerja menampilkan jumlah bukti aktual per indikator, tidak menyisipkan isi dokumen.
+
+Catatan keamanan: magic bytes dan ekstensi hanya validasi awal, **bukan antivirus**; key lifecycle, backup–restore, content scanning dan bukti keamanan operasional tetap P0 untuk deployment bank.
+
+**Regulatory release gate tetap BLOCKED**. Bukti aktual ini tidak membuat teks kriteria, peringkat provisional atau metodologi menjadi verified. Jalur berikutnya harus menyelesaikan kriteria peringkat yang terverifikasi, submit/revise/approve PADK, kalkulasi komposit resmi, PDF final dan UAT.

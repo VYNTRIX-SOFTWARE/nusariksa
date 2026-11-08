@@ -1,3 +1,5 @@
+import {createPadkEvidenceUI} from './padk-evidence-ui.js';
+
 const $=id=>document.getElementById(id);
 const ENDPOINT='/regulatory/padk43/cyber/preparations';
 const CONTROL=/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/;
@@ -35,6 +37,7 @@ export function validateDraftIndicatorList(data,category){
 }
 export function createPadkIndicatorNoteUI({api,onAuthFailure,getUserId,getPermissions}){
   const state={preparation:null,items:[],active:null,dirty:false,busy:false,request:0};
+  const evidenceUI=createPadkEvidenceUI({api,onAuthFailure,getUserId,getPermissions});
   const owner=()=>Boolean(state.preparation
     &&state.preparation.ownerUserId===getUserId()
     &&getPermissions().includes('assessments:write'));
@@ -48,6 +51,7 @@ export function createPadkIndicatorNoteUI({api,onAuthFailure,getUserId,getPermis
     message(error instanceof TypeError?error.message:fallback,'error');
   };
   function render(){
+    evidenceUI.sync();
     $('pdk-indicator-section').hidden=!state.preparation;
     $('pdk-indicator-form').hidden=!state.active;
     $('pdk-indicator-save').hidden=!owner();
@@ -67,6 +71,7 @@ export function createPadkIndicatorNoteUI({api,onAuthFailure,getUserId,getPermis
   function clear(){
     state.request++;state.preparation=null;state.items=[];state.active=null;
     state.dirty=false;state.busy=false;
+    evidenceUI.clear();
     $('pdk-indicator-list').replaceChildren();
     $('pdk-indicator-form').reset();
     $('pdk-indicator-history').replaceChildren();
@@ -89,6 +94,7 @@ export function createPadkIndicatorNoteUI({api,onAuthFailure,getUserId,getPermis
     state.active=item??null;state.dirty=false;
     $('pdk-indicator-form').reset();message('');
     if(!item){
+      evidenceUI.clear();
       $('pdk-indicator-description').textContent='';
       $('pdk-indicator-history').replaceChildren();render();return;
     }
@@ -99,7 +105,7 @@ export function createPadkIndicatorNoteUI({api,onAuthFailure,getUserId,getPermis
     $('pdk-indicator-evidence').value=item.evidencePlan;
     $('pdk-indicator-rank').value=item.provisionalRank===null?'':String(item.provisionalRank);
     $('pdk-indicator-justification').value=item.justification;
-    choices();render();void history();
+    choices();evidenceUI.open(state.preparation,item);render();void history();
   }
   async function history(){
     if(!state.preparation||!state.active)return;
@@ -197,6 +203,7 @@ export function createPadkIndicatorNoteUI({api,onAuthFailure,getUserId,getPermis
         ||saved.number!==active.number||saved.revision<=active.revision)
         throw new TypeError('Respons penyimpanan indikator tidak valid.');
       Object.assign(active,saved);state.dirty=false;
+      evidenceUI.open(state.preparation,active);
       choices();render();message('Draft indikator tersimpan. Belum menjadi nilai PADK final.','success');
       void history();
     }catch(error){if(request===state.request)fail(error,'Catatan gagal disimpan. Coba muat ulang.');}

@@ -14,6 +14,7 @@ import {createServer} from '../apps/api/src/server.js';
 import {changePasswordInTransaction} from '../apps/api/src/change-password.js';
 import {createPadkPreparationInTransaction,savePadkPreparationInTransaction} from '../apps/api/src/padk-preparations.js';
 import {savePadkIndicatorNoteInTransaction} from '../apps/api/src/padk-preparation-indicators.js';
+import {uploadPadkEvidenceInTransaction} from '../apps/api/src/padk-evidence.js';
 import {recordMappingReviewInTransaction} from '../apps/api/src/padk-crosswalk-reviews.js';
 import {
   MfaError,base32Decode,totpForStep,mfaStatus,
@@ -263,6 +264,26 @@ async function runBrowser(base,db,fixture){
       "document.getElementById('pdk-indicator-form').requestSubmit()");
     await until("document.getElementById('pdk-indicator-message').textContent.includes('Draft indikator tersimpan')",
       'PADK draft item note persisted');
+    await until("!document.getElementById('pdk-evidence-upload').hidden",
+      'PADK evidence upload enabled after saving indicator');
+    await evalJs("(()=>{const file=new File(['%PDF-1.4\\n1 0 obj\\n<<>>\\nendobj\\n%%EOF'], "+
+      "'bukti-padk-browser.pdf',{type:'application/pdf'});"+
+      "const dt=new DataTransfer();dt.items.add(file);"+
+      "document.getElementById('pdk-evidence-file').files=dt.files;"+
+      "document.getElementById('pdk-evidence-upload').requestSubmit();return true;})()");
+    await until("document.getElementById('pdk-evidence-list').textContent.includes('bukti-padk-browser.pdf')",
+      'PADK evidence uploaded and listed through browser');
+    const savedEvidence=await db.query(
+      "SELECT size_bytes,nonce,auth_tag,ciphertext FROM padk_indicator_evidence",
+    );
+    assert.equal(savedEvidence.rowCount,1);
+    assert.equal(savedEvidence.rows[0].nonce.length,12);
+    assert.ok(savedEvidence.rows[0].ciphertext.toString('utf8').includes('%PDF-')===false);
+    const evidenceDownloaded=await evalJs("(async()=>{const link=document.querySelector('#pdk-evidence-list a');"+
+      "const r=await fetch(link.href);const bytes=await r.text();"+
+      "return {status:r.status,marker:bytes.startsWith('%PDF-1.4')}})()");
+    assert.equal(evidenceDownloaded.status,200);
+    assert.equal(evidenceDownloaded.marker,true);
     const workpaper=await evalJs("(async()=>{const link=document.getElementById('pdk-workpaper-download');const r=await fetch(link.href);const pdf=await r.text();return {visible:!link.hidden,status:r.status,type:r.headers.get('content-type'),disposition:r.headers.get('content-disposition'),hasPdf:pdf.startsWith('%PDF-1.4'),hasSavedNote:pdf.includes('Validasi pemilik kontrol dan kebijakan.'),hasDraftRank:pdf.includes('Peringkat sementara: 2'),hasReason:pdf.includes('Penilaian sementara: dokumen ada'),hasDraftMark:pdf.includes('BUKAN HASIL PENILAIAN PADK')}})()");
     assert.equal(workpaper.visible,true);
     assert.equal(workpaper.status,200);
@@ -388,6 +409,9 @@ async function runBrowser(base,db,fixture){
     assert.equal(await evalJs("document.getElementById('pdk-indicator-save').hidden"),true);
     assert.equal(await evalJs("document.getElementById('pdk-indicator-notes').readOnly"),true);
     assert.equal(await evalJs("document.getElementById('pdk-indicator-rank').disabled"),true);
+    await until("document.getElementById('pdk-evidence-list').textContent.includes('bukti-padk-browser.pdf')",
+      'viewer sees persisted PADK evidence');
+    assert.equal(await evalJs("document.getElementById('pdk-evidence-upload').hidden"),true);
     assert.equal(await evalJs("document.getElementById('pdk-indicator-justification').readOnly"),true);
     await openMaturity();
     assert.equal(await evalJs("document.getElementById('ma-review-queue-panel').hidden"),true);
@@ -441,7 +465,7 @@ async function runBrowser(base,db,fixture){
     await evalJs("document.getElementById('mfa-login-code').value="+JSON.stringify(codes[0])+";"+
       "document.getElementById('mfa-login-form').requestSubmit()");
     await until("!document.getElementById('app-screen').hidden",'recovery login accepted');
-    console.log('Browser E2E PASS: PADK provisional rank + justification save/reopen + draft PDF, maturity, password and MFA');
+    console.log('Browser E2E PASS: PADK encrypted evidence upload/download + provisional ranks + draft PDF, maturity, password and MFA');
   }finally{
     await stopChromium(browser);
   }
@@ -459,6 +483,10 @@ async function main(){
     const origin='http://localhost:'+port;
     server=createServer({
       authDb:client,appOrigin:origin,
+      evidenceKey:'ab'.repeat(32),
+      padkEvidenceHandlers:{
+        upload:(db,args)=>uploadPadkEvidenceInTransaction(db,args),
+      },
       changeUserPassword:(db,args)=>changePasswordInTransaction(db,args),
       mfaEncryptionKey:Buffer.alloc(32,9).toString('base64'),
       mfaActions:{
