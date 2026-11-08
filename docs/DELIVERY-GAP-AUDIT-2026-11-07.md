@@ -48,3 +48,11 @@ Petugas sekarang dapat membuka 80 ringkasan kerja indikator Kategori 1 atau 60 K
 **Keterbatasan sengaja:** label bersumber dari `regulations/padk43/cyber/drafts/kategori-*.json`, ditampilkan eksplisit sebagai **ringkasan draft**, bukan kutipan OJK terverifikasi atau materi untuk scoring. Tidak ada rank 1–5, rumus, review penilaian, approval, PDF final, atau upload dokumen evidence. Regulatory release gate tetap BLOCKED.
 
 Sumber primer PDF PADK sudah diterima dan transkripsi kandidat 140 indikator + 400 sel kriteria tersimpan dalam review pack privat. Keterkaitan Kategori 2 ke Tabel 3, proofreading, serta review independen masih harus diselesaikan sebelum kriteria resmi digunakan. Indikator #24, #29, dan #32 Kategori 2 memerlukan pemeriksaan khusus karena redaksinya menggabungkan beberapa subpersyaratan.
+
+## MVP reporting slice — PDF kertas kerja persiapan
+
+Petugas dengan izin baca laporan dapat mengunduh PDF dari workspace persiapan PADK. Berkas dirakit di server dari identitas lembaga, periode, kategori, dan catatan/rencana bukti **yang sudah tersimpan per indikator** di PostgreSQL. Unduhan berlangsung lewat sesi aplikasi; viewer berizin baca dapat mengunduh, sedangkan pengguna tanpa izin ditolak.
+
+**Produk ini belum menghasilkan laporan final PADK.** PDF memuat penanda `DRAFT - BUKAN HASIL PENILAIAN PADK / BUKAN LAPORAN FINAL` pada setiap halaman, tidak mengarang skor, kriteria, approval, maupun bukti lampiran. Jika tidak ada catatan tersimpan, PDF menampilkan status kosong dengan jujur.
+
+Critical path MVP yang belum boleh dihilangkan: verifikasi independen regulatory pack, input rank 1–5 berdasarkan kriteria terverifikasi, penyimpanan bukti aktual, approval PADK tersendiri, perhitungan komposit valid, lalu **PDF final**. PDF persiapan ini tidak menggantikan salah satu gate tersebut.
