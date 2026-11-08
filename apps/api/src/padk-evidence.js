@@ -73,13 +73,13 @@ export async function uploadPadkEvidenceInTransaction(db,{
   const inserted=await db.query(
     'INSERT INTO padk_indicator_evidence '+
     '(id,preparation_id,indicator_number,file_name,media_type,size_bytes,sha256,'+
-    'nonce,auth_tag,ciphertext,uploaded_by) '+
-    'VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) '+
+    'nonce,auth_tag,ciphertext,uploaded_by,key_id) '+
+    'VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) '+
     'RETURNING id,preparation_id,indicator_number,file_name,media_type,'+
     'size_bytes,sha256,uploaded_by,uploaded_at',
     [encrypted.id,id,indicator,encrypted.file_name,encrypted.media_type,
       encrypted.size_bytes,encrypted.sha256,encrypted.nonce,
-      encrypted.auth_tag,encrypted.ciphertext,actorId],
+      encrypted.auth_tag,encrypted.ciphertext,actorId,encrypted.key_id],
   );
   return {...metadata(inserted.rows[0]),status:'DRAFT_EVIDENCE'};
 }
@@ -99,7 +99,7 @@ export async function downloadPadkEvidence(db,{actorId,id,evidenceId,key}){
   await getPadkPreparation(db,{actorId,id});
   const found=await db.query(
     'SELECT id,preparation_id,indicator_number,file_name,media_type,size_bytes,'+
-    'sha256,nonce,auth_tag,ciphertext FROM padk_indicator_evidence '+
+    'sha256,nonce,auth_tag,ciphertext,key_id FROM padk_indicator_evidence '+
     'WHERE id=$1 AND preparation_id=$2',[evidenceId,id],
   );
   if(found.rowCount!==1)reject(404,'PADK evidence not found');
@@ -109,7 +109,7 @@ export async function downloadPadkEvidence(db,{actorId,id,evidenceId,key}){
     control_id:contextFor(Number(row.indicator_number)),
     file_name:row.file_name,media_type:row.media_type,
     size_bytes:row.size_bytes,sha256:row.sha256,
-    nonce:row.nonce,auth_tag:row.auth_tag,ciphertext:row.ciphertext,
+    nonce:row.nonce,auth_tag:row.auth_tag,ciphertext:row.ciphertext,key_id:row.key_id,
   },key);
   return {data:bytes,fileName:row.file_name,mediaType:row.media_type};
 }

@@ -50,6 +50,8 @@ export function createServer({
   padkDraftReviewHandlers,
   crosswalkHandlers,
   evidenceKey = process.env.EVIDENCE_ENCRYPTION_KEY,
+  evidenceKeyring=process.env.EVIDENCE_KEYRING,
+  evidenceActiveKeyId=process.env.EVIDENCE_ACTIVE_KEY_ID,
 } = {}) {
   const handleAuth = createAuthHandler({
     db:authDb,appOrigin,limiter:loginLimiter,changeUserPassword,
@@ -76,7 +78,7 @@ export function createServer({
     db: authDb, appOrigin, ...padkPreparationHandlers,
   });
   const handlePadkEvidence = createPadkEvidenceHandler({
-    db:authDb,appOrigin,evidenceKey,...padkEvidenceHandlers,
+    db:authDb,appOrigin,evidenceKey,evidenceKeyring,evidenceActiveKeyId,...padkEvidenceHandlers,
   });
   const handlePadkDraftReview = createPadkDraftReviewHandler({
     db:authDb,appOrigin,...padkDraftReviewHandlers,
@@ -85,7 +87,7 @@ export function createServer({
     db:authDb,appOrigin,...crosswalkHandlers,
   });
   const handleEvidence = createAssessmentEvidenceHandler({
-    db: authDb, appOrigin, evidenceKey, ...evidenceHandlers,
+    db: authDb, appOrigin, evidenceKey,evidenceKeyring,evidenceActiveKeyId, ...evidenceHandlers,
   });
   const handleRoles = createRolesHandler({ db: authDb, appOrigin, changeRole });
   const handleAccounts = createUserAccountsHandler({

@@ -20,9 +20,11 @@ Bootstrap pertama meminta password melalui terminal. Gunakan data contoh, bukan 
 | `DATABASE_URL` | Koneksi PostgreSQL |
 | `APP_ORIGIN` | Origin browser yang diizinkan, misalnya `http://localhost:3000` |
 | `PORT` | Port server pengembangan; default 3000 |
-| `EVIDENCE_ENCRYPTION_KEY` | Kunci bukti AES-256-GCM: 64 digit heksadesimal |
+| `EVIDENCE_ENCRYPTION_KEY` | Kunci bukti legacy (64 digit hex) untuk seluruh baris historis tanpa key ID |
+| `EVIDENCE_KEYRING` | JSON object ID versi kunci ke 64 digit hex; simpan sebagai secret |
+| `EVIDENCE_ACTIVE_KEY_ID` | ID versi kunci aktif untuk unggahan baru |
 
-Simpan kunci di luar repositori. Kehilangan kunci dapat menyebabkan dokumen terenkripsi tidak dapat dibaca kembali.
+Simpan semua kunci di luar repositori. Untuk mulai rotasi, tetapkan `EVIDENCE_KEYRING` sebagai JSON object, misalnya `{"v1":"<64 hex>","v2":"<64 hex>"}`, dan `EVIDENCE_ACTIVE_KEY_ID=v2` secara bersamaan. Unggahan baru menggunakan kunci aktif dan menyimpan ID di database yang ikut diautentikasi oleh AES-GCM. Baris lama dengan `key_id IS NULL` tetap membutuhkan `EVIDENCE_ENCRYPTION_KEY` semula. Jangan menghapus kunci versi lama dari keyring selama masih ada bukti yang bergantung padanya. Rotasi ini tidak mengenkripsi ulang data historis. Simpan backup kunci terpisah, lakukan uji pemulihan database dan kunci bersama-sama. Konfigurasi invalid gagal tertutup (503), bukan fallback otomatis. Kehilangan kunci dapat menyebabkan berkas bukti tidak dapat dipulihkan.
 
 ## Struktur kode
 
