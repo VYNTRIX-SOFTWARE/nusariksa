@@ -261,6 +261,14 @@ async function runBrowser(base,db,fixture){
       "document.getElementById('pdk-indicator-form').requestSubmit()");
     await until("document.getElementById('pdk-indicator-message').textContent.includes('Catatan indikator tersimpan')",
       'PADK draft item note persisted');
+    const workpaper=await evalJs("(async()=>{const link=document.getElementById('pdk-workpaper-download');const r=await fetch(link.href);const pdf=await r.text();return {visible:!link.hidden,status:r.status,type:r.headers.get('content-type'),disposition:r.headers.get('content-disposition'),hasPdf:pdf.startsWith('%PDF-1.4'),hasSavedNote:pdf.includes('Validasi pemilik kontrol dan kebijakan.'),hasDraftMark:pdf.includes('BUKAN HASIL PENILAIAN PADK')}})()");
+    assert.equal(workpaper.visible,true);
+    assert.equal(workpaper.status,200);
+    assert.equal(workpaper.type,'application/pdf');
+    assert.match(workpaper.disposition,/attachment/);
+    assert.equal(workpaper.hasPdf,true);
+    assert.equal(workpaper.hasSavedNote,true);
+    assert.equal(workpaper.hasDraftMark,true);
     assert.equal((await db.query('SELECT revision FROM padk_assessment_preparations')).rows[0].revision,2);
     await openMaturity();
     assert.equal(await evalJs("document.getElementById('ma-submit').hidden"),false);

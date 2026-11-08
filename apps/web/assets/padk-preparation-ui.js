@@ -60,6 +60,10 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
   }
   function render(){
     indicatorUI.sync();
+    const report=$('pdk-workpaper-download');
+    report.hidden=!state.detail;
+    report.href=state.detail
+      ?ENDPOINT+'/'+encodeURIComponent(state.detail.id)+'/workpaper.pdf':'#';
     $('pdk-create-toggle').hidden=!writable();
     $('pdk-create-toggle').disabled=state.busy;
     $('pdk-detail').hidden=!state.detail;
