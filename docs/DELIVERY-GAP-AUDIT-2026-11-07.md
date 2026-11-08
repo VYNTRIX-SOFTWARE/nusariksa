@@ -90,3 +90,11 @@ Pada workspace PADK yang sama, modul kini mengakses peringkat sementara **langsu
 UI menampilkan progres per domain. **Jika satu indikator belum dinilai, komposit tidak dihitung**. Jika lengkap, angka dua desimal dan peringkat ditampilkan sangat jelas sebagai **SIMULASI SAJA** dan **BELUM SAH UNTUK PELAPORAN**. Setiap respon server membawa `mappingVerified=false`, `criteriaVerified=false`, `roundingPolicyVerified=false`, `officialScoreAvailable=false`, dan `finalReportAvailable=false`. Hasil pratinjau tidak dicetak sebagai nilai resmi dalam PDF dan tidak membuka approval penilaian resmi.
 
 Batas penting: kelompok domain pada daftar kerja masih `DRAFT_UNVERIFIED`; transkripsi kriteria 400 sel belum direview independen; pembulatan half-up dua desimal adalah kebijakan simulasi, **bukan ketentuan resmi yang telah dikonfirmasi**. Sebelum rilis final diperlukan verifikasi teks 140 indikator, 400 sel kriteria, crosswalk 60 indikator Kategori 2, metode pembulatan, alur approval hasil final, serta UAT produksi.
+
+## MVP — Tabel 3 lima kriteria per indikator dari PDF yang diunggah (DRAFT)
+
+Menu pengisian PADK sekarang bisa membuka kelima teks kriteria dari Tabel 3 Lampiran IV langsung pada indikator yang aktif, lengkap dengan halaman PDF sumber. Petugas dapat memilih peringkat sementara setelah membaca kriteria; peringkat dan histori tetap menggunakan penyimpanan yang sudah ada.
+
+Sumber adalah ekstraksi digital PDF unggahan (80 baris Tabel 3 × 5 rank = 400 teks), disimpan terkompresi dengan hash konten. Kategori 2 menggunakan kandidat crosswalk 60 pasangan yang **belum disahkan**; nomor 3,18,19,20,24,29,32 diberi peringatan risiko redaksi tambahan. Tidak ada perubahan pada regulatory release gate: `sourceTextVerified=false`, `criteriaVerified=false`, `mappingVerified=false`, `officialScoreAvailable=false` dan `finalReportAvailable=false`.
+
+Sebelum MVP resmi: verifikasi keaslian PDF resmi, proofreading 140 parameter dan 400 kriteria, penetapan mapping kategori 2, metode rounding, lalu approval resmi dan PDF final. Lihat `docs/PADK-EXTRACTED-CRITERIA-DRAFT.md`.
