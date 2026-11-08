@@ -395,6 +395,22 @@
               <h3>Riwayat pemeriksaan draft</h3>
               <div id="pdk-review-events" aria-live="polite"></div>
             </section>
+            <section id="pdk-score-preview" aria-labelledby="pdk-score-title" hidden>
+              <div class="maturity-rubric-heading">
+                <h3 id="pdk-score-title">Simulasi Perhitungan Maturitas</h3>
+                <button type="button" id="pdk-score-refresh" class="button button-outline">Hitung ulang draft</button>
+              </div>
+              <p class="workspace-disclaimer">
+                HANYA SIMULASI INTERNAL. Rata-rata domain dan komposit memakai jawaban
+                peringkat sementara yang tersimpan. Pemetaan indikator ke domain,
+                kriteria 1–5, dan kebijakan pembulatan belum disahkan dari PADK.
+                Angka ini bukan nilai penilaian resmi dan tidak boleh dipakai
+                untuk pelaporan OJK.
+              </p>
+              <p id="pdk-score-status" role="status" aria-live="polite"></p>
+              <div id="pdk-score-domains"></div>
+              <p id="pdk-score-composite" class="workspace-help" role="status" aria-live="polite"></p>
+            </section>
             <form id="pdk-note-form" class="maturity-edit-form" hidden>
               <label for="pdk-notes">Catatan kesiapan</label>
               <textarea id="pdk-notes" rows="5" maxlength="4000" placeholder="Kondisi aktual, hambatan, dan rencana tindak lanjut."></textarea>

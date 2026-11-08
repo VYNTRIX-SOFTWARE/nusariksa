@@ -7,6 +7,7 @@ const assets=[
   'assessment-workspace.js','control-catalog.js',
   'maturity-assessment-ui.js','maturity-ui.js',
   'padk-preparation-ui.js','padk-indicator-note-ui.js','padk-evidence-ui.js',
+  'padk-score-preview-ui.js',
   'padk-crosswalk-review-ui.js',
 ];
 

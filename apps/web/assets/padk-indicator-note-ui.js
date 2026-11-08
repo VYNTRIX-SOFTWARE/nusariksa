@@ -35,7 +35,7 @@ export function validateDraftIndicatorList(data,category){
   }
   return data.indicators;
 }
-export function createPadkIndicatorNoteUI({api,onAuthFailure,getUserId,getPermissions,canEditDraft=()=>true}){
+export function createPadkIndicatorNoteUI({api,onAuthFailure,getUserId,getPermissions,canEditDraft=()=>true,onDraftSaved=()=>{}}){
   const state={preparation:null,items:[],active:null,dirty:false,busy:false,request:0};
   const evidenceUI=createPadkEvidenceUI({api,onAuthFailure,getUserId,getPermissions,canEditDraft});
   const owner=()=>Boolean(state.preparation
@@ -206,6 +206,7 @@ export function createPadkIndicatorNoteUI({api,onAuthFailure,getUserId,getPermis
       evidenceUI.open(state.preparation,active);
       choices();render();message('Draft indikator tersimpan. Belum menjadi nilai PADK final.','success');
       void history();
+      onDraftSaved();
     }catch(error){if(request===state.request)fail(error,'Catatan gagal disimpan. Coba muat ulang.');}
     finally{if(request===state.request){state.busy=false;render();}}
   });

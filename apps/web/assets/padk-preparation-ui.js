@@ -1,4 +1,5 @@
 import {createPadkIndicatorNoteUI} from './padk-indicator-note-ui.js';
+import {createPadkScorePreviewUI} from './padk-score-preview-ui.js';
 
 const $=id=>document.getElementById(id);
 const ENDPOINT='/regulatory/padk43/cyber/preparations';
@@ -33,8 +34,10 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
   const state={items:[],detail:null,workflow:null,dirty:false,busy:false,request:0};
   const canEditDraft=()=>Boolean(state.workflow&&
     ['in_progress','changes_requested'].includes(state.workflow.status));
+  const previewUI=createPadkScorePreviewUI({api,onAuthFailure});
   const indicatorUI=createPadkIndicatorNoteUI({
     api,onAuthFailure,getUserId,getPermissions,canEditDraft,
+    onDraftSaved:()=>{if(state.detail)void previewUI.load(state.detail);},
   });
   const permitted=()=>getPermissions().includes('assessments:read');
   const writable=()=>getPermissions().includes('assessments:write');
@@ -52,7 +55,7 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
     'Ada catatan yang belum disimpan. Tinggalkan halaman dan abaikan perubahan?');
   function clear(){
     state.request++;state.items=[];state.detail=null;state.workflow=null;state.dirty=false;state.busy=false;
-    indicatorUI.clear();
+    indicatorUI.clear();previewUI.clear();
     $('pdk-draft-review-panel').hidden=true;
     $('pdk-review-form').reset();
     $('pdk-review-events').replaceChildren();
@@ -119,7 +122,7 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
         throw new TypeError('Daftar persiapan PADK tidak valid.');
       state.items=data.preparations.map(validatePreparationResponse);
       state.detail=null;state.workflow=null;state.dirty=false;
-      indicatorUI.clear();$('pdk-note-form').reset();
+      indicatorUI.clear();previewUI.clear();$('pdk-note-form').reset();
       render();
       message('');
       if(preferredId)await open(preferredId);
@@ -150,7 +153,7 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
   async function open(id){
     if(!UUID.test(id))return;
     const request=++state.request;state.busy=true;state.detail=null;state.workflow=null;state.dirty=false;
-    indicatorUI.clear();
+    indicatorUI.clear();previewUI.clear();
     $('pdk-note-form').reset();render();message('Memuat catatan…');
     try{
       const data=validatePreparationResponse(await api(ENDPOINT+'/'+encodeURIComponent(id)));
@@ -162,6 +165,7 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
       await reviewStatus();
       if(request!==state.request)return;
       void indicatorUI.load(data);
+      void previewUI.load(data);
       void history();
     }catch(error){if(request===state.request)fail(error,'Catatan gagal dibuka.');}
     finally{if(request===state.request){state.busy=false;render();}}
@@ -270,7 +274,7 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
   $('pdk-list').addEventListener('change',event=>{
     if(!confirmLeave()){event.target.value=state.detail?.id??'';return;}
     if(event.target.value)void open(event.target.value);
-    else{state.detail=null;state.workflow=null;state.dirty=false;indicatorUI.clear();render();}
+    else{state.detail=null;state.workflow=null;state.dirty=false;indicatorUI.clear();previewUI.clear();render();}
   });
   for(const id of ['pdk-notes','pdk-evidence-plan']){
     $(id).addEventListener('input',()=>{
