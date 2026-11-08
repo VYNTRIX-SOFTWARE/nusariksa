@@ -88,7 +88,7 @@ function linesOfWorkpaper({institution,preparation,items,generatedAt}){
     'PENTING: Teks indikator, kriteria peringkat, dan metode komposit belum disahkan.',
     'Dokumen ini HANYA memuat catatan kerja dan rencana bukti yang sudah tersimpan.',
     'Peringkat sementara tidak dihitung sebagai komposit, approval, atau hasil resmi.',
-    'Tidak ada skor final, klaim kesesuaian OJK, atau bukti lampiran di PDF ini.',
+    'Tidak ada skor final, klaim kesesuaian OJK, atau file lampiran di PDF ini.',
     '',
   ];
   for(const item of items){
@@ -100,6 +100,8 @@ function linesOfWorkpaper({institution,preparation,items,generatedAt}){
     lines.push(...wrap(item.justification));
     lines.push('Catatan kerja:');
     lines.push(...wrap(item.preparation_notes));
+    lines.push('Jumlah dokumen bukti aktual: '+Number(item.evidence_count??0)+
+      ' file (disimpan terenkripsi di aplikasi; tidak disisipkan ke PDF).');
     lines.push('Rencana bukti:');
     lines.push(...wrap(item.evidence_plan));
     lines.push('');
@@ -118,9 +120,12 @@ export async function getPadkPreparationWorkpaper(db,{actorId,id}){
   if(institution.rowCount!==1)
     throw new PadkPreparationError(404,'Preparation not found');
   const rows=await db.query(
-    'SELECT indicator_number,preparation_notes,evidence_plan,revision,'+
-    'provisional_rank,justification '+
-    'FROM padk_preparation_indicator_notes WHERE preparation_id=$1 ORDER BY indicator_number',[id],
+    'SELECT n.indicator_number,n.preparation_notes,n.evidence_plan,n.revision,'+
+    'n.provisional_rank,n.justification,'+
+    '(SELECT count(*)::int FROM padk_indicator_evidence e '+
+    'WHERE e.preparation_id=n.preparation_id AND e.indicator_number=n.indicator_number) '+
+    'AS evidence_count FROM padk_preparation_indicator_notes n '+
+    'WHERE n.preparation_id=$1 ORDER BY n.indicator_number',[id],
   );
   const pdf=makeDraftWorkpaperPdf(linesOfWorkpaper({
     institution:institution.rows[0],preparation,items:rows.rows,

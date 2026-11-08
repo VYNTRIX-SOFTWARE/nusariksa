@@ -20,6 +20,7 @@ const ASSETS = new Map([
   ['/assets/maturity-assessment-ui.js', { file: 'assets/maturity-assessment-ui.js', type: 'text/javascript; charset=utf-8' }],
   ['/assets/padk-preparation-ui.js', { file: 'assets/padk-preparation-ui.js', type: 'text/javascript; charset=utf-8' }],
   ['/assets/padk-indicator-note-ui.js', { file: 'assets/padk-indicator-note-ui.js', type: 'text/javascript; charset=utf-8' }],
+  ['/assets/padk-evidence-ui.js', { file: 'assets/padk-evidence-ui.js', type: 'text/javascript; charset=utf-8' }],
   ['/assets/padk-crosswalk-review-ui.js', { file: 'assets/padk-crosswalk-review-ui.js', type: 'text/javascript; charset=utf-8' }],
   ['/assets/control-catalog-model.js', { file: 'assets/control-catalog-model.js', type: 'text/javascript; charset=utf-8' }],
   ['/assets/control-catalog.js', { file: 'assets/control-catalog.js', type: 'text/javascript; charset=utf-8' }],

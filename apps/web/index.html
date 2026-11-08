@@ -416,6 +416,31 @@
                   Simpan draft indikator
                 </button>
               </form>
+              <section id="pdk-evidence-panel" aria-label="Bukti aktual indikator PADK" hidden>
+                <div class="maturity-rubric-heading">
+                  <h3>Dokumen bukti aktual</h3>
+                  <button type="button" id="pdk-evidence-reload" class="button button-outline">
+                    Muat ulang bukti
+                  </button>
+                </div>
+                <p class="workspace-help">
+                  Bukti PDF, PNG, atau JPEG maksimal 1 MiB per file dan 10 file per indikator.
+                  File disimpan terenkripsi dan tidak dapat diubah atau dihapus.
+                  Keberadaan bukti belum berarti hasil penilaian PADK disahkan.
+                </p>
+                <p id="pdk-evidence-save-first" class="workspace-help" hidden>
+                  Simpan draft indikator terlebih dahulu sebelum melampirkan bukti.
+                </p>
+                <p id="pdk-evidence-message" class="workspace-message" role="status" hidden></p>
+                <form id="pdk-evidence-upload" class="maturity-edit-form" hidden>
+                  <label for="pdk-evidence-file">Pilih dokumen bukti</label>
+                  <input id="pdk-evidence-file" type="file" accept=".pdf,.png,.jpg,.jpeg,application/pdf,image/png,image/jpeg" required>
+                  <button id="pdk-evidence-upload-button" type="submit" class="button button-primary">
+                    Unggah bukti untuk indikator ini
+                  </button>
+                </form>
+                <div id="pdk-evidence-list" aria-live="polite"></div>
+              </section>
               <div class="maturity-rubric-heading">
                 <h3>Riwayat catatan indikator</h3>
                 <button id="pdk-indicator-history-refresh" type="button" class="button button-outline">Muat riwayat</button>

@@ -7,6 +7,7 @@ import {createSession} from '../src/sessions.js';
 import {createServer} from '../src/server.js';
 import {createPadkPreparationInTransaction} from '../src/padk-preparations.js';
 import {savePadkIndicatorNoteInTransaction} from '../src/padk-preparation-indicators.js';
+import {uploadPadkEvidenceInTransaction} from '../src/padk-evidence.js';
 
 test('PADK workpaper PDF exports saved data with read permissions, not scores', {
   skip:!process.env.DATABASE_URL,
@@ -42,6 +43,12 @@ test('PADK workpaper PDF exports saved data with read permissions, not scores', 
         justification:'Proses pemulihan teridentifikasi, tetapi uji belum terdokumentasi.',
         expectedRevision:0,
       });
+      await uploadPadkEvidenceInTransaction(db,{
+        actorId:maker,id:preparation.id,number:1,
+        fileName:'sop-bukti.pdf',mediaType:'application/pdf',
+        contentBase64:Buffer.from('%PDF-1.4\\n%%EOF','utf8').toString('base64'),
+        key:Buffer.from('ab'.repeat(32),'hex'),
+      });
       const cookies={};
       for(const user of u.rows){
         cookies[user.email]='__Host-nusariksa_session='+
@@ -69,6 +76,7 @@ test('PADK workpaper PDF exports saved data with read permissions, not scores', 
         assert.match(source,/SOP backup dan pemulihan data sedang ditinjau/);
         assert.match(source,/Dokumen SOP dan catatan uji restore/);
         assert.match(source,/Peringkat sementara: 3/);
+        assert.match(source,/Jumlah dokumen bukti aktual: 1 file/);
         assert.match(source,/Proses pemulihan teridentifikasi/);
         assert.match(source,/DRAFT - BUKAN HASIL PENILAIAN PADK/);
         assert.doesNotMatch(source,/Composite Rank|Nilai Komposit|Disetujui OJK/i);
