@@ -299,7 +299,7 @@ async function runBrowser(base,db,fixture){
       "return {status:r.status,marker:bytes.startsWith('%PDF-1.4')}})()");
     assert.equal(evidenceDownloaded.status,200);
     assert.equal(evidenceDownloaded.marker,true);
-    const workpaper=await evalJs("(async()=>{const link=document.getElementById('pdk-workpaper-download');const r=await fetch(link.href);const pdf=await r.text();return {visible:!link.hidden,status:r.status,type:r.headers.get('content-type'),disposition:r.headers.get('content-disposition'),hasPdf:pdf.startsWith('%PDF-1.4'),hasSavedNote:pdf.includes('Validasi pemilik kontrol dan kebijakan.'),hasDraftRank:pdf.includes('Peringkat sementara: 2'),hasReason:pdf.includes('Penilaian sementara: dokumen ada'),hasDraftMark:pdf.includes('BUKAN HASIL PENILAIAN PADK')}})()");
+    const workpaper=await evalJs("(async()=>{const link=document.getElementById('pdk-workpaper-download');const r=await fetch(link.href);const pdf=await r.text();return {visible:!link.hidden,status:r.status,type:r.headers.get('content-type'),disposition:r.headers.get('content-disposition'),hasPdf:pdf.startsWith('%PDF-1.4'),hasSavedNote:pdf.includes('Validasi pemilik kontrol dan kebijakan.'),hasDraftRank:pdf.includes('Peringkat sementara: 2'),hasReason:pdf.includes('Penilaian sementara: dokumen ada'),hasDraftMark:pdf.includes('BUKAN HASIL PENILAIAN PADK'),partial:pdf.includes('Komposit SIMULASI: BELUM TERSEDIA'),hasEvidenceSha:pdf.includes('SHA-256')}})()");
     assert.equal(workpaper.visible,true);
     assert.equal(workpaper.status,200);
     assert.equal(workpaper.type,'application/pdf');
@@ -309,6 +309,8 @@ async function runBrowser(base,db,fixture){
     assert.equal(workpaper.hasDraftRank,true);
     assert.equal(workpaper.hasReason,true);
     assert.equal(workpaper.hasDraftMark,true);
+    assert.equal(workpaper.partial,true);
+    assert.equal(workpaper.hasEvidenceSha,true);
     assert.equal((await db.query('SELECT revision FROM padk_assessment_preparations')).rows[0].revision,2);
     await evalJs("document.getElementById('pdk-review-submit').click()");
     await until("document.getElementById('pdk-review-message').textContent.includes('Lengkapi')",
@@ -324,6 +326,12 @@ async function runBrowser(base,db,fixture){
     await until("document.getElementById('pdk-score-composite').textContent.includes('Komposit 2.00')",
       'PADK five-domain composite preview from saved ranks');
     assert.equal(await evalJs("document.getElementById('pdk-score-composite').textContent.includes('BELUM SAH')"),true);
+    const draftPdf=await evalJs("(async()=>{const r=await fetch(document.getElementById('pdk-workpaper-download').href);"+
+      "const text=await r.text();return {status:r.status,composite:text.includes('Komposit SIMULASI: 2.00'),"+
+      "warning:text.includes('BUKAN HASIL PENILAIAN PADK')}})()");
+    assert.equal(draftPdf.status,200);
+    assert.equal(draftPdf.composite,true);
+    assert.equal(draftPdf.warning,true);
     await evalJs("document.getElementById('pdk-review-submit').click()");
     await until("document.getElementById('pdk-review-state').textContent.includes('Menunggu pemeriksa')",
       'PADK provisional draft submitted in maker UI');
@@ -437,6 +445,12 @@ async function runBrowser(base,db,fixture){
       "document.getElementById('pdk-review-form').requestSubmit()");
     await until("document.getElementById('pdk-review-state').textContent.includes('Draft internal diterima')",
       'PADK draft internally accepted only');
+    const acceptedPdf=await evalJs("(async()=>{const r=await fetch(document.getElementById('pdk-workpaper-download').href);"+
+      "const text=await r.text();return {status:r.status,draftAccepted:text.includes('Status: draft_accepted'),"+
+      "notOfficial:text.includes('BUKAN HASIL PENILAIAN PADK')}})()");
+    assert.equal(acceptedPdf.status,200);
+    assert.equal(acceptedPdf.draftAccepted,true);
+    assert.equal(acceptedPdf.notOfficial,true);
     const padkState=await db.query(
       'SELECT status,submission_cycle FROM padk_draft_review_state WHERE preparation_id=$1',
       [padkDecision],
