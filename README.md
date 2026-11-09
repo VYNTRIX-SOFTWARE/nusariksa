@@ -76,6 +76,7 @@ Status `draft_accepted` **bukan persetujuan nilai resmi**. Hasil final masih mem
 ## Dokumentasi
 
 - [Pengembangan dan pengujian](docs/DEVELOPMENT.md)
+- [Panduan uji pemulihan database dan bukti terenkripsi](docs/RECOVERY.md)
 - [Penilaian dan batasan PADK](docs/PADK.md)
 - [Kontribusi](CONTRIBUTING.md)
 - [Kebijakan keamanan](SECURITY.md)

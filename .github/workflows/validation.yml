@@ -50,3 +50,24 @@ jobs:
         run: npm run check
       - name: Uji browser alur maker-checker maturitas
         run: npm run test:browser
+      - name: Uji recovery PostgreSQL dan bukti terenkripsi
+        env:
+          EVIDENCE_ENCRYPTION_KEY: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+          EVIDENCE_KEYRING: '{"v1":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"}'
+          EVIDENCE_ACTIVE_KEY_ID: v1
+          RECOVERY_DATABASE_URL: postgresql://nusariksa:temporary-test-password@127.0.0.1:5432/nusariksa_recovery_ci1
+          RECOVERY_DRILL_CONFIRM: ISOLATED_EMPTY_RECOVERY_DATABASE
+        run: |
+          mkdir -p "$RUNNER_TEMP/nusariksa-pg17"
+          for bin in pg_dump pg_restore; do
+            cat > "$RUNNER_TEMP/nusariksa-pg17/$bin" <<EOF
+          #!/usr/bin/env bash
+          exec docker run --rm --network host --user "$(id -u):$(id -g)" -v /tmp:/tmp -e PGHOST -e PGPORT -e PGUSER -e PGPASSWORD -e PGDATABASE -e PGSSLMODE postgres:17-alpine $bin "\$@"
+          EOF
+            chmod 700 "$RUNNER_TEMP/nusariksa-pg17/$bin"
+          done
+          export PATH="$RUNNER_TEMP/nusariksa-pg17:$PATH"
+          pg_dump --version
+          PGPASSWORD=temporary-test-password createdb -h 127.0.0.1 -U nusariksa --maintenance-db=postgres nusariksa_recovery_ci1
+          NUSARIKSA_CI_RECOVERY_FIXTURE=1 node scripts/recovery-ci-fixture.js
+          npm run recovery:drill

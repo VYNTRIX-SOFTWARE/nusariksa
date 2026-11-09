@@ -64,6 +64,10 @@ Satu PR sebaiknya membahas satu perubahan yang jelas. Kerjakan perubahan di `dev
 
 Jelaskan PR menggunakan **Summary, Changes, Testing, Limitations**. Issue dipakai untuk pekerjaan yang belum dikerjakan; PR tidak perlu memuat rencana sprint atau catatan pribadi. Baca [CONTRIBUTING.md](../CONTRIBUTING.md).
 
+## Uji pemulihan
+
+Untuk melakukan uji pemulihan terisolasi gunakan `npm run recovery:drill` sesuai [panduan pemulihan](RECOVERY.md). Perintah menguji `pg_dump`/`pg_restore`, riwayat migrasi, serta dekripsi dan hash bukti dari database hasil pemulihan. Tool ini tidak menggantikan kebijakan backup produksi, disaster recovery, atau pemulihan kunci eksternal. Jalankan hanya pada target lokal kosong dan terpisah.
+
 ## Sebelum menggunakan data produksi
 
 NusaRiksa masih dalam pengembangan. Penerapan produksi memerlukan review otorisasi, manajemen dan pemulihan kunci, keamanan unggahan, backup–restore, pengujian operasional, serta pemeriksaan independen atas instrumen PADK. CI yang lulus tidak membuktikan aplikasi aman untuk data bank.
