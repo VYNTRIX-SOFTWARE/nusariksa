@@ -71,3 +71,7 @@ npm run regulatory:release-gate
 ```
 
 Perintah terakhir memang harus gagal sampai persyaratan rilis terpenuhi. Untuk bentuk regulatory pack, lihat [panduan data PADK](../regulations/padk43/cyber/README.md). Untuk pemeriksaan PDF secara lokal, baca [panduan alat review](../tools/padk-review/README.md).
+
+## Pengalaman input indikator (MVP)
+
+Ruang kerja indikator didahulukan daripada review dan simulasi. Di layar lebar, kriteria dan jawaban ditampilkan berdampingan; di layar kecil disusun satu kolom. Gunakan **Simpan & lanjut** untuk menyimpan dan berpindah ke indikator belum lengkap. Catatan tambahan disimpan dalam panel opsional; catatan yang sudah ada otomatis ditampilkan kembali. Progres hanya menyatakan kelengkapan draft internal, bukan verifikasi PADK resmi.

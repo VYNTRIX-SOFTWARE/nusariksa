@@ -76,13 +76,36 @@ export function createPadkIndicatorNoteUI({api,onAuthFailure,getUserId,getPermis
     $('pdk-indicator-section').hidden=!state.preparation;
     $('pdk-indicator-form').hidden=!state.active;
     $('pdk-indicator-save').hidden=!owner();
+    $('pdk-indicator-save-next').hidden=!owner();
     $('pdk-indicator-save').disabled=state.busy||!state.dirty;
+    $('pdk-indicator-save-next').disabled=state.busy||!state.dirty;
     $('pdk-indicator-list').disabled=state.busy||!state.items.length;
     $('pdk-indicator-rank').disabled=!owner()||state.busy;
     for(const id of ['pdk-indicator-notes','pdk-indicator-evidence','pdk-indicator-justification']){
       $(id).readOnly=!owner()||state.busy;
     }
-    const progress=summarizeDraftIndicatorProgress(state.items);
+    const progress=summarizeDraftIndicatorProgress(state.items),active=state.active;
+    $('pdk-indicator-position').textContent=active
+      ?'INDIKATOR '+String(active.number).padStart(2,'0')+' / '+progress.total
+      :'PILIH INDIKATOR';
+    $('pdk-indicator-title').textContent=active?.workingSummary??'Indikator belum dipilih';
+    const status=state.dirty?'Perubahan belum disimpan'
+      :!active?'Belum dipilih'
+      :isDraftIndicatorComplete(active)?'Lengkap untuk draft internal'
+      :active.revision>0?'Catatan tersimpan · belum lengkap':'Belum diisi';
+    $('pdk-indicator-state').textContent=status;
+    $('pdk-indicator-state').dataset.kind=state.dirty?'dirty'
+      :active&&isDraftIndicatorComplete(active)?'complete':'pending';
+    $('pdk-indicator-save-state').textContent=state.dirty
+      ?'Perubahan di formulir belum tersimpan. Simpan sebelum berpindah indikator.'
+      :active?.revision>0
+        ?'Perubahan sudah tersimpan di server sebagai draft internal.'
+        :'Simpan isian untuk mencatat progres di server.';
+    $('pdk-indicator-ready-hint').textContent=progress.total
+      ?progress.pending===0
+        ?'Seluruh indikator lengkap untuk pengajuan draft internal. Buka bagian pemeriksaan draft.'
+        :'Masih '+progress.pending+' indikator membutuhkan peringkat sementara dan justifikasi minimal 20 karakter.'
+      :'';
     $('pdk-indicator-progress').max=progress.total||1;
     $('pdk-indicator-progress').value=progress.complete;
     $('pdk-indicator-count').textContent=progress.total
@@ -131,6 +154,7 @@ export function createPadkIndicatorNoteUI({api,onAuthFailure,getUserId,getPermis
       ' (halaman cetak Lampiran IV '+item.printedPage+').';
     $('pdk-indicator-notes').value=item.preparationNotes;
     $('pdk-indicator-evidence').value=item.evidencePlan;
+    $('pdk-indicator-optional').open=Boolean(item.preparationNotes||item.evidencePlan);
     $('pdk-indicator-rank').value=item.provisionalRank===null?'':String(item.provisionalRank);
     $('pdk-indicator-justification').value=item.justification;
     choices();evidenceUI.open(state.preparation,item);render();
@@ -224,6 +248,7 @@ export function createPadkIndicatorNoteUI({api,onAuthFailure,getUserId,getPermis
     event.preventDefault();
     if(!state.active||!owner()||state.busy||!state.dirty)return;
     const active=state.active,id=state.preparation.id,request=state.request;
+    const saveAndNext=event.submitter?.id==='pdk-indicator-save-next';
     const rawRank=$('pdk-indicator-rank').value;
     const rank=rawRank===''?null:Number(rawRank);
     const body={preparationNotes:$('pdk-indicator-notes').value,
@@ -252,7 +277,20 @@ export function createPadkIndicatorNoteUI({api,onAuthFailure,getUserId,getPermis
         throw new TypeError('Respons penyimpanan indikator tidak valid.');
       Object.assign(active,saved);state.dirty=false;
       evidenceUI.open(state.preparation,active);
-      choices();render();message('Draft indikator tersimpan. Belum menjadi nilai PADK final.','success');
+      choices();render();
+      if(saveAndNext&&isDraftIndicatorComplete(active)){
+        const next=nextPendingDraftIndicator(state.items,active.number);
+        if(next!==null&&next!==active.number){
+          selectIndicator(next);
+          message('Indikator '+active.number+' tersimpan. Lanjut ke indikator '+next+
+            '. Bukti dapat dilampirkan dengan memilih indikator sebelumnya.','success');
+          $('pdk-indicator-section').scrollIntoView({block:'start',behavior:'smooth'});
+        }else message('Semua indikator lengkap untuk pengajuan draft internal. Periksa bukti dan buka bagian pemeriksaan.','success');
+      }else if(saveAndNext){
+        message('Catatan tersimpan, tetapi indikator belum lengkap. Pilih peringkat dan isi justifikasi minimal 20 karakter untuk melanjutkan.','warning');
+      }else{
+        message('Draft indikator tersimpan. Belum menjadi nilai PADK final.','success');
+      }
       void history();
       onDraftSaved();
     }catch(error){if(request===state.request)fail(error,'Catatan gagal disimpan. Coba muat ulang.');}

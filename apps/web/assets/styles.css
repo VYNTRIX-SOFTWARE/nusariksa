@@ -526,3 +526,68 @@ h1,h2,p{margin-top:0}h1,h2{letter-spacing:-.027em}
 @media(max-width:800px){.onboard-admin-grid,.onboard-steps{grid-template-columns:1fr}
   .onboard-hero-aside{display:none}.onboard-hero{padding:22px}
   .onboard-hero .button-primary{width:100%}}
+
+/* PADK MVP: make the indicator editor the primary task, with calm hierarchy. */
+#pdk-detail{padding:26px}
+.pdk-primary-workspace{margin-top:24px;padding:25px;border:1px solid #DCDCF4;border-radius:14px;
+  background:linear-gradient(180deg,#FBFAFF 0%,#FFFFFF 190px)}
+.pdk-primary-workspace>.maturity-rubric-heading h3{font-size:22px;letter-spacing:-.03em;color:#1C2133}
+.pdk-primary-workspace>.workspace-disclaimer{border-left:3px solid #B7A7EF;padding:8px 12px;
+  background:#F8F6FE;line-height:1.65}
+.pdk-current-indicator{border:1px solid #DFDDF1;border-radius:12px;background:#FFF;
+  padding:20px 23px;margin:18px 0 12px;overflow-wrap:anywhere}
+.pdk-current-indicator-top{display:flex;justify-content:space-between;align-items:center;
+  flex-wrap:wrap;gap:8px;margin-bottom:9px}
+#pdk-indicator-position{font-size:11px;font-weight:800;color:#6D55C1;letter-spacing:.08em}
+#pdk-indicator-state{display:inline-flex;align-items:center;border:1px solid #DEDDED;
+  border-radius:50px;padding:5px 10px;font-size:11px;color:#666C80;background:#F9F9FC;font-weight:700}
+#pdk-indicator-state[data-kind="complete"]{color:#176447;background:#EAF8F0;border-color:#B9E3CC}
+#pdk-indicator-state[data-kind="dirty"]{color:#8A5108;background:#FFF8E6;border-color:#EFD89B}
+#pdk-indicator-title{font-size:18px;line-height:1.45;color:#1F273A;margin:0 0 9px;font-weight:700}
+#pdk-indicator-save-state{color:#686D80;font-size:12px;line-height:1.55;margin:0}
+.pdk-progress-card{display:grid;gap:8px;margin:14px 0 18px}
+.pdk-progress-card .workspace-help{margin:0;line-height:1.6}
+#pdk-indicator-count{font-weight:650;color:#48425E}
+#pdk-indicator-ready-hint{font-size:12px}
+#pdk-indicator-progress{width:100%;height:10px;accent-color:#6D4AFF}
+.pdk-navigation-row{display:flex;gap:9px;flex-wrap:wrap;margin:14px 0 17px}
+.pdk-navigation-row .button{flex:0 1 auto}
+#pdk-indicator-list{max-width:100%;font-size:13px}
+.pdk-source-reference{padding:11px 0 15px;border-bottom:1px solid #E5E7EB;line-height:1.7}
+#pdk-indicator-form{background:transparent;border:0;padding:0;margin:15px 0;gap:0}
+.pdk-answer-layout{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);
+  gap:18px;align-items:start;min-width:0}
+.pdk-reference-column,.pdk-answer-column{min-width:0;padding:19px;border:1px solid #E2E4ED;
+  border-radius:11px;background:#FFF;display:grid;gap:11px}
+.pdk-section-step{font-size:11px;font-weight:800;color:#6E55B9;letter-spacing:.06em;margin:0}
+.pdk-reference-column .workspace-help,.pdk-answer-column .workspace-help{margin:0}
+#pdk-criteria-panel{min-width:0}
+#pdk-criteria-list{max-height:560px;overflow-y:auto;padding-right:5px;overscroll-behavior:contain}
+#pdk-criteria-list:focus-visible{outline:2px solid #8870DD;outline-offset:3px}
+.pdk-answer-column label{margin:0;color:#31384A;font-size:13px;font-weight:700}
+.pdk-answer-column select,.pdk-answer-column textarea{width:100%;min-width:0}
+.pdk-optional-notes,.pdk-secondary-disclosure{background:#FFF;border:1px solid #E2E4ED;
+  border-radius:10px;padding:14px 17px;margin:8px 0}
+.pdk-optional-notes summary,.pdk-secondary-disclosure summary{cursor:pointer;
+  font-size:13px;font-weight:700;color:#40475B;line-height:1.6}
+.pdk-optional-notes summary:focus-visible,.pdk-secondary-disclosure summary:focus-visible{
+  outline:2px solid #8870DD;outline-offset:3px}
+.pdk-optional-notes-fields{display:grid;gap:10px;margin-top:15px}
+.pdk-save-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+.pdk-save-actions .button{width:auto;max-width:100%}
+.pdk-workspace-evidence{padding:19px;border:1px solid #E2E4ED;border-radius:11px;
+  background:#FFF;margin:20px 0}
+.pdk-workspace-evidence h3{font-size:14px}
+.pdk-stage-boundary{margin:22px 0 13px;padding:15px 18px;border-left:3px solid #8B76E0;
+  background:#F8F7FC;border-radius:0 9px 9px 0}
+.pdk-stage-boundary strong{font-size:12px;color:#54458C;letter-spacing:.04em}
+.pdk-stage-boundary p{font-size:13px;color:#616778;line-height:1.6;margin:6px 0 0}
+#pdk-draft-review-panel{border:1px solid #E2E4ED;border-radius:11px;padding:20px;margin:0 0 18px}
+#pdk-detail>.pdk-secondary-disclosure{margin:14px 0}
+#pdk-detail>.pdk-secondary-disclosure>section{margin-top:18px}
+@media(max-width:1000px){.pdk-answer-layout{grid-template-columns:1fr}
+  #pdk-criteria-list{max-height:380px}}
+@media(max-width:650px){#pdk-detail{padding:15px}.pdk-primary-workspace{padding:14px}
+  .pdk-current-indicator{padding:16px}.pdk-reference-column,.pdk-answer-column{padding:14px}
+  .pdk-save-actions,.pdk-navigation-row{display:grid;grid-template-columns:1fr}
+  .pdk-save-actions .button,.pdk-navigation-row .button{width:100%}}

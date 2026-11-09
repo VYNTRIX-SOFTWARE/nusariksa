@@ -251,6 +251,9 @@ async function runBrowser(base,db,fixture){
     await evalJs("document.getElementById('first-run-action').click()");
     await until("!document.getElementById('page-admin-onboarding').hidden",
       'administrator onboarding screen');
+    // Admin user list is loaded asynchronously; submitting while disabled is intentionally ignored.
+    await until("!document.getElementById('admin-invite-submit').disabled",
+      'administrator invitation form is ready');
     await evalJs("document.getElementById('admin-invite-email').value='browser-newstaff@example.test';"+
       "document.getElementById('admin-invite-form').requestSubmit()");
     await until("!document.getElementById('admin-invite-result').hidden",
@@ -378,6 +381,25 @@ async function runBrowser(base,db,fixture){
     await evalJs("document.getElementById('pdk-indicator-prev').click()");
     assert.equal(await evalJs("document.getElementById('pdk-indicator-list').value"),'1');
     assert.equal((await db.query('SELECT revision FROM padk_assessment_preparations')).rows[0].revision,2);
+    assert.equal(await evalJs("document.getElementById('pdk-indicator-position').textContent"),'INDIKATOR 01 / 80');
+    assert.equal(await evalJs("document.getElementById('pdk-indicator-state').dataset.kind"),'complete');
+    assert.equal(await evalJs("document.getElementById('pdk-indicator-optional').open"),true);
+    // Real save-and-next goes through PUT, updates the saved revision and chooses the next incomplete item.
+    await evalJs("document.getElementById('pdk-indicator-justification').value="+
+      JSON.stringify('Justifikasi sementara diperbaiki setelah pemeriksaan dokumen dan kontrol internal.')+";"+
+      "document.getElementById('pdk-indicator-justification').dispatchEvent(new Event('input',{bubbles:true}));"+
+      "document.getElementById('pdk-indicator-save-next').click()");
+    await until("document.getElementById('pdk-indicator-list').value==='2'",
+      'save and continue advanced to next pending indicator');
+    assert.equal(await evalJs("document.getElementById('pdk-indicator-state').dataset.kind"),'pending');
+    await evalJs("document.getElementById('pdk-indicator-prev').click()");
+    await until("document.getElementById('pdk-indicator-list').value==='1'",
+      'return to saved indicator');
+    assert.equal(await evalJs("document.getElementById('pdk-indicator-justification').value.includes('diperbaiki')"),true);
+    assert.equal(await evalJs("document.getElementById('pdk-indicator-optional').open"),true);
+    await c.command('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:1,mobile:true});
+    assert.equal(await evalJs("getComputedStyle(document.querySelector('.pdk-answer-layout')).gridTemplateColumns.split(' ').length"),1);
+    await c.command('Emulation.clearDeviceMetricsOverride');
     await evalJs("document.getElementById('pdk-review-submit').click()");
     await until("document.getElementById('pdk-review-message').textContent.includes('Lengkapi')",
       'PADK incomplete draft submission blocked');
@@ -488,7 +510,7 @@ async function runBrowser(base,db,fixture){
       'Validasi pemilik kontrol dan kebijakan.');
     assert.equal(await evalJs("document.getElementById('pdk-indicator-rank').value"),'2');
     assert.equal(await evalJs("document.getElementById('pdk-indicator-justification').value"),
-      'Penilaian sementara: dokumen ada tetapi pelaksanaan belum dievaluasi menyeluruh.');
+      'Justifikasi sementara diperbaiki setelah pemeriksaan dokumen dan kontrol internal.');
     assert.equal(await evalJs("document.getElementById('pdk-indicator-rank').disabled"),false);
     await evalJs("document.getElementById('pdk-review-submit').click()");
     await until("document.getElementById('pdk-review-state').textContent.includes('Menunggu pemeriksa')",
