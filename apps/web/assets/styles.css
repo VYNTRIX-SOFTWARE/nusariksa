@@ -482,3 +482,47 @@ h1,h2,p{margin-top:0}h1,h2{letter-spacing:-.027em}
 #ma-review-history{margin-top:12px}
 #ma-evidence-link{overflow-wrap:anywhere}
 @media(max-width:760px){#ma-review-form .button{width:100%}}
+
+
+/* MVP first-use onboarding: accessible, compact and responsive, no extra dashboard. */
+.onboard-hero{display:flex;gap:28px;align-items:stretch;justify-content:space-between;
+  border:1px solid #DCDCF4;border-radius:15px;padding:28px 31px;margin-bottom:23px;
+  background:linear-gradient(112deg,#FFFFFF 0%,#F8F7FF 72%,#F1EFFF 100%);
+  box-shadow:0 8px 25px rgba(40,31,81,.035)}
+.onboard-hero-main{flex:1;max-width:720px;min-width:0}
+.onboard-hero h2{font-size:clamp(20px,2.1vw,29px);letter-spacing:-.035em;margin:0 0 10px;line-height:1.2}
+.onboard-hero p:not(.eyebrow){color:#555D74;font-size:14px;line-height:1.75;max-width:670px;margin-bottom:20px}
+.onboard-hero .button-primary{width:auto;min-width:178px}
+.onboard-hero-aside{min-width:146px;border-left:1px solid #DEDAF3;padding:8px 0 8px 27px;
+  display:flex;flex-direction:column;gap:10px;color:#70738C;font-size:13px}
+.onboard-hero-aside strong{color:#302853;font-size:16px}
+.onboard-step-number{font-size:52px;letter-spacing:-.07em;color:#8574D9;font-weight:750;line-height:1}
+.onboard-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:0 0 22px}
+.onboard-step{display:flex;align-items:center;gap:13px;border:1px solid var(--border);
+  background:#FFF;border-radius:12px;padding:18px;min-width:0}
+.onboard-step b{display:grid;place-items:center;width:34px;height:34px;flex:none;
+  background:#F1EDFF;color:#6750CC;border-radius:10px;font-size:14px}
+.onboard-step div{display:flex;flex-direction:column;gap:5px;min-width:0}
+.onboard-step strong{font-size:13px;color:#272D40}
+.onboard-step span{font-size:12px;color:#71798A;line-height:1.45}
+.onboard-admin-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:16px}
+.onboard-admin-grid .panel-card h2{font-size:18px}
+.onboard-secret{border-radius:10px;background:#F7F6FC;border:1px dashed #A99DD9;
+  padding:17px;margin-top:20px;overflow-wrap:anywhere}
+.onboard-secret strong{font-size:13px}
+.onboard-secret p{font-size:12px;color:var(--secondary);line-height:1.6;margin:9px 0}
+.onboard-secret output{display:block;padding:12px;background:#FFF;border-radius:7px;
+  font:12px/1.7 ui-monospace,SFMono-Regular,Consolas,monospace;word-break:break-all;
+  user-select:all;margin-bottom:12px;border:1px solid #E2DEEE}
+.onboard-user-list{display:grid;gap:10px}
+.onboard-user-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;
+  padding:13px 0;border-top:1px solid #E9EAF0}
+.onboard-user-info{min-width:160px;flex:1}
+.onboard-user-info strong{font-size:13px;word-break:break-word}
+.onboard-user-info p{color:var(--secondary);font-size:12px;line-height:1.6;margin:5px 0 0}
+.onboard-user-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.onboard-user-actions select{max-width:230px;min-width:0;padding:9px 7px;border:1px solid #D1D5DB;border-radius:8px}
+.onboard-padk-start{margin-bottom:18px}
+@media(max-width:800px){.onboard-admin-grid,.onboard-steps{grid-template-columns:1fr}
+  .onboard-hero-aside{display:none}.onboard-hero{padding:22px}
+  .onboard-hero .button-primary{width:100%}}

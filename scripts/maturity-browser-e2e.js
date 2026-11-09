@@ -12,6 +12,9 @@ import {runMigrations} from '../apps/api/src/migrations.js';
 import {hashPassword} from '../apps/api/src/passwords.js';
 import {createServer} from '../apps/api/src/server.js';
 import {changePasswordInTransaction} from '../apps/api/src/change-password.js';
+import {createPendingAccountInTransaction,activatePendingAccountInTransaction,
+  listAccounts} from '../apps/api/src/user-accounts.js';
+import {applyRoleChangeInTransaction} from '../apps/api/src/role-management.js';
 import {createPadkPreparationInTransaction,savePadkPreparationInTransaction} from '../apps/api/src/padk-preparations.js';
 import {savePadkIndicatorNoteInTransaction} from '../apps/api/src/padk-preparation-indicators.js';
 import {submitPadkDraftInTransaction,reviewPadkDraftInTransaction} from '../apps/api/src/padk-draft-review.js';
@@ -161,13 +164,14 @@ async function seed(db){
     "INSERT INTO users(email,status,password_hash) VALUES "+
     "('browser-maker@example.test','active',$1),"+
     "('browser-reviewer@example.test','active',$1),"+
-    "('browser-viewer@example.test','active',$1) RETURNING id,email",[hashed],
+    "('browser-viewer@example.test','active',$1),"+
+    "('browser-admin@example.test','active',$1) RETURNING id,email",[hashed],
   );
   const users=Object.fromEntries(result.rows.map(u=>[u.email.split('@')[0].split('-')[1],u.id]));
   await db.query(
     "INSERT INTO user_roles(user_id,role) VALUES "+
-    "($1,'IT_OFFICER'),($2,'REVIEWER'),($3,'VIEWER')",
-    [users.maker,users.reviewer,users.viewer],
+    "($1,'IT_OFFICER'),($2,'REVIEWER'),($3,'VIEWER'),($4,'SUPER_ADMIN')",
+    [users.maker,users.reviewer,users.viewer,users.admin],
   );
   const model=await createMaturityModelInTransaction(db,{
     actorId:users.maker,code:'BROWSER_MAT',title:'Maturitas internal browser',
@@ -240,6 +244,57 @@ async function runBrowser(base,db,fixture){
   }
   try{
     await c.command('Page.navigate',{url:base+'/'});
+    // A real first-use flow: admin invitation, user activation, role assignment, first PADK form.
+    await login('admin');
+    await until("!document.getElementById('admin-setup-menu').hidden",
+      'administrator setup navigation');
+    await evalJs("document.getElementById('first-run-action').click()");
+    await until("!document.getElementById('page-admin-onboarding').hidden",
+      'administrator onboarding screen');
+    await evalJs("document.getElementById('admin-invite-email').value='browser-newstaff@example.test';"+
+      "document.getElementById('admin-invite-form').requestSubmit()");
+    await until("!document.getElementById('admin-invite-result').hidden",
+      'one-time invitation created');
+    const inviteToken=await evalJs("document.getElementById('admin-invite-token').textContent");
+    assert.match(inviteToken,/^[A-Za-z0-9_-]{43}$/);
+    await logout();
+    await evalJs("document.getElementById('activation-open').click()");
+    await until("!document.getElementById('activation-form').hidden",
+      'account activation visible');
+    await evalJs("document.getElementById('activation-token').value="+JSON.stringify(inviteToken)+";"+
+      "document.getElementById('activation-password').value="+JSON.stringify(fixture.password)+";"+
+      "document.getElementById('activation-confirm').value="+JSON.stringify(fixture.password)+";"+
+      "document.getElementById('activation-form').requestSubmit()");
+    await until("!document.getElementById('activation-success').hidden",
+      'invited staff activated');
+    await login('newstaff');
+    await until("document.getElementById('dashboard-access') && !document.getElementById('dashboard-access').hidden",
+      'staff blocked from assessment before role');
+    assert.equal(await evalJs("document.getElementById('padk-preparations-menu').hidden"),true);
+    await logout();
+    assert.equal(await evalJs("document.getElementById('activation-success').hidden"),true);
+    await login('admin');
+    await evalJs("document.getElementById('admin-setup-menu').click()");
+    await until("document.getElementById('admin-users-list').textContent.includes('browser-newstaff@example.test')",
+      'new staff visible for role grant');
+    await evalJs("(()=>{const row=[...document.querySelectorAll('.onboard-user-row')]"+
+      ".find(x=>x.textContent.includes('browser-newstaff@example.test'));"+
+      "const select=row.querySelector('select');select.value='IT_OFFICER';"+
+      "row.querySelector('button').click();})()");
+    await until("document.getElementById('admin-users-list').textContent.includes('IT_OFFICER')",
+      'IT officer role granted');
+    await logout();
+    await login('newstaff');
+    await until("!document.getElementById('first-run-card').hidden",
+      'new staff starting point visible');
+    await evalJs("document.getElementById('first-run-action').click()");
+    await until("!document.getElementById('page-padk-preparations').hidden",
+      'first PADK workspace reachable from CTA');
+    await until("!document.getElementById('pdk-first-run').hidden",
+      'first assessment empty state visible');
+    await evalJs("document.getElementById('pdk-empty-start').click()");
+    assert.equal(await evalJs("document.getElementById('pdk-create-form').hidden"),false);
+    await logout();
     await login('maker');
     await openPadk();
     await until("!document.getElementById('pdk-create-toggle').hidden && !document.getElementById('pdk-create-toggle').disabled",'PADK create permission');
@@ -570,7 +625,7 @@ async function runBrowser(base,db,fixture){
     await evalJs("document.getElementById('mfa-login-code').value="+JSON.stringify(codes[0])+";"+
       "document.getElementById('mfa-login-form').requestSubmit()");
     await until("!document.getElementById('app-screen').hidden",'recovery login accepted');
-    console.log('Browser E2E PASS: PADK extracted criteria + submit/review/evidence + PDF, maturity, password and MFA');
+    console.log('Browser E2E PASS: first-run admin invite/activation/role, PADK input + maker-checker/PDF, maturity, MFA');
   }finally{
     await stopChromium(browser);
   }
@@ -593,6 +648,10 @@ async function main(){
         upload:(db,args)=>uploadPadkEvidenceInTransaction(db,args),
       },
       changeUserPassword:(db,args)=>changePasswordInTransaction(db,args),
+      createUser:(db,args)=>createPendingAccountInTransaction(db,args),
+      activateUser:(db,args)=>activatePendingAccountInTransaction(db,args),
+      listUsers:(db,id)=>listAccounts(db,id),
+      changeRole:(db,args)=>applyRoleChangeInTransaction(db,args),
       mfaEncryptionKey:Buffer.alloc(32,9).toString('base64'),
       mfaActions:{
         status:mfaStatus,setup:startTotpEnrollment,beginLogin:startMfaLogin,

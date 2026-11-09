@@ -47,6 +47,7 @@
           <p id="login-error" class="form-error" role="alert" hidden></p>
           <button id="login-submit" class="button button-primary" type="submit">Masuk <span aria-hidden="true">→</span></button>
         </form>
+        <p id="activation-success" class="workspace-message" data-kind="success" role="status" hidden>Akun berhasil diaktifkan. Masuk dengan email dan password baru. Administrator perlu memberi peran sebelum Anda bisa mengisi penilaian.</p>
         <form id="mfa-login-form" autocomplete="off" hidden>
           <p class="supporting-copy">Masukkan kode 6 digit dari authenticator atau salah satu recovery code.</p>
           <label for="mfa-login-code">Kode MFA</label>
@@ -56,7 +57,23 @@
           <button id="mfa-login-submit" class="button button-primary" type="submit">Verifikasi</button>
           <button id="mfa-login-cancel" class="button button-outline" type="button">Kembali</button>
         </form>
-        <div class="login-help">Belum memiliki akun? Hubungi administrator NusaRiksa di lembaga Anda.</div>
+        <form id="activation-form" autocomplete="off" hidden>
+          <p class="supporting-copy">Akun baru? Masukkan kode undangan dari administrator lembaga dan buat password pribadi.</p>
+          <label for="activation-token">Kode undangan</label>
+          <input id="activation-token" type="text" required maxlength="43" minlength="43"
+                 autocomplete="off" autocapitalize="off" spellcheck="false"
+                 placeholder="Kode undangan satu kali">
+          <label for="activation-password">Password baru (minimal 12 karakter)</label>
+          <input id="activation-password" type="password" minlength="12" required autocomplete="new-password">
+          <label for="activation-confirm">Konfirmasi password</label>
+          <input id="activation-confirm" type="password" minlength="12" required autocomplete="new-password">
+          <p id="activation-message" class="workspace-message" role="status" aria-live="polite" hidden></p>
+          <button id="activation-submit" class="button button-primary" type="submit">Aktifkan akun</button>
+          <button id="activation-cancel" class="button button-outline" type="button">Kembali ke login</button>
+        </form>
+        <div class="login-help">Belum punya akun? Minta undangan administrator lembaga.
+          <button id="activation-open" type="button" class="button button-link">Sudah punya kode undangan? Aktifkan akun</button>
+        </div>
       </div>
       <p class="login-legal">Akses hanya untuk pengguna yang berwenang. Aktivitas tertentu dicatat dalam riwayat sistem.</p>
     </section>
@@ -107,6 +124,10 @@
         <button type="button" class="nav-link" data-page="maturity" id="maturity-menu" title="Metodologi Maturitas" hidden>
           <svg class="icon nav-icon"><use href="#i-clipboard"></use></svg><span class="nav-label">Metodologi Maturitas</span>
         </button>
+        <div class="sidebar-section-label sidebar-gap" id="admin-menu-group" hidden>PENGATURAN</div>
+        <button type="button" class="nav-link" data-page="admin-onboarding" id="admin-setup-menu" title="Kelola akses pengguna" hidden>
+          <svg class="icon nav-icon"><use href="#i-clipboard"></use></svg><span class="nav-label">Akses Pengguna</span>
+        </button>
         <div class="sidebar-section-label sidebar-gap" id="report-menu-group" hidden>PELAPORAN</div>
         <button type="button" class="nav-link" data-page="reports" id="report-menu" title="Laporan Asesmen" hidden>
           <svg class="icon nav-icon"><use href="#i-clipboard"></use></svg><span class="nav-label">Laporan Asesmen</span>
@@ -154,6 +175,18 @@
             </div>
             <button type="button" id="refresh-button" class="button button-outline"><svg class="icon"><use href="#i-refresh"></use></svg> Muat ulang</button>
           </div>
+          <section id="first-run-card" class="onboard-hero" aria-labelledby="first-run-title" hidden>
+            <div class="onboard-hero-main">
+              <p class="eyebrow" id="first-run-eyebrow">MULAI DI SINI</p>
+              <h2 id="first-run-title">Mulai pekerjaan pertama</h2>
+              <p id="first-run-desc">Pilih pekerjaan yang perlu diselesaikan terlebih dahulu.</p>
+              <button id="first-run-action" type="button" class="button button-primary workspace-primary">Mulai</button>
+            </div>
+            <div class="onboard-hero-aside" aria-hidden="true">
+              <span class="onboard-step-number">01</span>
+              <strong>Siapkan</strong><span>Isi</span><span>Periksa</span>
+            </div>
+          </section>
           <div id="dashboard-access" class="info-message" hidden>
             <strong>Akses asesmen belum tersedia.</strong><p>Akun ini tidak memiliki izin <code>assessments:read</code>. Hubungi administrator untuk meminta akses yang diperlukan.</p>
           </div>
@@ -181,6 +214,45 @@
                 <div class="context-footer"><p><strong>Model:</strong> Single-tenant, self-hosted</p><p><strong>Versi kontrol:</strong> Ditampilkan pada detail asesmen</p><p><strong>Akses:</strong> Berdasarkan izin backend</p></div>
               </section>
             </div>
+          </div>
+        </section>
+
+        <section id="page-admin-onboarding" class="page" aria-labelledby="admin-onboard-title" hidden>
+          <div class="page-intro">
+            <div>
+              <p class="eyebrow">SETUP PERTAMA / ADMINISTRATOR</p>
+              <h1 id="admin-onboard-title">Siapkan akses tim BPR</h1>
+              <p class="supporting-copy">Undang petugas, tunggu aktivasi akunnya, lalu berikan peran sesuai tugas. Tanpa SQL, tanpa perintah API manual.</p>
+            </div>
+          </div>
+          <div class="onboard-steps" aria-label="Langkah menyiapkan pengguna">
+            <div class="onboard-step"><b>1</b><div><strong>Undang petugas</strong><span>Masukkan email petugas BPR</span></div></div>
+            <div class="onboard-step"><b>2</b><div><strong>Petugas aktivasi</strong><span>Gunakan kode undangan satu kali</span></div></div>
+            <div class="onboard-step"><b>3</b><div><strong>Berikan peran</strong><span>Pilih pengisi atau pemeriksa</span></div></div>
+          </div>
+          <p id="admin-onboard-message" class="workspace-message" role="status" aria-live="polite" hidden></p>
+          <div class="onboard-admin-grid">
+            <section class="panel-card">
+              <h2>Undang petugas</h2>
+              <p class="workspace-help">Hanya administrator yang dapat mengundang. Kode berlaku 24 jam dan hanya ditampilkan sekali.</p>
+              <form id="admin-invite-form" class="maturity-edit-form">
+                <label for="admin-invite-email">Email petugas</label>
+                <input id="admin-invite-email" type="email" maxlength="254" required placeholder="petugas@bpr.example">
+                <button id="admin-invite-submit" class="button button-primary" type="submit">Buat undangan</button>
+              </form>
+              <section id="admin-invite-result" class="onboard-secret" aria-label="Kode undangan privat" hidden>
+                <strong>Kode undangan satu kali — rahasia</strong>
+                <p>Salin kode ini dan kirim lewat saluran privat. Jangan bagikan di grup atau screenshot publik.</p>
+                <output id="admin-invite-token"></output>
+                <button id="admin-invite-hide" type="button" class="button button-outline">Sembunyikan kode</button>
+              </section>
+            </section>
+            <section class="panel-card">
+              <div class="panel-heading"><h2>Akun dan peran</h2>
+                <button id="admin-users-refresh" type="button" class="button button-outline">Muat ulang</button></div>
+              <p class="workspace-help">Setelah petugas mengaktifkan akun, klik Muat ulang lalu berikan peran. Petugas pengisi dapat membuat persiapan PADK; pemeriksa hanya meninjau draft.</p>
+              <div id="admin-users-list" class="onboard-user-list" aria-live="polite"></div>
+            </section>
           </div>
         </section>
 
@@ -326,6 +398,15 @@
             <strong>Belum dapat dinilai atau disahkan.</strong>
             <p>Seluruh indikator dan kriteria Lampiran IV masih menunggu pemeriksaan sumber OJK serta review independen. Catatan di halaman ini bukan hasil asesmen, skor komposit, atau laporan resmi. Fitur pengisian peringkat, review, approval dan PDF final belum diaktifkan.</p>
           </div>
+          <section id="pdk-first-run" class="onboard-hero onboard-padk-start" hidden>
+            <div class="onboard-hero-main">
+              <p class="eyebrow">LANGKAH PERTAMA</p>
+              <h2>Mulai penilaian keamanan siber pertama</h2>
+              <p>Mulai dari nama penilaian, kategori bank, dan periode. Setelah dibuat, isi indikator satu per satu dengan bukti dan alasan yang dapat ditelusuri.</p>
+              <button id="pdk-empty-start" type="button" class="button button-primary workspace-primary">Buat penilaian pertama</button>
+            </div>
+            <div class="onboard-hero-aside" aria-hidden="true"><span class="onboard-step-number">01</span><strong>Buat</strong><span>Isi</span><span>Ajukan draft</span></div>
+          </section>
           <p id="pdk-message" class="workspace-message" role="status" aria-live="polite" hidden></p>
           <section id="pdk-review-queue" class="panel-card"
                    aria-label="Antrean pemeriksaan draft PADK internal" hidden>

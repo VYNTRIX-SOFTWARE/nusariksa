@@ -16,6 +16,12 @@ test('PADK preparation page and module are served with CSP',async()=>{
     const html=await home.text();
     for(const id of [
       'page-padk-preparations','padk-preparations-menu',
+      'first-run-card','first-run-action','pdk-first-run','pdk-empty-start',
+      'admin-setup-menu','page-admin-onboarding','admin-invite-form',
+      'admin-invite-email','admin-invite-result','admin-invite-token',
+      'admin-users-list','admin-users-refresh','activation-open',
+      'activation-form','activation-token','activation-password',
+      'activation-confirm','activation-success',
       'pdk-create-toggle','pdk-create-form','pdk-title','pdk-category',
       'pdk-period-start','pdk-period-end','pdk-list','pdk-detail',
       'pdk-note-form','pdk-notes','pdk-evidence-plan','pdk-save','pdk-history',
@@ -35,6 +41,9 @@ test('PADK preparation page and module are served with CSP',async()=>{
     const module=await fetch(base+'/assets/padk-preparation-ui.js');
     assert.equal(module.status,200);
     assert.match(module.headers.get('content-security-policy'),/script-src 'self'/);
+    const adminModule=await fetch(base+'/assets/admin-onboarding-ui.js');
+    assert.equal(adminModule.status,200);
+    assert.match(adminModule.headers.get('content-type'),/javascript/);
   }finally{server.close();await once(server,'close');}
 });
 test('PADK prep UI refuses malformed states and invalid category',()=>{

@@ -2,6 +2,18 @@
 
 Panduan ini untuk pengembang yang ingin menjalankan, menguji, atau memperbaiki NusaRiksa. Untuk pengenalan aplikasi dan instalasi singkat, mulai dari [README](../README.md).
 
+## Alur penggunaan pertama kali (MVP draft)
+
+Pembuatan database dan bootstrap `SUPER_ADMIN` masih dilakukan operator teknis satu kali melalui terminal, lalu seluruh langkah pengguna berikutnya tersedia pada web:
+
+1. Admin masuk dan memilih **Akses Pengguna** (juga tersedia melalui tombol utama di Dashboard). Undang email petugas pengisi; simpan kode undangan sekali pakai (24 jam) dan kirim langsung lewat kanal privat. Token tidak dikirim melalui email oleh NusaRiksa.
+2. Petugas membuka login, memilih **Sudah punya kode undangan? Aktifkan akun**, mengisi token undangan, password minimum 12 karakter, dan konfirmasi.
+3. Admin klik **Muat ulang** di Akses Pengguna, pilih peran **Petugas pengisi asesmen (IT_OFFICER)** untuk petugas yang baru aktif. Buat petugas pemeriksa terpisah dengan peran **REVIEWER**.
+4. Petugas pengisi login, memilih **Mulai penilaian** dari Dashboard. Di **Persiapan Penilaian PADK**, pilih **Buat penilaian pertama**, isi judul, kategori dan periode.
+5. Isi peringkat, justifikasi, dan bukti tiap indikator; periksa progres, ajukan draft, lalu pemeriksa lain dapat membuka antrean review.
+
+Akun `SUPER_ADMIN` saja tidak otomatis dapat menilai (least privilege), tidak dapat mengubah perannya sendiri, dan perlu pengguna petugas terpisah. Kode undangan adalah **rahasia autentikasi**: hanya ditampilkan sesaat di browser admin; jangan salin ke issue, chat publik, log, atau repositori. Alur ini tidak mengesahkan konten PADK untuk pelaporan resmi.
+
 ## Lingkungan lokal
 
 Gunakan Node.js `>=24.7.0 <27`, npm, dan PostgreSQL 17. Buat database kosong, lalu atur `DATABASE_URL` dan `APP_ORIGIN` sebagaimana dijelaskan di README.

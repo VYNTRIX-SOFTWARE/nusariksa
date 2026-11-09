@@ -194,7 +194,11 @@ export async function listAccounts(db, actorId) {
   );
   if (actor.rowCount !== 1) throw new AccountError(403, 'Forbidden');
   const result = await db.query(
-    'SELECT id, email, status, created_at FROM users ORDER BY created_at, id LIMIT 50',
+    'SELECT u.id,u.email,u.status,u.created_at,'+
+    'COALESCE(array_agg(ur.role ORDER BY ur.role) FILTER (WHERE ur.role IS NOT NULL),'+
+    'ARRAY[]::text[]) AS roles FROM users u '+
+    'LEFT JOIN user_roles ur ON ur.user_id=u.id '+
+    'GROUP BY u.id ORDER BY u.created_at,u.id LIMIT 50',
   );
   return { users: result.rows };
 }
