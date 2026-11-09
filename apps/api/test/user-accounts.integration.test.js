@@ -153,8 +153,10 @@ test('hanya admin aktif dapat membuat akun; duplikasi email, akun dinonaktifkan,
         }),
         (e) => e.status === 401,
       );
-      assert.deepEqual(await listAccounts(db, adminId).then((x) =>
-        x.users.find((u) => u.id === invite.userId)?.status), 'disabled');
+      const listed = await listAccounts(db, adminId);
+      assert.equal(listed.users.find((u)=>u.id===invite.userId)?.status,'disabled');
+      assert.deepEqual(listed.users.find((u)=>u.id===adminId)?.roles,['SUPER_ADMIN']);
+      assert.deepEqual(listed.users.find((u)=>u.id===invite.userId)?.roles,[]);
       await assert.rejects(listAccounts(db, otherId), (e) => e.status === 403);
       await db.query('ROLLBACK');
     } finally {

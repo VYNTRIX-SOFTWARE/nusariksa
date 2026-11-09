@@ -13,6 +13,7 @@ import { createControlCatalogManagement } from './control-catalog.js';
 import { createMaturityManagement } from './maturity-ui.js';
 import { createMaturityAssessmentUI } from './maturity-assessment-ui.js';
 import {createPadkPreparationUI} from './padk-preparation-ui.js';
+import {createAdminOnboardingUI} from './admin-onboarding-ui.js';
 import {createCrosswalkReviewUI} from './padk-crosswalk-review-ui.js';
 
 const $ = (id) => document.getElementById(id);
@@ -23,7 +24,7 @@ const state = {
   userId: null, permissions: [], assessments: [], load: 'loading', page: 'overview',
   year: 'all', status: 'all', search: '', sort: 'newest', workspaceOrigin:'assessments',
 };
-const pages = {overview: 'Dashboard', assessments: 'Daftar Asesmen', reviews: 'Review & Persetujuan', reports: 'Laporan Asesmen', catalogs: 'Katalog Kontrol', maturity: 'Metodologi Maturitas', 'maturity-assessments': 'Penilaian Maturitas', 'padk-preparations':'Persiapan PADK', 'padk-crosswalk':'QA Pemetaan PADK', workspace: 'Assessment Workspace'};
+const pages = {overview: 'Dashboard', assessments: 'Daftar Asesmen', reviews: 'Review & Persetujuan', reports: 'Laporan Asesmen', catalogs: 'Katalog Kontrol', maturity: 'Metodologi Maturitas', 'maturity-assessments': 'Penilaian Maturitas', 'padk-preparations':'Persiapan PADK', 'padk-crosswalk':'QA Pemetaan PADK', 'admin-onboarding':'Akses Pengguna', workspace: 'Assessment Workspace'};
 
 function show(screen) {
   for (const [name, element] of Object.entries(screens)) element.hidden = name !== screen;
@@ -39,6 +40,7 @@ function loginError(message) {
 }
 let pendingMfaChallenge=null;
 function resetMfaLogin(){
+  resetActivation();
   pendingMfaChallenge=null;
   $('mfa-login-form').hidden=true;
   $('login-form').hidden=false;
@@ -70,6 +72,7 @@ function cleanSession() {
   maturityAssessments.clear();
   padkPreparations.clear();
   padkCrosswalk.clear();
+  adminOnboarding.clear();
   notice('');
 }
 function authFailure(error) {
@@ -125,6 +128,9 @@ function renderPermissions() {
   padkCrosswalk.sync();
   $('padk-crosswalk-menu').hidden=!state.permissions.includes('assessments:approve');
   $('padk-preparations-menu').hidden=!state.permissions.includes('assessments:read');
+  $('admin-setup-menu').hidden=!state.permissions.includes('users:manage');
+  $('admin-menu-group').hidden=!state.permissions.includes('users:manage');
+  renderGettingStarted();
   const hasRead=state.permissions.includes('assessments:read');
   $('assessment-menu').hidden=!hasRead;
   $('assessment-menu-group').hidden=!hasRead;
@@ -136,6 +142,30 @@ function renderPermissions() {
   if (!hasRead && ['assessments','workspace','catalogs','maturity','maturity-assessments','padk-preparations'].includes(state.page)) navigate('overview');
   if (!canReview && ['reviews','padk-crosswalk'].includes(state.page)) navigate('overview');
   if (!state.permissions.includes('reports:read') && state.page==='reports') navigate('overview');
+}
+function renderGettingStarted(){
+  const canAdmin=state.permissions.includes('users:manage');
+  const canWrite=state.permissions.includes('assessments:write');
+  const canReview=state.permissions.includes('assessments:approve');
+  const panel=$('first-run-card');
+  panel.hidden=!(canAdmin||canWrite||canReview);
+  const headline=$('first-run-title'),desc=$('first-run-desc'),action=$('first-run-action');
+  if(canAdmin){
+    headline.textContent='Siapkan akses petugas pertama';
+    desc.textContent='Akun administrator perlu mengundang petugas, petugas mengaktifkan akun, lalu administrator memberikan peran pengisi atau pemeriksa.';
+    action.textContent='Kelola akses pengguna';
+    action.dataset.destination='admin-onboarding';
+  }else if(canWrite){
+    headline.textContent='Buat penilaian PADK pertama';
+    desc.textContent='Mulai dengan kategori dan periode, lalu isi peringkat sementara, justifikasi, serta bukti tiap indikator. Hasilnya masih draft internal.';
+    action.textContent='Mulai penilaian';
+    action.dataset.destination='padk-preparations';
+  }else if(canReview){
+    headline.textContent='Periksa draft yang masuk';
+    desc.textContent='Buka antrean draft PADK dari maker lain dan periksa kelengkapannya sebelum mengembalikan atau menerima draft internal.';
+    action.textContent='Buka antrean pemeriksaan';
+    action.dataset.destination='padk-preparations';
+  }
 }
 function renderMetrics() {
   const loading = state.load!=='ready';
@@ -267,6 +297,7 @@ function navigate(page) {
   if (!(page in pages)) return false;
   if(['assessments','workspace','reviews','catalogs','maturity','maturity-assessments','padk-preparations'].includes(page)&&!state.permissions.includes('assessments:read'))return false;
   if(page==='reports'&&!state.permissions.includes('reports:read'))return false;
+  if(page==='admin-onboarding'&&!state.permissions.includes('users:manage'))return false;
   if(['reviews','padk-crosswalk'].includes(page)&&!state.permissions.includes('assessments:approve'))return false;
   if(state.page==='workspace' && page!=='workspace' && !workspace.confirmLeave())return false;
   if(state.page==='maturity' && page!=='maturity' && !maturity.confirmLeave())return false;
@@ -274,6 +305,7 @@ function navigate(page) {
   if(state.page==='padk-preparations' && page!=='padk-preparations' && !padkPreparations.confirmLeave())return false;
   if(state.page==='padk-crosswalk' && page!=='padk-crosswalk' && !padkCrosswalk.confirmLeave())return false;
   if(state.page==='workspace' && page!=='workspace')workspace.close();
+  if(state.page==='admin-onboarding'&&page!=='admin-onboarding')adminOnboarding.conceal();
   state.page=page;
   for(const section of document.querySelectorAll('.page'))section.hidden=section.id!=='page-'+page;
   for(const btn of document.querySelectorAll('[data-page]')) {
@@ -288,6 +320,7 @@ function navigate(page) {
   if(page==='maturity') void maturity.load();
   if(page==='maturity-assessments') void maturityAssessments.load();
   if(page==='padk-preparations') void padkPreparations.load();
+  if(page==='admin-onboarding')void adminOnboarding.load();
   if(page==='padk-crosswalk') void padkCrosswalk.load();
   return true;
 }
@@ -604,6 +637,11 @@ const padkCrosswalk=createCrosswalkReviewUI({
   api:requestJson,getPermissions:()=>state.permissions,
   getUserId:()=>state.userId,onAuthFailure:authFailure,
 });
+const adminOnboarding=createAdminOnboardingUI({
+  api:requestJson,
+  getPermissions:()=>state.permissions,
+  onAuthFailure:authFailure,
+});
 const padkPreparations=createPadkPreparationUI({
   api:requestJson,
   getPermissions:()=>state.permissions,
@@ -671,4 +709,47 @@ $('review-queue-table').addEventListener('click',(event)=>{
 });
 $('review-queue-reload').addEventListener('click',()=>void loadWorkspace());
 
+function resetActivation(){
+  $('activation-form').hidden=true;
+  $('activation-success').hidden=true;
+  $('login-form').hidden=false;
+  $('activation-form').reset();
+  $('activation-message').hidden=true;
+  $('activation-message').textContent='';
+}
+$('activation-open').addEventListener('click',()=>{
+  resetMfaLogin();
+  $('login-form').hidden=true;
+  $('activation-form').hidden=false;
+  $('activation-token').focus();
+});
+$('activation-cancel').addEventListener('click',resetActivation);
+$('activation-form').addEventListener('submit',async event=>{
+  event.preventDefault();
+  const token=$('activation-token').value.trim();
+  const password=$('activation-password').value;
+  const confirm=$('activation-confirm').value;
+  const message=$('activation-message');
+  if(!/^[A-Za-z0-9_-]{43}$/.test(token)||password.length<12||password!==confirm){
+    message.hidden=false;message.dataset.kind='error';
+    message.textContent='Periksa kode undangan dan password (minimal 12 karakter, harus sama).';
+    return;
+  }
+  $('activation-submit').disabled=true;
+  try{
+    const result=await requestJson('/auth/activate',{method:'POST',body:{token,password}});
+    if(result.activated!==true)throw new TypeError('Aktivasi tidak valid');
+    resetActivation();
+    loginError('');
+    $('activation-success').hidden=false;
+  }catch{
+    message.hidden=false;message.dataset.kind='error';
+    message.textContent='Aktivasi gagal. Pastikan kode belum dipakai dan belum kedaluwarsa.';
+  }finally{$('activation-submit').disabled=false;}
+});
+$('activation-open').addEventListener('click',()=>$('activation-success').hidden=true);
+$('first-run-action').addEventListener('click',()=>{
+  const destination=$('first-run-action').dataset.destination;
+  if(destination)navigate(destination);
+});
 void restoreSession();

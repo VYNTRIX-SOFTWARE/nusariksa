@@ -48,7 +48,7 @@ export function validatePadkReviewQueue(data){
   return data;
 }
 export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFailure}){
-  const state={items:[],detail:null,workflow:null,dirty:false,busy:false,request:0,
+  const state={items:[],detail:null,workflow:null,dirty:false,busy:false,loaded:false,request:0,
     queue:[],queueMore:false,queueBusy:false,queueRequest:0};
   const canEditDraft=()=>Boolean(state.workflow&&
     ['in_progress','changes_requested'].includes(state.workflow.status));
@@ -74,6 +74,7 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
   function clear(){
     state.request++;state.queueRequest++;
     state.items=[];state.detail=null;state.workflow=null;state.dirty=false;state.busy=false;
+    state.loaded=false;
     state.queue=[];state.queueMore=false;state.queueBusy=false;
     $('pdk-review-queue-list').replaceChildren();
     indicatorUI.clear();previewUI.clear();
@@ -113,6 +114,8 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
     report.hidden=!state.detail;
     report.href=state.detail
       ?ENDPOINT+'/'+encodeURIComponent(state.detail.id)+'/workpaper.pdf':'#';
+    $('pdk-first-run').hidden=!(state.loaded&&state.items.length===0&&writable());
+    $('pdk-empty-start').disabled=state.busy;
     $('pdk-create-toggle').hidden=!writable();
     $('pdk-create-toggle').disabled=state.busy;
     $('pdk-detail').hidden=!state.detail;
@@ -183,7 +186,7 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
   }
   async function list(preferredId){
     if(!permitted())return;
-    const request=++state.request;state.busy=true;
+    const request=++state.request;state.busy=true;state.loaded=false;
     message('Memuat daftar persiapan PADK…');render();
     try{
       const data=await api(ENDPOINT);
@@ -191,6 +194,7 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
       if(!Array.isArray(data.preparations)||data.regulatoryPackReady!==false)
         throw new TypeError('Daftar persiapan PADK tidak valid.');
       state.items=data.preparations.map(validatePreparationResponse);
+      state.loaded=true;
       state.detail=null;state.workflow=null;state.dirty=false;
       indicatorUI.clear();previewUI.clear();$('pdk-note-form').reset();
       render();
@@ -322,9 +326,19 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
   });
   $('pdk-review-queue-refresh').addEventListener('click',()=>void refreshReviewQueue());
   $('pdk-refresh').addEventListener('click',()=>{if(confirmLeave())void list();});
+  function openFirstPreparation(){
+    if(!writable()||state.busy)return;
+    $('pdk-create-form').hidden=false;
+    const year=new Date().getFullYear();
+    if(!$('pdk-period-start').value)$('pdk-period-start').value=year+'-01-01';
+    if(!$('pdk-period-end').value)$('pdk-period-end').value=year+'-12-31';
+    $('pdk-title').focus();
+  }
+  $('pdk-empty-start').addEventListener('click',openFirstPreparation);
   $('pdk-create-toggle').addEventListener('click',()=>{
     if(!writable())return;
-    $('pdk-create-form').hidden=!$('pdk-create-form').hidden;
+    if($('pdk-create-form').hidden)openFirstPreparation();
+    else $('pdk-create-form').hidden=true;
   });
   $('pdk-create-form').addEventListener('submit',async event=>{
     event.preventDefault();

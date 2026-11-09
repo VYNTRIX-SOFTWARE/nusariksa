@@ -50,6 +50,10 @@ Bootstrap pertama meminta password melalui terminal interaktif. Buka **http://lo
 
 Mode lama membutuhkan `EVIDENCE_ENCRYPTION_KEY` berupa **64 karakter heksadesimal** (32 byte). Rotasi menggunakan `EVIDENCE_KEYRING` (JSON berisi key ID dan kunci) bersama `EVIDENCE_ACTIVE_KEY_ID`; pertahankan kunci lama untuk mengakses bukti historis. Simpan kunci di luar Git; jangan gunakan dokumen nasabah untuk pengujian. Baca [panduan rotasi](docs/DEVELOPMENT.md).
 
+## Memulai pengisian di web
+
+Setelah bootstrap `SUPER_ADMIN`, buka Dashboard lalu **Kelola akses pengguna**. Undang petugas melalui email, serahkan kode undangan satu kali secara privat, dan minta petugas memilih **Aktifkan akun** pada halaman login. Setelah akun aktif, admin memberikan peran `IT_OFFICER` melalui halaman Akses Pengguna. Petugas dapat login, memilih **Mulai penilaian**, lalu **Buat penilaian pertama** pada halaman PADK. Gunakan akun `REVIEWER` terpisah untuk pemeriksaan draft. Lihat [panduan langkah pertama](docs/DEVELOPMENT.md).
+
 ## Mengisi penilaian PADK
 
 1. Login, buat penilaian berdasarkan periode, lalu pilih kategori sesuai layanan BPR/BPRS.
