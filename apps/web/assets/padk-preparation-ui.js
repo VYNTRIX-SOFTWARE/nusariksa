@@ -324,6 +324,13 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
       reviewMessage('Keputusan pemeriksa gagal disimpan. Muat ulang status.','error');
     }finally{state.busy=false;render();}
   });
+  $('pdk-jump-review').addEventListener('click',()=>{
+    if(!state.detail||state.dirty||indicatorUI.isDirty()){
+      if(!confirmLeave())return;
+    }
+    const panel=$('pdk-draft-review-panel');
+    if(!panel.hidden)panel.scrollIntoView({block:'start',behavior:'smooth'});
+  });
   $('pdk-review-queue-refresh').addEventListener('click',()=>void refreshReviewQueue());
   $('pdk-refresh').addEventListener('click',()=>{if(confirmLeave())void list();});
   function openFirstPreparation(){

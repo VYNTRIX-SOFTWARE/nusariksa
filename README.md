@@ -58,7 +58,7 @@ Setelah bootstrap `SUPER_ADMIN`, buka Dashboard lalu **Kelola akses pengguna**. 
 
 1. Login, buat penilaian berdasarkan periode, lalu pilih kategori sesuai layanan BPR/BPRS.
 2. Baca kriteria indikator dan bandingkan hasil ekstraksi dengan halaman PDF sumber.
-3. Pilih peringkat sementara, tulis justifikasi, simpan, lalu unggah bukti PDF/PNG/JPEG.
+3. Pada ruang kerja indikator, bandingkan kriteria ekstraksi dengan PDF resmi, pilih peringkat sementara, tulis justifikasi, lalu pilih **Simpan indikator ini** atau **Simpan & lanjut** untuk pindah ke indikator belum lengkap. Catatan tambahan bersifat opsional; setelah menyimpan, bukti PDF/PNG/JPEG dapat diunggah.
 4. Setelah semua indikator terisi, ajukan draft untuk pemeriksaan.
 5. Pemeriksa berbeda dapat mengembalikan draft atau menerima **kelengkapan draft internal**.
 6. Lihat progres, komposit simulasi, atau unduh PDF kertas kerja draft.

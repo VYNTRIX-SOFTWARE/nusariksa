@@ -34,10 +34,18 @@ test('PADK preparation page and module are served with CSP',async()=>{
       'pdk-criteria-panel','pdk-criteria-status','pdk-criteria-source',
       'pdk-criteria-list',
       'pdk-indicator-progress','pdk-indicator-prev','pdk-indicator-next',
-      'pdk-indicator-next-pending',
-      'pdk-review-queue','pdk-review-queue-refresh','pdk-review-queue-list',
+      'pdk-indicator-next-pending','pdk-indicator-position',
+      'pdk-indicator-state','pdk-indicator-title','pdk-indicator-save-state',
+      'pdk-indicator-save-next','pdk-indicator-ready-hint','pdk-indicator-optional',
+      'pdk-jump-review','pdk-review-queue','pdk-review-queue-refresh','pdk-review-queue-list',
     ])assert.ok(html.includes('id="'+id+'"'),id+' missing');
     assert.match(html,/Belum dapat dinilai atau disahkan/);
+    assert.ok(html.indexOf('id="pdk-indicator-section"')<
+      html.indexOf('id="pdk-draft-review-panel"'),
+      'PADK primary input must precede review and auxiliary sections');
+    assert.match(html,/Simpan &amp; lanjut|Simpan & lanjut/);
+    assert.doesNotMatch(html,/Fitur pengisian peringkat, review, approval dan PDF final belum diaktifkan/);
+    assert.match(html,/aria-label="Lima kriteria peringkat, gulir untuk membaca semuanya"/);
     const module=await fetch(base+'/assets/padk-preparation-ui.js');
     assert.equal(module.status,200);
     assert.match(module.headers.get('content-security-policy'),/script-src 'self'/);
