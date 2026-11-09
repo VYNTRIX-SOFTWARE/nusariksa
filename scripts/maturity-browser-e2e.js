@@ -311,6 +311,17 @@ async function runBrowser(base,db,fixture){
     assert.equal(workpaper.hasDraftMark,true);
     assert.equal(workpaper.partial,true);
     assert.equal(workpaper.hasEvidenceSha,true);
+    // MVP usability: progress reflects saved rank+reason, navigate pending and protect unsaved edits.
+    assert.equal(await evalJs("document.getElementById('pdk-indicator-progress').value"),1);
+    assert.equal(await evalJs("document.getElementById('pdk-indicator-count').textContent.includes('79 belum lengkap')"),true);
+    await evalJs("document.getElementById('pdk-indicator-notes').value='Perubahan belum disimpan';"+
+      "document.getElementById('pdk-indicator-notes').dispatchEvent(new Event('input',{bubbles:true}));"+
+      "window.confirm=()=>false;document.getElementById('pdk-indicator-next-pending').click()");
+    assert.equal(await evalJs("document.getElementById('pdk-indicator-list').value"),'1');
+    await evalJs("window.confirm=()=>true;document.getElementById('pdk-indicator-next-pending').click()");
+    assert.equal(await evalJs("document.getElementById('pdk-indicator-list').value"),'2');
+    await evalJs("document.getElementById('pdk-indicator-prev').click()");
+    assert.equal(await evalJs("document.getElementById('pdk-indicator-list').value"),'1');
     assert.equal((await db.query('SELECT revision FROM padk_assessment_preparations')).rows[0].revision,2);
     await evalJs("document.getElementById('pdk-review-submit').click()");
     await until("document.getElementById('pdk-review-message').textContent.includes('Lengkapi')",

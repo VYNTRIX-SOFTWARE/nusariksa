@@ -41,8 +41,9 @@ Pemetaan Kategori 2 nomor **3, 18, 19, 20, 24, 29, 32** memerlukan pemeriksaan k
 1. Pilih kategori dan periode penilaian.
 2. Bandingkan lima kriteria yang ditampilkan dengan halaman sumber PDF; teks dalam aplikasi masih hasil ekstraksi.
 3. Isi peringkat sementara, justifikasi, dan bukti pendukung.
-4. Ajukan draft setelah seluruh indikator terisi. Pemeriksa lain dapat mengembalikan atau menerima **kelengkapan draft internal**.
-5. Lihat nilai komposit simulasi dan PDF kertas kerja draft. Status `draft_accepted` **bukan approval nilai resmi**.
+4. Lanjutkan pengisian dari indikator belum lengkap melalui navigasi **Ke indikator belum lengkap**. Progres pengajuan dihitung dari peringkat sementara dan justifikasi minimal 20 karakter per indikator; catatan saja tidak dianggap lengkap. Perpindahan saat ada perubahan yang belum disimpan memerlukan konfirmasi.
+5. Ajukan draft setelah seluruh indikator terisi. Pemeriksa lain dapat mengembalikan atau menerima **kelengkapan draft internal**.
+6. Lihat nilai komposit simulasi dan PDF kertas kerja draft. Status `draft_accepted` **bukan approval nilai resmi**.
 
 Bukti PDF/PNG/JPEG disimpan terenkripsi dan ditautkan ke indikator. Daftar bukti di PDF bukan pengganti file asli.
 

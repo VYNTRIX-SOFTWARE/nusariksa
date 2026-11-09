@@ -428,6 +428,12 @@
                 penilaian, approval, atau laporan PADK resmi sudah tersedia.
               </p>
               <p id="pdk-indicator-count" class="workspace-help" aria-live="polite"></p>
+              <progress id="pdk-indicator-progress" max="1" value="0" aria-label="Progres kelengkapan pengisian indikator draft"></progress>
+              <div class="maturity-rubric-heading">
+                <button type="button" id="pdk-indicator-prev" class="button button-outline">Sebelumnya</button>
+                <button type="button" id="pdk-indicator-next" class="button button-outline">Berikutnya</button>
+                <button type="button" id="pdk-indicator-next-pending" class="button button-outline">Ke indikator belum lengkap</button>
+              </div>
               <label for="pdk-indicator-list">Pilih indikator kategori penilaian</label>
               <select id="pdk-indicator-list"><option value="">Pilih indikator…</option></select>
               <p id="pdk-indicator-description" class="workspace-help"></p>
