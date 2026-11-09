@@ -357,6 +357,14 @@ async function runBrowser(base,db,fixture){
     await logout();
 
     await login('reviewer');
+    await openPadk();
+    await until("document.querySelectorAll('#pdk-review-queue-list button').length===1",
+      'PADK draft visible in reviewer queue');
+    assert.equal(await evalJs("document.getElementById('pdk-review-queue').hidden"),false);
+    await evalJs("document.querySelector('#pdk-review-queue-list button').click()");
+    await until("document.getElementById('pdk-review-state').textContent.includes('Menunggu pemeriksa')",
+      'Reviewer opens submitted PADK draft directly from queue');
+    assert.equal(await evalJs("document.getElementById('pdk-review-form').hidden"),false);
     await until("!document.getElementById('padk-crosswalk-menu').hidden",'regulatory QA menu');
     await evalJs("document.getElementById('padk-crosswalk-menu').click()");
     await until("!document.getElementById('page-padk-crosswalk').hidden",'regulatory QA page');

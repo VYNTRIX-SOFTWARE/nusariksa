@@ -2,12 +2,13 @@ import {originAccepted,tokenFromCookies} from './auth-http.js';
 import {findSession} from './sessions.js';
 import {PadkPreparationError} from './padk-preparations.js';
 import {
-  padkDraftReviewStatus,padkDraftReviewHistory,
+  padkDraftReviewStatus,padkDraftReviewHistory,listPendingPadkDrafts,
   submitPadkDraft,reviewPadkDraft,
 } from './padk-draft-review.js';
 
 const UUID='([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})';
 const BASE='/regulatory/padk43/cyber/preparations/';
+const QUEUE=BASE+'draft-review/pending';
 const STATUS=new RegExp('^'+BASE+UUID+'/draft-review$','i');
 const HISTORY=new RegExp('^'+BASE+UUID+'/draft-review/history$','i');
 const SUBMIT=new RegExp('^'+BASE+UUID+'/draft-review/submit$','i');
@@ -31,17 +32,18 @@ async function readDecision(req){
 }
 export function createPadkDraftReviewHandler({
   db,appOrigin,status=padkDraftReviewStatus,history=padkDraftReviewHistory,
-  submit=submitPadkDraft,review=reviewPadkDraft,
+  queue=listPendingPadkDrafts,submit=submitPadkDraft,review=reviewPadkDraft,
 }){
   return async function handle(req,res){
     const path=req.url??'',method=req.method;
     const state=STATUS.exec(path),events=HISTORY.exec(path),
       send=SUBMIT.exec(path),decision=DECIDE.exec(path);
+    const pending=method==='GET'&&path===QUEUE;
     const fetching=method==='GET'&&state,
       listing=method==='GET'&&events,
       submitting=method==='POST'&&send,
       reviewing=method==='POST'&&decision;
-    if(!fetching&&!listing&&!submitting&&!reviewing){
+    if(!pending&&!fetching&&!listing&&!submitting&&!reviewing){
       reply(res,404,{error:'Not found'});return;
     }
     if(!db||!appOrigin){reply(res,503,{error:'Unavailable'});return;}
@@ -52,6 +54,7 @@ export function createPadkDraftReviewHandler({
     const session=cookie?await findSession(db,cookie):null;
     if(!session){reply(res,401,{error:'Unauthorized'});return;}
     try{
+      if(pending){reply(res,200,await queue(db,{actorId:session.userId}));return;}
       const id=(state??events??send??decision)[1],args={actorId:session.userId,id};
       if(fetching){reply(res,200,await status(db,args));return;}
       if(listing){reply(res,200,await history(db,args));return;}
