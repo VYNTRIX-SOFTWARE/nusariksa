@@ -327,6 +327,17 @@
             <p>Seluruh indikator dan kriteria Lampiran IV masih menunggu pemeriksaan sumber OJK serta review independen. Catatan di halaman ini bukan hasil asesmen, skor komposit, atau laporan resmi. Fitur pengisian peringkat, review, approval dan PDF final belum diaktifkan.</p>
           </div>
           <p id="pdk-message" class="workspace-message" role="status" aria-live="polite" hidden></p>
+          <section id="pdk-review-queue" class="panel-card"
+                   aria-label="Antrean pemeriksaan draft PADK internal" hidden>
+            <div class="panel-heading">
+              <div>
+                <h2>Draft menunggu pemeriksaan</h2>
+                <p class="panel-caption">Hanya draft institusi ini yang diajukan maker lain. Bukan antrean persetujuan OJK.</p>
+              </div>
+              <button id="pdk-review-queue-refresh" type="button" class="button button-outline">Muat antrean</button>
+            </div>
+            <div id="pdk-review-queue-list" aria-live="polite"></div>
+          </section>
           <div class="panel-card">
             <div class="panel-heading">
               <div><h2>Persiapan penilaian</h2><p id="pdk-count" class="panel-caption">Belum dimuat.</p></div>

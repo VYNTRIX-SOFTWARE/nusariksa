@@ -47,6 +47,10 @@ Pemetaan Kategori 2 nomor **3, 18, 19, 20, 24, 29, 32** memerlukan pemeriksaan k
 
 Bukti PDF/PNG/JPEG disimpan terenkripsi dan ditautkan ke indikator. Daftar bukti di PDF bukan pengganti file asli.
 
+## Antrean pemeriksaan draft internal
+
+Pemeriksa dengan izin `assessments:approve` dapat membuka bagian **Draft menunggu pemeriksaan** pada halaman Persiapan PADK. Daftar menampilkan draft `submitted` milik maker lain dalam institusi yang sama, diurutkan dari waktu pengajuan yang paling lama, dengan batas 50 entri per muatan. Pemeriksa dapat membuka satu draft langsung untuk mengecek catatan, bukti, dan memutuskan pengembalian atau penerimaan **kelengkapan draft internal**. Setelah keputusan dibuat, draft keluar dari antrean saat dimuat ulang. Antrean bukan persetujuan regulator atau hasil final.
+
 ## Syarat sebelum dipakai secara resmi
 
 1. Dapatkan PDF PADK dari penerbit resmi; catat URL, tanggal akses, dan hash file.

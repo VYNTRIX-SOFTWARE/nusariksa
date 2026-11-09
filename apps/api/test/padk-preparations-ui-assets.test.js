@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {once} from 'node:events';
 import {test} from 'node:test';
 import {createServer} from '../src/server.js';
-import {validatePreparationInput,validatePreparationResponse}
+import {validatePreparationInput,validatePreparationResponse,validatePadkReviewQueue}
   from '../../web/assets/padk-preparation-ui.js';
 
 test('PADK preparation page and module are served with CSP',async()=>{
@@ -29,6 +29,7 @@ test('PADK preparation page and module are served with CSP',async()=>{
       'pdk-criteria-list',
       'pdk-indicator-progress','pdk-indicator-prev','pdk-indicator-next',
       'pdk-indicator-next-pending',
+      'pdk-review-queue','pdk-review-queue-refresh','pdk-review-queue-list',
     ])assert.ok(html.includes('id="'+id+'"'),id+' missing');
     assert.match(html,/Belum dapat dinilai atau disahkan/);
     const module=await fetch(base+'/assets/padk-preparation-ui.js');
@@ -48,4 +49,23 @@ test('PADK prep UI refuses malformed states and invalid category',()=>{
     preparationNotes:'',evidencePlan:'',status:'PREPARATION_ONLY',
     scoringAvailable:true,submissionAvailable:false,finalReportAvailable:false,
   }));
+});
+
+test('PADK review queue accepts only scoped submitted-draft metadata',()=>{
+  const sample={draftOnly:true,officialApprovalAvailable:false,
+    regulatoryPackVerified:false,hasMore:false,drafts:[{
+      preparationId:'11111111-1111-4111-8111-111111111111',
+      ownerUserId:'22222222-2222-4222-8222-222222222222',
+      title:'Asesmen PADK draft',category:2,status:'submitted',submissionCycle:1,
+      submittedAt:'2026-11-09T04:00:00Z',
+    }]};
+  assert.equal(validatePadkReviewQueue(sample).drafts.length,1);
+  for(const changed of [
+    {...sample,officialApprovalAvailable:true},
+    {...sample,draftOnly:false},
+    {...sample,drafts:[{...sample.drafts[0],status:'draft_accepted'}]},
+    {...sample,drafts:[{...sample.drafts[0],ownerUserId:'invalid'}]},
+    {...sample,drafts:[{...sample.drafts[0],submittedAt:'not a date'}]},
+    {...sample,drafts:Array(51).fill(sample.drafts[0])},
+  ])assert.throws(()=>validatePadkReviewQueue(changed),TypeError);
 });

@@ -30,8 +30,26 @@ export function validatePreparationResponse(data){
     throw new TypeError('Respons persiapan PADK tidak valid.');
   return data;
 }
+const REVIEW_QUEUE=ENDPOINT+'/draft-review/pending';
+export function validatePadkReviewQueue(data){
+  if(!data||data.draftOnly!==true||data.officialApprovalAvailable!==false
+    ||data.regulatoryPackVerified!==false||typeof data.hasMore!=='boolean'
+    ||!Array.isArray(data.drafts)||data.drafts.length>50)
+    throw new TypeError('Daftar antrean draft PADK tidak valid.');
+  for(const item of data.drafts){
+    if(!UUID.test(item.preparationId)||!UUID.test(item.ownerUserId)
+      ||typeof item.title!=='string'||!item.title.trim()
+      ||![1,2].includes(item.category)||item.status!=='submitted'
+      ||!Number.isSafeInteger(item.submissionCycle)||item.submissionCycle<1
+      ||typeof item.submittedAt!=='string'
+      ||!Number.isFinite(Date.parse(item.submittedAt)))
+      throw new TypeError('Item antrean draft PADK tidak valid.');
+  }
+  return data;
+}
 export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFailure}){
-  const state={items:[],detail:null,workflow:null,dirty:false,busy:false,request:0};
+  const state={items:[],detail:null,workflow:null,dirty:false,busy:false,request:0,
+    queue:[],queueMore:false,queueBusy:false,queueRequest:0};
   const canEditDraft=()=>Boolean(state.workflow&&
     ['in_progress','changes_requested'].includes(state.workflow.status));
   const previewUI=createPadkScorePreviewUI({api,onAuthFailure});
@@ -54,7 +72,10 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
   const confirmLeave=()=>!state.dirty&&!indicatorUI.isDirty()||window.confirm(
     'Ada catatan yang belum disimpan. Tinggalkan halaman dan abaikan perubahan?');
   function clear(){
-    state.request++;state.items=[];state.detail=null;state.workflow=null;state.dirty=false;state.busy=false;
+    state.request++;state.queueRequest++;
+    state.items=[];state.detail=null;state.workflow=null;state.dirty=false;state.busy=false;
+    state.queue=[];state.queueMore=false;state.queueBusy=false;
+    $('pdk-review-queue-list').replaceChildren();
     indicatorUI.clear();previewUI.clear();
     $('pdk-draft-review-panel').hidden=true;
     $('pdk-review-form').reset();
@@ -86,6 +107,8 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
       &&state.detail.ownerUserId!==getUserId());
     $('pdk-review-form').hidden=!allowedReview;
     $('pdk-review-decision-submit').disabled=!allowedReview||state.busy;
+    $('pdk-review-queue').hidden=!getPermissions().includes('assessments:approve');
+    $('pdk-review-queue-refresh').disabled=state.queueBusy;
     const report=$('pdk-workpaper-download');
     report.hidden=!state.detail;
     report.href=state.detail
@@ -101,8 +124,11 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
     const current=state.detail?.id??'';
     sel.replaceChildren(new Option('Pilih persiapan…',''));
     for(const item of state.items)sel.add(new Option(
-      item.title+' — Kategori '+item.category+' · '+item.periodStart,current===item.id?item.id:item.id));
-    sel.value=state.items.some(i=>i.id===current)?current:'';
+      item.title+' — Kategori '+item.category+' · '+item.periodStart,item.id));
+    // An older pending draft can lie outside the latest 50 preparations.
+    if(state.detail&&!state.items.some(i=>i.id===current))
+      sel.add(new Option(state.detail.title+' — Dibuka dari antrean review',current));
+    sel.value=current;
     if(state.detail){
       $('pdk-summary').textContent=
         state.detail.title+' · Kategori '+state.detail.category+
@@ -110,6 +136,50 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
         ' · Revisi '+state.detail.revision;
     }else $('pdk-summary').textContent='Pilih catatan persiapan untuk melanjutkan.';
     $('pdk-count').textContent=state.items.length+' persiapan terbaru ditampilkan (maks. 50).';
+  }
+  function renderQueue(){
+    const list=$('pdk-review-queue-list');
+    list.replaceChildren();
+    if(state.queueBusy){
+      list.append(text('p','Memuat draft yang menunggu pemeriksaan…'));
+      return;
+    }
+    if(!state.queue.length){
+      list.append(text('p','Tidak ada draft yang sedang menunggu pemeriksaan.'));
+      return;
+    }
+    for(const item of state.queue){
+      const row=text('div','','workspace-history-item');
+      const button=text('button',item.title,'button button-outline');
+      button.type='button';
+      button.addEventListener('click',()=>{
+        if(confirmLeave())void open(item.preparationId);
+      });
+      row.append(button,text('p','Kategori '+item.category+
+        ' · Siklus '+item.submissionCycle+
+        ' · Diajukan '+new Date(item.submittedAt).toLocaleString('id-ID')+
+        ' · Kelengkapan draft internal, bukan approval PADK'));
+      list.append(row);
+    }
+    if(state.queueMore)list.append(text('p',
+      'Ditampilkan 50 draft tertua. Selesaikan antrean untuk melihat sisanya.'));
+  }
+  async function refreshReviewQueue(){
+    if(!getPermissions().includes('assessments:approve'))return;
+    const request=++state.queueRequest;
+    state.queueBusy=true;renderQueue();render();
+    try{
+      const result=validatePadkReviewQueue(await api(REVIEW_QUEUE));
+      if(request!==state.queueRequest)return;
+      state.queue=result.drafts;
+      state.queueMore=result.hasMore;
+    }catch(error){
+      if(request!==state.queueRequest)return;
+      state.queue=[];state.queueMore=false;
+      if(!onAuthFailure(error))message('Antrean pemeriksaan draft gagal dimuat.','error');
+    }finally{
+      if(request===state.queueRequest){state.queueBusy=false;renderQueue();render();}
+    }
   }
   async function list(preferredId){
     if(!permitted())return;
@@ -125,6 +195,8 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
       indicatorUI.clear();previewUI.clear();$('pdk-note-form').reset();
       render();
       message('');
+      if(request!==state.request)return;
+      void refreshReviewQueue();
       if(preferredId)await open(preferredId);
     }catch(error){if(request===state.request)fail(error,'Gagal memuat persiapan PADK.');}
     finally{if(request===state.request){state.busy=false;render();}}
@@ -239,6 +311,7 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
       await api(reviewPath()+'/decision',{method:'POST',body:{decision,note}});
       $('pdk-review-form').reset();
       await reviewStatus();
+      void refreshReviewQueue();
       reviewMessage(decision==='accept_draft'
         ?'Kelengkapan draft internal diterima; ini BUKAN approval resmi PADK.'
         :'Draft dikembalikan. Maker boleh memperbaiki dan mengajukan lagi.','success');
@@ -247,6 +320,7 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
       reviewMessage('Keputusan pemeriksa gagal disimpan. Muat ulang status.','error');
     }finally{state.busy=false;render();}
   });
+  $('pdk-review-queue-refresh').addEventListener('click',()=>void refreshReviewQueue());
   $('pdk-refresh').addEventListener('click',()=>{if(confirmLeave())void list();});
   $('pdk-create-toggle').addEventListener('click',()=>{
     if(!writable())return;

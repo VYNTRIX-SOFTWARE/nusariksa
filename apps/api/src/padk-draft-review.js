@@ -42,6 +42,32 @@ export function validatePadkDraftDecision(body){
     fail(400,'Invalid draft review reason');
   return {decision,note};
 }
+export async function listPendingPadkDrafts(db,{actorId}){
+  // Only actionable, submitted drafts for this institution. Not regulatory approvals.
+  await permission(db,actorId,'assessments:approve');
+  const found=await db.query(
+    'SELECT p.id,p.title,p.category,p.owner_user_id,s.submission_cycle,'+
+    'e.occurred_at FROM padk_draft_review_state s '+
+    'JOIN padk_assessment_preparations p ON p.id=s.preparation_id '+
+    'JOIN users u ON u.id=$1 AND u.institution_id=p.institution_id '+
+    'JOIN padk_draft_review_events e ON e.preparation_id=p.id '+
+    "AND e.submission_cycle=s.submission_cycle AND e.action='SUBMITTED' "+
+    "WHERE s.status='submitted' AND p.owner_user_id<>$1 "+
+    'ORDER BY e.occurred_at ASC,p.id ASC LIMIT 51',
+    [actorId],
+  );
+  return {
+    drafts:found.rows.slice(0,50).map(row=>({
+      preparationId:row.id,title:row.title,category:row.category,
+      ownerUserId:row.owner_user_id,
+      submissionCycle:Number(row.submission_cycle),
+      submittedAt:row.occurred_at,status:'submitted',
+    })),
+    hasMore:found.rows.length>50,
+    draftOnly:true,officialApprovalAvailable:false,regulatoryPackVerified:false,
+  };
+}
+
 export async function padkDraftReviewStatus(db,{actorId,id}){
   await permission(db,actorId,'assessments:read');
   await scoped(db,{actorId,id});

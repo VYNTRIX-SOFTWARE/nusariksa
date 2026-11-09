@@ -82,7 +82,14 @@ test('PADK maker submits complete provisional assessment; checker returns, resub
         ...(body!==undefined?{body:JSON.stringify(body)}:{}),
       });
       const url=base+'/draft-review';
+      const queueUrl='/regulatory/padk43/cyber/preparations/draft-review/pending';
       try{
+        assert.equal((await send(queueUrl)).status,401);
+        assert.equal((await send(queueUrl,'GET',makerCookie)).status,403);
+        assert.equal((await send(queueUrl,'GET',viewerCookie)).status,403);
+        const emptyQueue=await send(queueUrl,'GET',reviewerCookie);
+        assert.equal(emptyQueue.status,200);
+        assert.deepEqual((await emptyQueue.json()).drafts,[]);
         assert.equal((await send(url)).status,401);
         assert.equal((await send(url,'GET',viewerCookie)).status,200);
         const initial=await(await send(url,'GET',makerCookie)).json();
@@ -104,6 +111,22 @@ test('PADK maker submits complete provisional assessment; checker returns, resub
         assert.equal(submittedData.status,'submitted');
         assert.equal(submittedData.submissionCycle,1);
         assert.equal(submittedData.officialApprovalAvailable,false);
+        // A maker with additional checker permission must not see their own draft in queue.
+        await db.query("INSERT INTO user_roles(user_id,role) VALUES($1,'REVIEWER')",[maker]);
+        const ownQueue=await send(queueUrl,'GET',makerCookie);
+        assert.equal(ownQueue.status,200);
+        assert.deepEqual((await ownQueue.json()).drafts,[]);
+        const reviewerQueue=await(await send(queueUrl,'GET',reviewerCookie)).json();
+        assert.equal(reviewerQueue.drafts.length,1);
+        assert.equal(reviewerQueue.hasMore,false);
+        assert.equal(reviewerQueue.draftOnly,true);
+        assert.equal(reviewerQueue.officialApprovalAvailable,false);
+        assert.equal(reviewerQueue.regulatoryPackVerified,false);
+        assert.equal(reviewerQueue.drafts[0].preparationId,prep.id);
+        assert.equal(reviewerQueue.drafts[0].title,prep.title);
+        assert.equal(reviewerQueue.drafts[0].submissionCycle,1);
+        assert.equal(reviewerQueue.drafts[0].status,'submitted');
+        assert.equal(reviewerQueue.drafts[0].ownerUserId,maker);
         assert.equal((await send(url+'/submit','POST',makerCookie)).status,409);
         assert.equal((await send(url+'/decision','POST',makerCookie,{
           decision:'accept_draft',note:'',
@@ -133,6 +156,7 @@ test('PADK maker submits complete provisional assessment; checker returns, resub
         });
         assert.equal(returned.status,200);
         assert.equal((await returned.json()).status,'changes_requested');
+        assert.deepEqual((await(await send(queueUrl,'GET',reviewerCookie)).json()).drafts,[]);
         assert.equal((await send(url+'/decision','POST',reviewerCookie,{
           decision:'accept_draft',note:'',
         })).status,409);
@@ -146,6 +170,7 @@ test('PADK maker submits complete provisional assessment; checker returns, resub
         assert.equal(amended.status,200);
         assert.equal((await amended.json()).revision,2);
         assert.equal((await send(url+'/submit','POST',makerCookie)).status,200);
+        assert.equal((await(await send(queueUrl,'GET',reviewerCookie)).json()).drafts[0].submissionCycle,2);
         const second=await send(url+'/decision','POST',reviewerCookie,{
           decision:'accept_draft',note:'Kelengkapan dokumentasi draft internal telah diperiksa.',
         });
@@ -156,6 +181,7 @@ test('PADK maker submits complete provisional assessment; checker returns, resub
         assert.equal(accepted.officialApprovalAvailable,false);
         assert.equal(accepted.regulatoryPackVerified,false);
         assert.equal(accepted.finalReportAvailable,false);
+        assert.deepEqual((await(await send(queueUrl,'GET',reviewerCookie)).json()).drafts,[]);
         const history=await(await send(url+'/history','GET',viewerCookie)).json();
         assert.deepEqual(history.events.map(e=>e.action),
           ['DRAFT_ACCEPTED','SUBMITTED','CHANGES_REQUESTED','SUBMITTED']);
