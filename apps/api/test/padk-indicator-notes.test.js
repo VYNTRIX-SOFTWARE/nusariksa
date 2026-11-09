@@ -6,7 +6,8 @@ import {
 import {
   parseIndicatorNumber,validateIndicatorWorkingNotes,
 } from '../src/padk-preparation-indicators.js';
-import {validateDraftIndicatorList}
+import {validateDraftIndicatorList,isDraftIndicatorComplete,
+  summarizeDraftIndicatorProgress,nextPendingDraftIndicator}
   from '../../web/assets/padk-indicator-note-ui.js';
 
 test('indicator number must follow PADK category sizes',()=>{
@@ -55,4 +56,23 @@ test('UI must reject authoritative-looking or scored draft indicator payload',()
     indicators:draft.indicators.map((x,i)=>i===0?{...x,rank:1}:x)},2));
   assert.throws(()=>validateDraftIndicatorList({...draft,
     indicators:draft.indicators.slice(1)},2));
+});
+
+test('MVP PADK resume navigation follows exact draft submission readiness',()=>{
+  const incomplete=(number,revision=0)=>({number,revision,provisionalRank:null,justification:''});
+  const done=(number)=>({number,revision:2,provisionalRank:3,
+    justification:'Alasan pemeriksaan internal yang telah memenuhi minimal 20 karakter.'});
+  const items=[done(1),incomplete(2,1),done(3),incomplete(4)];
+  assert.deepEqual(summarizeDraftIndicatorProgress(items),
+    {total:4,complete:2,pending:2,noted:3});
+  assert.equal(nextPendingDraftIndicator(items),2);
+  assert.equal(nextPendingDraftIndicator(items,2),4);
+  assert.equal(nextPendingDraftIndicator(items,4),2);
+  assert.equal(nextPendingDraftIndicator(items,1),2);
+  assert.equal(isDraftIndicatorComplete({...done(5),justification:'terlalu pendek'}),false);
+  assert.equal(isDraftIndicatorComplete({...done(5),provisionalRank:null}),false);
+  assert.equal(nextPendingDraftIndicator([done(1),done(2)],1),null);
+  assert.deepEqual(summarizeDraftIndicatorProgress([]),
+    {total:0,complete:0,pending:0,noted:0});
+  assert.throws(()=>summarizeDraftIndicatorProgress(null),TypeError);
 });
