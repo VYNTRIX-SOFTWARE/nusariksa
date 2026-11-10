@@ -472,7 +472,11 @@ export function createWorkspace({
     if(validation)return;
     renderBusy(true);
     try{
-      const created=await api('/assessments',{method:'POST',body:input});
+      const quick=$('assessment-quick-start').checked;
+      const created=await api(quick?'/assessments/start-default':'/assessments',
+        {method:'POST',body:input});
+      if(quick&&(created.status!=='in_progress'||created.builtinCatalogAttached!==true))
+        throw new TypeError('Template bawaan belum terpasang dengan benar. Muat ulang daftar asesmen.');
       $('assessment-create-dialog').close();
       $('assessment-create-form').reset();
       await onCreated(created.id);
@@ -481,9 +485,22 @@ export function createWorkspace({
       err.hidden=false;err.textContent=responseMessage(error);
     }finally{renderBusy(false);}
   }
+  $('assessment-quick-start').addEventListener('change',()=>{
+    const quick=$('assessment-quick-start').checked;
+    $('assessment-create-submit').textContent=quick?'Buat & mulai asesmen TI':'Simpan asesmen sebagai draft';
+    $('assessment-quick-start-hint').textContent=quick
+      ?'26 kontrol bawaan langsung terpasang dan asesmen mulai dikerjakan. Pilihan template tidak bisa diganti setelah disimpan.'
+      :'Mode khusus: asesmen dibuat sebagai Draft. Pilih dan pasang katalog lain secara manual di ruang kerja.';
+  });
   $('assessment-create').addEventListener('click',()=>{
     if(!getPermissions().includes('assessments:write'))return;
     $('assessment-create-error').hidden=true;
+    const year=new Date().getFullYear();
+    $('assessment-create-name').value='Asesmen TI BPR/BPRS '+year;
+    $('assessment-create-start').value=year+'-01-01';
+    $('assessment-create-end').value=year+'-12-31';
+    $('assessment-quick-start').checked=true;
+    $('assessment-quick-start').dispatchEvent(new Event('change'));
     $('assessment-create-dialog').showModal();
     $('assessment-create-name').focus();
   });

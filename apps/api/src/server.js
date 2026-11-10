@@ -34,6 +34,7 @@ export function createServer({
   disableUser,
   listUsers,
   createAssessment,
+  createReadyAssessment,
   listAssessments,
   getAssessment,
   startAssessment,
@@ -59,7 +60,7 @@ export function createServer({
   });
   const handleAssessments = createAssessmentsHandler({
     db: authDb, appOrigin, create: createAssessment, list: listAssessments,
-    get: getAssessment, start: startAssessment,
+    get: getAssessment, start: startAssessment, startDefault: createReadyAssessment,
   });
   const handleCatalogs = createControlCatalogsHandler({ db: authDb, appOrigin, ...catalogHandlers });
   const handleResults = createAssessmentResultsHandler({ db: authDb, appOrigin, ...resultHandlers });

@@ -16,7 +16,8 @@ import {createPendingAccountInTransaction,activatePendingAccountInTransaction,
   listAccounts} from '../apps/api/src/user-accounts.js';
 import {applyRoleChangeInTransaction} from '../apps/api/src/role-management.js';
 import {createPadkPreparationInTransaction,savePadkPreparationInTransaction} from '../apps/api/src/padk-preparations.js';
-import {createAssessmentInTransaction,startAssessmentInTransaction} from '../apps/api/src/assessments.js';
+import {createAssessmentInTransaction,createReadyAssessmentInTransaction,
+  startAssessmentInTransaction} from '../apps/api/src/assessments.js';
 import {writeAssessmentResultInTransaction} from '../apps/api/src/assessment-results.js';
 import {assignCatalogInTransaction} from '../apps/api/src/control-catalogs.js';
 import {savePadkIndicatorNoteInTransaction} from '../apps/api/src/padk-preparation-indicators.js';
@@ -310,9 +311,35 @@ async function runBrowser(base,db,fixture){
     await login('maker');
     await until("!document.getElementById('assessment-menu').hidden",'general assessment navigation');
     await evalJs("document.getElementById('assessment-menu').click()");
-    await until("!!document.querySelector('#assessments-table [data-workspace-id]')",
-      'assessment on list');
-    await evalJs("document.querySelector('#assessments-table [data-workspace-id]').click()");
+    await until("!document.getElementById('assessment-create').hidden",'create assessment action');
+    await evalJs("document.getElementById('assessment-create').click()");
+    await until("document.getElementById('assessment-create-dialog').open",
+      'one-click create form ready');
+    assert.equal(await evalJs("document.getElementById('assessment-quick-start').checked"),true);
+    assert.match(await evalJs("document.getElementById('assessment-create-name').value"),
+      /^Asesmen TI BPR\/BPRS [0-9]{4}$/);
+    await evalJs("document.getElementById('assessment-create-name').value='Asesmen Satu Klik Browser';"+
+      "document.getElementById('assessment-create-form').requestSubmit()");
+    await until("!document.getElementById('page-workspace').hidden && "+
+      "!document.getElementById('workspace-editor-content').hidden",
+      'one-click creates and starts a working 26-control assessment');
+    assert.equal(await evalJs("document.getElementById('workspace-control-count').textContent"),'26 kontrol');
+    assert.equal(await evalJs("document.getElementById('workspace-setup').hidden"),true);
+    assert.equal(await evalJs("document.getElementById('workspace-rating').value"),'');
+    const quickDb=await db.query(
+      "SELECT a.id,a.status,count(aa.assessment_id)::int AS assignments "+
+      "FROM assessments a LEFT JOIN assessment_catalog_assignments aa ON aa.assessment_id=a.id "+
+      "WHERE a.title='Asesmen Satu Klik Browser' GROUP BY a.id");
+    assert.equal(quickDb.rowCount,1);
+    assert.equal(quickDb.rows[0].status,'in_progress');
+    assert.equal(quickDb.rows[0].assignments,1);
+    // Existing custom-catalog assessment workflow remains accessible.
+    await evalJs("document.getElementById('assessment-menu').click()");
+    await until("!![...document.querySelectorAll('#assessments-table [data-workspace-id]')].find(x=>x.dataset.workspaceId==="+
+      JSON.stringify(fixture.generalAssessmentId)+")",
+      'previous custom assessment remains accessible');
+    await evalJs("[...document.querySelectorAll('#assessments-table [data-workspace-id]')].find(x=>x.dataset.workspaceId==="+
+      JSON.stringify(fixture.generalAssessmentId)+").click()");
     await until("!document.getElementById('workspace-setup').hidden && "+
       "document.getElementById('workspace-catalog').value!==''",
       'recommended published baseline is selected');
@@ -750,6 +777,7 @@ async function main(){
       authDb:client,appOrigin:origin,
       catalogHandlers:{assign:(db,args)=>assignCatalogInTransaction(db,args)},
       startAssessment:(db,args)=>startAssessmentInTransaction(db,args),
+      createReadyAssessment:(db,args)=>createReadyAssessmentInTransaction(db,args),
       resultHandlers:{write:(db,args)=>writeAssessmentResultInTransaction(db,args)},
       evidenceKey:'ab'.repeat(32),
       padkEvidenceHandlers:{

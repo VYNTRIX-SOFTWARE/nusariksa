@@ -660,3 +660,15 @@ h1,h2,p{margin-top:0}h1,h2{letter-spacing:-.027em}
 #workspace-compose-feedback{font-size:12px;line-height:1.6;margin:0}
 @media(max-width:620px){.workspace-guidance{padding:14px}
   .workspace-note-fields .button{width:100%}}
+
+/* MVP: single-action start in existing assessment dialog, not a navigation change. */
+.assessment-quick-start-choice{display:flex;align-items:flex-start;gap:13px;
+  padding:16px;border:1px solid #D9D5F0;background:#F8F7FF;border-radius:11px;
+  cursor:pointer;margin-top:9px}
+.assessment-quick-start-choice input{width:18px;height:18px;flex:none;
+  margin:2px 0 0;accent-color:#7457D3}
+.assessment-quick-start-choice span{display:grid;gap:5px;min-width:0}
+.assessment-quick-start-choice strong{font-size:13px;line-height:1.5;color:#292845}
+.assessment-quick-start-choice small{font-size:12px;line-height:1.55;color:#586176}
+#assessment-quick-start-hint{font-size:12px;line-height:1.6;color:#535F72}
+@media(max-width:580px){.assessment-quick-start-choice{padding:12px;gap:10px}}

@@ -30,6 +30,12 @@ NusaRiksa menampilkan panduan yang sudah disediakan pengembang untuk seluruh **2
 
 Untuk keamanan siber, **PADK 43/2025** menggunakan workspace khusus 60/80 indikator bawaan, bukan 26 kontrol umum. Instrumen PADK masih ditandai belum terverifikasi untuk keluaran resmi. Di UI template siap digunakan sebagai **acuan penilaian** tanpa label persiapan, tetapi tidak mengubah tanggal legal berlaku kedua aturan atau status release gate. Sumber POJK diperiksa pada salinan dokumen OJK di proyek; rujukan teks operasional bukan kutipan literal pasal.
 
+## Alur cepat MVP: buat, pasang katalog, mulai dalam satu aksi
+
+Endpoint `POST /assessments/start-default` memproses payload yang sama dengan `POST /assessments` (judul, periode awal/akhir). Hanya actor dengan `assessments:write`, cookie sesi valid, origin sesuai, dan validasi payload yang sama boleh memanggilnya. Backend dalam **satu transaksi** mengonfirmasi katalog internal bawaan berstatus `published`, `version=1`, berisi tepat 26 kontrol dan terikat institusi pemanggil, membuat asesmen, memasang versi tersebut, lalu memulai status `in_progress`. Gagal pada tahap mana pun = ROLLBACK. Catatan audit `CREATED`, assignment, `STARTED` tetap tercatat melalui fungsi yang sama dengan alur manual.
+
+UI hanya mengubah formulir **Daftar Asesmen** yang ada. Mode cepat dicentang sejak awal, periode default tahun lokal, dan tombol berlabel **Buat & mulai asesmen TI**. Pengguna dapat tidak mencentang untuk membuat Draft dengan katalog custom melalui cara lama. Pembukaan asesmen baru mengikuti callback `onCreated` dan langsung membuka 26 kontrol. Tidak ada perubahan sidebar, izin, rubrik, tata kerja maker–checker, kalkulasi regulatori ataupun rilis PADK.
+
 ## Lingkungan lokal
 
 Gunakan Node.js `>=24.7.0 <27`, npm, dan PostgreSQL 17. Buat database kosong, lalu atur `DATABASE_URL` dan `APP_ORIGIN` sebagaimana dijelaskan di README.

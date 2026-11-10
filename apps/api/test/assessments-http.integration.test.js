@@ -6,7 +6,8 @@ import { runMigrations } from '../src/migrations.js';
 import { createSession } from '../src/sessions.js';
 import { createServer } from '../src/server.js';
 import {
-  createAssessmentInTransaction, startAssessmentInTransaction,
+  createAssessmentInTransaction, createReadyAssessmentInTransaction,
+  startAssessmentInTransaction,
 } from '../src/assessments.js';
 
 const origin = 'http://127.0.0.1:3000';
@@ -43,6 +44,7 @@ test('API asesmen menegakkan sesi, izin, validasi dan status', {
         authDb: db, appOrigin: origin,
         createAssessment: (client, data) => createAssessmentInTransaction(client, data),
         startAssessment: (client, data) => startAssessmentInTransaction(client, data),
+        createReadyAssessment:(client,data)=>createReadyAssessmentInTransaction(client,data),
       });
       server.listen(0, '127.0.0.1');
       await once(server, 'listening');
@@ -74,6 +76,39 @@ test('API asesmen menegakkan sesi, izin, validasi dan status', {
         assert.equal((await send('/assessments', 'POST', cookies.owner, {
           ...payload, title: 'X'.repeat(3000),
         })).status, 413);
+        // First-use default start must fail safely when template is absent.
+        const missing=await send('/assessments/start-default','POST',cookies.owner,payload);
+        assert.equal(missing.status,409);
+        assert.equal((await db.query('SELECT count(*)::int AS n FROM assessments')).rows[0].n,0);
+        assert.equal((await send('/assessments/start-default','POST',cookies.viewer,payload)).status,403);
+        assert.equal((await send('/assessments/start-default','POST',cookies.owner,payload,
+          'https://invalid.example')).status,403);
+        assert.equal((await send('/assessments/start-default','POST',cookies.owner,payload,
+          origin,'text/plain')).status,415);
+        // Synthetic test bank: install the same internal baseline as bootstrap.
+        await db.query("INSERT INTO user_roles(user_id,role) VALUES($1,'SUPER_ADMIN')",[owner]);
+        await db.query('SELECT ensure_builtin_control_catalog($1)',[owner]);
+        const fast=await send('/assessments/start-default','POST',cookies.owner,{
+          title:'Asesmen TI Cepat 2027',periodStart:'2027-01-01',periodEnd:'2027-12-31'});
+        assert.equal(fast.status,201);
+        const ready=await fast.json();
+        assert.equal(ready.status,'in_progress');
+        assert.equal(ready.builtinCatalogAttached,true);
+        assert.equal(ready.owner_user_id,owner);
+        const attached=await db.query(
+          'SELECT c.code,v.version FROM assessment_catalog_assignments aa '+
+          'JOIN control_catalog_versions v ON v.id=aa.catalog_version_id '+
+          'JOIN control_catalogs c ON c.id=v.catalog_id WHERE aa.assessment_id=$1',[ready.id]);
+        assert.equal(attached.rowCount,1);
+        assert.equal(attached.rows[0].code,'NUSARIKSA_BPR_INTERNAL');
+        assert.equal(attached.rows[0].version,1);
+        const actions=await db.query(
+          'SELECT action FROM assessment_events WHERE assessment_id=$1 ORDER BY id',[ready.id]);
+        assert.deepEqual(actions.rows.map(x=>x.action),['CREATED','STARTED']);
+        assert.equal((await db.query(
+          'SELECT count(*)::int AS n FROM control_definitions WHERE version_id='+
+          '(SELECT catalog_version_id FROM assessment_catalog_assignments WHERE assessment_id=$1)',
+          [ready.id])).rows[0].n,26);
         const created = await send('/assessments', 'POST', cookies.owner, payload);
         assert.equal(created.status, 201);
         const assessment = await created.json();
