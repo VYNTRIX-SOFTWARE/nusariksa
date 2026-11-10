@@ -484,7 +484,7 @@ h1,h2,p{margin-top:0}h1,h2{letter-spacing:-.027em}
 @media(max-width:760px){#ma-review-form .button{width:100%}}
 
 
-/* MVP first-use onboarding: accessible, compact and responsive, no extra dashboard. */
+/* Form aktivasi akun dan pengaturan akses pertama. */
 .onboard-hero{display:flex;gap:28px;align-items:stretch;justify-content:space-between;
   border:1px solid #DCDCF4;border-radius:15px;padding:28px 31px;margin-bottom:23px;
   background:linear-gradient(112deg,#FFFFFF 0%,#F8F7FF 72%,#F1EFFF 100%);
@@ -527,7 +527,7 @@ h1,h2,p{margin-top:0}h1,h2{letter-spacing:-.027em}
   .onboard-hero-aside{display:none}.onboard-hero{padding:22px}
   .onboard-hero .button-primary{width:100%}}
 
-/* PADK MVP: make the indicator editor the primary task, with calm hierarchy. */
+/* Tata letak pengisian indikator keamanan siber. */
 #pdk-detail{padding:26px}
 .pdk-primary-workspace{margin-top:24px;padding:25px;border:1px solid #DCDCF4;border-radius:14px;
   background:linear-gradient(180deg,#FBFAFF 0%,#FFFFFF 190px)}
@@ -592,7 +592,7 @@ h1,h2,p{margin-top:0}h1,h2{letter-spacing:-.027em}
   .pdk-save-actions,.pdk-navigation-row{display:grid;grid-template-columns:1fr}
   .pdk-save-actions .button,.pdk-navigation-row .button{width:100%}}
 
-/* PR61 MVP: complete the general-control assessment flow before review. */
+/* Pengisian kontrol dan panel pemeriksaan. */
 .workspace-remaining-hint{flex:1 1 100%;order:5;font-size:12px;line-height:1.55;
   color:#555E74;margin:0}
 .workspace-next-stage{padding:15px 18px;border-left:3px solid #8B76E0;
@@ -661,7 +661,7 @@ h1,h2,p{margin-top:0}h1,h2{letter-spacing:-.027em}
 @media(max-width:620px){.workspace-guidance{padding:14px}
   .workspace-note-fields .button{width:100%}}
 
-/* MVP: single-action start in existing assessment dialog, not a navigation change. */
+/* Pilihan katalog bawaan saat membuat asesmen. */
 .assessment-quick-start-choice{display:flex;align-items:flex-start;gap:13px;
   padding:16px;border:1px solid #D9D5F0;background:#F8F7FF;border-radius:11px;
   cursor:pointer;margin-top:9px}
@@ -673,7 +673,7 @@ h1,h2,p{margin-top:0}h1,h2{letter-spacing:-.027em}
 #assessment-quick-start-hint{font-size:12px;line-height:1.6;color:#535F72}
 @media(max-width:580px){.assessment-quick-start-choice{padding:12px;gap:10px}}
 
-/* MVP module 8 — TI asset register */
+/* Daftar dan detail inventaris aset TI. */
 .ti-asset-filters{display:grid;grid-template-columns:minmax(160px,2fr) repeat(3,minmax(115px,1fr)) auto auto;
   gap:12px;align-items:end;margin-bottom:20px}
 .ti-asset-filters label{display:grid;gap:6px;font-size:12px;color:#505B70;font-weight:650}
@@ -704,7 +704,7 @@ h1,h2,p{margin-top:0}h1,h2{letter-spacing:-.027em}
 @media(max-width:580px){.ti-asset-filters,.ti-assets-detail-values{grid-template-columns:1fr}
   .ti-assets-actions{width:100%}}
 
-/* MVP 9 — Internal risk register; no externally-certified scoring. */
+/* Daftar dan penilaian risiko TI. */
 .ti-risk-rubric{border:1px solid #D8DAED;background:#F8F9FE;border-radius:11px;
   display:grid;gap:5px;padding:14px 16px;margin-bottom:17px;font-size:12px;color:#414965}
 .ti-risk-rubric strong{font-size:13px;color:#3A3659}
@@ -731,7 +731,7 @@ h1,h2,p{margin-top:0}h1,h2{letter-spacing:-.027em}
 @media(max-width:700px){.ti-risk-filters{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:580px){.ti-risk-filters,.ti-risk-two-col{grid-template-columns:1fr}}
 
-/* MVP 10: incident handling and audit chronology */
+/* Daftar insiden dan kronologi penanganan. */
 .ti-incident-advisory{padding:12px 15px;border:1px solid #E4DCCB;border-left:3px solid #AD8B4D;
   background:#FDFBF6;color:#6B5940;border-radius:8px;font-size:12px;line-height:1.65;margin:0 0 16px}
 .ti-incidents-filters{display:grid;grid-template-columns:minmax(170px,2fr) repeat(4,minmax(105px,1fr)) auto auto;

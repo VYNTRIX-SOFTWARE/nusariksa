@@ -1,138 +1,88 @@
 # NusaRiksa
 
-NusaRiksa adalah aplikasi sumber terbuka dari VYNTRIX untuk membantu BPR dan BPRS mendokumentasikan penilaian teknologi informasi, menyimpan bukti, dan melakukan pemeriksaan internal. Aplikasi dapat dijalankan sendiri oleh masing-masing lembaga.
+**NusaRiksa** adalah aplikasi sumber terbuka untuk membantu Bank Perekonomian Rakyat (BPR) dan Bank Perekonomian Rakyat Syariah (BPRS) mencatat, menilai, dan meninjau pelaksanaan tata kelola teknologi informasi. Setiap lembaga dapat menjalankan NusaRiksa pada server dan database miliknya sendiri.
 
-**Status pengembangan:** aplikasi belum siap untuk data bank sebenarnya atau pelaporan resmi OJK. Instrumen maturitas keamanan siber PADK masih menggunakan hasil ekstraksi dan pemetaan yang belum diverifikasi.
+NusaRiksa dikembangkan oleh **VYNTRIX** dan didistribusikan dengan lisensi **AGPL-3.0-only**.
 
-## Fitur
+## Apa yang bisa dilakukan?
 
-- Akun, peran dan izin, login, pergantian password, serta MFA TOTP.
-- Asesmen kontrol internal dengan **26 kontrol baseline TI bawaan** (template internal), katalog tambahan manual, lampiran bukti, review, dan laporan internal.
-- Penilaian PADK berdasarkan kategori dan periode: peringkat sementara 1–5, justifikasi, dan bukti.
-- Pengajuan, pengembalian, dan pemeriksaan kelengkapan draft oleh pengguna berbeda.
-- Lima kriteria peringkat dari ekstraksi Tabel 3 Lampiran IV beserta rujukan halaman PDF.
-- Perhitungan nilai domain, komposit simulasi, dan ekspor PDF kertas kerja draft.
+- **Asesmen TI:** memeriksa pelaksanaan kontrol TI menggunakan daftar pemeriksaan bawaan, melampirkan bukti, dan meminta peninjauan oleh petugas lain.
+- **Penilaian keamanan siber:** mencatat penilaian indikator, alasan penilaian, bukti, dan hasil simulasi berdasarkan referensi PADK.
+- **Inventaris aset TI:** mengelola daftar perangkat, aplikasi, penanggung jawab, lokasi, dan tingkat kritikalitas.
+- **Register risiko TI:** menilai kemungkinan dan dampak risiko, mencatat mitigasi, serta menghubungkannya dengan aset.
+- **Penanganan insiden TI/siber:** mencatat kejadian, kronologi tindakan, pemulihan, serta hubungan dengan aset dan risiko.
+- **Pengguna dan pemeriksaan:** mengelola hak akses, meninjau hasil pekerjaan, serta menelusuri riwayat perubahan.
 
-**Hasil simulasi dan PDF draft bukan penilaian resmi.** Penggunaan NusaRiksa juga tidak otomatis memenuhi seluruh ketentuan POJK 34/2025 dan PADK 43/PADK.03/2025. Baca [panduan PADK](docs/PADK.md).
+Katalog asesmen TI bawaan menyediakan **26 kontrol operasional** beserta pertanyaan pemeriksaan, panduan pengisian, dan contoh bukti. Petugas tetap perlu mengisi hasil berdasarkan kondisi dan dokumen lembaganya.
 
-## Menjalankan secara lokal
+**Catatan penggunaan:** penilaian, simulasi, dan dokumen yang dihasilkan NusaRiksa perlu ditelaah oleh petugas berwenang sebelum digunakan untuk pengambilan keputusan atau pelaporan eksternal. Aplikasi ini tidak dengan sendirinya menyatakan sebuah bank patuh terhadap seluruh ketentuan OJK.
 
-Gunakan Node.js **24.7.0 atau lebih baru, tetapi di bawah 27**, npm, dan PostgreSQL 17. Buat database dan pengguna PostgreSQL sebelum menjalankan migrasi.
+## Panduan penggunaan
+
+Untuk petugas dan pemeriksa BPR/BPRS, mulai dari **[Panduan Penggunaan NusaRiksa](docs/PANDUAN-PENGGUNA.md)**. Panduan tersebut menjelaskan cara masuk, memulai asesmen, mencatat bukti, mengelola aset dan risiko, serta menangani insiden.
+
+## Menjalankan NusaRiksa secara lokal
+
+Persyaratan:
+
+- Node.js **24.7.0 atau lebih baru, tetapi di bawah 27**
+- npm
+- PostgreSQL 17
+
+Siapkan database PostgreSQL kosong dan akun database dengan izin yang sesuai. Pasang dependensi:
 
 ```bash
 npm ci
 ```
 
-Di Linux/macOS:
+Atur koneksi database dan alamat aplikasi. Contoh di Linux/macOS:
 
 ```bash
 export DATABASE_URL='postgresql://user:password@127.0.0.1:5432/nusariksa_dev'
 export APP_ORIGIN='http://localhost:3000'
 ```
 
-Di PowerShell:
+Contoh di PowerShell:
 
 ```powershell
 $env:DATABASE_URL = 'postgresql://user:password@127.0.0.1:5432/nusariksa_dev'
 $env:APP_ORIGIN = 'http://localhost:3000'
 ```
 
-Sesuaikan kredensial dan nama database, lalu jalankan:
+Jalankan migrasi, buat akun administrator pertama, lalu mulai aplikasi:
 
 ```bash
 npm run db:migrate
 npm run admin:bootstrap -- --name "BPR Contoh" --kind BPR --email admin@example.test
-npm run check
 npm start
 ```
 
-Bootstrap pertama meminta password melalui terminal interaktif. Buka **http://localhost:3000**. Server pengembangan hanya mendengarkan di `127.0.0.1` dan menggunakan port 3000 secara default. Atur `PORT` jika diperlukan; `APP_ORIGIN` harus sama dengan alamat yang dipakai browser.
+Password administrator pertama diminta melalui terminal. Buka **http://localhost:3000** melalui browser. Server lokal menggunakan `127.0.0.1` dan port 3000 sebagai pengaturan bawaan.
 
-Mode lama membutuhkan `EVIDENCE_ENCRYPTION_KEY` berupa **64 karakter heksadesimal** (32 byte). Rotasi menggunakan `EVIDENCE_KEYRING` (JSON berisi key ID dan kunci) bersama `EVIDENCE_ACTIVE_KEY_ID`; pertahankan kunci lama untuk mengakses bukti historis. Simpan kunci di luar Git; jangan gunakan dokumen nasabah untuk pengujian. Baca [panduan rotasi](docs/DEVELOPMENT.md).
+Untuk menjalankan pengujian:
 
-## Memulai pengisian di web
+```bash
+npm run check
+```
 
-Setelah bootstrap `SUPER_ADMIN`, buka Dashboard lalu **Kelola akses pengguna**. Undang petugas melalui email, serahkan kode undangan satu kali secara privat, dan minta petugas memilih **Aktifkan akun** pada halaman login. Setelah akun aktif, admin memberikan peran `IT_OFFICER` melalui halaman Akses Pengguna. Petugas dapat login, memilih **Mulai penilaian**, lalu **Buat penilaian pertama** pada halaman PADK. Gunakan akun `REVIEWER` terpisah untuk pemeriksaan draft. Lihat [panduan langkah pertama](docs/DEVELOPMENT.md).
+### Keamanan berkas bukti
 
-## Katalog bawaan untuk asesmen kontrol umum
+Berkas bukti menggunakan enkripsi pada penyimpanan. Sebelum mengunggah berkas, administrator sistem perlu mengonfigurasi kunci yang sesuai:
 
-Instalasi yang sudah bermigrasi dan memiliki admin, serta instalasi baru setelah bootstrap, otomatis memperoleh katalog **Baseline Operasional TI BPR/BPRS** dengan 26 kontrol internal (tata kelola, aset, akun, operasi, data, jaringan, pemulihan dan vendor). Buat asesmen kontrol umum pada menu **Daftar Asesmen**: katalog bawaan akan langsung disarankan pada tahap persiapan. Pemilik tetap harus menekan **Pasang katalog** dan mengonfirmasinya, karena pemasangan tidak dapat diganti.
+- `EVIDENCE_ENCRYPTION_KEY` untuk bukti yang masih menggunakan format kunci lama;
+- `EVIDENCE_KEYRING` dan `EVIDENCE_ACTIVE_KEY_ID` untuk pengelolaan beberapa versi kunci.
 
-Untuk kebutuhan khusus BPR/BPRS, menu **Katalog Kontrol** tetap memungkinkan pembuatan katalog manual atau versi Draft berikutnya dari baseline bawaan. Tambahkan kontrol sendiri lalu terbitkan versi baru tanpa mengubah versi lama yang sudah dipakai asesmen.
-
-**Penting:** Katalog ini hanya **template internal NusaRiksa**, bukan teks pasal POJK/PADK yang telah diverifikasi. Katalog asesmen kontrol umum ini **berbeda** dari 60/80 indikator pada menu **Persiapan PADK**. Progres dan hasilnya tidak boleh diklaim sebagai kepatuhan resmi.
-
-## Mengisi 26 kontrol TI bawaan (MVP)
-
-Sesudah memasang katalog bawaan dan menekan **Mulai asesmen**, form kontrol muncul **sebelum review internal**. Kontrol aktif menampilkan nomor urut dan status penyimpanan. Isi hasil penilaian sesuai bukti, kemudian pilih **Simpan di kontrol ini** atau **Simpan & lanjut** untuk berpindah ke kontrol berikutnya yang belum dinilai. Navigasi **Sebelumnya / Berikutnya / Cari yang belum dinilai** tidak menyimpan data otomatis; perubahan yang belum disimpan perlu dikonfirmasi bila berpindah. Progres menunjukkan berapa dari 26 kontrol sudah dinilai, bukan nilai kepatuhan resmi. Bukti dilampirkan per kontrol, sedangkan riwayat disembunyikan di panel opsional. Pemeriksaan internal tetap membutuhkan akun reviewer berbeda.
-
-## Template asesmen POJK 34/2025 dan PADK 43/2025 siap digunakan
-
-Katalog bawaan asesmen kontrol umum (26 kontrol) memiliki **pertanyaan pemeriksaan, contoh bukti yang perlu disiapkan, pemetaan pasal POJK 34/2025, dan catatan kondisi khusus**. Ini ditampilkan otomatis ketika memilih kontrol bawaan. Petugas tidak perlu mengetik referensi atau menulis daftar dokumen dari nol. Form bantuan **Susun catatan dari temuan nyata** memungkinkan petugas menjelaskan kondisi bank dan dokumen yang benar-benar diperiksa; hasilnya masuk ke catatan pemeriksaan tetapi **tidak tersimpan sebelum menekan Simpan**. Peringkat kepatuhan tidak dipilih otomatis.
-
-Untuk asesmen maturitas siber menurut **PADK 43/PADK.03/2025**, menu **Persiapan Penilaian PADK** sudah menyediakan struktur kategori 1/2 dengan 80/60 indikator; pengguna tidak menyusun instrumen secara manual. Dokumen PADK dan pemetaan kategori/teks kriteria masih berstatus `DRAFT_UNVERIFIED` dan tidak boleh diterbitkan sebagai hasil resmi. Template digunakan sekarang sebagai acuan kerja; status hukum pemberlakuan kedua ketentuan tidak diubah oleh aplikasi.
-
-**Jangan unggah data nasabah asli atau rahasia akses untuk membuat bukti contoh.** Dokumen yang ditampilkan adalah contoh jenis bukti, bukan bukti bank yang sudah ada. Catatan kondisi aktual dan peringkat harus tetap diisi petugas berdasarkan pemeriksaan.
-
-## Langsung mulai asesmen TI (MVP)
-
-Pada **Daftar Asesmen → Buat asesmen**, judul serta periode tahun berjalan otomatis terisi tetapi bisa diubah. Opsi **Gunakan katalog TI bawaan dan langsung mulai** dipilih secara default. Tekan **Buat & mulai asesmen TI** untuk membuat asesmen, memasang katalog internal 26 kontrol **versi 1 yang telah diterbitkan**, dan mengubah status menjadi **Dikerjakan** dalam satu transaksi PostgreSQL; setelahnya workspace langsung dibuka pada kontrol pertama yang belum dinilai. Rating, kondisi bank dan file bukti **tidak pernah diisi otomatis**.
-
-Jika perlu katalog lain, hilangkan centang opsi tersebut: sistem membuat asesmen Draft biasa dan petugas dapat memasang katalog custom serta mulai asesmen melalui workflow lama. Sidebar dan peran tidak berubah. Bila katalog bawaan belum ada atau tidak valid, pembuatan cepat ditolak tanpa meninggalkan asesmen kosong.
-
-## Inventaris aset TI (MVP, Modul 8)
-
-Pada menu **Inventaris Aset TI**, petugas TI/kepatuhan mengelola aset dengan kode unik, jenis, PIC, lokasi, kritikalitas, status operasional, dan catatan. Tersedia tambah, ubah, arsip, pencarian kode/nama/PIC, filter, dan histori append-only. Pengguna lain dengan akses lihat dapat mengakses tanpa bisa menyunting.
-
-Perubahan menggunakan **optimistic revision** agar dua pengguna tidak saling menimpa data. Arsip tidak menghapus aset atau kode yang telah dipakai. Relasi risiko/insiden akan menyusul ketika modul terkait tersedia, tanpa membuat data relasi fiktif.
-
-## Register Risiko TI (MVP, Modul 9)
-
-Petugas TI atau kepatuhan dapat membuka **Register Risiko TI**, mencatat risiko dengan skenario, PIC, tenggat mitigasi, dan opsional mengaitkannya dengan aset inventaris aktif. Risiko inheren ditentukan dari **kemungkinan × dampak**, masing-masing skala 1–5. Skor kerja **internal NusaRiksa**: 1–4 rendah, 5–9 sedang, 10–16 tinggi, 17–25 kritis; ini **bukan** skor resmi POJK maupun PADK. Risiko residual tidak otomatis muncul sebelum petugas mengisi kedua parameternya.
-
-Tersedia daftar, pencarian kode/judul/PIC, filter status/tingkat risiko/aset, histori revisi, dan arsip yang tidak menghapus jejak audit. Kode risiko tidak dapat diganti. Menutup risiko membutuhkan mitigasi terisi dan residual maksimal sedang; proses penerimaan risiko tinggi dengan persetujuan pimpinan belum tersedia sehingga tidak dipalsukan sebagai "Ditutup".
-
-Relasi risiko–aset memakai foreign key yang benar, dan bank tidak dapat membuat referensi baru ke aset diarsipkan. Arsip aset lama tetap dapat dirujuk oleh risiko historis. Perubahan konflik ditolak menggunakan `expectedRevision`.
-
-## Manajemen Insiden TI/Siber (MVP, Modul 10)
-
-Petugas TI dan kepatuhan dapat membuka **Manajemen Insiden TI/Siber** untuk mencatat insiden dengan kode, waktu deteksi, kategori (layanan/siber/data/integritas/lainnya), tingkat keparahan, PIC, uraian dampak dan pengendalian. Insiden dapat ditautkan ke **aset dan risiko TI yang benar-benar tercatat**. Bila risiko terkait sudah memiliki aset, pilihan aset insiden harus konsisten.
-
-Alur status: **Dilaporkan → Investigasi → Terkendali/Dipulihkan → Ditutup**. Status Dipulihkan/Ditutup membutuhkan akar penyebab serta hasil pemulihan nyata (masing-masing minimal 10 karakter). Arsip hanya diperbolehkan setelah Ditutup. **Kronologi aktivitas** dapat dicatat terpisah sebagai Observasi, Pengendalian, Pemulihan atau Komunikasi; setiap entri memiliki jenis, waktu kejadian (opsional), waktu server, aktor, dan revisi. Perubahan atau penghapusan riwayat diblokir oleh trigger database. Koreksi dilakukan dengan menambah catatan baru.
-
-Tersedia filter kategori, status, keparahan, pencarian dan histori. Aplikasi **tidak mengirim laporan insiden kepada OJK**; petugas wajib mengevaluasi sendiri kewajiban eskalasi, klasifikasi, tenggat dan pelaporan sesuai ketentuan yang berlaku. Jangan memasukkan kata sandi, data nasabah mentah, atau secret ke deskripsi dan kronologi.
-
-## Mengisi penilaian PADK
-
-1. Login, buat penilaian berdasarkan periode, lalu pilih kategori sesuai layanan BPR/BPRS.
-2. Baca kriteria indikator dan bandingkan hasil ekstraksi dengan halaman PDF sumber.
-3. Pada ruang kerja indikator, bandingkan kriteria ekstraksi dengan PDF resmi, pilih peringkat sementara, tulis justifikasi, lalu pilih **Simpan indikator ini** atau **Simpan & lanjut** untuk pindah ke indikator belum lengkap. Catatan tambahan bersifat opsional; setelah menyimpan, bukti PDF/PNG/JPEG dapat diunggah.
-4. Setelah semua indikator terisi, ajukan draft untuk pemeriksaan.
-5. Pemeriksa berbeda dapat mengembalikan draft atau menerima **kelengkapan draft internal**.
-6. Lihat progres, komposit simulasi, atau unduh PDF kertas kerja draft.
-
-Status `draft_accepted` **bukan persetujuan nilai resmi**. Hasil final masih memerlukan verifikasi instrumen, pemetaan Kategori 2, aturan perhitungan, pengesahan hasil, dan pengujian operasional.
-
-## Struktur proyek
-
-| Lokasi | Kegunaan |
-| --- | --- |
-| `apps/api/` | API, autentikasi, aturan bisnis, dan pengujian backend |
-| `apps/web/` | Antarmuka web |
-| `database/migrations/` | Migrasi PostgreSQL |
-| `regulations/padk43/cyber/` | Draft instrumen, pemetaan, dan verifikasi PADK |
-| `scripts/` | Migrasi, pemeriksaan, dan pengujian browser |
-| `tools/padk-review/` | Alat pembanding kriteria dengan PDF |
-| `docs/` | Panduan pengembangan dan instrumen PADK |
+Simpan kunci di luar repository dan bersama cadangan yang aman. Jangan menggunakan data nasabah, kata sandi, atau dokumen rahasia sebagai data uji. Petunjuk pengelolaan dan pemulihan kunci tersedia dalam [dokumentasi teknis](docs/DEVELOPMENT.md) dan [panduan pemulihan](docs/RECOVERY.md).
 
 ## Dokumentasi
 
-- [Pengembangan dan pengujian](docs/DEVELOPMENT.md)
-- [Panduan uji pemulihan database dan bukti terenkripsi](docs/RECOVERY.md)
-- [Penilaian dan batasan PADK](docs/PADK.md)
-- [Kontribusi](CONTRIBUTING.md)
+- [Panduan penggunaan untuk BPR/BPRS](docs/PANDUAN-PENGGUNA.md)
+- [Instalasi dan pemeliharaan teknis](docs/DEVELOPMENT.md)
+- [Penilaian keamanan siber dan referensinya](docs/PADK.md)
+- [Pemulihan database dan berkas bukti](docs/RECOVERY.md)
+- [Panduan kontribusi](CONTRIBUTING.md)
 - [Kebijakan keamanan](SECURITY.md)
 
 ## Lisensi
 
-NusaRiksa menggunakan **AGPL-3.0-only**. Periksa [LICENSE](LICENSE), [NOTICE.md](NOTICE.md), dan [TRADEMARKS.md](TRADEMARKS.md) sebelum mendistribusikan modifikasi atau menggunakan identitas proyek.
+NusaRiksa menggunakan **AGPL-3.0-only**. Lihat [LICENSE](LICENSE), [NOTICE.md](NOTICE.md), dan [TRADEMARKS.md](TRADEMARKS.md) untuk ketentuan distribusi dan penggunaan identitas proyek.
