@@ -42,6 +42,12 @@ Migrasi `0025_create_ti_assets.sql` membuat tabel aset `ti_assets` dan audit app
 
 Keterhubungan aset ke risiko dan insiden masih memerlukan tabel dan workflow modul 9/10. Sampai kedua modul ada, jangan menyebut kaitan tersebut selesai.
 
+## Modul 9: Register Risiko TI
+
+Migrasi `0026_create_ti_risks.sql` membuat register risiko yang ditautkan secara opsional ke `ti_assets` melalui foreign key komposit `institution_id/asset_id`; `ti_risk_events` mencatat CREATED/UPDATED/ARCHIVED dengan trigger immutable. Endpoint `GET/POST /risks`, `GET /risks/asset-options`, `GET/PATCH /risks/:id`, `POST /risks/:id/archive`, `GET /risks/:id/history` memiliki session, same-origin untuk mutasi, RBAC, validasi strict, dan batas input.
+
+Penilaian inheren dan residual adalah skor internal `kemungkinan × dampak` (1–5), kategori low (1–4), medium (5–9), high (10–16), critical (17–25). Nilai residual `NULL` berarti belum dinilai; tidak boleh dihitung sebagai nol. Menutup risiko hanya diperbolehkan bila mitigasi minimal 10 karakter dan residual <=9. Mekanisme *risk acceptance* risiko di atas medium membutuhkan modul persetujuan eksplisit yang belum ada. Register mendukung revisi optimistis, arsip non-destruktif, filter/paginasi, dan riwayat immutable. Tidak ada nilai regulator otomatis maupun hubungan fiktif dengan modul insiden.
+
 ## Lingkungan lokal
 
 Gunakan Node.js `>=24.7.0 <27`, npm, dan PostgreSQL 17. Buat database kosong, lalu atur `DATABASE_URL` dan `APP_ORIGIN` sebagaimana dijelaskan di README.

@@ -703,3 +703,30 @@ h1,h2,p{margin-top:0}h1,h2{letter-spacing:-.027em}
 @media(max-width:1050px){.ti-asset-filters{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:580px){.ti-asset-filters,.ti-assets-detail-values{grid-template-columns:1fr}
   .ti-assets-actions{width:100%}}
+
+/* MVP 9 — Internal risk register; no externally-certified scoring. */
+.ti-risk-rubric{border:1px solid #D8DAED;background:#F8F9FE;border-radius:11px;
+  display:grid;gap:5px;padding:14px 16px;margin-bottom:17px;font-size:12px;color:#414965}
+.ti-risk-rubric strong{font-size:13px;color:#3A3659}
+.ti-risk-rubric small{line-height:1.55;color:#646D82}
+.ti-risk-filters{display:grid;grid-template-columns:minmax(180px,2fr) repeat(4,minmax(110px,1fr)) auto auto;
+  gap:12px;align-items:end;margin-bottom:19px}
+.ti-risk-filters label{display:grid;gap:6px;font-size:12px;font-weight:650;color:#505B70}
+.ti-risk-filters input,.ti-risk-filters select{width:100%;min-width:0;box-sizing:border-box;
+  border:1px solid #D9DDE7;border-radius:8px;padding:9px 10px}
+.ti-risk-list-item{border:1px solid #E3E6EF;background:#FFF;padding:13px 16px;border-radius:10px}
+.ti-risk-open{border:0;background:transparent;text-align:left;color:#39345D;
+  font-size:14px;font-weight:700;padding:0;cursor:pointer}
+.ti-risk-open:hover{text-decoration:underline}
+.ti-risk-list-item p{margin:7px 0 0}
+#ti-risks-dialog{width:min(650px,calc(100vw - 28px));max-height:calc(100vh - 48px);overflow:auto}
+#ti-risks-form{display:grid;gap:12px}
+#ti-risks-form label{display:grid;gap:6px;font-size:12px;font-weight:650;color:#444E62}
+#ti-risks-form input,#ti-risks-form select,#ti-risks-form textarea{
+  width:100%;min-width:0;box-sizing:border-box;padding:10px;border:1px solid #CED3DF;border-radius:8px}
+.ti-risk-two-col{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.ti-risk-preview{font-size:12px;background:#F4F3FB;color:#4B465D;
+  border-radius:8px;padding:9px 12px;margin:0}
+@media(max-width:1200px){.ti-risk-filters{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:700px){.ti-risk-filters{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:580px){.ti-risk-filters,.ti-risk-two-col{grid-template-columns:1fr}}

@@ -8,6 +8,7 @@ const ASSETS = new Map([
   ['/assets/app.js', { file: 'assets/app.js', type: 'text/javascript; charset=utf-8' }],
   ['/assets/admin-onboarding-ui.js', { file: 'assets/admin-onboarding-ui.js', type: 'text/javascript; charset=utf-8' }],
   ['/assets/ti-assets-ui.js', { file: 'assets/ti-assets-ui.js', type: 'text/javascript; charset=utf-8' }],
+  ['/assets/ti-risks-ui.js', { file: 'assets/ti-risks-ui.js', type: 'text/javascript; charset=utf-8' }],
   ['/assets/session.js', { file: 'assets/session.js', type: 'text/javascript; charset=utf-8' }],
   ['/assets/assessment-model.js', { file: 'assets/assessment-model.js', type: 'text/javascript; charset=utf-8' }],
   ['/assets/assessment-workspace-model.js', { file: 'assets/assessment-workspace-model.js', type: 'text/javascript; charset=utf-8' }],
