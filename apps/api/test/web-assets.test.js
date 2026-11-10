@@ -28,6 +28,12 @@ test('antarmuka web dan aset dimuat dari origin API dengan header keamanan', asy
     assert.match(source,/id="assessment-quick-start-hint"/);
     assert.match(source,/Buat &amp; mulai asesmen TI/);
     assert.match(source,/id="assessment-create-form"/);
+    for(const id of ['page-ti-assets','asset-menu','ti-assets-form','ti-assets-list',
+      'ti-assets-history','ti-assets-search','ti-assets-archive','ti-assets-kind-filter'])
+      assert.match(source,new RegExp('id="'+id+'"'));
+    const assetsJs=await fetch(base+'/assets/ti-assets-ui.js');
+    assert.equal(assetsJs.status,200);
+    assert.match(assetsJs.headers.get('content-type'),/javascript/);
     const page=source.indexOf('id="page-workspace"');
     assert.ok(page>=0);
     assert.ok(source.indexOf('id="workspace-control-position"',page)<

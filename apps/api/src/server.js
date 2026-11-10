@@ -14,6 +14,7 @@ import {createPadkEvidenceHandler} from './padk-evidence-http.js';
 import {createPadkDraftReviewHandler} from './padk-draft-review-http.js';
 import {createCrosswalkReviewHandler} from './padk-crosswalk-reviews-http.js';
 import { createControlCatalogsHandler } from './control-catalogs-http.js';
+import {createAssetHandler} from './ti-assets-http.js';
 import { checkDatabase, createPool } from './database.js';
 import { createLoginLimiter } from './login-limiter.js';
 import { createRolesHandler } from './roles-http.js';
@@ -39,6 +40,7 @@ export function createServer({
   getAssessment,
   startAssessment,
   catalogHandlers,
+  assetHandlers,
   resultHandlers,
   reviewHandlers,
   reportHandler,
@@ -63,6 +65,7 @@ export function createServer({
     get: getAssessment, start: startAssessment, startDefault: createReadyAssessment,
   });
   const handleCatalogs = createControlCatalogsHandler({ db: authDb, appOrigin, ...catalogHandlers });
+  const handleAssets = createAssetHandler({db:authDb,appOrigin,...assetHandlers});
   const handleResults = createAssessmentResultsHandler({ db: authDb, appOrigin, ...resultHandlers });
   const handleReviews = createAssessmentReviewsHandler({ db: authDb, appOrigin, ...reviewHandlers });
   const handleReport = createAssessmentReportsHandler({ db: authDb, appOrigin, report: reportHandler });
@@ -151,6 +154,16 @@ export function createServer({
       return;
     }
 
+    // Asset API shares /assets with static web files; match only REST paths.
+    if (/^\/assets(?:\?.*)?$/.test(request.url??'')
+      || /^\/assets\/[0-9a-f-]{36}(?:\/(?:history|archive))?$/i.test(request.url??'')) {
+      try{await handleAssets(request,response);}
+      catch{
+        if(!response.headersSent){response.writeHead(503);response.end(JSON.stringify({error:'Unavailable'}));}
+        else response.destroy();
+      }
+      return;
+    }
     if (request.url === '/catalogs' || request.url?.startsWith('/catalogs/')
       || request.url?.startsWith('/catalog-versions/')
       || request.url?.endsWith('/catalog') || request.url?.endsWith('/checklist')) {
