@@ -16,7 +16,8 @@ import {createPendingAccountInTransaction,activatePendingAccountInTransaction,
   listAccounts} from '../apps/api/src/user-accounts.js';
 import {applyRoleChangeInTransaction} from '../apps/api/src/role-management.js';
 import {createPadkPreparationInTransaction,savePadkPreparationInTransaction} from '../apps/api/src/padk-preparations.js';
-import {createAssessmentInTransaction} from '../apps/api/src/assessments.js';
+import {createAssessmentInTransaction,startAssessmentInTransaction} from '../apps/api/src/assessments.js';
+import {writeAssessmentResultInTransaction} from '../apps/api/src/assessment-results.js';
 import {assignCatalogInTransaction} from '../apps/api/src/control-catalogs.js';
 import {savePadkIndicatorNoteInTransaction} from '../apps/api/src/padk-preparation-indicators.js';
 import {submitPadkDraftInTransaction,reviewPadkDraftInTransaction} from '../apps/api/src/padk-draft-review.js';
@@ -334,6 +335,39 @@ async function runBrowser(base,db,fixture){
         ' | assignmentCount: '+check.rows[0].n);
     }
     assert.equal(await evalJs("document.getElementById('workspace-catalog-tag').textContent.includes('NUSARIKSA_BPR_INTERNAL')"),true);
+    assert.equal(await evalJs("document.getElementById('workspace-control-count').textContent"),'26 kontrol');
+    assert.equal(await evalJs("document.querySelector('#page-workspace .workspace-grid').compareDocumentPosition(document.getElementById('workspace-review-panel')) & Node.DOCUMENT_POSITION_FOLLOWING"),4);
+    await evalJs("document.getElementById('workspace-start').click()");
+    await until("document.getElementById('workspace-setup').hidden && "+
+      "!document.getElementById('workspace-editor-content').hidden",
+      'general TI control assessment started');
+    assert.equal(await evalJs("document.getElementById('workspace-control-position').textContent"),'KONTROL 01 / 26');
+    assert.equal(await evalJs("document.getElementById('workspace-remaining-hint').textContent.includes('26 kontrol belum dinilai')"),true);
+    await evalJs("document.getElementById('workspace-rating').value='non_compliant';"+
+      "document.getElementById('workspace-rating').dispatchEvent(new Event('change',{bubbles:true}));"+
+      "document.getElementById('workspace-note').value='Kontrol ini belum memenuhi karena dokumen kebijakan belum tersedia.';"+
+      "document.getElementById('workspace-note').dispatchEvent(new Event('input',{bubbles:true}));");
+    assert.equal(await evalJs("document.getElementById('workspace-save-indicator').dataset.state"),'dirty');
+    await evalJs("window.confirm=()=>false;document.getElementById('workspace-next').click()");
+    assert.equal(await evalJs("document.getElementById('workspace-control-position').textContent"),'KONTROL 01 / 26');
+    await evalJs("window.confirm=()=>true;document.getElementById('workspace-save-next').click()");
+    await until("document.getElementById('workspace-control-position').textContent==='KONTROL 02 / 26'",
+      'save-next selects next incomplete TI control');
+    assert.equal(await evalJs("document.getElementById('workspace-save-indicator').dataset.state"),'pending');
+    assert.equal(await evalJs("document.getElementById('workspace-remaining-hint').textContent.includes('25 kontrol belum dinilai')"),true);
+    const savedGeneralControl=await db.query('SELECT r.rating,r.note,r.revision FROM assessment_control_results r '+
+      'WHERE r.assessment_id=$1 ORDER BY r.updated_at DESC LIMIT 1',[fixture.generalAssessmentId]);
+    assert.equal(savedGeneralControl.rowCount,1);
+    assert.equal(savedGeneralControl.rows[0].rating,'non_compliant');
+    assert.equal(savedGeneralControl.rows[0].revision,1);
+    await evalJs("document.getElementById('workspace-prev').click()");
+    await until("document.getElementById('workspace-control-position').textContent==='KONTROL 01 / 26'",
+      'navigate back to persisted result');
+    assert.equal(await evalJs("document.getElementById('workspace-rating').value"),'non_compliant');
+    assert.equal(await evalJs("document.getElementById('workspace-save-indicator').dataset.state"),'saved');
+    await c.command('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:1,mobile:true});
+    assert.equal(await evalJs("getComputedStyle(document.querySelector('#page-workspace .workspace-grid')).gridTemplateColumns.split(' ').length"),1);
+    await c.command('Emulation.clearDeviceMetricsOverride');
     await openPadk();
     await until("!document.getElementById('pdk-create-toggle').hidden && !document.getElementById('pdk-create-toggle').disabled",'PADK create permission');
     await evalJs("document.getElementById('pdk-create-toggle').click()");
@@ -682,7 +716,7 @@ async function runBrowser(base,db,fixture){
     await evalJs("document.getElementById('mfa-login-code').value="+JSON.stringify(codes[0])+";"+
       "document.getElementById('mfa-login-form').requestSubmit()");
     await until("!document.getElementById('app-screen').hidden",'recovery login accepted');
-    console.log('Browser E2E PASS: first-run admin invite/activation/role, PADK input + maker-checker/PDF, maturity, MFA');
+    console.log('Browser E2E PASS: general TI 26-control save-next, first-run, PADK maker-checker/PDF, maturity, MFA');
   }finally{
     await stopChromium(browser);
   }
@@ -701,6 +735,8 @@ async function main(){
     server=createServer({
       authDb:client,appOrigin:origin,
       catalogHandlers:{assign:(db,args)=>assignCatalogInTransaction(db,args)},
+      startAssessment:(db,args)=>startAssessmentInTransaction(db,args),
+      resultHandlers:{write:(db,args)=>writeAssessmentResultInTransaction(db,args)},
       evidenceKey:'ab'.repeat(32),
       padkEvidenceHandlers:{
         upload:(db,args)=>uploadPadkEvidenceInTransaction(db,args),

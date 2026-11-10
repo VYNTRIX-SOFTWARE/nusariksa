@@ -3,6 +3,7 @@ import { createEvidenceUI } from './assessment-evidence.js';
 import {
   RATING_LABELS, canWriteAssessment, canAttachCatalog, canStartAssessment,
   canEditResult, combineControls, validateAssessmentDraft, validateRatingDraft,
+  nextUnassessedControl, neighborControl,
 } from './assessment-workspace-model.js';
 import { ApiError } from './session.js';
 import {
@@ -69,9 +70,11 @@ export function createWorkspace({
     $('workspace-start').disabled=isBusy
       || !canStartAssessment(state.assessment,getUserId(),getPermissions(),state.catalog);
     $('workspace-save').disabled=isBusy || state.conflict || !state.dirty || !editable();
+    $('workspace-save-next').disabled=isBusy || state.conflict || !state.dirty || !editable();
     $('assessment-create-submit').disabled=isBusy;
     $('workspace-submit-review').disabled=isBusy || state.dirty || state.conflict || !canSubmitReview(state.assessment,getUserId(),getPermissions(),state.catalog,state.controls);
     $('workspace-review-save').disabled=isBusy || !canDecideReview(state.assessment,getUserId(),getPermissions());
+    renderNavigation();
   }
   function renderProgress(){
     const total=state.controls.length;
@@ -84,6 +87,11 @@ export function createWorkspace({
       ?'Katalog '+(state.catalog.catalog_code??'')+' · v'+state.catalog.version
       :'Katalog belum terpasang');
     message('workspace-control-count',total+' kontrol');
+    message('workspace-remaining-hint',!total
+      ?'Pasang katalog, lalu mulai asesmen untuk mengisi kontrol.'
+      :assessed===total
+        ?'Semua kontrol sudah dinilai. Periksa bukti dan lanjut ke pemeriksaan internal.'
+        :'Masih '+(total-assessed)+' kontrol belum dinilai. Simpan dan lanjut untuk mengisi satu per satu.');
   }
 
   function renderReview(){
@@ -168,6 +176,22 @@ export function createWorkspace({
       el.append(button);
     }
   }
+  function renderNavigation(){
+    const control=selected(),active=Boolean(control)&&!state.pending;
+    $('workspace-prev').disabled=!active||!neighborControl(state.controls,state.selectedId,-1);
+    $('workspace-next').disabled=!active||!neighborControl(state.controls,state.selectedId,1);
+    const pending=control&&nextUnassessedControl(state.controls,state.selectedId);
+    $('workspace-next-pending').hidden=!pending;
+    $('workspace-next-pending').disabled=!active;
+    $('workspace-save-next').disabled=state.pending||state.conflict||!state.dirty||!editable();
+  }
+  function selectControl(id){
+    if(state.pending||!state.controls.some(c=>c.id===id)||!confirmLeave())return;
+    state.selectedId=id;
+    $('workspace-filter').value='all';
+    renderControls();renderEditor();showMessage('');
+    document.querySelector('.workspace-editor')?.scrollIntoView({block:'start',behavior:'smooth'});
+  }
   function draftState(){
     const control=selected();
     if(!control)return;
@@ -178,6 +202,13 @@ export function createWorkspace({
       ?'Konflik revisi: muat ulang sebelum menyimpan kembali.'
       :state.dirty?'Perubahan belum disimpan.':'Tidak ada perubahan.');
     $('workspace-save').disabled=state.pending||state.conflict||!state.dirty;
+    $('workspace-save-next').disabled=state.pending||state.conflict||!state.dirty;
+    $('workspace-save-indicator').textContent=state.conflict
+      ?'Ada konflik perubahan. Salin catatan dan muat ulang sebelum menyimpan.'
+      :state.dirty?'Perubahan pada kontrol ini BELUM tersimpan di server.'
+        :control.revision>0?'Penilaian kontrol ini tersimpan di server.':'Kontrol ini belum dinilai.';
+    $('workspace-save-indicator').dataset.state=state.dirty?'dirty':control.revision>0?'saved':'pending';
+    renderNavigation();
     $('workspace-submit-review').disabled=state.pending||state.conflict||state.dirty
       || !canSubmitReview(state.assessment,getUserId(),getPermissions(),state.catalog,state.controls);
   }
@@ -186,6 +217,9 @@ export function createWorkspace({
     $('workspace-editor-empty').hidden=!!control;
     $('workspace-editor-content').hidden=!control;
     if(!control){evidence.clear();return;}
+    const index=state.controls.findIndex(c=>c.id===control.id);
+    message('workspace-control-position','KONTROL '+String(index+1).padStart(2,'0')+
+      ' / '+state.controls.length);
     message('workspace-control-code',control.control_code);
     message('workspace-control-title',control.title);
     message('workspace-control-description',control.description || 'Tidak ada deskripsi kontrol.');
@@ -199,12 +233,21 @@ export function createWorkspace({
     $('workspace-rating').disabled=!editable();
     $('workspace-note').disabled=!editable();
     $('workspace-save').hidden=!editable();
+    $('workspace-save-next').hidden=!editable();
     $('workspace-history-refresh').hidden=control.revision===0;
     message('workspace-history',control.revision
       ?'Klik Lihat riwayat untuk memuat perubahan dari server.':'Belum ada riwayat penilaian.');
     state.dirty=false;state.conflict=false;
     message('workspace-dirty-label',editable()?'Tidak ada perubahan.':'Baca-saja sesuai status dan hak akses.');
     $('workspace-save').disabled=true;
+    $('workspace-save-next').disabled=true;
+    $('workspace-save-indicator').textContent=editable()
+      ?(control.revision>0
+        ?'Penilaian tersimpan di server (revisi '+control.revision+').'
+        :'Belum ada penilaian tersimpan untuk kontrol ini.')
+      :'Baca-saja. Hasil dan riwayat dapat diperiksa tanpa mengubah data.';
+    $('workspace-save-indicator').dataset.state=control.revision>0?'saved':'pending';
+    renderNavigation();
     evidence.open({
       assessmentId:state.id, controlId:control.id,
       status:state.assessment?.status, ownerId:state.assessment?.owner_user_id,
@@ -331,13 +374,27 @@ export function createWorkspace({
     const messageText=validateRatingDraft({rating,note});
     if(messageText){showMessage(messageText,'error');return;}
     const gen=state.generation;
+    const saveAndNext=event.submitter?.id==='workspace-save-next';
     renderBusy(true);
     try {
       await api(base('/results/'+encodeURIComponent(control.id)),{
         method:'PUT',body:{rating,note,expectedRevision:control.revision},
       });
       if(gen!==state.generation)return;
-      await load();showMessage('Penilaian tersimpan dan revisi diperbarui.','info');
+      await load();
+      if($('workspace-content').hidden)return;
+      if(saveAndNext){
+        const next=nextUnassessedControl(state.controls,control.id);
+        if(next){
+          state.selectedId=next;
+          $('workspace-filter').value='all';
+          renderControls();renderEditor();
+          showMessage('Kontrol '+control.control_code+' tersimpan. Lanjut ke kontrol yang belum dinilai.','success');
+          document.querySelector('.workspace-editor')?.scrollIntoView({block:'start',behavior:'smooth'});
+        }else{
+          showMessage('Penilaian tersimpan. Seluruh kontrol telah dinilai; periksa lampiran bukti dan ajukan review internal.','success');
+        }
+      }else showMessage('Penilaian kontrol tersimpan di server.','success');
     } catch(error){
       if(gen!==state.generation)return;
       if(onAuthFailure(error))return;
@@ -407,9 +464,21 @@ export function createWorkspace({
   $('workspace-controls').addEventListener('click',(event)=>{
     const target=event.target.closest?.('[data-control-id]');
     if(!target||!confirmLeave())return;
-    state.selectedId=target.dataset.controlId;renderControls();renderEditor();showMessage('');
+    selectControl(target.dataset.controlId);
   });
   $('workspace-filter').addEventListener('change',renderControls);
+  $('workspace-prev').addEventListener('click',()=>{
+    const id=neighborControl(state.controls,state.selectedId,-1);
+    if(id)selectControl(id);
+  });
+  $('workspace-next').addEventListener('click',()=>{
+    const id=neighborControl(state.controls,state.selectedId,1);
+    if(id)selectControl(id);
+  });
+  $('workspace-next-pending').addEventListener('click',()=>{
+    const id=nextUnassessedControl(state.controls,state.selectedId);
+    if(id)selectControl(id);
+  });
   $('workspace-rating').addEventListener('change',draftState);
   $('workspace-note').addEventListener('input',draftState);
   $('workspace-result-form').addEventListener('submit',event=>void save(event));

@@ -591,3 +591,36 @@ h1,h2,p{margin-top:0}h1,h2{letter-spacing:-.027em}
   .pdk-current-indicator{padding:16px}.pdk-reference-column,.pdk-answer-column{padding:14px}
   .pdk-save-actions,.pdk-navigation-row{display:grid;grid-template-columns:1fr}
   .pdk-save-actions .button,.pdk-navigation-row .button{width:100%}}
+
+/* PR61 MVP: complete the general-control assessment flow before review. */
+.workspace-remaining-hint{flex:1 1 100%;order:5;font-size:12px;line-height:1.55;
+  color:#555E74;margin:0}
+.workspace-next-stage{padding:15px 18px;border-left:3px solid #8B76E0;
+  border-radius:0 10px 10px 0;background:#F8F7FC;margin:20px 0 13px}
+.workspace-next-stage span{font-size:11px;letter-spacing:.07em;font-weight:800;color:#62509F}
+.workspace-next-stage p{font-size:13px;line-height:1.6;color:#555E72;margin:6px 0 0}
+.workspace-grid{grid-template-columns:minmax(250px,33fr) minmax(0,67fr)}
+.workspace-editor{border-color:#DDD9F0;box-shadow:0 6px 20px rgba(34,21,91,.025)}
+.workspace-position{font-size:11px;font-weight:800;letter-spacing:.08em;color:#6554A9}
+.workspace-flow-nav{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin:16px 0 9px;
+  padding-bottom:12px;border-bottom:1px solid #E8E7F1}
+.workspace-flow-nav .button{width:auto}
+.workspace-save-indicator{border-radius:8px;padding:10px 12px;background:#F5F6FA;
+  color:#536076;font-size:12px;line-height:1.5;margin:0 0 14px}
+.workspace-save-indicator[data-state="saved"]{background:#EEF8F0;color:#246448}
+.workspace-save-indicator[data-state="dirty"]{background:#FFF7E6;color:#8D580B}
+.workspace-save-row{display:flex;flex-wrap:wrap;align-items:center;gap:12px;justify-content:space-between}
+.workspace-save-actions{display:flex;gap:10px;flex-wrap:wrap}
+.workspace-save-actions .button{width:auto}
+.workspace-history-disclosure{border:1px solid #E4E6EF;border-radius:10px;padding:13px 16px;margin:18px 0}
+.workspace-history-disclosure summary{font-size:13px;font-weight:700;color:#4D5367;cursor:pointer}
+.workspace-history-disclosure summary:focus-visible{outline:2px solid #7968D2;outline-offset:3px}
+.workspace-history-disclosure .workspace-history-head{margin-top:14px}
+@media(max-width:900px){.workspace-grid{grid-template-columns:1fr}
+  .workspace-controls{max-height:240px}
+  .workspace-save-actions{width:100%}}
+@media(max-width:560px){.workspace-flow-nav{display:grid;grid-template-columns:1fr 1fr}
+  .workspace-flow-nav #workspace-next-pending{grid-column:1 / -1}
+  .workspace-flow-nav .button,.workspace-save-actions .button{width:100%}
+  .workspace-save-actions{display:grid;grid-template-columns:1fr}
+  .workspace-next-stage{padding:13px}}

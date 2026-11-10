@@ -62,6 +62,10 @@ Untuk kebutuhan khusus BPR/BPRS, menu **Katalog Kontrol** tetap memungkinkan pem
 
 **Penting:** Katalog ini hanya **template internal NusaRiksa**, bukan teks pasal POJK/PADK yang telah diverifikasi. Katalog asesmen kontrol umum ini **berbeda** dari 60/80 indikator pada menu **Persiapan PADK**. Progres dan hasilnya tidak boleh diklaim sebagai kepatuhan resmi.
 
+## Mengisi 26 kontrol TI bawaan (MVP)
+
+Sesudah memasang katalog bawaan dan menekan **Mulai asesmen**, form kontrol muncul **sebelum review internal**. Kontrol aktif menampilkan nomor urut dan status penyimpanan. Isi hasil penilaian sesuai bukti, kemudian pilih **Simpan di kontrol ini** atau **Simpan & lanjut** untuk berpindah ke kontrol berikutnya yang belum dinilai. Navigasi **Sebelumnya / Berikutnya / Cari yang belum dinilai** tidak menyimpan data otomatis; perubahan yang belum disimpan perlu dikonfirmasi bila berpindah. Progres menunjukkan berapa dari 26 kontrol sudah dinilai, bukan nilai kepatuhan resmi. Bukti dilampirkan per kontrol, sedangkan riwayat disembunyikan di panel opsional. Pemeriksaan internal tetap membutuhkan akun reviewer berbeda.
+
 ## Mengisi penilaian PADK
 
 1. Login, buat penilaian berdasarkan periode, lalu pilih kategori sesuai layanan BPR/BPRS.

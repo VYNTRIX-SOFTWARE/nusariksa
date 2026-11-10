@@ -1005,6 +1005,7 @@
               <div><span class="workspace-kicker">PROGRES PENGISIAN</span><strong id="workspace-progress-label">0 dari 0 kontrol</strong></div>
               <progress id="workspace-progress" value="0" max="1">0%</progress>
               <span id="workspace-progress-percent">0%</span>
+              <p id="workspace-remaining-hint" class="workspace-remaining-hint" aria-live="polite">Siapkan asesmen untuk memulai.</p>
               <span id="workspace-catalog-tag" class="workspace-catalog-tag">Katalog belum terpasang</span>
             </div>
             <div id="workspace-setup" class="workspace-setup" hidden>
@@ -1018,6 +1019,80 @@
               <button id="workspace-start" type="button" class="button button-primary workspace-primary" hidden>Mulai asesmen</button>
             </div>
 
+            <div class="workspace-grid">
+              <aside class="workspace-list-panel" aria-label="Daftar kontrol">
+                <div class="workspace-list-head"><h2>Daftar kontrol</h2><span id="workspace-control-count">0 kontrol</span></div>
+                <label for="workspace-filter">Tampilkan</label>
+                <select id="workspace-filter"><option value="all">Semua kontrol</option>
+                  <option value="not_assessed">Belum dinilai</option><option value="assessed">Sudah dinilai</option></select>
+                <div id="workspace-controls" class="workspace-controls" aria-live="polite">
+                  <p class="empty-note">Kontrol belum tersedia.</p>
+                </div>
+              </aside>
+              <section class="workspace-editor" aria-label="Penilaian kontrol">
+                <div id="workspace-editor-empty" class="workspace-editor-empty">
+                  <h2>Pilih kontrol</h2><p>Detail penilaian muncul di sini setelah memilih kontrol.</p>
+                </div>
+                <div id="workspace-editor-content" hidden>
+                  <div class="workspace-editor-heading">
+                    <span id="workspace-control-position" class="workspace-position">KONTROL 01 / 26</span>
+                    <span id="workspace-control-code" class="workspace-code">—</span>
+                    <span id="workspace-control-revision" class="workspace-revision">Belum dinilai</span>
+                  </div>
+                  <h2 id="workspace-control-title">Kontrol TI</h2>
+                  <p id="workspace-control-description" class="workspace-description"></p>
+                  <p id="workspace-control-source" class="workspace-source" hidden></p>
+                  <div class="workspace-flow-nav" aria-label="Navigasi kontrol asesmen">
+                    <button id="workspace-prev" type="button" class="button button-outline">Sebelumnya</button>
+                    <button id="workspace-next" type="button" class="button button-outline">Berikutnya</button>
+                    <button id="workspace-next-pending" type="button" class="button button-link">Cari yang belum dinilai</button>
+                  </div>
+                  <p id="workspace-save-indicator" class="workspace-save-indicator" role="status" aria-live="polite">Belum dinilai.</p>
+                  <form id="workspace-result-form">
+                    <label for="workspace-rating">Hasil penilaian</label>
+                    <select id="workspace-rating" required>
+                      <option value="">Pilih hasil penilaian</option>
+                      <option value="compliant">Memenuhi</option>
+                      <option value="partially_compliant">Memenuhi sebagian</option>
+                      <option value="non_compliant">Belum memenuhi</option>
+                      <option value="not_applicable">Tidak relevan</option>
+                    </select>
+                    <label for="workspace-note">Catatan pemeriksaan</label>
+                    <textarea id="workspace-note" maxlength="2000" rows="5" placeholder="Tuliskan kondisi serta dasar penilaian."></textarea>
+                    <p class="workspace-help">Catatan minimal 10 karakter untuk hasil selain Memenuhi. Bukti pendukung dikelola terpisah dari hasil penilaian.</p>
+                    <div class="workspace-save-row">
+                      <span id="workspace-dirty-label" class="workspace-dirty-label">Belum ada perubahan.</span>
+                      <div class="workspace-save-actions">
+                        <button id="workspace-save" type="submit" class="button button-outline">Simpan di kontrol ini</button>
+                        <button id="workspace-save-next" type="submit" class="button button-primary workspace-primary">Simpan &amp; lanjut</button>
+                      </div>
+                    </div>
+                  </form>
+                  <details class="workspace-history-disclosure">
+                    <summary>Riwayat perubahan penilaian (opsional)</summary>
+                  <div class="workspace-history-head"><h3>Riwayat penilaian</h3>
+                    <button id="workspace-history-refresh" class="button button-link" type="button">Lihat riwayat</button></div>
+                  <div id="workspace-history" class="workspace-history"><p>Riwayat belum dimuat.</p></div>                  </details>
+                  <section id="workspace-evidence-panel" class="workspace-evidence-panel" aria-labelledby="workspace-evidence-heading" hidden>
+                    <div class="workspace-history-head">
+                      <h3 id="workspace-evidence-heading">Bukti pendukung</h3>
+                      <button id="workspace-evidence-reload" type="button" class="button button-link">Muat ulang</button>
+                    </div>
+                    <p class="workspace-help">Lampiran terikat ke kontrol ini dan disimpan secara terenkripsi. Unggahan tidak dapat diubah atau dihapus. File belum dipindai antivirus; hanya unduh dari sumber tepercaya.</p>
+                    <div id="workspace-evidence-message" class="workspace-message" role="status" aria-live="polite" hidden></div>
+                    <div id="workspace-evidence-list" class="workspace-evidence-list"></div>
+                    <form id="workspace-evidence-upload" class="workspace-evidence-upload" hidden>
+                      <label for="workspace-evidence-file">Unggah bukti (PDF, PNG, atau JPEG; maksimum 1 MiB)</label>
+                      <input id="workspace-evidence-file" type="file" accept=".pdf,.png,.jpg,.jpeg,application/pdf,image/png,image/jpeg" required>
+                      <button id="workspace-evidence-upload-button" type="submit" class="button button-outline">Simpan bukti</button>
+                    </form>
+                  </section>
+                </div>
+              </section>
+            </div>
+            <div class="workspace-next-stage"><span>LANGKAH BERIKUTNYA · REVIEW INTERNAL</span>
+              <p>Lengkapi penilaian kontrol, periksa bukti, lalu ajukan untuk pemeriksaan internal. Ini bukan hasil kepatuhan resmi.</p>
+            </div>
             <section id="workspace-review-panel" class="review-panel" aria-labelledby="workspace-review-heading">
               <div class="review-panel-heading">
                 <div><p class="eyebrow">MAKER–CHECKER</p><h2 id="workspace-review-heading">Pengajuan & Pemeriksaan</h2></div>
@@ -1045,63 +1120,6 @@
               <div id="workspace-review-history" class="review-history" aria-live="polite"><p class="empty-note">Belum ada riwayat.</p></div>
             </section>
 
-            <div class="workspace-grid">
-              <aside class="workspace-list-panel" aria-label="Daftar kontrol">
-                <div class="workspace-list-head"><h2>Daftar kontrol</h2><span id="workspace-control-count">0 kontrol</span></div>
-                <label for="workspace-filter">Tampilkan</label>
-                <select id="workspace-filter"><option value="all">Semua kontrol</option>
-                  <option value="not_assessed">Belum dinilai</option><option value="assessed">Sudah dinilai</option></select>
-                <div id="workspace-controls" class="workspace-controls" aria-live="polite">
-                  <p class="empty-note">Kontrol belum tersedia.</p>
-                </div>
-              </aside>
-              <section class="workspace-editor" aria-label="Penilaian kontrol">
-                <div id="workspace-editor-empty" class="workspace-editor-empty">
-                  <h2>Pilih kontrol</h2><p>Detail penilaian muncul di sini setelah memilih kontrol.</p>
-                </div>
-                <div id="workspace-editor-content" hidden>
-                  <div class="workspace-editor-heading">
-                    <span id="workspace-control-code" class="workspace-code">—</span>
-                    <span id="workspace-control-revision" class="workspace-revision">Belum dinilai</span>
-                  </div>
-                  <h2 id="workspace-control-title">Kontrol TI</h2>
-                  <p id="workspace-control-description" class="workspace-description"></p>
-                  <p id="workspace-control-source" class="workspace-source" hidden></p>
-                  <form id="workspace-result-form">
-                    <label for="workspace-rating">Hasil penilaian</label>
-                    <select id="workspace-rating" required>
-                      <option value="">Pilih hasil penilaian</option>
-                      <option value="compliant">Memenuhi</option>
-                      <option value="partially_compliant">Memenuhi sebagian</option>
-                      <option value="non_compliant">Belum memenuhi</option>
-                      <option value="not_applicable">Tidak relevan</option>
-                    </select>
-                    <label for="workspace-note">Catatan pemeriksaan</label>
-                    <textarea id="workspace-note" maxlength="2000" rows="5" placeholder="Tuliskan kondisi serta dasar penilaian."></textarea>
-                    <p class="workspace-help">Catatan minimal 10 karakter untuk hasil selain Memenuhi. Bukti pendukung dikelola terpisah dari hasil penilaian.</p>
-                    <div class="workspace-save-row"><span id="workspace-dirty-label" class="workspace-dirty-label">Belum ada perubahan.</span>
-                      <button id="workspace-save" type="submit" class="button button-primary workspace-primary">Simpan penilaian</button></div>
-                  </form>
-                  <div class="workspace-history-head"><h3>Riwayat penilaian</h3>
-                    <button id="workspace-history-refresh" class="button button-link" type="button">Lihat riwayat</button></div>
-                  <div id="workspace-history" class="workspace-history"><p>Riwayat belum dimuat.</p></div>
-                  <section id="workspace-evidence-panel" class="workspace-evidence-panel" aria-labelledby="workspace-evidence-heading" hidden>
-                    <div class="workspace-history-head">
-                      <h3 id="workspace-evidence-heading">Bukti pendukung</h3>
-                      <button id="workspace-evidence-reload" type="button" class="button button-link">Muat ulang</button>
-                    </div>
-                    <p class="workspace-help">Lampiran terikat ke kontrol ini dan disimpan secara terenkripsi. Unggahan tidak dapat diubah atau dihapus. File belum dipindai antivirus; hanya unduh dari sumber tepercaya.</p>
-                    <div id="workspace-evidence-message" class="workspace-message" role="status" aria-live="polite" hidden></div>
-                    <div id="workspace-evidence-list" class="workspace-evidence-list"></div>
-                    <form id="workspace-evidence-upload" class="workspace-evidence-upload" hidden>
-                      <label for="workspace-evidence-file">Unggah bukti (PDF, PNG, atau JPEG; maksimum 1 MiB)</label>
-                      <input id="workspace-evidence-file" type="file" accept=".pdf,.png,.jpg,.jpeg,application/pdf,image/png,image/jpeg" required>
-                      <button id="workspace-evidence-upload-button" type="submit" class="button button-outline">Simpan bukti</button>
-                    </form>
-                  </section>
-                </div>
-              </section>
-            </div>
             <p class="workspace-disclaimer">Penilaian internal; bukan skor atau pengesahan kepatuhan regulator.</p>
           </div>
         </section>
