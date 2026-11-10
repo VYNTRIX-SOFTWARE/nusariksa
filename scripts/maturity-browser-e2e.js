@@ -343,10 +343,22 @@ async function runBrowser(base,db,fixture){
       'general TI control assessment started');
     assert.equal(await evalJs("document.getElementById('workspace-control-position').textContent"),'KONTROL 01 / 26');
     assert.equal(await evalJs("document.getElementById('workspace-remaining-hint').textContent.includes('26 kontrol belum dinilai')"),true);
+    // Full guided workflow on baseline control GOV_01; no compliance answer is preselected.
+    assert.equal(await evalJs("document.getElementById('workspace-guidance').hidden"),false);
+    assert.equal(await evalJs("document.getElementById('workspace-guide-regulation').textContent.includes('Pasal 3')"),true);
+    assert.equal(await evalJs("document.querySelectorAll('#workspace-guide-evidence li').length"),2);
+    assert.equal(await evalJs("document.getElementById('workspace-rating').value"),'');
+    assert.equal(await evalJs("document.getElementById('workspace-note-helper').hidden"),false);
+    await evalJs("document.getElementById('workspace-note-helper').open=true;"+
+      "document.getElementById('workspace-observed-condition').value='Belum ada SK penanggung jawab pengelolaan TI yang disahkan.';"+
+      "document.getElementById('workspace-observed-evidence').value='Inventaris dokumen organisasi dan wawancara petugas.';"+
+      "document.getElementById('workspace-observed-followup').value='Koordinasikan penyusunan SK dengan Direksi.';"+
+      "document.getElementById('workspace-compose-note').click()");
+    assert.equal(await evalJs("document.getElementById('workspace-note').value.includes('Kondisi aktual:')"),true);
+    assert.equal(await evalJs("document.getElementById('workspace-note').value.includes('Bukti diperiksa:')"),true);
+    assert.equal(await evalJs("document.getElementById('workspace-rating').value"),'');
     await evalJs("document.getElementById('workspace-rating').value='non_compliant';"+
-      "document.getElementById('workspace-rating').dispatchEvent(new Event('change',{bubbles:true}));"+
-      "document.getElementById('workspace-note').value='Kontrol ini belum memenuhi karena dokumen kebijakan belum tersedia.';"+
-      "document.getElementById('workspace-note').dispatchEvent(new Event('input',{bubbles:true}));");
+      "document.getElementById('workspace-rating').dispatchEvent(new Event('change',{bubbles:true}));");
     assert.equal(await evalJs("document.getElementById('workspace-save-indicator').dataset.state"),'dirty');
     await evalJs("window.confirm=()=>false;document.getElementById('workspace-next').click()");
     assert.equal(await evalJs("document.getElementById('workspace-control-position').textContent"),'KONTROL 01 / 26');
@@ -360,6 +372,8 @@ async function runBrowser(base,db,fixture){
     assert.equal(savedGeneralControl.rowCount,1);
     assert.equal(savedGeneralControl.rows[0].rating,'non_compliant');
     assert.equal(savedGeneralControl.rows[0].revision,1);
+    assert.match(savedGeneralControl.rows[0].note,/Kondisi aktual: Belum ada SK/);
+    assert.match(savedGeneralControl.rows[0].note,/Bukti diperiksa: Inventaris dokumen/);
     await evalJs("document.getElementById('workspace-prev').click()");
     await until("document.getElementById('workspace-control-position').textContent==='KONTROL 01 / 26'",
       'navigate back to persisted result');

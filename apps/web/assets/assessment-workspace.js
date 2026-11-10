@@ -6,6 +6,7 @@ import {
   nextUnassessedControl, neighborControl,
 } from './assessment-workspace-model.js';
 import { ApiError } from './session.js';
+import {guideForControl,composeObservedNote} from './control-guidance.js';
 import {
   REVIEW_ACTION_LABELS, canDecideReview, canSubmitReview,
   maySubmitReview, validateReviewDecision,
@@ -55,12 +56,19 @@ export function createWorkspace({
   const selected=()=>state.controls.find(x=>x.id===state.selectedId)??null;
   const base=(suffix='')=>'/assessments/'+encodeURIComponent(state.id)+suffix;
 
+  function hasDraftNoteFields(){
+    return ['workspace-observed-condition','workspace-observed-evidence','workspace-observed-followup']
+      .some(id=>$(id).value.trim().length>0);
+  }
   function confirmLeave(){
-    return !state.dirty || window.confirm('Penilaian belum disimpan. Buang perubahan dan lanjutkan?');
+    return !(state.dirty||hasDraftNoteFields())
+      ||window.confirm('Ada perubahan atau isian panduan belum disimpan. Abaikan dan lanjutkan?');
   }
   function close(){
     state.generation++;
     state.id=null;state.dirty=false;state.conflict=false;state.selectedId=null;
+    ['workspace-observed-condition','workspace-observed-evidence','workspace-observed-followup']
+      .forEach(id=>{$(id).value='';});
     evidence.clear();
   }
   function renderBusy(isBusy){
@@ -71,6 +79,7 @@ export function createWorkspace({
       || !canStartAssessment(state.assessment,getUserId(),getPermissions(),state.catalog);
     $('workspace-save').disabled=isBusy || state.conflict || !state.dirty || !editable();
     $('workspace-save-next').disabled=isBusy || state.conflict || !state.dirty || !editable();
+    $('workspace-compose-note').disabled=isBusy || !editable();
     $('assessment-create-submit').disabled=isBusy;
     $('workspace-submit-review').disabled=isBusy || state.dirty || state.conflict || !canSubmitReview(state.assessment,getUserId(),getPermissions(),state.catalog,state.controls);
     $('workspace-review-save').disabled=isBusy || !canDecideReview(state.assessment,getUserId(),getPermissions());
@@ -223,6 +232,26 @@ export function createWorkspace({
     message('workspace-control-code',control.control_code);
     message('workspace-control-title',control.title);
     message('workspace-control-description',control.description || 'Tidak ada deskripsi kontrol.');
+    const guide=guideForControl(state.catalog?.catalog_code,control.control_code);
+    $('workspace-guidance').hidden=!guide;
+    $('workspace-note-helper').hidden=!guide||!editable();
+    $('workspace-note-helper').open=false;
+    ['workspace-observed-condition','workspace-observed-evidence','workspace-observed-followup']
+      .forEach(id=>{ $(id).value='';$(id).disabled=!editable(); });
+    message('workspace-compose-feedback','');
+    $('workspace-compose-note').disabled=!editable();
+    if(guide){
+      message('workspace-guide-question',guide.question);
+      message('workspace-guide-regulation','POJK 34/2025 '+guide.reference);
+      message('workspace-guide-caution',guide.caution);
+      const list=$('workspace-guide-evidence');
+      list.replaceChildren();
+      for(const description of guide.evidence){
+        const li=document.createElement('li');
+        li.textContent=description;
+        list.append(li);
+      }
+    }
     const source=control.source_document && control.source_section
       ?'Referensi yang dicatat: '+control.source_document+' / '+control.source_section:'';
     $('workspace-control-source').hidden=!source;
@@ -370,6 +399,10 @@ export function createWorkspace({
     event.preventDefault();
     const control=selected();
     if(!control||!editable()||!state.dirty||state.pending||state.conflict)return;
+    if(hasDraftNoteFields()){
+      showMessage('Masih ada isian pada panduan yang belum disusun ke catatan. Klik Susun ke catatan pemeriksaan terlebih dahulu.','warning');
+      return;
+    }
     const rating=$('workspace-rating').value,note=$('workspace-note').value;
     const messageText=validateRatingDraft({rating,note});
     if(messageText){showMessage(messageText,'error');return;}
@@ -481,6 +514,33 @@ export function createWorkspace({
   });
   $('workspace-rating').addEventListener('change',draftState);
   $('workspace-note').addEventListener('input',draftState);
+  $('workspace-compose-note').addEventListener('click',()=>{
+    if(!editable()||state.pending)return;
+    try{
+      const note=composeObservedNote({
+        condition:$('workspace-observed-condition').value,
+        evidence:$('workspace-observed-evidence').value,
+        followUp:$('workspace-observed-followup').value,
+      });
+      const existing=$('workspace-note').value.trim();
+      if(existing&&!window.confirm('Ganti isi catatan pemeriksaan saat ini dengan temuan yang baru disusun?'))return;
+      $('workspace-note').value=note;
+      ['workspace-observed-condition','workspace-observed-evidence','workspace-observed-followup']
+        .forEach(id=>{ $(id).value=''; });
+      message('workspace-compose-feedback',
+        'Catatan tersusun dari input Anda, BELUM tersimpan. Pilih peringkat lalu tekan Simpan.');
+      $('workspace-note').dispatchEvent(new Event('input',{bubbles:true}));
+    }catch{
+      message('workspace-compose-feedback',
+        'Isi temuan aktual (minimal 10 karakter) dan bukti yang diperiksa (minimal 5 karakter).');
+    }
+  });
+  for(const id of ['workspace-observed-condition','workspace-observed-evidence','workspace-observed-followup']){
+    $(id).addEventListener('input',()=>{
+      message('workspace-compose-feedback',hasDraftNoteFields()
+        ?'Isian panduan BELUM menjadi catatan dan belum disimpan. Klik Susun ke catatan pemeriksaan.':'');
+    });
+  }
   $('workspace-result-form').addEventListener('submit',event=>void save(event));
   $('workspace-history-refresh').addEventListener('click',()=>void history());
   $('workspace-attach').addEventListener('click',()=>{
@@ -531,7 +591,7 @@ export function createWorkspace({
   $('workspace-review-history-reload').addEventListener('click',()=>void loadReviewHistory());
 
   window.addEventListener('beforeunload',(event)=>{
-    if(!state.dirty)return;
+    if(!state.dirty&&!hasDraftNoteFields())return;
     event.preventDefault();
     event.returnValue='';
   });

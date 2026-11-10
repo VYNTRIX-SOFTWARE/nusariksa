@@ -1042,6 +1042,26 @@
                   <h2 id="workspace-control-title">Kontrol TI</h2>
                   <p id="workspace-control-description" class="workspace-description"></p>
                   <p id="workspace-control-source" class="workspace-source" hidden></p>
+                  <section id="workspace-guidance" class="workspace-guidance" aria-label="Panduan pemeriksaan kontrol bawaan" hidden>
+                    <div class="workspace-guidance-head">
+                      <div><span class="workspace-guidance-eyebrow">TEMPLATE SIAP PAKAI · POJK 34/2025</span>
+                        <h3>Apa yang perlu diperiksa?</h3></div>
+                      <span class="workspace-guidance-tag">Panduan internal, bukan hasil audit</span>
+                    </div>
+                    <p id="workspace-guide-question" class="workspace-guide-question"></p>
+                    <h4>Contoh dokumen yang bisa disiapkan</h4>
+                    <ul id="workspace-guide-evidence" class="workspace-guide-list"></ul>
+                    <p class="workspace-guide-reference">Ketentuan terkait:
+                      <strong id="workspace-guide-regulation"></strong> ·
+                      <a href="https://www.ojk.go.id/id/regulasi/Pages/POJK-34-Tahun-2025-Penyelenggaraan-Teknologi-Informasi-oleh-Bank-Perekonomian-Rakyat-dan-Bank-Perekonomian-Rakyat-Syariah.aspx"
+                         target="_blank" rel="noopener noreferrer">Buka POJK 34/2025 di OJK</a>
+                    </p>
+                    <p id="workspace-guide-caution" class="workspace-guide-caution"></p>
+                    <p class="workspace-guide-status">Rujukan ini adalah pemetaan panduan operasional, bukan kutipan ketentuan wajib secara literal.
+                       Gunakan sebagai acuan asesmen NusaRiksa. Setiap isian harus berdasarkan kondisi BPR yang sebenarnya; hasil bukan pengesahan oleh OJK.</p>
+                    <p class="workspace-guide-status">Untuk penilaian maturitas keamanan siber <strong>PADK 43/2025</strong>, gunakan menu <strong>Persiapan Penilaian PADK</strong>
+                      dengan instrumen 60/80 indikator yang sudah tersedia. Teks kriteria PADK masih memerlukan verifikasi independen.</p>
+                  </section>
                   <div class="workspace-flow-nav" aria-label="Navigasi kontrol asesmen">
                     <button id="workspace-prev" type="button" class="button button-outline">Sebelumnya</button>
                     <button id="workspace-next" type="button" class="button button-outline">Berikutnya</button>
@@ -1060,6 +1080,23 @@
                     <label for="workspace-note">Catatan pemeriksaan</label>
                     <textarea id="workspace-note" maxlength="2000" rows="5" placeholder="Tuliskan kondisi serta dasar penilaian."></textarea>
                     <p class="workspace-help">Catatan minimal 10 karakter untuk hasil selain Memenuhi. Bukti pendukung dikelola terpisah dari hasil penilaian.</p>
+                    <details id="workspace-note-helper" class="workspace-note-helper" hidden>
+                      <summary>Permudah input: susun catatan dari temuan nyata</summary>
+                      <p class="workspace-help">Isi sesuai hasil pemeriksaan BPR. Template tidak mengisi jawaban, bukti, atau penilaian otomatis.</p>
+                      <div class="workspace-note-fields">
+                        <label for="workspace-observed-condition">Kondisi yang benar-benar ditemukan</label>
+                        <textarea id="workspace-observed-condition" rows="2" maxlength="1000"
+                          placeholder="Contoh jenis informasi: apakah kebijakan tersedia, diterapkan, atau belum dapat dibuktikan."></textarea>
+                        <label for="workspace-observed-evidence">Dokumen atau pemeriksaan yang dilakukan</label>
+                        <textarea id="workspace-observed-evidence" rows="2" maxlength="700"
+                          placeholder="Isi jenis dokumen, tanggal pemeriksaan, atau keterangan bahwa bukti belum tersedia."></textarea>
+                        <label for="workspace-observed-followup">Tindak lanjut yang diperlukan (opsional)</label>
+                        <textarea id="workspace-observed-followup" rows="2" maxlength="300"
+                          placeholder="Tulis rencana nyata atau kosongkan bila tidak relevan."></textarea>
+                        <button id="workspace-compose-note" type="button" class="button button-outline">Susun ke catatan pemeriksaan</button>
+                        <p id="workspace-compose-feedback" class="workspace-help" aria-live="polite"></p>
+                      </div>
+                    </details>
                     <div class="workspace-save-row">
                       <span id="workspace-dirty-label" class="workspace-dirty-label">Belum ada perubahan.</span>
                       <div class="workspace-save-actions">

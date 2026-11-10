@@ -66,6 +66,14 @@ Untuk kebutuhan khusus BPR/BPRS, menu **Katalog Kontrol** tetap memungkinkan pem
 
 Sesudah memasang katalog bawaan dan menekan **Mulai asesmen**, form kontrol muncul **sebelum review internal**. Kontrol aktif menampilkan nomor urut dan status penyimpanan. Isi hasil penilaian sesuai bukti, kemudian pilih **Simpan di kontrol ini** atau **Simpan & lanjut** untuk berpindah ke kontrol berikutnya yang belum dinilai. Navigasi **Sebelumnya / Berikutnya / Cari yang belum dinilai** tidak menyimpan data otomatis; perubahan yang belum disimpan perlu dikonfirmasi bila berpindah. Progres menunjukkan berapa dari 26 kontrol sudah dinilai, bukan nilai kepatuhan resmi. Bukti dilampirkan per kontrol, sedangkan riwayat disembunyikan di panel opsional. Pemeriksaan internal tetap membutuhkan akun reviewer berbeda.
 
+## Template asesmen POJK 34/2025 dan PADK 43/2025 siap digunakan
+
+Katalog bawaan asesmen kontrol umum (26 kontrol) memiliki **pertanyaan pemeriksaan, contoh bukti yang perlu disiapkan, pemetaan pasal POJK 34/2025, dan catatan kondisi khusus**. Ini ditampilkan otomatis ketika memilih kontrol bawaan. Petugas tidak perlu mengetik referensi atau menulis daftar dokumen dari nol. Form bantuan **Susun catatan dari temuan nyata** memungkinkan petugas menjelaskan kondisi bank dan dokumen yang benar-benar diperiksa; hasilnya masuk ke catatan pemeriksaan tetapi **tidak tersimpan sebelum menekan Simpan**. Peringkat kepatuhan tidak dipilih otomatis.
+
+Untuk asesmen maturitas siber menurut **PADK 43/PADK.03/2025**, menu **Persiapan Penilaian PADK** sudah menyediakan struktur kategori 1/2 dengan 80/60 indikator; pengguna tidak menyusun instrumen secara manual. Dokumen PADK dan pemetaan kategori/teks kriteria masih berstatus `DRAFT_UNVERIFIED` dan tidak boleh diterbitkan sebagai hasil resmi. Template digunakan sekarang sebagai acuan kerja; status hukum pemberlakuan kedua ketentuan tidak diubah oleh aplikasi.
+
+**Jangan unggah data nasabah asli atau rahasia akses untuk membuat bukti contoh.** Dokumen yang ditampilkan adalah contoh jenis bukti, bukan bukti bank yang sudah ada. Catatan kondisi aktual dan peringkat harus tetap diisi petugas berdasarkan pemeriksaan.
+
 ## Mengisi penilaian PADK
 
 1. Login, buat penilaian berdasarkan periode, lalu pilih kategori sesuai layanan BPR/BPRS.
