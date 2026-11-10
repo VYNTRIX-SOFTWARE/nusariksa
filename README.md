@@ -94,6 +94,14 @@ Tersedia daftar, pencarian kode/judul/PIC, filter status/tingkat risiko/aset, hi
 
 Relasi risiko–aset memakai foreign key yang benar, dan bank tidak dapat membuat referensi baru ke aset diarsipkan. Arsip aset lama tetap dapat dirujuk oleh risiko historis. Perubahan konflik ditolak menggunakan `expectedRevision`.
 
+## Manajemen Insiden TI/Siber (MVP, Modul 10)
+
+Petugas TI dan kepatuhan dapat membuka **Manajemen Insiden TI/Siber** untuk mencatat insiden dengan kode, waktu deteksi, kategori (layanan/siber/data/integritas/lainnya), tingkat keparahan, PIC, uraian dampak dan pengendalian. Insiden dapat ditautkan ke **aset dan risiko TI yang benar-benar tercatat**. Bila risiko terkait sudah memiliki aset, pilihan aset insiden harus konsisten.
+
+Alur status: **Dilaporkan → Investigasi → Terkendali/Dipulihkan → Ditutup**. Status Dipulihkan/Ditutup membutuhkan akar penyebab serta hasil pemulihan nyata (masing-masing minimal 10 karakter). Arsip hanya diperbolehkan setelah Ditutup. **Kronologi aktivitas** dapat dicatat terpisah sebagai Observasi, Pengendalian, Pemulihan atau Komunikasi; setiap entri memiliki jenis, waktu kejadian (opsional), waktu server, aktor, dan revisi. Perubahan atau penghapusan riwayat diblokir oleh trigger database. Koreksi dilakukan dengan menambah catatan baru.
+
+Tersedia filter kategori, status, keparahan, pencarian dan histori. Aplikasi **tidak mengirim laporan insiden kepada OJK**; petugas wajib mengevaluasi sendiri kewajiban eskalasi, klasifikasi, tenggat dan pelaporan sesuai ketentuan yang berlaku. Jangan memasukkan kata sandi, data nasabah mentah, atau secret ke deskripsi dan kronologi.
+
 ## Mengisi penilaian PADK
 
 1. Login, buat penilaian berdasarkan periode, lalu pilih kategori sesuai layanan BPR/BPRS.

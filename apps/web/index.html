@@ -130,6 +130,9 @@
         <button type="button" class="nav-link" data-page="ti-risks" id="risk-menu" title="Register Risiko TI" hidden>
           <svg class="icon nav-icon"><use href="#i-clipboard"></use></svg><span class="nav-label">Register Risiko TI</span>
         </button>
+        <button type="button" class="nav-link" data-page="ti-incidents" id="incident-menu" title="Insiden TI/Siber" hidden>
+          <svg class="icon nav-icon"><use href="#i-clipboard"></use></svg><span class="nav-label">Insiden TI/Siber</span>
+        </button>
         <div class="sidebar-section-label sidebar-gap" id="admin-menu-group" hidden>PENGATURAN</div>
         <button type="button" class="nav-link" data-page="admin-onboarding" id="admin-setup-menu" title="Kelola akses pengguna" hidden>
           <svg class="icon nav-icon"><use href="#i-clipboard"></use></svg><span class="nav-label">Akses Pengguna</span>
@@ -260,6 +263,86 @@
               <div id="admin-users-list" class="onboard-user-list" aria-live="polite"></div>
             </section>
           </div>
+        </section>
+
+        <section id="page-ti-incidents" class="page" aria-labelledby="ti-incidents-title" hidden>
+          <div class="page-intro">
+            <div><p class="eyebrow">TATA KELOLA TI / INSIDEN</p><h1 id="ti-incidents-title">Manajemen Insiden TI/Siber</h1>
+              <p class="supporting-copy">Catat kejadian, tingkat dampak, PIC, kronologi pengendalian dan pemulihan, sampai penyelesaian dan arsip.</p>
+            </div>
+            <button id="ti-incidents-create" type="button" class="button button-primary workspace-primary" hidden>Tambah insiden</button>
+          </div>
+          <p id="ti-incidents-message" class="workspace-message" role="status" aria-live="polite" hidden></p>
+          <section class="panel-card">
+            <p class="ti-incident-advisory">Untuk insiden signifikan, periksa ketentuan eskalasi dan pelaporan OJK yang berlaku.
+              NusaRiksa mencatat insiden internal, tidak otomatis mengirim laporan kepada regulator.</p>
+            <form id="ti-incidents-filter-form" class="ti-incidents-filters">
+              <label for="ti-incidents-search">Cari kode, kejadian atau PIC
+                <input id="ti-incidents-search" type="search" maxlength="80" placeholder="INC-CBS-001">
+              </label>
+              <label for="ti-incidents-view">Tampilan
+                <select id="ti-incidents-view"><option value="active">Belum diarsipkan</option>
+                  <option value="archived">Diarsipkan</option><option value="all">Semua</option></select>
+              </label>
+              <label for="ti-incidents-status-filter">Status
+                <select id="ti-incidents-status-filter"><option value="all">Semua</option>
+                  <option value="reported">Dilaporkan</option><option value="investigating">Investigasi</option>
+                  <option value="contained">Terkendali</option><option value="resolved">Dipulihkan</option>
+                  <option value="closed">Ditutup</option></select>
+              </label>
+              <label for="ti-incidents-severity-filter">Keparahan
+                <select id="ti-incidents-severity-filter"><option value="all">Semua</option>
+                  <option value="low">Rendah</option><option value="medium">Sedang</option>
+                  <option value="high">Tinggi</option><option value="critical">Kritis</option></select>
+              </label>
+              <label for="ti-incidents-category-filter">Kategori
+                <select id="ti-incidents-category-filter"><option value="all">Semua</option>
+                  <option value="availability">Gangguan layanan</option>
+                  <option value="cybersecurity">Keamanan siber</option><option value="data">Data dan privasi</option>
+                  <option value="integrity">Integritas transaksi</option><option value="other">Lainnya</option></select>
+              </label>
+              <button type="submit" class="button button-outline">Cari</button>
+              <button id="ti-incidents-refresh" type="button" class="button button-outline">Muat ulang</button>
+            </form>
+            <div id="ti-incidents-list" class="ti-assets-list" aria-live="polite"></div>
+            <div class="ti-asset-pagination">
+              <span id="ti-incidents-position" class="workspace-help">Belum dimuat</span>
+              <button id="ti-incidents-prev" type="button" class="button button-outline" disabled>Sebelumnya</button>
+              <button id="ti-incidents-next" type="button" class="button button-outline" disabled>Berikutnya</button>
+            </div>
+          </section>
+          <section id="ti-incidents-detail" class="panel-card" aria-labelledby="ti-incidents-detail-title" hidden>
+            <div class="panel-heading">
+              <h2 id="ti-incidents-detail-title">Detail dan kronologi insiden</h2>
+              <div class="ti-assets-actions">
+                <button id="ti-incidents-edit" type="button" class="button button-outline">Perbarui status / penanganan</button>
+                <button id="ti-incidents-archive" type="button" class="button button-outline">Arsipkan</button>
+              </div>
+            </div>
+            <dl id="ti-incidents-detail-values" class="ti-assets-detail-values"></dl>
+            <div class="ti-incident-chronology">
+              <h3>Kronologi penanganan</h3>
+              <form id="ti-incidents-timeline-form" class="ti-incident-note-form">
+                <label for="ti-incidents-note-type">Jenis aktivitas
+                  <select id="ti-incidents-note-type">
+                    <option value="OBSERVATION">Observasi</option>
+                    <option value="CONTAINMENT">Pengendalian</option>
+                    <option value="RECOVERY">Pemulihan</option>
+                    <option value="COMMUNICATION">Eskalasi / komunikasi</option></select>
+                </label>
+                <label for="ti-incidents-note-observed">Waktu kejadian (opsional)
+                  <input id="ti-incidents-note-observed" type="datetime-local">
+                </label>
+                <label for="ti-incidents-note">Apa yang benar-benar dilakukan / ditemukan?
+                  <textarea id="ti-incidents-note" rows="3" maxlength="2000" minlength="10" required
+                    placeholder="Misalnya: pemeriksaan log layanan dan tindakan isolasi yang dilakukan."></textarea>
+                </label>
+                <button id="ti-incidents-timeline-save" type="submit" class="button button-primary">Catat kronologi</button>
+                <p class="workspace-help">Catatan permanen; koreksi ditambahkan sebagai catatan baru, tidak menghapus histori lama.</p>
+              </form>
+              <ol id="ti-incidents-history" class="ti-incident-history-list"></ol>
+            </div>
+          </section>
         </section>
 
         <section id="page-ti-risks" class="page" aria-labelledby="ti-risks-title" hidden>
@@ -1476,6 +1559,74 @@
       <div class="workspace-save-actions">
         <button id="ti-risks-save" type="submit" class="button button-primary">Simpan risiko</button>
         <button id="ti-risks-cancel" type="button" class="button button-outline">Batal</button>
+      </div>
+    </form>
+  </dialog>
+  <dialog id="ti-incidents-dialog" aria-labelledby="ti-incidents-dialog-title" class="workspace-dialog">
+    <form id="ti-incidents-form" class="maturity-edit-form">
+      <h2 id="ti-incidents-dialog-title">Laporkan insiden TI</h2>
+      <p class="workspace-help">Isi berdasarkan kejadian nyata; jangan memasukkan password maupun data nasabah mentah.</p>
+      <label for="ti-incident-code">Kode insiden
+        <input id="ti-incident-code" required minlength="2" maxlength="32"
+          pattern="[A-Z][A-Z0-9_-]{1,31}" placeholder="INC-CBS-001">
+      </label>
+      <label for="ti-incident-title">Judul kejadian
+        <input id="ti-incident-title" required minlength="3" maxlength="200"
+          placeholder="Layanan core banking tidak dapat diakses">
+      </label>
+      <label for="ti-incident-description">Deskripsi kejadian
+        <textarea id="ti-incident-description" rows="3" required minlength="10" maxlength="2000"
+          placeholder="Gejala, waktu diketahui, layanan terdampak dan situasi yang ditemukan."></textarea>
+      </label>
+      <div class="ti-incident-cols">
+        <label for="ti-incident-category">Kategori
+          <select id="ti-incident-category">
+            <option value="availability">Gangguan layanan</option>
+            <option value="cybersecurity">Keamanan siber</option><option value="data">Data dan privasi</option>
+            <option value="integrity">Integritas transaksi</option><option value="other">Lainnya</option></select>
+        </label>
+        <label for="ti-incident-severity">Keparahan
+          <select id="ti-incident-severity">
+            <option value="low">Rendah</option><option value="medium" selected>Sedang</option>
+            <option value="high">Tinggi</option><option value="critical">Kritis</option></select>
+        </label>
+      </div>
+      <label for="ti-incident-detected-at">Waktu insiden diketahui
+        <input id="ti-incident-detected-at" type="datetime-local" required>
+      </label>
+      <div class="ti-incident-cols">
+        <label for="ti-incident-asset-id">Aset terdampak (opsional)
+          <select id="ti-incident-asset-id"><option value="">Tidak terkait aset tertentu</option></select>
+        </label>
+        <label for="ti-incident-risk-id">Risiko terkait (opsional)
+          <select id="ti-incident-risk-id"><option value="">Tidak terkait risiko tertentu</option></select>
+        </label>
+      </div>
+      <p id="ti-incidents-options-note" class="workspace-help">Aset dan risiko diambil dari register internal yang aktif.</p>
+      <label for="ti-incident-pic">PIC penanganan
+        <input id="ti-incident-pic" required minlength="2" maxlength="120" placeholder="Petugas TI">
+      </label>
+      <label for="ti-incident-impact">Dampak operasional yang terverifikasi (opsional)
+        <textarea id="ti-incident-impact" rows="2" maxlength="2000"></textarea>
+      </label>
+      <label for="ti-incident-containment">Langkah pembatasan / pengendalian
+        <textarea id="ti-incident-containment" rows="2" maxlength="2000"></textarea>
+      </label>
+      <label for="ti-incident-root-cause">Akar penyebab (wajib sebelum Dipulihkan)
+        <textarea id="ti-incident-root-cause" rows="2" maxlength="2000"></textarea>
+      </label>
+      <label for="ti-incident-resolution">Hasil pemulihan (wajib sebelum Dipulihkan)
+        <textarea id="ti-incident-resolution" rows="2" maxlength="2000"></textarea>
+      </label>
+      <label for="ti-incident-status">Status penanganan
+        <select id="ti-incident-status"><option value="reported">Dilaporkan</option></select>
+      </label>
+      <p class="workspace-help">Alur: Dilaporkan → Investigasi → Terkendali/Dipulihkan → Ditutup.
+        Penutupan membutuhkan penyebab dan hasil pemulihan yang tercatat, bukan pengesahan regulator.</p>
+      <p id="ti-incidents-form-error" class="form-error" role="alert" hidden></p>
+      <div class="workspace-save-actions">
+        <button id="ti-incidents-save" type="submit" class="button button-primary">Simpan insiden</button>
+        <button id="ti-incidents-cancel" type="button" class="button button-outline">Batal</button>
       </div>
     </form>
   </dialog>

@@ -48,6 +48,14 @@ Migrasi `0026_create_ti_risks.sql` membuat register risiko yang ditautkan secara
 
 Penilaian inheren dan residual adalah skor internal `kemungkinan × dampak` (1–5), kategori low (1–4), medium (5–9), high (10–16), critical (17–25). Nilai residual `NULL` berarti belum dinilai; tidak boleh dihitung sebagai nol. Menutup risiko hanya diperbolehkan bila mitigasi minimal 10 karakter dan residual <=9. Mekanisme *risk acceptance* risiko di atas medium membutuhkan modul persetujuan eksplisit yang belum ada. Register mendukung revisi optimistis, arsip non-destruktif, filter/paginasi, dan riwayat immutable. Tidak ada nilai regulator otomatis maupun hubungan fiktif dengan modul insiden.
 
+## Modul 10: Manajemen Insiden TI/Siber
+
+Migrasi `0027_create_ti_incidents.sql` menambahkan `ti_incidents` beserta FKs komposit untuk referensi aset dan risiko dalam institusi yang sama, dan `ti_incident_events` append-only (trigger menolak perubahan/penghapusan). Jalur REST: `GET/POST /incidents`, `GET /incidents/options`, `GET/PATCH /incidents/:id`, `POST /incidents/:id/timeline`, `GET /incidents/:id/history`, `POST /incidents/:id/archive`. Session cookie, same-origin pada mutasi, pembatasan izin `incidents:read/write`, transaksi, FK, dan optimistic revision diterapkan.
+
+Alur status ditetapkan eksplisit: reported→investigating, investigating→contained/resolved, contained→investigating/resolved, resolved→investigating/closed. Status closed terminal; arsip hanya bila closed. Resolusi wajib memiliki root cause dan hasil pemulihan minimal 10 karakter. Catatan kronologi dibuat dari event OBSERVATION/CONTAINMENT/RECOVERY/COMMUNICATION, dengan `observed_at` opsional dan `recorded_at` server. Kronologi tak dapat diedit; bila salah, tulis koreksi baru. UI memakai daftar aset/risiko aktif; risiko yang terikat aset spesifik harus memakai aset yang sama pada insiden.
+
+Belum ada keputusan otomatis wajib-lapor OJK, pengiriman laporan resmi, lampiran insiden terpisah, approval penutupan, atau integrasi tindak lanjut temuan. Fitur ini perlu dikerjakan/ditinjau sesuai Scope Freeze dan kebijakan masing-masing BPR sebelum release stabil.
+
 ## Lingkungan lokal
 
 Gunakan Node.js `>=24.7.0 <27`, npm, dan PostgreSQL 17. Buat database kosong, lalu atur `DATABASE_URL` dan `APP_ORIGIN` sebagaimana dijelaskan di README.

@@ -730,3 +730,41 @@ h1,h2,p{margin-top:0}h1,h2{letter-spacing:-.027em}
 @media(max-width:1200px){.ti-risk-filters{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:700px){.ti-risk-filters{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:580px){.ti-risk-filters,.ti-risk-two-col{grid-template-columns:1fr}}
+
+/* MVP 10: incident handling and audit chronology */
+.ti-incident-advisory{padding:12px 15px;border:1px solid #E4DCCB;border-left:3px solid #AD8B4D;
+  background:#FDFBF6;color:#6B5940;border-radius:8px;font-size:12px;line-height:1.65;margin:0 0 16px}
+.ti-incidents-filters{display:grid;grid-template-columns:minmax(170px,2fr) repeat(4,minmax(105px,1fr)) auto auto;
+  gap:12px;align-items:end;margin-bottom:18px}
+.ti-incidents-filters label{display:grid;gap:5px;font-size:12px;font-weight:650;color:#505B70}
+.ti-incidents-filters input,.ti-incidents-filters select{width:100%;min-width:0;box-sizing:border-box;
+  padding:9px 10px;border:1px solid #D9DDE7;border-radius:8px}
+.ti-incident-row{border:1px solid #E3E6EF;background:#FFF;padding:13px 16px;border-radius:10px}
+.ti-incident-open{border:0;background:transparent;padding:0;text-align:left;color:#39345D;
+  font-size:14px;font-weight:700;cursor:pointer}
+.ti-incident-open:hover{text-decoration:underline}
+.ti-incident-row p{margin:7px 0 0}
+#ti-incidents-dialog{width:min(660px,calc(100vw - 28px));max-height:calc(100vh - 48px);overflow:auto}
+#ti-incidents-form{display:grid;gap:12px}
+#ti-incidents-form label,#ti-incidents-timeline-form label{display:grid;gap:6px;
+  font-size:12px;font-weight:650;color:#444E62}
+#ti-incidents-form input,#ti-incidents-form select,#ti-incidents-form textarea,
+#ti-incidents-timeline-form input,#ti-incidents-timeline-form select,
+#ti-incidents-timeline-form textarea{width:100%;box-sizing:border-box;min-width:0;
+  padding:10px;border:1px solid #CED3DF;border-radius:8px}
+.ti-incident-cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.ti-incident-chronology{margin-top:20px;border-top:1px solid #E3E6ED;padding-top:18px}
+.ti-incident-chronology h3{font-size:15px;color:#2D344B}
+.ti-incident-note-form{display:grid;gap:11px;padding:16px;
+  border:1px solid #E2E2EF;background:#FCFCFF;border-radius:10px}
+.ti-incident-note-form .button{width:fit-content}
+.ti-incident-history-list{list-style:none;padding:0;margin:16px 0;display:grid;gap:10px}
+.ti-incident-history-item{border:1px solid #E7E8F1;border-radius:10px;padding:13px 15px;
+  display:grid;gap:6px}
+.ti-incident-history-item strong{font-size:12px;color:#464268}
+.ti-incident-history-item span{font-size:11px;color:#777E8D}
+.ti-incident-history-item p{font-size:13px;line-height:1.6;color:#464E60;margin:0;overflow-wrap:anywhere}
+@media(max-width:1200px){.ti-incidents-filters{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:700px){.ti-incidents-filters{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:580px){.ti-incidents-filters,.ti-incident-cols{grid-template-columns:1fr}
+  .ti-incident-note-form .button{width:100%}}
