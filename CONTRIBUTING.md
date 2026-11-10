@@ -31,6 +31,12 @@ Gunakan empat bagian dalam deskripsi PR:
 
 Roadmap dan daftar pekerjaan berikutnya tidak perlu dimasukkan ke PR. Tulis judul, pesan commit, dan penjelasan singkat dalam bahasa Indonesia; nama fungsi, API, dan variabel tetap mengikuti konvensi kode.
 
+## Dokumentasi untuk pengguna
+
+Gunakan **README.md** untuk memperkenalkan NusaRiksa, menjelaskan cara instalasi singkat, dan menyediakan tautan dokumentasi. Langkah kerja melalui browser ditulis dalam **[Panduan Penggunaan NusaRiksa](docs/PANDUAN-PENGGUNA.md)** dengan istilah yang mudah dipahami petugas BPR/BPRS.
+
+Tuliskan instruksi berdasarkan fungsi yang benar-benar tersedia. Gunakan bahasa yang jelas dan langsung, serta hindari memasukkan nomor PR, catatan sprint, atau status internal pengerjaan ke dalam dokumentasi pengguna. Batasan yang memengaruhi keputusan, keamanan, dan pelaporan tetap perlu dijelaskan secara faktual.
+
 ## Keamanan dan data
 
 Jangan commit password, token, kunci, data nasabah, dokumen internal BPR/BPRS, atau laporan pemeriksaan yang bersifat rahasia. Laporkan kerentanan melalui jalur privat sesuai [SECURITY.md](SECURITY.md), bukan issue publik yang memuat detail eksploitasi.
