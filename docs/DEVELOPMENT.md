@@ -20,6 +20,10 @@ Migrasi `0024_seed_internal_bpr_catalog.sql` menambahkan katalog dengan 26 kontr
 
 UI menandai katalog `origin='builtin'` dan menyarankan versi terbitnya pada formulir asesmen tanpa memasangnya diam-diam. Setelah dipasang, assignment versi tidak dapat dibatalkan. BPR boleh membuat versi Draft berikutnya, menambah kontrol, dan menerbitkannya; atau membuat katalog sendiri. Semua kontrol bawaan adalah **baseline internal yang belum merupakan instrumen OJK**.
 
+## Pengalaman mengisi asesmen kontrol umum (MVP)
+
+Di **Daftar Asesmen → Workspace**, setelah katalog bawaan dipasang dan asesmen dimulai, petugas melihat daftar 26 kontrol, form jawaban, status tersimpan, progres, dan langkah selanjutnya. Tombol **Simpan & lanjut** memakai API PUT yang sama dengan Simpan dan baru memilih kontrol belum dinilai berikut setelah data tersimpan pada server; status konflik revisi dan izin backend tetap berlaku. Kontrol dapat dinavigasi dengan tombol sebelum/berikutnya, filter, atau cari belum dinilai. Perubahan belum tersimpan tidak otomatis dibuang. Bukti per kontrol tetap terenkripsi, dan review internal muncul setelah input. Progres hanya menghitung kontrol yang memiliki revision, bukan kualitas bukti atau kepatuhan OJK.
+
 ## Lingkungan lokal
 
 Gunakan Node.js `>=24.7.0 <27`, npm, dan PostgreSQL 17. Buat database kosong, lalu atur `DATABASE_URL` dan `APP_ORIGIN` sebagaimana dijelaskan di README.

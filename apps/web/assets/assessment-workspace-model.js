@@ -69,3 +69,21 @@ export function validateRatingDraft({rating,note}) {
     return 'Catatan minimal 10 karakter untuk hasil selain Memenuhi.';
   return null;
 }
+
+/** The next incomplete control after current, wrapping once without reselecting current. */
+export function nextUnassessedControl(controls,currentId){
+  if(!Array.isArray(controls)||controls.length===0)return null;
+  const index=controls.findIndex(x=>x?.id===currentId);
+  if(index<0)return controls.find(x=>x?.revision===0)?.id??null;
+  for(let offset=1;offset<controls.length;offset++){
+    const c=controls[(index+offset)%controls.length];
+    if(c?.revision===0)return c.id;
+  }
+  return null;
+}
+
+export function neighborControl(controls,currentId,direction){
+  if(!Array.isArray(controls)||![1,-1].includes(direction))return null;
+  const idx=controls.findIndex(x=>x?.id===currentId), next=idx+direction;
+  return idx>=0&&next>=0&&next<controls.length?controls[next]?.id??null:null;
+}

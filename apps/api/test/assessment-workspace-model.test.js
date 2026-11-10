@@ -3,6 +3,7 @@ import { test } from 'node:test';
 import {
   RATING_LABELS, canWriteAssessment, canAttachCatalog, canStartAssessment,
   canEditResult, combineControls, validateAssessmentDraft, validateRatingDraft,
+  nextUnassessedControl, neighborControl,
 } from '../../web/assets/assessment-workspace-model.js';
 
 const maker='00000000-0000-4000-8000-000000000001';
@@ -81,4 +82,23 @@ test('hasil selain memenuhi wajib memiliki catatan, bukan data bukti palsu',()=>
   assert.ok(validateRatingDraft({rating:'non_compliant',note:'singkat'}));
   assert.ok(validateRatingDraft({rating:'compliant',note:'x'.repeat(2001)}));
   assert.ok(validateRatingDraft({rating:'compliant',note:'\u0000'}));
+});
+
+test('MVP navigasi mengutamakan kontrol belum dinilai dan mempertahankan urutan stabil',()=>{
+  const controls=[
+    {id:'a',revision:1},{id:'b',revision:0},
+    {id:'c',revision:1},{id:'d',revision:0},
+  ];
+  assert.equal(nextUnassessedControl(controls,'a'),'b');
+  assert.equal(nextUnassessedControl(controls,'b'),'d');
+  assert.equal(nextUnassessedControl(controls,'d'),'b');
+  assert.equal(nextUnassessedControl(controls,'other'),'b');
+  assert.equal(nextUnassessedControl([{id:'a',revision:0}],'a'),null);
+  assert.equal(nextUnassessedControl(controls.map(c=>({...c,revision:1})),'a'),null);
+  assert.equal(nextUnassessedControl(null,'a'),null);
+  assert.equal(neighborControl(controls,'a',1),'b');
+  assert.equal(neighborControl(controls,'d',-1),'c');
+  assert.equal(neighborControl(controls,'d',1),null);
+  assert.equal(neighborControl(controls,'a',-1),null);
+  assert.equal(neighborControl(controls,'a',0),null);
 });

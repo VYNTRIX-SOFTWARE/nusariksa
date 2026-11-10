@@ -24,6 +24,15 @@ test('antarmuka web dan aset dimuat dari origin API dengan header keamanan', asy
     assert.match(source, /<html lang="id">/);
     assert.match(source, /id="login-form"/);
     assert.match(source, /id="app-screen"/);
+    const page=source.indexOf('id="page-workspace"');
+    assert.ok(page>=0);
+    assert.ok(source.indexOf('id="workspace-control-position"',page)<
+      source.indexOf('id="workspace-review-panel"',page),
+      'assessment input must precede internal reviewer panel');
+    for(const id of ['workspace-prev','workspace-next','workspace-next-pending',
+      'workspace-save-next','workspace-remaining-hint','workspace-save-indicator']){
+      assert.match(source,new RegExp('id="'+id+'"'));
+    }
     assert.match(source, /src="\/assets\/app\.js"/);
     assert.doesNotMatch(source, /<script(?![^>]*\bsrc=)[^>]*>[\s\S]*?<\/script>/i);
     assert.doesNotMatch(source, /on(?:click|submit|load)\s*=/i);
