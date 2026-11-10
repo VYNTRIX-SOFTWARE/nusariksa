@@ -1181,10 +1181,15 @@
         <div><label for="assessment-create-start">Tanggal mulai periode</label><input id="assessment-create-start" type="date" min="1900-01-01" max="2100-12-31" required></div>
         <div><label for="assessment-create-end">Tanggal akhir periode</label><input id="assessment-create-end" type="date" min="1900-01-01" max="2100-12-31" required></div>
       </div>
-      <p class="workspace-help">Asesmen dibuat sebagai Draft. Katalog bisa dipasang setelah asesmen dibuat.</p>
+      <label class="assessment-quick-start-choice" for="assessment-quick-start">
+        <input id="assessment-quick-start" type="checkbox" checked>
+        <span><strong>Gunakan katalog TI bawaan dan langsung mulai</strong>
+          <small>26 kontrol TI internal dengan panduan POJK 34/2025. Tidak perlu pasang katalog manual. Penilaian dan bukti tetap diisi petugas.</small></span>
+      </label>
+      <p id="assessment-quick-start-hint" class="workspace-help">Asesmen langsung berstatus Dikerjakan. Katalog bawaan v1 terkunci demi jejak audit; klik Simpan &amp; mulai untuk mengonfirmasi.</p>
       <p id="assessment-create-error" class="form-error" role="alert" hidden></p>
       <div class="create-actions"><button id="assessment-create-cancel" type="button" class="button button-outline">Batal</button>
-        <button id="assessment-create-submit" type="submit" class="button button-primary workspace-primary">Simpan asesmen</button></div>
+        <button id="assessment-create-submit" type="submit" class="button button-primary workspace-primary">Buat &amp; mulai asesmen TI</button></div>
     </form>
   </dialog>
 

@@ -1,4 +1,5 @@
 import { userHasPermission } from './authorization.js';
+import {assignCatalogInTransaction} from './control-catalogs.js';
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const DATE_PATTERN = /^(\d{4})-(\d{2})-(\d{2})$/;
@@ -114,6 +115,32 @@ export async function startAssessmentInTransaction(db, { actorId, id }) {
   return getAssessment(db, actorId, id);
 }
 
+/** Atomic first-use MVP flow: create + attach the immutable built-in v1 + start. */
+export async function createReadyAssessmentInTransaction(db,{actorId,...input}){
+  // Authenticate/authorize before reading tenant-specific template metadata.
+  await requirePermission(db,actorId,'assessments:write');
+  const data=validateAssessment(input);
+  const baseline=await db.query(
+    "SELECT v.id FROM control_catalog_versions v "+
+    "JOIN control_catalogs c ON c.id=v.catalog_id "+
+    "JOIN users actor ON actor.institution_id=c.institution_id AND actor.id=$1 "+
+    "WHERE c.origin='builtin' AND c.code='NUSARIKSA_BPR_INTERNAL' "+
+    "AND v.version=1 AND v.status='published' "+
+    "AND (SELECT count(*) FROM control_definitions d WHERE d.version_id=v.id)=26 "+
+    "ORDER BY v.id LIMIT 1",
+    [actorId],
+  );
+  if(baseline.rowCount!==1){
+    throw new AssessmentError(409,'Katalog bawaan belum tersedia. Hubungi administrator.');
+  }
+  const assessment=await createAssessmentInTransaction(db,{actorId,...data});
+  await assignCatalogInTransaction(db,{
+    actorId,assessmentId:assessment.id,versionId:baseline.rows[0].id,
+  });
+  const started=await startAssessmentInTransaction(db,{actorId,id:assessment.id});
+  return {...started,builtinCatalogAttached:true};
+}
+
 async function transaction(pool, callback) {
   const client = await pool.connect();
   try {
@@ -136,3 +163,8 @@ export function createAssessment(pool, args) {
 export function startAssessment(pool, args) {
   return transaction(pool, (db) => startAssessmentInTransaction(db, args));
 }
+
+export function createReadyAssessment(pool,args){
+  return transaction(pool,(db)=>createReadyAssessmentInTransaction(db,args));
+}
+

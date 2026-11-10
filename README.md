@@ -74,6 +74,12 @@ Untuk asesmen maturitas siber menurut **PADK 43/PADK.03/2025**, menu **Persiapan
 
 **Jangan unggah data nasabah asli atau rahasia akses untuk membuat bukti contoh.** Dokumen yang ditampilkan adalah contoh jenis bukti, bukan bukti bank yang sudah ada. Catatan kondisi aktual dan peringkat harus tetap diisi petugas berdasarkan pemeriksaan.
 
+## Langsung mulai asesmen TI (MVP)
+
+Pada **Daftar Asesmen → Buat asesmen**, judul serta periode tahun berjalan otomatis terisi tetapi bisa diubah. Opsi **Gunakan katalog TI bawaan dan langsung mulai** dipilih secara default. Tekan **Buat & mulai asesmen TI** untuk membuat asesmen, memasang katalog internal 26 kontrol **versi 1 yang telah diterbitkan**, dan mengubah status menjadi **Dikerjakan** dalam satu transaksi PostgreSQL; setelahnya workspace langsung dibuka pada kontrol pertama yang belum dinilai. Rating, kondisi bank dan file bukti **tidak pernah diisi otomatis**.
+
+Jika perlu katalog lain, hilangkan centang opsi tersebut: sistem membuat asesmen Draft biasa dan petugas dapat memasang katalog custom serta mulai asesmen melalui workflow lama. Sidebar dan peran tidak berubah. Bila katalog bawaan belum ada atau tidak valid, pembuatan cepat ditolak tanpa meninggalkan asesmen kosong.
+
 ## Mengisi penilaian PADK
 
 1. Login, buat penilaian berdasarkan periode, lalu pilih kategori sesuai layanan BPR/BPRS.

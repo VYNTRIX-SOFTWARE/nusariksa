@@ -1,8 +1,9 @@
 import { originAccepted, tokenFromCookies } from './auth-http.js';
 import { userHasPermission } from './authorization.js';
+import {CatalogError} from './control-catalogs.js';
 import { findSession } from './sessions.js';
 import {
-  AssessmentError, createAssessment, getAssessment, listAssessments, startAssessment,
+  AssessmentError, createAssessment, createReadyAssessment, getAssessment, listAssessments, startAssessment,
 } from './assessments.js';
 
 const DETAILS = /^\/assessments\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/i;
@@ -42,14 +43,15 @@ async function readCreateBody(request) {
 export function createAssessmentsHandler({
   db, appOrigin,
   create = createAssessment, list = listAssessments,
-  get = getAssessment, start = startAssessment,
+  get = getAssessment, start = startAssessment, startDefault = createReadyAssessment,
 }) {
   return async function handleAssessments(request, response) {
     const isList = request.method === 'GET' && request.url === '/assessments';
     const isCreate = request.method === 'POST' && request.url === '/assessments';
+    const isDefaultStart = request.method === 'POST' && request.url === '/assessments/start-default';
     const detail = request.method === 'GET' ? DETAILS.exec(request.url ?? '') : null;
     const begin = request.method === 'POST' ? START.exec(request.url ?? '') : null;
-    if (!isList && !isCreate && !detail && !begin) {
+    if (!isList && !isCreate && !isDefaultStart && !detail && !begin) {
       respond(response, 404, { error: 'Not found' });
       return;
     }
@@ -57,7 +59,7 @@ export function createAssessmentsHandler({
       respond(response, 503, { error: 'Unavailable' });
       return;
     }
-    if ((isCreate || begin) && !originAccepted(request, appOrigin)) {
+    if ((isCreate || isDefaultStart || begin) && !originAccepted(request, appOrigin)) {
       respond(response, 403, { error: 'Forbidden' });
       return;
     }
@@ -68,7 +70,7 @@ export function createAssessmentsHandler({
       respond(response, 401, { error: 'Unauthorized' });
       return;
     }
-    const permission = isCreate || begin ? 'assessments:write' : 'assessments:read';
+    const permission = isCreate || isDefaultStart || begin ? 'assessments:write' : 'assessments:read';
     if (!await userHasPermission(db, session.userId, permission)) {
       respond(response, 403, { error: 'Forbidden' });
       return;
@@ -92,10 +94,10 @@ export function createAssessmentsHandler({
         respond(response, input.error, { error: 'Invalid request' });
         return;
       }
-      const result = await create(db, { actorId: session.userId, ...input.body });
+      const result = await (isDefaultStart ? startDefault : create)(db, { actorId: session.userId, ...input.body });
       respond(response, 201, result);
     } catch (error) {
-      if (!(error instanceof AssessmentError)) throw error;
+      if (!(error instanceof AssessmentError || error instanceof CatalogError)) throw error;
       respond(response, error.status, { error: error.message });
     }
   };

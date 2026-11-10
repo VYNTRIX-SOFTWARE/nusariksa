@@ -24,6 +24,10 @@ test('antarmuka web dan aset dimuat dari origin API dengan header keamanan', asy
     assert.match(source, /<html lang="id">/);
     assert.match(source, /id="login-form"/);
     assert.match(source, /id="app-screen"/);
+    assert.match(source,/id="assessment-quick-start"/);
+    assert.match(source,/id="assessment-quick-start-hint"/);
+    assert.match(source,/Buat &amp; mulai asesmen TI/);
+    assert.match(source,/id="assessment-create-form"/);
     const page=source.indexOf('id="page-workspace"');
     assert.ok(page>=0);
     assert.ok(source.indexOf('id="workspace-control-position"',page)<
