@@ -7,7 +7,7 @@ NusaRiksa adalah aplikasi sumber terbuka dari VYNTRIX untuk membantu BPR dan BPR
 ## Fitur
 
 - Akun, peran dan izin, login, pergantian password, serta MFA TOTP.
-- Asesmen kontrol internal, katalog, lampiran bukti, review, dan laporan internal.
+- Asesmen kontrol internal dengan **26 kontrol baseline TI bawaan** (template internal), katalog tambahan manual, lampiran bukti, review, dan laporan internal.
 - Penilaian PADK berdasarkan kategori dan periode: peringkat sementara 1–5, justifikasi, dan bukti.
 - Pengajuan, pengembalian, dan pemeriksaan kelengkapan draft oleh pengguna berbeda.
 - Lima kriteria peringkat dari ekstraksi Tabel 3 Lampiran IV beserta rujukan halaman PDF.
@@ -53,6 +53,14 @@ Mode lama membutuhkan `EVIDENCE_ENCRYPTION_KEY` berupa **64 karakter heksadesima
 ## Memulai pengisian di web
 
 Setelah bootstrap `SUPER_ADMIN`, buka Dashboard lalu **Kelola akses pengguna**. Undang petugas melalui email, serahkan kode undangan satu kali secara privat, dan minta petugas memilih **Aktifkan akun** pada halaman login. Setelah akun aktif, admin memberikan peran `IT_OFFICER` melalui halaman Akses Pengguna. Petugas dapat login, memilih **Mulai penilaian**, lalu **Buat penilaian pertama** pada halaman PADK. Gunakan akun `REVIEWER` terpisah untuk pemeriksaan draft. Lihat [panduan langkah pertama](docs/DEVELOPMENT.md).
+
+## Katalog bawaan untuk asesmen kontrol umum
+
+Instalasi yang sudah bermigrasi dan memiliki admin, serta instalasi baru setelah bootstrap, otomatis memperoleh katalog **Baseline Operasional TI BPR/BPRS** dengan 26 kontrol internal (tata kelola, aset, akun, operasi, data, jaringan, pemulihan dan vendor). Buat asesmen kontrol umum pada menu **Daftar Asesmen**: katalog bawaan akan langsung disarankan pada tahap persiapan. Pemilik tetap harus menekan **Pasang katalog** dan mengonfirmasinya, karena pemasangan tidak dapat diganti.
+
+Untuk kebutuhan khusus BPR/BPRS, menu **Katalog Kontrol** tetap memungkinkan pembuatan katalog manual atau versi Draft berikutnya dari baseline bawaan. Tambahkan kontrol sendiri lalu terbitkan versi baru tanpa mengubah versi lama yang sudah dipakai asesmen.
+
+**Penting:** Katalog ini hanya **template internal NusaRiksa**, bukan teks pasal POJK/PADK yang telah diverifikasi. Katalog asesmen kontrol umum ini **berbeda** dari 60/80 indikator pada menu **Persiapan PADK**. Progres dan hasilnya tidak boleh diklaim sebagai kepatuhan resmi.
 
 ## Mengisi penilaian PADK
 

@@ -14,6 +14,12 @@ Pembuatan database dan bootstrap `SUPER_ADMIN` masih dilakukan operator teknis s
 
 Akun `SUPER_ADMIN` saja tidak otomatis dapat menilai (least privilege), tidak dapat mengubah perannya sendiri, dan perlu pengguna petugas terpisah. Kode undangan adalah **rahasia autentikasi**: hanya ditampilkan sesaat di browser admin; jangan salin ke issue, chat publik, log, atau repositori. Alur ini tidak mengesahkan konten PADK untuk pelaporan resmi.
 
+## Katalog internal bawaan untuk MVP
+
+Migrasi `0024_seed_internal_bpr_catalog.sql` menambahkan katalog dengan 26 kontrol internal terbit pada database yang sudah memiliki `SUPER_ADMIN`. Saat bootstrap instalasi baru, fungsi installer katalog yang sama dipanggil dalam transaksi. Penyediaan bersifat idempoten, tidak mengubah versi terbit yang telah ada dan tidak menimpa katalog custom. Jika kode `NUSARIKSA_BPR_INTERNAL` sudah dipakai katalog manual, installer tidak mengambil alih kode tersebut; periksa konflik secara privat.
+
+UI menandai katalog `origin='builtin'` dan menyarankan versi terbitnya pada formulir asesmen tanpa memasangnya diam-diam. Setelah dipasang, assignment versi tidak dapat dibatalkan. BPR boleh membuat versi Draft berikutnya, menambah kontrol, dan menerbitkannya; atau membuat katalog sendiri. Semua kontrol bawaan adalah **baseline internal yang belum merupakan instrumen OJK**.
+
 ## Lingkungan lokal
 
 Gunakan Node.js `>=24.7.0 <27`, npm, dan PostgreSQL 17. Buat database kosong, lalu atur `DATABASE_URL` dan `APP_ORIGIN` sebagaimana dijelaskan di README.
