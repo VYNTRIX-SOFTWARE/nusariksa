@@ -22,6 +22,9 @@ import {createAssetInTransaction,updateAssetInTransaction,archiveAssetInTransact
   from '../apps/api/src/ti-assets.js';
 import {createRiskInTransaction,updateRiskInTransaction,archiveRiskInTransaction}
   from '../apps/api/src/ti-risks.js';
+import {createIncidentInTransaction,updateIncidentInTransaction,
+  appendIncidentTimelineInTransaction,archiveIncidentInTransaction}
+  from '../apps/api/src/ti-incidents.js';
 import {writeAssessmentResultInTransaction} from '../apps/api/src/assessment-results.js';
 import {assignCatalogInTransaction} from '../apps/api/src/control-catalogs.js';
 import {savePadkIndicatorNoteInTransaction} from '../apps/api/src/padk-preparation-indicators.js';
@@ -394,6 +397,65 @@ async function runBrowser(base,db,fixture){
     await until("document.getElementById('ti-risks-detail-values').textContent.includes('6/25')",
       'residual saved in risk detail');
     assert.equal((await db.query("SELECT revision FROM ti_risks WHERE risk_code='RSK-E2E-01'")).rows[0].revision,2);
+    // Incident workflow: link a real asset + risk, record response, resolve and archive.
+    await until("!document.getElementById('incident-menu').hidden",'incident register navigation');
+    await evalJs("document.getElementById('incident-menu').click()");
+    await until("!document.getElementById('ti-incidents-create').hidden && "+
+      "[...document.querySelectorAll('#ti-incident-risk-id option')].some(x=>x.value==="+
+      JSON.stringify(riskRow.rows[0].id)+")",'incident options from live risk register');
+    await evalJs("document.getElementById('ti-incidents-create').click()");
+    await until("document.getElementById('ti-incidents-dialog').open",'incident form ready');
+    await evalJs("document.getElementById('ti-incident-code').value='INC-E2E-01';"+
+      "document.getElementById('ti-incident-title').value='Kegagalan layanan transaksi';"+
+      "document.getElementById('ti-incident-description').value='Server core banking gagal merespons transaksi petugas pada jam operasional.';"+
+      "document.getElementById('ti-incident-pic').value='Petugas TI Insiden';"+
+      "document.getElementById('ti-incident-severity').value='high';"+
+      "document.getElementById('ti-incident-risk-id').value="+JSON.stringify(riskRow.rows[0].id)+";"+
+      "document.getElementById('ti-incident-risk-id').dispatchEvent(new Event('change'));" +
+      "document.getElementById('ti-incidents-form').requestSubmit()");
+    await until("!document.getElementById('ti-incidents-detail').hidden && "+
+      "document.getElementById('ti-incidents-detail-values').textContent.includes('INC-E2E-01')",
+      'incident created and detail opened');
+    const incident=await db.query("SELECT id,asset_id,risk_id,status,revision FROM ti_incidents "+
+      "WHERE incident_code='INC-E2E-01'");
+    assert.equal(incident.rowCount,1);
+    assert.equal(incident.rows[0].asset_id,riskAsset);
+    assert.equal(incident.rows[0].risk_id,riskRow.rows[0].id);
+    assert.equal(incident.rows[0].status,'reported');
+    await evalJs("document.getElementById('ti-incidents-note-type').value='CONTAINMENT';"+
+      "document.getElementById('ti-incidents-note').value='Koneksi remote diputus sementara untuk investigasi gangguan CBS.';"+
+      "document.getElementById('ti-incidents-timeline-form').requestSubmit()");
+    await until("document.getElementById('ti-incidents-history').textContent.includes('Koneksi remote diputus')",
+      'immutable incident containment chronology');
+    assert.equal((await db.query('SELECT count(*)::int AS n FROM ti_incident_events WHERE incident_id=$1',
+      [incident.rows[0].id])).rows[0].n,2);
+    await evalJs("document.getElementById('ti-incidents-edit').click()");
+    await until("document.getElementById('ti-incidents-dialog').open",'investigate incident');
+    await evalJs("document.getElementById('ti-incident-status').value='investigating';"+
+      "document.getElementById('ti-incidents-form').requestSubmit()");
+    await until("document.getElementById('ti-incidents-detail-values').textContent.includes('Investigasi')",
+      'investigation persisted');
+    await evalJs("document.getElementById('ti-incidents-edit').click()");
+    await until("document.getElementById('ti-incidents-dialog').open",'resolve incident');
+    await evalJs("document.getElementById('ti-incident-root-cause').value='Layanan database gagal menjalankan koneksi';"+
+      "document.getElementById('ti-incident-resolution').value='Service dipulihkan dan transaksi uji berhasil diproses';"+
+      "document.getElementById('ti-incident-status').value='resolved';"+
+      "document.getElementById('ti-incidents-form').requestSubmit()");
+    await until("document.getElementById('ti-incidents-detail-values').textContent.includes('Dipulihkan')",
+      'resolution with root cause persisted');
+    await evalJs("document.getElementById('ti-incidents-edit').click()");
+    await until("document.getElementById('ti-incidents-dialog').open",'close incident');
+    await evalJs("document.getElementById('ti-incident-status').value='closed';"+
+      "document.getElementById('ti-incidents-form').requestSubmit()");
+    await until("document.getElementById('ti-incidents-detail-values').textContent.includes('Ditutup')",
+      'incident closed with audit');
+    await evalJs("window.confirm=()=>true;document.getElementById('ti-incidents-archive').click()");
+    await until("document.getElementById('ti-incidents-detail-values').textContent.includes('Diarsipkan')",
+      'incident archived with persistent history');
+    assert.equal((await db.query('SELECT count(*)::int AS n FROM ti_incident_events WHERE incident_id=$1',
+      [incident.rows[0].id])).rows[0].n,6);
+    await evalJs("document.getElementById('risk-menu').click()");
+    await until("!document.getElementById('ti-risks-detail').hidden",'return to risk register');
     await evalJs("window.confirm=()=>true;document.getElementById('ti-risks-archive').click()");
     await until("document.getElementById('ti-risks-detail-values').textContent.includes('Diarsipkan')",
       'risk archived with history');
@@ -852,7 +914,7 @@ async function runBrowser(base,db,fixture){
     await evalJs("document.getElementById('mfa-login-code').value="+JSON.stringify(codes[0])+";"+
       "document.getElementById('mfa-login-form').requestSubmit()");
     await until("!document.getElementById('app-screen').hidden",'recovery login accepted');
-    console.log('Browser E2E PASS: linked TI risk and assets, scoring/edit/archive/audit, general TI, PADK, MFA');
+    console.log('Browser E2E PASS: incident lifecycle/chronology linked to assets and risks, TI, PADK, MFA');
   }finally{
     await stopChromium(browser);
   }
@@ -883,6 +945,12 @@ async function main(){
         create:(db,args)=>createRiskInTransaction(db,args),
         update:(db,args)=>updateRiskInTransaction(db,args),
         archive:(db,args)=>archiveRiskInTransaction(db,args),
+      },
+      incidentHandlers:{
+        create:(db,args)=>createIncidentInTransaction(db,args),
+        update:(db,args)=>updateIncidentInTransaction(db,args),
+        timeline:(db,args)=>appendIncidentTimelineInTransaction(db,args),
+        archive:(db,args)=>archiveIncidentInTransaction(db,args),
       },
       evidenceKey:'ab'.repeat(32),
       padkEvidenceHandlers:{

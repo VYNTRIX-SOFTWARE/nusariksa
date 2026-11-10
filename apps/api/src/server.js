@@ -16,6 +16,7 @@ import {createCrosswalkReviewHandler} from './padk-crosswalk-reviews-http.js';
 import { createControlCatalogsHandler } from './control-catalogs-http.js';
 import {createAssetHandler} from './ti-assets-http.js';
 import {createRiskHandler} from './ti-risks-http.js';
+import {createIncidentHandler} from './ti-incidents-http.js';
 import { checkDatabase, createPool } from './database.js';
 import { createLoginLimiter } from './login-limiter.js';
 import { createRolesHandler } from './roles-http.js';
@@ -43,6 +44,7 @@ export function createServer({
   catalogHandlers,
   assetHandlers,
   riskHandlers,
+  incidentHandlers,
   resultHandlers,
   reviewHandlers,
   reportHandler,
@@ -69,6 +71,7 @@ export function createServer({
   const handleCatalogs = createControlCatalogsHandler({ db: authDb, appOrigin, ...catalogHandlers });
   const handleAssets = createAssetHandler({db:authDb,appOrigin,...assetHandlers});
   const handleRisks = createRiskHandler({db:authDb,appOrigin,...riskHandlers});
+  const handleIncidents = createIncidentHandler({db:authDb,appOrigin,...incidentHandlers});
   const handleResults = createAssessmentResultsHandler({ db: authDb, appOrigin, ...resultHandlers });
   const handleReviews = createAssessmentReviewsHandler({ db: authDb, appOrigin, ...reviewHandlers });
   const handleReport = createAssessmentReportsHandler({ db: authDb, appOrigin, report: reportHandler });
@@ -153,6 +156,16 @@ export function createServer({
         } else {
           response.destroy();
         }
+      }
+      return;
+    }
+
+    if (request.url === '/incidents' || request.url?.startsWith('/incidents?')
+      || request.url?.startsWith('/incidents/')) {
+      try{await handleIncidents(request,response);}
+      catch{
+        if(!response.headersSent){response.writeHead(503);response.end(JSON.stringify({error:'Unavailable'}));}
+        else response.destroy();
       }
       return;
     }
