@@ -36,6 +36,12 @@ Endpoint `POST /assessments/start-default` memproses payload yang sama dengan `P
 
 UI hanya mengubah formulir **Daftar Asesmen** yang ada. Mode cepat dicentang sejak awal, periode default tahun lokal, dan tombol berlabel **Buat & mulai asesmen TI**. Pengguna dapat tidak mencentang untuk membuat Draft dengan katalog custom melalui cara lama. Pembukaan asesmen baru mengikuti callback `onCreated` dan langsung membuka 26 kontrol. Tidak ada perubahan sidebar, izin, rubrik, tata kerja maker–checker, kalkulasi regulatori ataupun rilis PADK.
 
+## Inventaris aset TI (Modul 8)
+
+Migrasi `0025_create_ti_assets.sql` membuat tabel aset `ti_assets` dan audit append-only `ti_asset_events`. Kolom `institution_id` digunakan di semua operasi; API tidak menerima identitas bank dari browser. Admin, petugas TI dan kepatuhan dapat menulis; pemeriksa, auditor, dan viewer hanya membaca. Kode aset permanen dan unik per instansi, update/arsip memerlukan `expectedRevision`. Endpoint: `GET /assets`, `POST /assets`, `GET/PATCH /assets/:id`, `POST /assets/:id/archive`, `GET /assets/:id/history`. Pencarian/filter memakai query database dan pagination 50 baris dengan offset.
+
+Keterhubungan aset ke risiko dan insiden masih memerlukan tabel dan workflow modul 9/10. Sampai kedua modul ada, jangan menyebut kaitan tersebut selesai.
+
 ## Lingkungan lokal
 
 Gunakan Node.js `>=24.7.0 <27`, npm, dan PostgreSQL 17. Buat database kosong, lalu atur `DATABASE_URL` dan `APP_ORIGIN` sebagaimana dijelaskan di README.

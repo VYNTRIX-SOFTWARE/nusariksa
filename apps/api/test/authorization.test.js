@@ -11,6 +11,10 @@ test('hak akses hanya diberikan pada peran yang dikenal', () => {
   assert.ok(!viewer.includes('assessments:write'));
   assert.ok(!viewer.includes('assessments:approve'));
   assert.ok(!viewer.includes('users:manage'));
+  assert.ok(viewer.includes('assets:read'));
+  assert.ok(!viewer.includes('assets:write'));
+  assert.ok(permissionsForRoles(['IT_OFFICER']).includes('assets:write'));
+  assert.ok(!permissionsForRoles(['REVIEWER']).includes('assets:write'));
 });
 
 test('pemeriksa dapat menyetujui tanpa hak mengubah asesmen', () => {

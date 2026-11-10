@@ -124,6 +124,9 @@
         <button type="button" class="nav-link" data-page="maturity" id="maturity-menu" title="Metodologi Maturitas" hidden>
           <svg class="icon nav-icon"><use href="#i-clipboard"></use></svg><span class="nav-label">Metodologi Maturitas</span>
         </button>
+        <button type="button" class="nav-link" data-page="ti-assets" id="asset-menu" title="Inventaris Aset TI" hidden>
+          <svg class="icon nav-icon"><use href="#i-clipboard"></use></svg><span class="nav-label">Inventaris Aset TI</span>
+        </button>
         <div class="sidebar-section-label sidebar-gap" id="admin-menu-group" hidden>PENGATURAN</div>
         <button type="button" class="nav-link" data-page="admin-onboarding" id="admin-setup-menu" title="Kelola akses pengguna" hidden>
           <svg class="icon nav-icon"><use href="#i-clipboard"></use></svg><span class="nav-label">Akses Pengguna</span>
@@ -254,6 +257,59 @@
               <div id="admin-users-list" class="onboard-user-list" aria-live="polite"></div>
             </section>
           </div>
+        </section>
+
+        <section id="page-ti-assets" class="page" aria-labelledby="ti-assets-title" hidden>
+          <div class="page-intro">
+            <div><p class="eyebrow">TATA KELOLA TI / ASET</p><h1 id="ti-assets-title">Inventaris Aset TI</h1>
+              <p class="supporting-copy">Catat aset, PIC, lokasi, kritikalitas, dan status operasional dengan histori perubahan.</p>
+            </div>
+            <button id="ti-assets-create" type="button" class="button button-primary workspace-primary" hidden>Tambah aset</button>
+          </div>
+          <p id="ti-assets-message" class="workspace-message" role="status" aria-live="polite" hidden></p>
+          <section class="panel-card">
+            <form id="ti-assets-filter-form" class="ti-asset-filters">
+              <label for="ti-assets-search">Cari kode, nama atau PIC
+                <input id="ti-assets-search" type="search" maxlength="80" placeholder="Misalnya SRV-CBS-01">
+              </label>
+              <label for="ti-assets-status">Tampilan
+                <select id="ti-assets-status"><option value="active">Belum diarsipkan</option>
+                  <option value="archived">Diarsipkan</option><option value="all">Semua</option></select>
+              </label>
+              <label for="ti-assets-kind-filter">Jenis
+                <select id="ti-assets-kind-filter"><option value="all">Semua</option>
+                  <option value="server">Server</option><option value="workstation">PC/Laptop</option>
+                  <option value="network">Jaringan</option><option value="software">Aplikasi</option>
+                  <option value="storage">Storage</option><option value="other">Lainnya</option></select>
+              </label>
+              <label for="ti-assets-priority-filter">Kritikalitas
+                <select id="ti-assets-priority-filter"><option value="all">Semua</option>
+                  <option value="low">Rendah</option><option value="medium">Sedang</option>
+                  <option value="high">Tinggi</option></select>
+              </label>
+              <button type="submit" class="button button-outline">Cari</button>
+              <button id="ti-assets-refresh" type="button" class="button button-outline">Muat ulang</button>
+            </form>
+            <div id="ti-assets-list" class="ti-assets-list" aria-live="polite"></div>
+            <div class="ti-asset-pagination">
+              <span id="ti-assets-position" class="workspace-help">Belum dimuat</span>
+              <button id="ti-assets-prev" type="button" class="button button-outline" disabled>Sebelumnya</button>
+              <button id="ti-assets-next" type="button" class="button button-outline" disabled>Berikutnya</button>
+            </div>
+          </section>
+          <section id="ti-assets-detail" class="panel-card" aria-labelledby="ti-assets-detail-title" hidden>
+            <div class="panel-heading"><h2 id="ti-assets-detail-title">Detail aset dan riwayat</h2>
+              <div class="ti-assets-actions">
+                <button id="ti-assets-edit" type="button" class="button button-outline">Ubah</button>
+                <button id="ti-assets-archive" type="button" class="button button-outline">Arsipkan</button>
+              </div>
+            </div>
+            <dl id="ti-assets-detail-values" class="ti-assets-detail-values"></dl>
+            <details class="ti-assets-history-details">
+              <summary>Riwayat perubahan aset</summary>
+              <ol id="ti-assets-history"></ol>
+            </details>
+          </section>
         </section>
 
         <section id="page-assessments" class="page" aria-labelledby="assessments-title" hidden>
@@ -1240,6 +1296,45 @@
       <div class="create-actions">
         <button id="change-password-cancel" type="button" class="button button-outline">Batal</button>
         <button id="change-password-submit" type="submit" class="button button-primary">Simpan password baru</button>
+      </div>
+    </form>
+  </dialog>
+  <dialog id="ti-assets-dialog" aria-labelledby="ti-assets-dialog-title" class="workspace-dialog">
+    <form id="ti-assets-form" class="maturity-edit-form">
+      <h2 id="ti-assets-dialog-title">Tambah aset TI</h2>
+      <p class="workspace-help">Kode aset permanen agar riwayat dapat ditelusuri.</p>
+      <label for="ti-asset-code">Kode aset
+        <input id="ti-asset-code" required minlength="2" maxlength="32" pattern="[A-Z][A-Z0-9_-]{1,31}" placeholder="SRV-CBS-01">
+      </label>
+      <label for="ti-asset-title">Nama aset
+        <input id="ti-asset-title" required minlength="3" maxlength="200" placeholder="Server Core Banking">
+      </label>
+      <label for="ti-asset-kind">Jenis
+        <select id="ti-asset-kind"><option value="server">Server</option><option value="workstation">PC/Laptop</option>
+          <option value="network">Perangkat jaringan</option><option value="software">Aplikasi</option>
+          <option value="storage">Storage</option><option value="other">Lainnya</option></select>
+      </label>
+      <label for="ti-asset-owner">Pemilik / PIC
+        <input id="ti-asset-owner" required minlength="2" maxlength="120" placeholder="Bagian Operasional TI">
+      </label>
+      <label for="ti-asset-location">Lokasi
+        <input id="ti-asset-location" required minlength="2" maxlength="200" placeholder="Ruang Server Kantor Pusat">
+      </label>
+      <label for="ti-asset-criticality">Kritikalitas
+        <select id="ti-asset-criticality"><option value="low">Rendah</option>
+          <option value="medium" selected>Sedang</option><option value="high">Tinggi</option></select>
+      </label>
+      <label for="ti-asset-operational-status">Status operasional
+        <select id="ti-asset-operational-status"><option value="active">Aktif</option>
+          <option value="maintenance">Pemeliharaan</option><option value="retired">Tidak digunakan</option></select>
+      </label>
+      <label for="ti-asset-note">Catatan tambahan (opsional)
+        <textarea id="ti-asset-note" rows="3" maxlength="2000"></textarea>
+      </label>
+      <p id="ti-assets-error" class="form-error" role="alert" hidden></p>
+      <div class="workspace-save-actions">
+        <button id="ti-assets-save" type="submit" class="button button-primary">Simpan aset</button>
+        <button id="ti-assets-cancel" type="button" class="button button-outline">Batal</button>
       </div>
     </form>
   </dialog>

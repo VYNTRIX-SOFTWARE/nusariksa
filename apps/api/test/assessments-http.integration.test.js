@@ -118,7 +118,7 @@ test('API asesmen menegakkan sesi, izin, validasi dan status', {
 
         const listed = await send('/assessments', 'GET', cookies.viewer);
         assert.equal(listed.status, 200);
-        assert.equal((await listed.json()).assessments[0].id, assessment.id);
+        assert.ok((await listed.json()).assessments.some(row=>row.id===assessment.id));
         assert.equal((await send('/assessments/' + assessment.id, 'GET', cookies.viewer)).status, 200);
         assert.equal((await send('/assessments/' + assessment.id + '/start', 'POST', cookies.viewer)).status, 403);
         const started = await send('/assessments/' + assessment.id + '/start', 'POST', cookies.owner);

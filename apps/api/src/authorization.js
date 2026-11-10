@@ -1,22 +1,25 @@
 const ROLE_PERMISSIONS = Object.freeze({
   SUPER_ADMIN: [
     'users:manage', 'assessments:read', 'evidence:read', 'reports:read', 'audit:read',
+    'assets:read', 'assets:write',
   ],
   IT_OFFICER: [
     'assessments:read', 'assessments:write', 'evidence:read', 'evidence:write', 'reports:read',
+    'assets:read', 'assets:write',
   ],
   COMPLIANCE_OFFICER: [
     'assessments:read', 'assessments:write', 'evidence:read', 'evidence:write',
-    'reports:read', 'audit:read',
+    'reports:read', 'audit:read', 'assets:read', 'assets:write',
   ],
   REVIEWER: [
     'assessments:read', 'assessments:approve', 'evidence:read', 'reports:read', 'audit:read',
+    'assets:read',
   ],
   AUDITOR: [
-    'assessments:read', 'evidence:read', 'reports:read', 'audit:read',
+    'assessments:read', 'evidence:read', 'reports:read', 'audit:read', 'assets:read',
   ],
   VIEWER: [
-    'assessments:read', 'evidence:read', 'reports:read',
+    'assessments:read', 'evidence:read', 'reports:read', 'assets:read',
   ],
 });
 

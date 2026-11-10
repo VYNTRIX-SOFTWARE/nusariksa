@@ -672,3 +672,34 @@ h1,h2,p{margin-top:0}h1,h2{letter-spacing:-.027em}
 .assessment-quick-start-choice small{font-size:12px;line-height:1.55;color:#586176}
 #assessment-quick-start-hint{font-size:12px;line-height:1.6;color:#535F72}
 @media(max-width:580px){.assessment-quick-start-choice{padding:12px;gap:10px}}
+
+/* MVP module 8 — TI asset register */
+.ti-asset-filters{display:grid;grid-template-columns:minmax(160px,2fr) repeat(3,minmax(115px,1fr)) auto auto;
+  gap:12px;align-items:end;margin-bottom:20px}
+.ti-asset-filters label{display:grid;gap:6px;font-size:12px;color:#505B70;font-weight:650}
+.ti-asset-filters input,.ti-asset-filters select{width:100%;min-width:0;
+  border:1px solid #D9DDE7;border-radius:8px;padding:9px 10px;box-sizing:border-box}
+.ti-assets-list{display:grid;gap:8px}
+.ti-asset-item{border:1px solid #E3E6EF;background:#FFF;padding:13px 16px;border-radius:10px}
+.ti-asset-open{background:transparent;border:0;text-align:left;padding:0;font-size:14px;
+  color:#39345D;font-weight:700;cursor:pointer}
+.ti-asset-open:hover{text-decoration:underline}
+.ti-asset-item p{margin:7px 0 0}
+.ti-asset-pagination{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:16px}
+.ti-asset-pagination span{margin-right:auto}
+.ti-assets-actions{display:flex;flex-wrap:wrap;gap:8px}
+.ti-assets-detail-values{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+.ti-asset-detail-item{display:grid;gap:4px;border-top:1px solid #EAEAF1;padding-top:10px}
+.ti-asset-detail-item dt{font-size:11px;color:#6C7384;font-weight:650}
+.ti-asset-detail-item dd{font-size:14px;color:#2D3548;margin:0;overflow-wrap:anywhere}
+.ti-assets-history-details{border-top:1px solid #EAEAF1;padding-top:14px;margin-top:19px}
+.ti-assets-history-details summary{cursor:pointer;font-weight:700;color:#504A6E}
+.ti-asset-history-item{font-size:12px;line-height:1.65;padding:5px 0;color:#596478}
+#ti-assets-dialog{width:min(520px,calc(100vw - 28px));max-height:calc(100vh - 48px);overflow:auto}
+#ti-assets-form{display:grid;gap:12px}
+#ti-assets-form label{display:grid;gap:5px;font-size:12px;font-weight:650}
+#ti-assets-form input,#ti-assets-form select,#ti-assets-form textarea{
+  width:100%;min-width:0;box-sizing:border-box;padding:10px;border:1px solid #CED3DF;border-radius:8px}
+@media(max-width:1050px){.ti-asset-filters{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:580px){.ti-asset-filters,.ti-assets-detail-values{grid-template-columns:1fr}
+  .ti-assets-actions{width:100%}}

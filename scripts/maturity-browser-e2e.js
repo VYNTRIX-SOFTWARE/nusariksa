@@ -18,6 +18,8 @@ import {applyRoleChangeInTransaction} from '../apps/api/src/role-management.js';
 import {createPadkPreparationInTransaction,savePadkPreparationInTransaction} from '../apps/api/src/padk-preparations.js';
 import {createAssessmentInTransaction,createReadyAssessmentInTransaction,
   startAssessmentInTransaction} from '../apps/api/src/assessments.js';
+import {createAssetInTransaction,updateAssetInTransaction,archiveAssetInTransaction}
+  from '../apps/api/src/ti-assets.js';
 import {writeAssessmentResultInTransaction} from '../apps/api/src/assessment-results.js';
 import {assignCatalogInTransaction} from '../apps/api/src/control-catalogs.js';
 import {savePadkIndicatorNoteInTransaction} from '../apps/api/src/padk-preparation-indicators.js';
@@ -309,6 +311,43 @@ async function runBrowser(base,db,fixture){
     assert.equal(await evalJs("document.getElementById('pdk-create-form').hidden"),false);
     await logout();
     await login('maker');
+    // Real inventory browser journey: create, persist, edit, filter, archive, audit.
+    await until("!document.getElementById('asset-menu').hidden",'asset register navigation');
+    await evalJs("document.getElementById('asset-menu').click()");
+    await until("!document.getElementById('ti-assets-create').hidden",'asset register create ready');
+    await evalJs("document.getElementById('ti-assets-create').click()");
+    await until("document.getElementById('ti-assets-dialog').open",'asset creation form');
+    await evalJs("document.getElementById('ti-asset-code').value='SRV-BROWSER-01';"+
+      "document.getElementById('ti-asset-title').value='Server Browser Uji';"+
+      "document.getElementById('ti-asset-owner').value='IT Internal';"+
+      "document.getElementById('ti-asset-location').value='Ruang Server';"+
+      "document.getElementById('ti-asset-criticality').value='high';"+
+      "document.getElementById('ti-assets-form').requestSubmit()");
+    await until("!document.getElementById('ti-assets-detail').hidden && "+
+      "document.getElementById('ti-assets-detail-values').textContent.includes('SRV-BROWSER-01')",
+      'asset persisted and detail visible');
+    const assetId=(await db.query(
+      "SELECT id FROM ti_assets WHERE asset_code='SRV-BROWSER-01'")).rows[0].id;
+    assert.ok(assetId);
+    await evalJs("document.getElementById('ti-assets-edit').click()");
+    await until("document.getElementById('ti-assets-dialog').open",'asset editing form');
+    await evalJs("document.getElementById('ti-asset-owner').value='Tim Sistem Informasi';"+
+      "document.getElementById('ti-assets-form').requestSubmit()");
+    await until("document.getElementById('ti-assets-detail-values').textContent.includes('Tim Sistem Informasi')",
+      'asset edit persisted in browser');
+    assert.equal((await db.query('SELECT revision,owner_name FROM ti_assets WHERE id=$1',[assetId])).rows[0].revision,2);
+    await evalJs("window.confirm=()=>true;document.getElementById('ti-assets-archive').click()");
+    await until("document.getElementById('ti-assets-detail-values').textContent.includes('Diarsipkan')",
+      'asset archived without deletion');
+    assert.equal((await db.query('SELECT archived_at IS NOT NULL AS archived FROM ti_assets WHERE id=$1',
+      [assetId])).rows[0].archived,true);
+    assert.equal((await db.query('SELECT count(*)::int AS n FROM ti_asset_events WHERE asset_id=$1',
+      [assetId])).rows[0].n,3);
+    await evalJs("document.getElementById('ti-assets-status').value='archived';"+
+      "document.getElementById('ti-assets-status').dispatchEvent(new Event('change'))");
+    await until("document.querySelectorAll('#ti-assets-list .ti-asset-item').length===1",
+      'archived assets filter');
+    await evalJs("document.getElementById('assessment-menu').click()");
     await until("!document.getElementById('assessment-menu').hidden",'general assessment navigation');
     await evalJs("document.getElementById('assessment-menu').click()");
     await until("!document.getElementById('assessment-create').hidden",'create assessment action');
@@ -757,7 +796,7 @@ async function runBrowser(base,db,fixture){
     await evalJs("document.getElementById('mfa-login-code').value="+JSON.stringify(codes[0])+";"+
       "document.getElementById('mfa-login-form').requestSubmit()");
     await until("!document.getElementById('app-screen').hidden",'recovery login accepted');
-    console.log('Browser E2E PASS: general TI 26-control save-next, first-run, PADK maker-checker/PDF, maturity, MFA');
+    console.log('Browser E2E PASS: asset register create/edit/archive/audit, general TI, PADK, MFA');
   }finally{
     await stopChromium(browser);
   }
@@ -779,6 +818,11 @@ async function main(){
       startAssessment:(db,args)=>startAssessmentInTransaction(db,args),
       createReadyAssessment:(db,args)=>createReadyAssessmentInTransaction(db,args),
       resultHandlers:{write:(db,args)=>writeAssessmentResultInTransaction(db,args)},
+      assetHandlers:{
+        create:(db,args)=>createAssetInTransaction(db,args),
+        update:(db,args)=>updateAssetInTransaction(db,args),
+        archive:(db,args)=>archiveAssetInTransaction(db,args),
+      },
       evidenceKey:'ab'.repeat(32),
       padkEvidenceHandlers:{
         upload:(db,args)=>uploadPadkEvidenceInTransaction(db,args),

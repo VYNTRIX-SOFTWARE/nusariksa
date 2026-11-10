@@ -80,6 +80,12 @@ Pada **Daftar Asesmen → Buat asesmen**, judul serta periode tahun berjalan oto
 
 Jika perlu katalog lain, hilangkan centang opsi tersebut: sistem membuat asesmen Draft biasa dan petugas dapat memasang katalog custom serta mulai asesmen melalui workflow lama. Sidebar dan peran tidak berubah. Bila katalog bawaan belum ada atau tidak valid, pembuatan cepat ditolak tanpa meninggalkan asesmen kosong.
 
+## Inventaris aset TI (MVP, Modul 8)
+
+Pada menu **Inventaris Aset TI**, petugas TI/kepatuhan mengelola aset dengan kode unik, jenis, PIC, lokasi, kritikalitas, status operasional, dan catatan. Tersedia tambah, ubah, arsip, pencarian kode/nama/PIC, filter, dan histori append-only. Pengguna lain dengan akses lihat dapat mengakses tanpa bisa menyunting.
+
+Perubahan menggunakan **optimistic revision** agar dua pengguna tidak saling menimpa data. Arsip tidak menghapus aset atau kode yang telah dipakai. Relasi risiko/insiden akan menyusul ketika modul terkait tersedia, tanpa membuat data relasi fiktif.
+
 ## Mengisi penilaian PADK
 
 1. Login, buat penilaian berdasarkan periode, lalu pilih kategori sesuai layanan BPR/BPRS.
