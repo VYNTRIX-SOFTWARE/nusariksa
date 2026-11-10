@@ -24,6 +24,12 @@ UI menandai katalog `origin='builtin'` dan menyarankan versi terbitnya pada form
 
 Di **Daftar Asesmen → Workspace**, setelah katalog bawaan dipasang dan asesmen dimulai, petugas melihat daftar 26 kontrol, form jawaban, status tersimpan, progres, dan langkah selanjutnya. Tombol **Simpan & lanjut** memakai API PUT yang sama dengan Simpan dan baru memilih kontrol belum dinilai berikut setelah data tersimpan pada server; status konflik revisi dan izin backend tetap berlaku. Kontrol dapat dinavigasi dengan tombol sebelum/berikutnya, filter, atau cari belum dinilai. Perubahan belum tersimpan tidak otomatis dibuang. Bukti per kontrol tetap terenkripsi, dan review internal muncul setelah input. Progres hanya menghitung kontrol yang memiliki revision, bukan kualitas bukti atau kepatuhan OJK.
 
+## Template regulasi siap pakai pada asesmen BPR (MVP)
+
+NusaRiksa menampilkan panduan yang sudah disediakan pengembang untuk seluruh **26 kontrol baseline operasional TI internal**, dengan pemetaan **pasal terkait POJK 34/2025**, pertanyaan pemeriksaan, dua contoh dokumen bukti, dan catatan konteks. Panduan **read-only**, tidak membuat katalog/bukti baru pada database, tidak mengubah versi katalog historis, dan tidak memetakan kontrol kustom secara sembrono. Petugas mengisi kondisi aktual dan bukti dari pemeriksaan; helper form menyusun teks catatan dari input petugas, tanpa memilih rating atau membuat file bukti. Konfirmasi dibutuhkan sebelum membuang isian helper; penyimpanan tetap memakai API PUT/expectedRevision yang telah ada.
+
+Untuk keamanan siber, **PADK 43/2025** menggunakan workspace khusus 60/80 indikator bawaan, bukan 26 kontrol umum. Instrumen PADK masih ditandai belum terverifikasi untuk keluaran resmi. Di UI template siap digunakan sebagai **acuan penilaian** tanpa label persiapan, tetapi tidak mengubah tanggal legal berlaku kedua aturan atau status release gate. Sumber POJK diperiksa pada salinan dokumen OJK di proyek; rujukan teks operasional bukan kutipan literal pasal.
+
 ## Lingkungan lokal
 
 Gunakan Node.js `>=24.7.0 <27`, npm, dan PostgreSQL 17. Buat database kosong, lalu atur `DATABASE_URL` dan `APP_ORIGIN` sebagaimana dijelaskan di README.

@@ -624,3 +624,39 @@ h1,h2,p{margin-top:0}h1,h2{letter-spacing:-.027em}
   .workspace-flow-nav .button,.workspace-save-actions .button{width:100%}
   .workspace-save-actions{display:grid;grid-template-columns:1fr}
   .workspace-next-stage{padding:13px}}
+
+/* Regulation-guided templates: show source/required evidence without auto-scoring. */
+.workspace-guidance{border:1px solid #DADFED;border-radius:12px;background:#F9FAFE;
+  padding:19px 21px;margin:20px 0 15px;line-height:1.6}
+.workspace-guidance-head{display:flex;justify-content:space-between;align-items:flex-start;
+  gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.workspace-guidance-eyebrow{display:block;font-size:10px;font-weight:800;letter-spacing:.08em;
+  color:#6655B5;margin-bottom:5px}
+.workspace-guidance h3{font-size:17px;color:#273044;margin:0}
+.workspace-guidance-tag{font-size:10px;background:#EFEDFC;border-radius:30px;
+  padding:5px 9px;color:#6655B5;font-weight:700}
+.workspace-guide-question{font-size:14px;color:#263347;font-weight:600;
+  margin:0 0 14px;line-height:1.6}
+.workspace-guidance h4{font-size:12px;text-transform:uppercase;letter-spacing:.04em;
+  margin:0 0 7px;color:#444F68}
+.workspace-guide-list{margin:0 0 14px;padding-left:21px;font-size:13px;color:#4E596A}
+.workspace-guide-list li{margin:6px 0}
+.workspace-guide-reference{border-top:1px solid #E3E6F1;padding-top:11px;
+  font-size:12px;margin:0 0 8px;color:#535C70;line-height:1.7}
+.workspace-guide-reference a{color:#6655B5}
+.workspace-guide-caution{font-size:12px;font-weight:550;margin:9px 0;color:#665133}
+.workspace-guide-status{font-size:11px;line-height:1.65;color:#666F80;
+  margin:10px 0 0}
+.workspace-note-helper{margin:13px 0 18px;border:1px solid #DDDFE9;
+  border-radius:10px;padding:14px 17px;background:#FFF}
+.workspace-note-helper summary{font-size:13px;font-weight:700;cursor:pointer;
+  color:#514484}
+.workspace-note-helper summary:focus-visible{outline:2px solid #7660D0;outline-offset:3px}
+.workspace-note-fields{display:grid;gap:9px;margin-top:13px}
+.workspace-note-fields label{font-size:12px;font-weight:650;color:#42495C}
+.workspace-note-fields textarea{width:100%;min-width:0;box-sizing:border-box;
+  padding:10px;border:1px solid #CCD2DC;border-radius:8px}
+.workspace-note-fields .button{width:fit-content}
+#workspace-compose-feedback{font-size:12px;line-height:1.6;margin:0}
+@media(max-width:620px){.workspace-guidance{padding:14px}
+  .workspace-note-fields .button{width:100%}}

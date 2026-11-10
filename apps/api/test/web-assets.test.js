@@ -46,6 +46,16 @@ test('antarmuka web dan aset dimuat dari origin API dengan header keamanan', asy
     assert.equal(app.status, 200);
     assert.match(app.headers.get('content-type'), /text\/javascript/);
     assert.match(await app.text(), /restoreSession/);
+    for(const id of ['workspace-guidance','workspace-guide-question','workspace-guide-evidence',
+      'workspace-note-helper','workspace-observed-condition','workspace-observed-evidence',
+      'workspace-observed-followup','workspace-compose-note','workspace-guide-regulation']){
+      assert.match(source,new RegExp('id="'+id+'"'));
+    }
+    const guide=await fetch(base+'/assets/control-guidance.js');
+    assert.equal(guide.status,200);
+    assert.match(guide.headers.get('content-type'),/javascript/);
+    assert.match(await guide.text(),/GUIDANCE_CODES/);
+    assert.doesNotMatch(source,/TEMPLATE SIAP PAKAI · PERSIAPAN REGULASI/);
     const session = await fetch(base + '/assets/session.js');
     assert.equal(session.status, 200);
     assert.match(await session.text(), /credentials: 'same-origin'/);
