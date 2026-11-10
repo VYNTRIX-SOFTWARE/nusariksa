@@ -20,6 +20,8 @@ import {createAssessmentInTransaction,createReadyAssessmentInTransaction,
   startAssessmentInTransaction} from '../apps/api/src/assessments.js';
 import {createAssetInTransaction,updateAssetInTransaction,archiveAssetInTransaction}
   from '../apps/api/src/ti-assets.js';
+import {createRiskInTransaction,updateRiskInTransaction,archiveRiskInTransaction}
+  from '../apps/api/src/ti-risks.js';
 import {writeAssessmentResultInTransaction} from '../apps/api/src/assessment-results.js';
 import {assignCatalogInTransaction} from '../apps/api/src/control-catalogs.js';
 import {savePadkIndicatorNoteInTransaction} from '../apps/api/src/padk-preparation-indicators.js';
@@ -347,6 +349,60 @@ async function runBrowser(base,db,fixture){
       "document.getElementById('ti-assets-status').dispatchEvent(new Event('change'))");
     await until("document.querySelectorAll('#ti-assets-list .ti-asset-item').length===1",
       'archived assets filter');
+    // Create one active asset to exercise the actual risk-to-asset foreign key in the browser.
+    await evalJs("document.getElementById('ti-assets-create').click()");
+    await until("document.getElementById('ti-assets-dialog').open",'second asset form');
+    await evalJs("document.getElementById('ti-asset-code').value='SRV-RISK-E2E';"+
+      "document.getElementById('ti-asset-title').value='Server Aset Risiko Browser';"+
+      "document.getElementById('ti-asset-owner').value='Bagian TI';"+
+      "document.getElementById('ti-asset-location').value='Ruang Server';"+
+      "document.getElementById('ti-assets-form').requestSubmit()");
+    await until("document.getElementById('ti-assets-detail-values').textContent.includes('SRV-RISK-E2E')",
+      'second asset persisted');
+    const riskAsset=(await db.query("SELECT id FROM ti_assets WHERE asset_code='SRV-RISK-E2E'")).rows[0].id;
+    await until("!document.getElementById('risk-menu').hidden",'risk register navigation');
+    await evalJs("document.getElementById('risk-menu').click()");
+    await until("!document.getElementById('ti-risks-create').hidden && "+
+      "[...document.querySelectorAll('#ti-risk-asset-id option')].some(x=>x.value==="+
+      JSON.stringify(riskAsset)+")",'risk form loads real active assets');
+    await evalJs("document.getElementById('ti-risks-create').click()");
+    await until("document.getElementById('ti-risks-dialog').open",'new risk dialog');
+    await evalJs("document.getElementById('ti-risk-code').value='RSK-E2E-01';"+
+      "document.getElementById('ti-risk-title').value='Gangguan server saat transaksi';"+
+      "document.getElementById('ti-risk-scenario').value='Kegagalan server dapat menghentikan transaksi harian pada BPR.';"+
+      "document.getElementById('ti-risk-asset-id').value="+JSON.stringify(riskAsset)+";"+
+      "document.getElementById('ti-risk-likelihood').value='4';"+
+      "document.getElementById('ti-risk-impact').value='5';"+
+      "document.getElementById('ti-risk-pic').value='Petugas Infrastruktur';"+
+      "document.getElementById('ti-risks-form').requestSubmit()");
+    await until("!document.getElementById('ti-risks-detail').hidden && "+
+      "document.getElementById('ti-risks-detail-values').textContent.includes('RSK-E2E-01')",
+      'risk created and detail opened');
+    const riskRow=await db.query("SELECT id,asset_id,likelihood*impact AS score,"+
+      "residual_likelihood FROM ti_risks WHERE risk_code='RSK-E2E-01'");
+    assert.equal(riskRow.rowCount,1);
+    assert.equal(riskRow.rows[0].asset_id,riskAsset);
+    assert.equal(riskRow.rows[0].score,20);
+    assert.equal(riskRow.rows[0].residual_likelihood,null);
+    await evalJs("document.getElementById('ti-risks-edit').click()");
+    await until("document.getElementById('ti-risks-dialog').open",'risk edit dialog');
+    await evalJs("document.getElementById('ti-risk-mitigation').value='Pengujian backup dan prosedur restore rutin.';"+
+      "document.getElementById('ti-risk-residual-likelihood').value='2';"+
+      "document.getElementById('ti-risk-residual-impact').value='3';"+
+      "document.getElementById('ti-risk-status').value='mitigating';"+
+      "document.getElementById('ti-risks-form').requestSubmit()");
+    await until("document.getElementById('ti-risks-detail-values').textContent.includes('6/25')",
+      'residual saved in risk detail');
+    assert.equal((await db.query("SELECT revision FROM ti_risks WHERE risk_code='RSK-E2E-01'")).rows[0].revision,2);
+    await evalJs("window.confirm=()=>true;document.getElementById('ti-risks-archive').click()");
+    await until("document.getElementById('ti-risks-detail-values').textContent.includes('Diarsipkan')",
+      'risk archived with history');
+    assert.equal((await db.query("SELECT count(*)::int n FROM ti_risk_events WHERE risk_id=$1",
+      [riskRow.rows[0].id])).rows[0].n,3);
+    await evalJs("document.getElementById('ti-risks-view').value='archived';"+
+      "document.getElementById('ti-risks-view').dispatchEvent(new Event('change'))");
+    await until("document.querySelectorAll('#ti-risks-list .ti-risk-list-item').length===1",
+      'archived risk filter');
     await evalJs("document.getElementById('assessment-menu').click()");
     await until("!document.getElementById('assessment-menu').hidden",'general assessment navigation');
     await evalJs("document.getElementById('assessment-menu').click()");
@@ -796,7 +852,7 @@ async function runBrowser(base,db,fixture){
     await evalJs("document.getElementById('mfa-login-code').value="+JSON.stringify(codes[0])+";"+
       "document.getElementById('mfa-login-form').requestSubmit()");
     await until("!document.getElementById('app-screen').hidden",'recovery login accepted');
-    console.log('Browser E2E PASS: asset register create/edit/archive/audit, general TI, PADK, MFA');
+    console.log('Browser E2E PASS: linked TI risk and assets, scoring/edit/archive/audit, general TI, PADK, MFA');
   }finally{
     await stopChromium(browser);
   }
@@ -822,6 +878,11 @@ async function main(){
         create:(db,args)=>createAssetInTransaction(db,args),
         update:(db,args)=>updateAssetInTransaction(db,args),
         archive:(db,args)=>archiveAssetInTransaction(db,args),
+      },
+      riskHandlers:{
+        create:(db,args)=>createRiskInTransaction(db,args),
+        update:(db,args)=>updateRiskInTransaction(db,args),
+        archive:(db,args)=>archiveRiskInTransaction(db,args),
       },
       evidenceKey:'ab'.repeat(32),
       padkEvidenceHandlers:{

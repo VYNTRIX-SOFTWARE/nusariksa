@@ -1,25 +1,25 @@
 const ROLE_PERMISSIONS = Object.freeze({
   SUPER_ADMIN: [
     'users:manage', 'assessments:read', 'evidence:read', 'reports:read', 'audit:read',
-    'assets:read', 'assets:write',
+    'assets:read', 'assets:write', 'risks:read', 'risks:write',
   ],
   IT_OFFICER: [
     'assessments:read', 'assessments:write', 'evidence:read', 'evidence:write', 'reports:read',
-    'assets:read', 'assets:write',
+    'assets:read', 'assets:write', 'risks:read', 'risks:write',
   ],
   COMPLIANCE_OFFICER: [
     'assessments:read', 'assessments:write', 'evidence:read', 'evidence:write',
-    'reports:read', 'audit:read', 'assets:read', 'assets:write',
+    'reports:read', 'audit:read', 'assets:read', 'assets:write', 'risks:read', 'risks:write',
   ],
   REVIEWER: [
     'assessments:read', 'assessments:approve', 'evidence:read', 'reports:read', 'audit:read',
-    'assets:read',
+    'assets:read', 'risks:read',
   ],
   AUDITOR: [
-    'assessments:read', 'evidence:read', 'reports:read', 'audit:read', 'assets:read',
+    'assessments:read', 'evidence:read', 'reports:read', 'audit:read', 'assets:read', 'risks:read',
   ],
   VIEWER: [
-    'assessments:read', 'evidence:read', 'reports:read', 'assets:read',
+    'assessments:read', 'evidence:read', 'reports:read', 'assets:read', 'risks:read',
   ],
 });
 

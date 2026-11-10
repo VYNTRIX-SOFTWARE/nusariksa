@@ -31,6 +31,12 @@ test('antarmuka web dan aset dimuat dari origin API dengan header keamanan', asy
     for(const id of ['page-ti-assets','asset-menu','ti-assets-form','ti-assets-list',
       'ti-assets-history','ti-assets-search','ti-assets-archive','ti-assets-kind-filter'])
       assert.match(source,new RegExp('id="'+id+'"'));
+    for(const id of ['page-ti-risks','risk-menu','ti-risks-form','ti-risks-detail',
+      'ti-risks-history','ti-risk-asset-id','ti-risk-inherent-preview','ti-risk-residual-preview'])
+      assert.match(source,new RegExp('id="'+id+'"'));
+    const riskJs=await fetch(base+'/assets/ti-risks-ui.js');
+    assert.equal(riskJs.status,200);
+    assert.match(riskJs.headers.get('content-type'),/javascript/);
     const assetsJs=await fetch(base+'/assets/ti-assets-ui.js');
     assert.equal(assetsJs.status,200);
     assert.match(assetsJs.headers.get('content-type'),/javascript/);

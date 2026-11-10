@@ -15,6 +15,7 @@ import { createMaturityAssessmentUI } from './maturity-assessment-ui.js';
 import {createPadkPreparationUI} from './padk-preparation-ui.js';
 import {createAdminOnboardingUI} from './admin-onboarding-ui.js';
 import {createAssetRegisterUI} from './ti-assets-ui.js';
+import {createRiskRegisterUI} from './ti-risks-ui.js';
 import {createCrosswalkReviewUI} from './padk-crosswalk-review-ui.js';
 
 const $ = (id) => document.getElementById(id);
@@ -25,7 +26,7 @@ const state = {
   userId: null, permissions: [], assessments: [], load: 'loading', page: 'overview',
   year: 'all', status: 'all', search: '', sort: 'newest', workspaceOrigin:'assessments',
 };
-const pages = {overview: 'Dashboard', assessments: 'Daftar Asesmen', reviews: 'Review & Persetujuan', reports: 'Laporan Asesmen', catalogs: 'Katalog Kontrol', maturity: 'Metodologi Maturitas', 'maturity-assessments': 'Penilaian Maturitas', 'padk-preparations':'Persiapan PADK', 'padk-crosswalk':'QA Pemetaan PADK', 'admin-onboarding':'Akses Pengguna', 'ti-assets':'Inventaris Aset TI', workspace: 'Assessment Workspace'};
+const pages = {overview: 'Dashboard', assessments: 'Daftar Asesmen', reviews: 'Review & Persetujuan', reports: 'Laporan Asesmen', catalogs: 'Katalog Kontrol', maturity: 'Metodologi Maturitas', 'maturity-assessments': 'Penilaian Maturitas', 'padk-preparations':'Persiapan PADK', 'padk-crosswalk':'QA Pemetaan PADK', 'admin-onboarding':'Akses Pengguna', 'ti-assets':'Inventaris Aset TI', 'ti-risks':'Register Risiko TI', workspace: 'Assessment Workspace'};
 
 function show(screen) {
   for (const [name, element] of Object.entries(screens)) element.hidden = name !== screen;
@@ -75,6 +76,7 @@ function cleanSession() {
   padkCrosswalk.clear();
   adminOnboarding.clear();
   assetRegister.clear();
+  riskRegister.clear();
   notice('');
 }
 function authFailure(error) {
@@ -133,7 +135,8 @@ function renderPermissions() {
   $('admin-setup-menu').hidden=!state.permissions.includes('users:manage');
   $('admin-menu-group').hidden=!state.permissions.includes('users:manage');
   $('asset-menu').hidden=!state.permissions.includes('assets:read');
-  assetRegister.sync();
+  $('risk-menu').hidden=!state.permissions.includes('risks:read');
+  assetRegister.sync();riskRegister.sync();
   renderGettingStarted();
   const hasRead=state.permissions.includes('assessments:read');
   $('assessment-menu').hidden=!hasRead;
@@ -303,6 +306,7 @@ function navigate(page) {
   if(page==='reports'&&!state.permissions.includes('reports:read'))return false;
   if(page==='admin-onboarding'&&!state.permissions.includes('users:manage'))return false;
   if(page==='ti-assets'&&!state.permissions.includes('assets:read'))return false;
+  if(page==='ti-risks'&&!state.permissions.includes('risks:read'))return false;
   if(['reviews','padk-crosswalk'].includes(page)&&!state.permissions.includes('assessments:approve'))return false;
   if(state.page==='workspace' && page!=='workspace' && !workspace.confirmLeave())return false;
   if(state.page==='maturity' && page!=='maturity' && !maturity.confirmLeave())return false;
@@ -322,6 +326,7 @@ function navigate(page) {
   $('topbar-page').textContent=pages[page];
   notice('');closeMobile();
   if(page==='ti-assets')void assetRegister.load();
+  if(page==='ti-risks')void riskRegister.load();
   if(page==='catalogs') void catalogs.load();
   if(page==='maturity') void maturity.load();
   if(page==='maturity-assessments') void maturityAssessments.load();
@@ -642,6 +647,9 @@ $('detail-dialog').addEventListener('click',(event)=>{
 const padkCrosswalk=createCrosswalkReviewUI({
   api:requestJson,getPermissions:()=>state.permissions,
   getUserId:()=>state.userId,onAuthFailure:authFailure,
+});
+const riskRegister=createRiskRegisterUI({
+  api:requestJson,getPermissions:()=>state.permissions,onAuthFailure:authFailure,
 });
 const assetRegister=createAssetRegisterUI({
   api:requestJson,getPermissions:()=>state.permissions,onAuthFailure:authFailure,

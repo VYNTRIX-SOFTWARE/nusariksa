@@ -86,6 +86,14 @@ Pada menu **Inventaris Aset TI**, petugas TI/kepatuhan mengelola aset dengan kod
 
 Perubahan menggunakan **optimistic revision** agar dua pengguna tidak saling menimpa data. Arsip tidak menghapus aset atau kode yang telah dipakai. Relasi risiko/insiden akan menyusul ketika modul terkait tersedia, tanpa membuat data relasi fiktif.
 
+## Register Risiko TI (MVP, Modul 9)
+
+Petugas TI atau kepatuhan dapat membuka **Register Risiko TI**, mencatat risiko dengan skenario, PIC, tenggat mitigasi, dan opsional mengaitkannya dengan aset inventaris aktif. Risiko inheren ditentukan dari **kemungkinan × dampak**, masing-masing skala 1–5. Skor kerja **internal NusaRiksa**: 1–4 rendah, 5–9 sedang, 10–16 tinggi, 17–25 kritis; ini **bukan** skor resmi POJK maupun PADK. Risiko residual tidak otomatis muncul sebelum petugas mengisi kedua parameternya.
+
+Tersedia daftar, pencarian kode/judul/PIC, filter status/tingkat risiko/aset, histori revisi, dan arsip yang tidak menghapus jejak audit. Kode risiko tidak dapat diganti. Menutup risiko membutuhkan mitigasi terisi dan residual maksimal sedang; proses penerimaan risiko tinggi dengan persetujuan pimpinan belum tersedia sehingga tidak dipalsukan sebagai "Ditutup".
+
+Relasi risiko–aset memakai foreign key yang benar, dan bank tidak dapat membuat referensi baru ke aset diarsipkan. Arsip aset lama tetap dapat dirujuk oleh risiko historis. Perubahan konflik ditolak menggunakan `expectedRevision`.
+
 ## Mengisi penilaian PADK
 
 1. Login, buat penilaian berdasarkan periode, lalu pilih kategori sesuai layanan BPR/BPRS.
