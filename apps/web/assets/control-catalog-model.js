@@ -62,7 +62,8 @@ export function validateControlDraft({
 export function parseCatalogs(data) {
   if (!data || !Array.isArray(data.catalogs)
     || data.catalogs.some(c => !c || !isCatalogId(c.id)
-      || typeof c.code !== 'string' || typeof c.title !== 'string')) {
+      || typeof c.code !== 'string' || typeof c.title !== 'string'
+      || (c.origin!==undefined&&!['builtin','custom'].includes(c.origin)))) {
     throw new TypeError('Daftar katalog dari API tidak valid.');
   }
   return data.catalogs;

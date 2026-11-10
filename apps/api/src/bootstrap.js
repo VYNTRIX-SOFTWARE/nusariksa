@@ -45,6 +45,9 @@ export async function initializeInstitutionInTransaction(client, setup) {
     "VALUES ($1, $1, 'SUPER_ADMIN', 'GRANT', 'BOOTSTRAP')",
     [userId],
   );
+  // Bootstrap and default baseline are committed atomically.
+  const seeded=await client.query('SELECT ensure_builtin_control_catalog($1) AS version_id',[userId]);
+  if(!seeded.rows[0].version_id)throw new Error('Could not initialize internal baseline catalog');
   return { userId, email, institutionName: name, institutionKind };
 }
 

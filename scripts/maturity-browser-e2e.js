@@ -16,6 +16,8 @@ import {createPendingAccountInTransaction,activatePendingAccountInTransaction,
   listAccounts} from '../apps/api/src/user-accounts.js';
 import {applyRoleChangeInTransaction} from '../apps/api/src/role-management.js';
 import {createPadkPreparationInTransaction,savePadkPreparationInTransaction} from '../apps/api/src/padk-preparations.js';
+import {createAssessmentInTransaction} from '../apps/api/src/assessments.js';
+import {assignCatalogInTransaction} from '../apps/api/src/control-catalogs.js';
 import {savePadkIndicatorNoteInTransaction} from '../apps/api/src/padk-preparation-indicators.js';
 import {submitPadkDraftInTransaction,reviewPadkDraftInTransaction} from '../apps/api/src/padk-draft-review.js';
 import {uploadPadkEvidenceInTransaction} from '../apps/api/src/padk-evidence.js';
@@ -173,6 +175,12 @@ async function seed(db){
     "($1,'IT_OFFICER'),($2,'REVIEWER'),($3,'VIEWER'),($4,'SUPER_ADMIN')",
     [users.maker,users.reviewer,users.viewer,users.admin],
   );
+  const builtin=await db.query('SELECT ensure_builtin_control_catalog($1) AS version_id',[users.admin]);
+  assert.ok(builtin.rows[0].version_id);
+  const generalAssessment=await createAssessmentInTransaction(db,{
+    actorId:users.maker,title:'Asesmen Kontrol TI Baseline 2026',
+    periodStart:'2026-01-01',periodEnd:'2026-12-31',
+  });
   const model=await createMaturityModelInTransaction(db,{
     actorId:users.maker,code:'BROWSER_MAT',title:'Maturitas internal browser',
     methodologyReference:'Rubrik internal untuk E2E tanpa klaim OJK',
@@ -204,7 +212,7 @@ async function seed(db){
       level:index+1,expectedRevision:0,
       justification:'Hasil awal diperiksa melalui browser dengan data uji internal.',
     });
-  return {password,assessmentId:assessment.id,domains};
+  return {password,assessmentId:assessment.id,generalAssessmentId:generalAssessment.id,domains};
 }
 async function runBrowser(base,db,fixture){
   const browser=await launchChromium();
@@ -299,6 +307,33 @@ async function runBrowser(base,db,fixture){
     assert.equal(await evalJs("document.getElementById('pdk-create-form').hidden"),false);
     await logout();
     await login('maker');
+    await until("!document.getElementById('assessment-menu').hidden",'general assessment navigation');
+    await evalJs("document.getElementById('assessment-menu').click()");
+    await until("!!document.querySelector('#assessments-table [data-workspace-id]')",
+      'assessment on list');
+    await evalJs("document.querySelector('#assessments-table [data-workspace-id]').click()");
+    await until("!document.getElementById('workspace-setup').hidden && "+
+      "document.getElementById('workspace-catalog').value!==''",
+      'recommended published baseline is selected');
+    assert.equal(await evalJs("document.getElementById('workspace-catalog').selectedOptions[0].textContent.includes('KATALOG BAWAAN')"),true);
+    assert.equal(await evalJs("document.getElementById('workspace-default-catalog-hint').textContent.includes('tidak dapat dibatalkan')"),true);
+    assert.equal(await evalJs("document.getElementById('workspace-control-count').textContent"),'0 kontrol');
+    await evalJs("window.confirm=()=>true;document.getElementById('workspace-attach').click()");
+    try{
+      await until("document.getElementById('workspace-control-count').textContent==='26 kontrol'",
+        '26 baseline controls attached after user confirmation');
+    }catch(error){
+      const ui=await evalJs("({message:document.getElementById('workspace-message').textContent,"+
+        "count:document.getElementById('workspace-control-count').textContent,"+
+        "tag:document.getElementById('workspace-catalog-tag').textContent,"+
+        "disabled:document.getElementById('workspace-attach').disabled,"+
+        "value:document.getElementById('workspace-catalog').value})");
+      const check=await db.query('SELECT count(*)::int AS n FROM assessment_catalog_assignments WHERE assessment_id=$1',
+        [fixture.generalAssessmentId]);
+      throw new Error(error.message+' | synthetic UI: '+JSON.stringify(ui)+
+        ' | assignmentCount: '+check.rows[0].n);
+    }
+    assert.equal(await evalJs("document.getElementById('workspace-catalog-tag').textContent.includes('NUSARIKSA_BPR_INTERNAL')"),true);
     await openPadk();
     await until("!document.getElementById('pdk-create-toggle').hidden && !document.getElementById('pdk-create-toggle').disabled",'PADK create permission');
     await evalJs("document.getElementById('pdk-create-toggle').click()");
@@ -665,6 +700,7 @@ async function main(){
     const origin='http://localhost:'+port;
     server=createServer({
       authDb:client,appOrigin:origin,
+      catalogHandlers:{assign:(db,args)=>assignCatalogInTransaction(db,args)},
       evidenceKey:'ab'.repeat(32),
       padkEvidenceHandlers:{
         upload:(db,args)=>uploadPadkEvidenceInTransaction(db,args),

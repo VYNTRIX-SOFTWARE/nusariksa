@@ -98,9 +98,9 @@ export async function createCatalogInTransaction(db, { actorId, ...data }) {
 export async function listCatalogs(db, actorId) {
   await requirePermission(db, actorId, 'assessments:read');
   const result = await db.query(
-    'SELECT c.id, c.code, c.title FROM control_catalogs c ' +
+    'SELECT c.id, c.code, c.title, c.origin FROM control_catalogs c ' +
     'JOIN users u ON u.institution_id = c.institution_id AND u.id = $1 ' +
-    'ORDER BY c.code LIMIT 50',
+    "ORDER BY CASE WHEN c.origin = 'builtin' THEN 0 ELSE 1 END, c.code LIMIT 50",
     [actorId],
   );
   return { catalogs: result.rows };

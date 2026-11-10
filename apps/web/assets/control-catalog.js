@@ -47,7 +47,8 @@ export function createControlCatalogManagement({ api, getPermissions, onAuthFail
       button.classList.toggle('is-selected', catalog.id === state.catalogId);
       button.setAttribute('aria-pressed', String(catalog.id === state.catalogId));
       button.disabled = state.busy;
-      button.append(node('strong', 'catalog-list-code', catalog.code),
+      button.append(node('strong', 'catalog-list-code',
+        catalog.code+(catalog.origin==='builtin'?' · BAWAAN':'')),
         node('span', 'catalog-list-title', catalog.title));
       root.append(button);
     }
@@ -56,7 +57,9 @@ export function createControlCatalogManagement({ api, getPermissions, onAuthFail
     const root = $('catalog-versions');
     root.replaceChildren();
     const catalog = currentCatalog();
-    $('catalog-active-title').textContent = catalog ? catalog.code + ' · ' + catalog.title : 'Pilih katalog';
+    $('catalog-active-title').textContent = catalog
+      ? (catalog.origin==='builtin'?'Template internal bawaan · ':'')+
+        catalog.code+' · '+catalog.title : 'Pilih katalog';
     if (!catalog) {
       root.append(node('p', 'empty-note', 'Pilih katalog untuk melihat versi.'));
       return;
@@ -127,7 +130,7 @@ export function createControlCatalogManagement({ api, getPermissions, onAuthFail
     $('catalog-next-version').disabled = state.busy;
     $('catalog-refresh').disabled = state.busy;
     $('catalog-status-hint').textContent = !ready
-      ? 'Pilih katalog dan versi untuk melihat kontrol.'
+      ? 'Pilih katalog dan versi untuk melihat kontrol. Template bawaan tersedia otomatis; katalog lain bisa dibuat manual.'
       : state.version.status === 'published'
         ? 'Versi terbit terkunci. Buat versi Draft berikutnya untuk menambahkan kontrol.'
         : 'Versi Draft: kontrol baru dapat ditambahkan. API belum mendukung mengedit atau menghapus kontrol yang sudah dibuat.';

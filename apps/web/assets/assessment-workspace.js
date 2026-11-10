@@ -223,15 +223,24 @@ export function createWorkspace({
         const response=await api('/catalogs/'+encodeURIComponent(catalog.id)+'/versions');
         return (Array.isArray(response.versions)?response.versions:[])
           .filter(v=>v.status==='published').map(v=>({
-            id:v.id, name:catalog.code+' · '+catalog.title+' / v'+v.version,
+            id:v.id,builtin:catalog.origin==='builtin',
+            name:(catalog.origin==='builtin'?'KATALOG BAWAAN · ':'')+
+              catalog.title+' / v'+v.version,
           }));
       }));
       if(gen!==state.generation)return;
-      select.replaceChildren(new Option('Pilih versi terpublikasi',''));
-      for(const version of versions.flat())select.add(new Option(version.name,version.id));
-      select.disabled=versions.flat().length===0;
+      const candidates=versions.flat();
+      select.replaceChildren(new Option('Pilih katalog penilaian',''));
+      for(const version of candidates)select.add(new Option(version.name,version.id));
+      select.disabled=candidates.length===0;
+      // Suggest but never attach silently: attachment is immutable.
+      const recommended=candidates.find(x=>x.builtin);
+      if(recommended)select.value=recommended.id;
       $('workspace-attach').disabled=select.disabled;
-      if(select.disabled) showMessage('Belum ada katalog terpublikasi pada daftar (maksimal 50 katalog dan 50 versi per katalog). Katalog masih dikelola lewat API.','warning');
+      $('workspace-default-catalog-hint').textContent=recommended
+        ?'Katalog internal bawaan sudah dipilih. Periksa lalu klik Pasang katalog; pemasangan tidak dapat dibatalkan.'
+        :'Pilih katalog terbit atau buat katalog baru melalui menu Katalog Kontrol.';
+      if(select.disabled)showMessage('Belum ada katalog terbit. Buat dan terbitkan katalog dari menu Katalog Kontrol.','warning');
     }catch(error){
       if(gen!==state.generation)return;
       if(onAuthFailure(error))return;
@@ -251,7 +260,7 @@ export function createWorkspace({
       message('workspace-setup-note',!allowed()
         ?'Hanya pemilik asesmen yang memiliki izin tulis yang dapat menyiapkan asesmen.'
         :state.catalog?'Katalog terpasang dan terkunci. Anda dapat memulai asesmen.':
-        'Pilih katalog versi terpublikasi. Katalog tidak dapat diganti setelah dipasang.');
+        'Katalog bawaan tersedia tanpa input kontrol manual. Pasang versi yang dipilih sebelum memulai; pilihan akan terkunci.');
       if(attach)void catalogChoices(gen);
     }
   }
