@@ -150,7 +150,34 @@ Daftar temuan dapat dicari serta difilter menurut prioritas, status, dan asal pe
 
 **Referensi bukti** berisi keterangan yang dapat ditelusuri, seperti nomor tiket, nama berita acara, atau lokasi dokumen internal. Kolom ini belum menggantikan pemeriksaan dokumen aslinya. Jangan mencantumkan kata sandi atau data nasabah yang tidak diperlukan.
 
-## 8. Dokumen bukti dan riwayat pemeriksaan
+## 8. Mengelola penyedia layanan dan kontrak TI
+
+Buka **Vendor TI** untuk mencatat penyedia jasa, kontrak, serta hasil evaluasi layanan yang digunakan lembaga.
+
+### Mencatat penyedia dan kontrak
+
+1. Klik **Tambah penyedia**. Masukkan kode, nama penyedia, kategori layanan, tingkat kritikalitas, dan PIC internal.
+2. Isi kontak penyedia apabila tersedia, lalu simpan.
+3. Buka penyedia tersebut dan pilih **Tambah kontrak**.
+4. Masukkan kode kontrak, nama layanan, nomor perjanjian, ruang lingkup, tanggal mulai dan berakhir, serta PIC.
+5. Isi target ketersediaan dan target waktu respons **hanya jika tercantum dalam perjanjian**. Biarkan kosong jika tidak ada.
+6. Klik **Simpan kontrak**.
+
+Pada daftar penyedia dan detail kontrak, NusaRiksa menunjukkan kontrak yang masih berlaku, akan berakhir dalam 30 hari, atau sudah melewati tanggal berakhir. Penanda tersebut dihitung dari tanggal yang dimasukkan petugas, bukan dari konfirmasi langsung penyedia.
+
+### Mencatat evaluasi layanan
+
+1. Pilih kontrak yang akan dievaluasi.
+2. Klik **Catat evaluasi**, kemudian masukkan periode penilaian.
+3. Isi nilai ketersediaan dan waktu respons terukur berdasarkan laporan atau bukti yang benar-benar tersedia.
+4. Tambahkan hasil pemeriksaan dan rencana tindak lanjut.
+5. Klik **Simpan evaluasi**.
+
+NusaRiksa membandingkan realisasi dengan target numerik yang diisi pada kontrak. Jika target atau pengukuran yang diperlukan belum tersedia, hasilnya ditampilkan sebagai **Belum dapat dinilai**. Perbandingan numerik tidak menggantikan penilaian seluruh ketentuan SLA atau kinerja penyedia.
+
+Evaluasi yang telah disimpan menjadi catatan tetap. Sesudah ada evaluasi, periode kontrak dan target SLA tidak bisa diubah pada catatan yang sama. Untuk kontrak yang telah diakhiri, gunakan status **Diakhiri** dan arsipkan bila diperlukan. Data riwayat perjanjian maupun hasil evaluasi tetap tersimpan.
+
+## 9. Dokumen bukti dan riwayat pemeriksaan
 
 Untuk hasil pemeriksaan yang memerlukan bukti, unggah berkas yang sesuai dengan kontrol atau indikator. Gunakan dokumen yang memang berlaku di lembaga, periksa isinya sebelum mengunggah, dan jangan membuat bukti hanya untuk memenuhi kolom aplikasi.
 
@@ -158,7 +185,7 @@ Riwayat perubahan membantu petugas menelusuri kapan informasi diperbarui. Pada p
 
 Jangan memasukkan password, token akses, kunci enkripsi, atau data pribadi nasabah yang tidak diperlukan ke dalam catatan dan lampiran.
 
-## 9. Jika mengalami kendala
+## 10. Jika mengalami kendala
 
 | Kondisi | Tindakan yang disarankan |
 | --- | --- |
@@ -169,10 +196,12 @@ Jangan memasukkan password, token akses, kunci enkripsi, atau data pribadi nasab
 | Risiko tidak muncul sebagai pilihan insiden | Pastikan risiko masih aktif dan pilih aset yang sesuai jika risiko sudah tertaut ke aset tertentu. |
 | Insiden tidak dapat ditutup | Periksa status sebelumnya serta kelengkapan akar penyebab dan hasil pemulihan. |
 | Temuan tidak dapat diajukan | Periksa kelengkapan rencana, catatan hasil tindakan, dan referensi bukti. |
+| Penyedia tidak bisa diarsipkan | Akhiri terlebih dahulu kontrak yang masih berstatus aktif. |
+| Evaluasi vendor ditolak | Pastikan periode berada dalam masa kontrak dan realisasi hanya diisi untuk target SLA yang tercantum. |
 | Tombol verifikasi tidak tersedia | Pastikan akun pemeriksa punya hak verifikasi dan bukan pembuat temuan. |
 | Bukti tidak dapat dibuka atau diunggah | Hubungi administrator untuk memeriksa izin berkas dan konfigurasi penyimpanan bukti. |
 
-## 10. Meninjau hasil sebelum digunakan
+## 11. Meninjau hasil sebelum digunakan
 
 Gunakan hasil asesmen dan catatan operasional sebagai bahan pemeriksaan serta pengambilan keputusan internal. Sebelum menjadikannya dasar laporan eksternal, petugas yang berwenang perlu meninjau ketepatan data, bukti, perhitungan, dan ketentuan yang relevan.
 

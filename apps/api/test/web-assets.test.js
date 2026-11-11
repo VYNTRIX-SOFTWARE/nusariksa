@@ -43,6 +43,13 @@ test('antarmuka web dan aset dimuat dari origin API dengan header keamanan', asy
       'ti-findings-detail','ti-findings-review-form','ti-finding-source-type',
       'ti-findings-submit','ti-findings-history','ti-findings-archive'])
       assert.match(source,new RegExp('id="'+id+'"'));
+    for(const id of ['page-ti-vendors','vendor-menu','ti-vendors-dialog',
+      'ti-vendors-contract-dialog','ti-vendors-review-dialog','ti-vendors-list',
+      'ti-vendors-contracts','ti-vendors-reviews','ti-vendors-history'])
+      assert.match(source,new RegExp('id="'+id+'"'));
+    const vendorJs=await fetch(base+'/assets/ti-vendors-ui.js');
+    assert.equal(vendorJs.status,200);
+    assert.match(vendorJs.headers.get('content-type'),/javascript/);
     const findingJs=await fetch(base+'/assets/ti-findings-ui.js');
     assert.equal(findingJs.status,200);
     assert.match(findingJs.headers.get('content-type'),/javascript/);

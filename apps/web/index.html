@@ -136,6 +136,9 @@
         <button type="button" class="nav-link" data-page="ti-findings" id="finding-menu" title="Tindak Lanjut Temuan" hidden>
           <svg class="icon nav-icon"><use href="#i-clipboard"></use></svg><span class="nav-label">Tindak Lanjut Temuan</span>
         </button>
+        <button type="button" class="nav-link" data-page="ti-vendors" id="vendor-menu" title="Pengelolaan Vendor TI" hidden>
+          <svg class="icon nav-icon"><use href="#i-clipboard"></use></svg><span class="nav-label">Vendor TI</span>
+        </button>
         <div class="sidebar-section-label sidebar-gap" id="admin-menu-group" hidden>PENGATURAN</div>
         <button type="button" class="nav-link" data-page="admin-onboarding" id="admin-setup-menu" title="Kelola akses pengguna" hidden>
           <svg class="icon nav-icon"><use href="#i-clipboard"></use></svg><span class="nav-label">Akses Pengguna</span>
@@ -266,6 +269,90 @@
               <div id="admin-users-list" class="onboard-user-list" aria-live="polite"></div>
             </section>
           </div>
+        </section>
+
+        <section id="page-ti-vendors" class="page" aria-labelledby="ti-vendors-title" hidden>
+          <div class="page-intro">
+            <div><p class="eyebrow">TATA KELOLA TI / PIHAK KETIGA</p><h1 id="ti-vendors-title">Pengelolaan Vendor TI</h1>
+              <p class="supporting-copy">Catat penyedia layanan, kontrak, target layanan, masa berlaku, dan hasil evaluasinya.</p>
+            </div>
+            <button id="ti-vendors-create" type="button" class="button button-primary workspace-primary" hidden>Tambah penyedia</button>
+          </div>
+          <p id="ti-vendors-message" class="workspace-message" role="status" aria-live="polite" hidden></p>
+          <section class="panel-card">
+            <p class="ti-vendor-guidance">Periksa kontrak yang berakhir dalam 30 hari atau telah melewati masa berlaku.
+              Penanda masa berlaku berasal dari tanggal perjanjian yang dicatat dan tidak menggantikan pemeriksaan dokumen kontrak.</p>
+            <form id="ti-vendors-filter-form" class="ti-vendor-filters">
+              <label for="ti-vendors-search">Cari kode, penyedia atau PIC
+                <input id="ti-vendors-search" type="search" maxlength="80" placeholder="Contoh: VND-CBS-01">
+              </label>
+              <label for="ti-vendors-view">Tampilan
+                <select id="ti-vendors-view"><option value="active">Belum diarsipkan</option>
+                  <option value="archived">Diarsipkan</option><option value="all">Semua</option></select>
+              </label>
+              <label for="ti-vendors-category-filter">Layanan
+                <select id="ti-vendors-category-filter"><option value="all">Semua</option>
+                  <option value="core_banking">Core banking</option>
+                  <option value="infrastructure">Infrastruktur &amp; jaringan</option>
+                  <option value="cybersecurity">Keamanan siber</option>
+                  <option value="cloud">Cloud &amp; hosting</option>
+                  <option value="software">Aplikasi</option>
+                  <option value="other">Lainnya</option></select>
+              </label>
+              <label for="ti-vendors-status-filter">Status penyedia
+                <select id="ti-vendors-status-filter"><option value="all">Semua</option>
+                  <option value="active">Aktif</option><option value="inactive">Tidak aktif</option></select>
+              </label>
+              <button type="submit" class="button button-outline">Cari</button>
+              <button id="ti-vendors-refresh" type="button" class="button button-outline">Muat ulang</button>
+            </form>
+            <div id="ti-vendors-list" class="ti-assets-list" aria-live="polite"></div>
+            <div class="ti-asset-pagination">
+              <span id="ti-vendors-position" class="workspace-help">Belum dimuat</span>
+              <button id="ti-vendors-prev" type="button" class="button button-outline" disabled>Sebelumnya</button>
+              <button id="ti-vendors-next" type="button" class="button button-outline" disabled>Berikutnya</button>
+            </div>
+          </section>
+          <section id="ti-vendors-detail" class="panel-card" hidden>
+            <div class="panel-heading">
+              <h2>Detail penyedia</h2>
+              <div class="ti-assets-actions">
+                <button id="ti-vendors-edit" type="button" class="button button-outline">Ubah penyedia</button>
+                <button id="ti-vendors-archive" type="button" class="button button-outline">Arsipkan penyedia</button>
+              </div>
+            </div>
+            <dl id="ti-vendors-detail-values" class="ti-assets-detail-values"></dl>
+            <div class="ti-vendor-contracts-panel">
+              <div class="panel-heading">
+                <h3>Kontrak dan layanan</h3>
+                <button id="ti-vendors-add-contract" type="button" class="button button-primary">Tambah kontrak</button>
+              </div>
+              <p id="ti-vendors-contracts-note" class="workspace-help"></p>
+              <div id="ti-vendors-contracts" class="ti-assets-list" aria-live="polite"></div>
+            </div>
+            <section id="ti-vendors-contract-detail" class="ti-vendor-contract-detail" hidden>
+              <div class="panel-heading">
+                <h3>Rincian kontrak</h3>
+                <div class="ti-assets-actions">
+                  <button id="ti-vendors-edit-contract" type="button" class="button button-outline">Ubah kontrak</button>
+                  <button id="ti-vendors-archive-contract" type="button" class="button button-outline">Arsipkan kontrak</button>
+                </div>
+              </div>
+              <dl id="ti-vendors-contract-values" class="ti-assets-detail-values"></dl>
+              <div class="ti-vendor-reviews-panel">
+                <div class="panel-heading">
+                  <h3>Evaluasi layanan dan SLA</h3>
+                  <button id="ti-vendors-add-review" type="button" class="button button-primary">Catat evaluasi</button>
+                </div>
+                <p id="ti-vendors-reviews-note" class="workspace-help"></p>
+                <div id="ti-vendors-reviews" class="ti-vendor-review-list" aria-live="polite"></div>
+              </div>
+            </section>
+            <details class="ti-vendor-history-panel">
+              <summary>Riwayat perubahan penyedia dan kontrak</summary>
+              <ol id="ti-vendors-history" class="ti-vendor-history-list"></ol>
+            </details>
+          </section>
         </section>
 
         <section id="page-ti-findings" class="page" aria-labelledby="ti-findings-title" hidden>
@@ -1778,6 +1865,147 @@
       <div class="workspace-save-actions">
         <button id="ti-findings-save" type="submit" class="button button-primary">Simpan temuan</button>
         <button id="ti-findings-cancel" type="button" class="button button-outline">Batal</button>
+      </div>
+    </form>
+  </dialog>
+  <dialog id="ti-vendors-dialog" class="workspace-dialog" aria-labelledby="ti-vendors-dialog-title">
+    <form id="ti-vendors-form" class="maturity-edit-form">
+      <h2 id="ti-vendors-dialog-title">Tambah penyedia TI</h2>
+      <p class="workspace-help">Catat penyedia yang benar-benar memiliki hubungan layanan dengan lembaga.</p>
+      <label for="ti-vendor-code">Kode penyedia
+        <input id="ti-vendor-code" required minlength="2" maxlength="32"
+          pattern="[A-Z][A-Z0-9_-]{1,31}" placeholder="VND-CBS-01">
+      </label>
+      <label for="ti-vendor-name">Nama penyedia
+        <input id="ti-vendor-name" required minlength="3" maxlength="200"
+          placeholder="Nama badan usaha penyedia layanan">
+      </label>
+      <div class="ti-vendor-cols">
+        <label for="ti-vendor-category">Kategori layanan
+          <select id="ti-vendor-category">
+            <option value="core_banking">Core banking</option>
+            <option value="infrastructure">Infrastruktur &amp; jaringan</option>
+            <option value="cybersecurity">Keamanan siber</option>
+            <option value="cloud">Cloud &amp; hosting</option>
+            <option value="software">Aplikasi</option><option value="other" selected>Lainnya</option></select>
+        </label>
+        <label for="ti-vendor-criticality">Kritikalitas penyedia
+          <select id="ti-vendor-criticality"><option value="low">Rendah</option>
+            <option value="medium" selected>Sedang</option><option value="high">Tinggi</option></select>
+        </label>
+      </div>
+      <label for="ti-vendor-pic">PIC internal BPR
+        <input id="ti-vendor-pic" required minlength="2" maxlength="120" placeholder="Petugas TI">
+      </label>
+      <div class="ti-vendor-cols">
+        <label for="ti-vendor-contact">Nama kontak penyedia
+          <input id="ti-vendor-contact" maxlength="120">
+        </label>
+        <label for="ti-vendor-email">Email kontak
+          <input id="ti-vendor-email" type="email" maxlength="254">
+        </label>
+      </div>
+      <label for="ti-vendor-phone">Nomor telepon kontak
+        <input id="ti-vendor-phone" maxlength="60">
+      </label>
+      <label for="ti-vendor-status">Status penyedia
+        <select id="ti-vendor-status"><option value="active">Aktif</option>
+          <option value="inactive">Tidak aktif</option></select>
+      </label>
+      <label for="ti-vendor-note">Catatan
+        <textarea id="ti-vendor-note" rows="3" maxlength="2000"></textarea>
+      </label>
+      <p id="ti-vendors-form-error" class="form-error" role="alert" hidden></p>
+      <div class="workspace-save-actions">
+        <button id="ti-vendors-save" type="submit" class="button button-primary">Simpan penyedia</button>
+        <button id="ti-vendors-cancel" type="button" class="button button-outline">Batal</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="ti-vendors-contract-dialog" class="workspace-dialog" aria-labelledby="ti-vendors-contract-dialog-title">
+    <form id="ti-vendors-contract-form" class="maturity-edit-form">
+      <h2 id="ti-vendors-contract-dialog-title">Tambah kontrak layanan</h2>
+      <p class="workspace-help">Gunakan tanggal dan target layanan sesuai dokumen perjanjian yang berlaku.</p>
+      <label for="ti-vendor-contract-code">Kode kontrak
+        <input id="ti-vendor-contract-code" required minlength="2" maxlength="32"
+          pattern="[A-Z][A-Z0-9_-]{1,31}" placeholder="CTR-CBS-2026">
+      </label>
+      <label for="ti-vendor-contract-service">Nama layanan
+        <input id="ti-vendor-contract-service" required minlength="3" maxlength="200"
+          placeholder="Pemeliharaan core banking">
+      </label>
+      <label for="ti-vendor-contract-reference">Nomor / referensi perjanjian
+        <input id="ti-vendor-contract-reference" required minlength="3" maxlength="160"
+          placeholder="PKS-001/2026">
+      </label>
+      <label for="ti-vendor-contract-description">Ruang lingkup layanan
+        <textarea id="ti-vendor-contract-description" rows="2" maxlength="2000"></textarea>
+      </label>
+      <div class="ti-vendor-cols">
+        <label for="ti-vendor-contract-start">Tanggal mulai
+          <input id="ti-vendor-contract-start" type="date" required>
+        </label>
+        <label for="ti-vendor-contract-end">Tanggal berakhir
+          <input id="ti-vendor-contract-end" type="date" required>
+        </label>
+      </div>
+      <label for="ti-vendor-contract-pic">PIC internal
+        <input id="ti-vendor-contract-pic" required minlength="2" maxlength="120">
+      </label>
+      <div class="ti-vendor-cols">
+        <label for="ti-vendor-contract-uptime">Target ketersediaan (%), jika ada
+          <input id="ti-vendor-contract-uptime" type="number" min="0" max="100" step="0.01" placeholder="99.50">
+        </label>
+        <label for="ti-vendor-contract-response">Target respons (jam), jika ada
+          <input id="ti-vendor-contract-response" type="number" min="0" max="999999.99" step="0.01" placeholder="4">
+        </label>
+      </div>
+      <p class="workspace-help">Kosongkan target yang tidak dinyatakan dalam perjanjian. Nilai target tidak boleh diasumsikan sebagai persyaratan regulator.</p>
+      <label for="ti-vendor-contract-status">Status kontrak
+        <select id="ti-vendor-contract-status"><option value="active">Aktif</option>
+          <option value="ended">Diakhiri</option></select>
+      </label>
+      <label for="ti-vendor-contract-note">Catatan
+        <textarea id="ti-vendor-contract-note" rows="2" maxlength="2000"></textarea>
+      </label>
+      <p id="ti-vendors-contract-form-error" class="form-error" role="alert" hidden></p>
+      <div class="workspace-save-actions">
+        <button id="ti-vendors-contract-save" type="submit" class="button button-primary">Simpan kontrak</button>
+        <button id="ti-vendors-contract-cancel" type="button" class="button button-outline">Batal</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="ti-vendors-review-dialog" class="workspace-dialog" aria-labelledby="ti-vendors-review-title">
+    <form id="ti-vendors-review-form" class="maturity-edit-form">
+      <h2 id="ti-vendors-review-title">Evaluasi layanan</h2>
+      <p class="workspace-help">Catat hasil pengukuran yang didukung catatan layanan. Jika belum diukur, biarkan kolom realisasi kosong.</p>
+      <div class="ti-vendor-cols">
+        <label for="ti-vendor-review-start">Awal periode
+          <input id="ti-vendor-review-start" type="date" required>
+        </label>
+        <label for="ti-vendor-review-end">Akhir periode
+          <input id="ti-vendor-review-end" type="date" required>
+        </label>
+      </div>
+      <div class="ti-vendor-cols">
+        <label for="ti-vendor-review-uptime">Ketersediaan terukur (%), jika ada
+          <input id="ti-vendor-review-uptime" type="number" min="0" max="100" step="0.01">
+        </label>
+        <label for="ti-vendor-review-response">Waktu respons terukur (jam), jika ada
+          <input id="ti-vendor-review-response" type="number" min="0" max="999999.99" step="0.01">
+        </label>
+      </div>
+      <label for="ti-vendor-review-summary">Hasil pemeriksaan dan tindak lanjut
+        <textarea id="ti-vendor-review-summary" required rows="3" minlength="10" maxlength="2000"
+          placeholder="Catat hasil pengukuran, kendala, dan tindakan yang diperlukan."></textarea>
+      </label>
+      <p class="workspace-help">Hasil perbandingan hanya mencakup target numerik yang tercatat. Evaluasi yang tersimpan tidak bisa diubah atau dihapus.</p>
+      <p id="ti-vendors-review-error" class="form-error" role="alert" hidden></p>
+      <div class="workspace-save-actions">
+        <button id="ti-vendors-review-save" type="submit" class="button button-primary">Simpan evaluasi</button>
+        <button id="ti-vendors-review-cancel" type="button" class="button button-outline">Batal</button>
       </div>
     </form>
   </dialog>
