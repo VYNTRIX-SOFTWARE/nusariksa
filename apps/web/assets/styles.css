@@ -805,3 +805,46 @@ h1,h2,p{margin-top:0}h1,h2{letter-spacing:-.027em}
 @media(max-width:700px){.ti-findings-filters{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:580px){.ti-findings-filters,.ti-finding-cols{grid-template-columns:1fr}
   .ti-finding-review-form .button{width:100%}}
+
+/* Daftar penyedia TI, kontrak layanan, dan hasil evaluasi. */
+.ti-vendor-guidance{padding:12px 15px;border:1px solid #DFE3ED;border-left:3px solid #695A96;
+  background:#FAFAFD;border-radius:8px;color:#5B5870;line-height:1.6;font-size:12px;margin:0 0 18px}
+.ti-vendor-filters{display:grid;grid-template-columns:minmax(190px,2fr) repeat(3,minmax(105px,1fr)) auto auto;
+  gap:12px;align-items:end;margin-bottom:18px}
+.ti-vendor-filters label{display:grid;gap:5px;font-size:12px;font-weight:650;color:#505B70}
+.ti-vendor-filters input,.ti-vendor-filters select{width:100%;box-sizing:border-box;
+  min-width:0;padding:9px 10px;border:1px solid #D9DDE7;border-radius:8px}
+.ti-vendor-row{border:1px solid #E3E6EF;background:#FFF;padding:13px 16px;border-radius:10px}
+.ti-vendor-open,.ti-vendor-contract-open{border:0;background:transparent;padding:0;
+  text-align:left;color:#39345D;font-size:14px;font-weight:700;cursor:pointer}
+.ti-vendor-open:hover,.ti-vendor-contract-open:hover{text-decoration:underline}
+.ti-vendor-row p{margin:7px 0 0}
+.ti-vendor-contracts-panel,.ti-vendor-contract-detail,.ti-vendor-reviews-panel{
+  margin-top:24px;border-top:1px solid #E4E5EE;padding-top:20px}
+.ti-vendor-contracts-panel .panel-heading h3,.ti-vendor-contract-detail h3,
+.ti-vendor-reviews-panel h3{font-size:15px;color:#323652;margin:0}
+.ti-vendor-contract-detail{padding:20px;border:1px solid #E3E4EF;border-radius:10px}
+.ti-vendor-history-panel{margin-top:23px;padding:15px 0;border-top:1px solid #E5E5EF}
+.ti-vendor-history-panel summary{cursor:pointer;font-weight:650;color:#484562;font-size:13px}
+.ti-vendor-history-list{display:grid;gap:10px;list-style:none;padding:0;margin:16px 0}
+.ti-vendor-history-item{display:grid;gap:5px;border:1px solid #E6E7EF;border-radius:9px;padding:12px 14px}
+.ti-vendor-history-item strong{font-size:12px;color:#484562}
+.ti-vendor-history-item span{font-size:11px;color:#72798A}
+.ti-vendor-review-list{display:grid;gap:10px;margin-top:13px}
+.ti-vendor-review{display:grid;gap:7px;padding:14px 16px;border:1px solid #E2E5EF;border-radius:10px}
+.ti-vendor-review strong{font-size:13px;color:#454061}
+.ti-vendor-review p{font-size:12px;line-height:1.6;margin:0;color:#525A68;overflow-wrap:anywhere}
+.ti-vendor-review small{font-size:11px;color:#7B808D}
+#ti-vendors-dialog,#ti-vendors-contract-dialog,#ti-vendors-review-dialog{
+  width:min(660px,calc(100vw - 28px));max-height:calc(100vh - 48px);overflow:auto}
+#ti-vendors-form,#ti-vendors-contract-form,#ti-vendors-review-form{display:grid;gap:12px}
+#ti-vendors-form label,#ti-vendors-contract-form label,#ti-vendors-review-form label{
+  display:grid;gap:6px;font-size:12px;font-weight:650;color:#444E62}
+#ti-vendors-form input,#ti-vendors-form select,#ti-vendors-form textarea,
+#ti-vendors-contract-form input,#ti-vendors-contract-form select,#ti-vendors-contract-form textarea,
+#ti-vendors-review-form input,#ti-vendors-review-form textarea{
+  width:100%;box-sizing:border-box;min-width:0;padding:10px;border:1px solid #CED3DF;border-radius:8px}
+.ti-vendor-cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media(max-width:1200px){.ti-vendor-filters{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:700px){.ti-vendor-filters{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:580px){.ti-vendor-filters,.ti-vendor-cols{grid-template-columns:1fr}}

@@ -1,25 +1,25 @@
 const ROLE_PERMISSIONS = Object.freeze({
   SUPER_ADMIN: [
     'users:manage', 'assessments:read', 'evidence:read', 'reports:read', 'audit:read',
-    'assets:read', 'assets:write', 'risks:read', 'risks:write', 'incidents:read', 'incidents:write', 'findings:read', 'findings:write',
+    'assets:read', 'assets:write', 'risks:read', 'risks:write', 'incidents:read', 'incidents:write', 'findings:read', 'findings:write', 'vendors:read', 'vendors:write',
   ],
   IT_OFFICER: [
     'assessments:read', 'assessments:write', 'evidence:read', 'evidence:write', 'reports:read',
-    'assets:read', 'assets:write', 'risks:read', 'risks:write', 'incidents:read', 'incidents:write', 'findings:read', 'findings:write',
+    'assets:read', 'assets:write', 'risks:read', 'risks:write', 'incidents:read', 'incidents:write', 'findings:read', 'findings:write', 'vendors:read', 'vendors:write',
   ],
   COMPLIANCE_OFFICER: [
     'assessments:read', 'assessments:write', 'evidence:read', 'evidence:write',
-    'reports:read', 'audit:read', 'assets:read', 'assets:write', 'risks:read', 'risks:write', 'incidents:read', 'incidents:write', 'findings:read', 'findings:write', 'findings:verify',
+    'reports:read', 'audit:read', 'assets:read', 'assets:write', 'risks:read', 'risks:write', 'incidents:read', 'incidents:write', 'findings:read', 'findings:write', 'findings:verify', 'vendors:read', 'vendors:write',
   ],
   REVIEWER: [
     'assessments:read', 'assessments:approve', 'evidence:read', 'reports:read', 'audit:read',
-    'assets:read', 'risks:read', 'incidents:read', 'findings:read', 'findings:verify',
+    'assets:read', 'risks:read', 'incidents:read', 'findings:read', 'findings:verify', 'vendors:read',
   ],
   AUDITOR: [
-    'assessments:read', 'evidence:read', 'reports:read', 'audit:read', 'assets:read', 'risks:read', 'incidents:read', 'findings:read',
+    'assessments:read', 'evidence:read', 'reports:read', 'audit:read', 'assets:read', 'risks:read', 'incidents:read', 'findings:read', 'vendors:read',
   ],
   VIEWER: [
-    'assessments:read', 'evidence:read', 'reports:read', 'assets:read', 'risks:read', 'incidents:read', 'findings:read',
+    'assessments:read', 'evidence:read', 'reports:read', 'assets:read', 'risks:read', 'incidents:read', 'findings:read', 'vendors:read',
   ],
 });
 

@@ -12,6 +12,7 @@ NusaRiksa dikembangkan oleh **VYNTRIX** dan didistribusikan dengan lisensi **AGP
 - **Register risiko TI:** menilai kemungkinan dan dampak risiko, mencatat mitigasi, serta menghubungkannya dengan aset.
 - **Penanganan insiden TI/siber:** mencatat kejadian, kronologi tindakan, pemulihan, serta hubungan dengan aset dan risiko.
 - **Tindak lanjut temuan:** mendokumentasikan kondisi yang perlu diperbaiki, menetapkan PIC dan tenggat, mengajukan hasil tindakan, serta mencatat verifikasi dari pemeriksa yang berbeda.
+- **Pengelolaan vendor TI:** mencatat penyedia layanan, perjanjian, target SLA, masa berlaku kontrak, dan hasil evaluasi layanan.
 - **Pengguna dan pemeriksaan:** mengelola hak akses, meninjau hasil pekerjaan, serta menelusuri riwayat perubahan.
 
 Katalog asesmen TI bawaan menyediakan **26 kontrol operasional** beserta pertanyaan pemeriksaan, panduan pengisian, dan contoh bukti. Petugas tetap perlu mengisi hasil berdasarkan kondisi dan dokumen lembaganya.

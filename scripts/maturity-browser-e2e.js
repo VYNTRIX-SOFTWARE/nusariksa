@@ -27,6 +27,9 @@ import {createIncidentInTransaction,updateIncidentInTransaction,
   from '../apps/api/src/ti-incidents.js';
 import {createFindingInTransaction,updateFindingInTransaction,submitFindingInTransaction,
   reviewFindingInTransaction,archiveFindingInTransaction} from '../apps/api/src/ti-findings.js';
+import {createVendorInTransaction,updateVendorInTransaction,archiveVendorInTransaction,
+  createContractInTransaction,updateContractInTransaction,archiveContractInTransaction,
+  addServiceReviewInTransaction} from '../apps/api/src/ti-vendors.js';
 import {writeAssessmentResultInTransaction} from '../apps/api/src/assessment-results.js';
 import {assignCatalogInTransaction} from '../apps/api/src/control-catalogs.js';
 import {savePadkIndicatorNoteInTransaction} from '../apps/api/src/padk-preparation-indicators.js';
@@ -318,6 +321,75 @@ async function runBrowser(base,db,fixture){
     assert.equal(await evalJs("document.getElementById('pdk-create-form').hidden"),false);
     await logout();
     await login('maker');
+    await until("!document.getElementById('vendor-menu').hidden",'vendor management navigation');
+    await evalJs("document.getElementById('vendor-menu').click()");
+    await until("!document.getElementById('ti-vendors-create').hidden",'vendor creation action');
+    await evalJs("document.getElementById('ti-vendors-create').click()");
+    await until("document.getElementById('ti-vendors-dialog').open",'new vendor dialog');
+    await evalJs("document.getElementById('ti-vendor-code').value='VND-BROWSER-01';"+
+      "document.getElementById('ti-vendor-name').value='Penyedia layanan pengujian CBS';"+
+      "document.getElementById('ti-vendor-category').value='core_banking';"+
+      "document.getElementById('ti-vendor-criticality').value='high';"+
+      "document.getElementById('ti-vendor-pic').value='Petugas TI';"+
+      "document.getElementById('ti-vendors-form').requestSubmit()");
+    await until("!document.getElementById('ti-vendors-detail').hidden && "+
+      "document.getElementById('ti-vendors-detail-values').textContent.includes('VND-BROWSER-01')",
+      'vendor persisted and detail opened');
+    const vendorRow=await db.query("SELECT id FROM ti_vendors WHERE vendor_code='VND-BROWSER-01'");
+    assert.equal(vendorRow.rowCount,1);
+    const vendorStart=new Date(Date.now()-60*86400000).toISOString().slice(0,10);
+    const vendorReviewStart=new Date(Date.now()-30*86400000).toISOString().slice(0,10);
+    const vendorEnd=new Date(Date.now()+20*86400000).toISOString().slice(0,10);
+    await evalJs("document.getElementById('ti-vendors-add-contract').click()");
+    await until("document.getElementById('ti-vendors-contract-dialog').open",'vendor contract dialog');
+    await evalJs("document.getElementById('ti-vendor-contract-code').value='CTR-BROWSER-01';"+
+      "document.getElementById('ti-vendor-contract-service').value='Layanan CBS dan SLA';"+
+      "document.getElementById('ti-vendor-contract-reference').value='PKS-TEST-2026';"+
+      "document.getElementById('ti-vendor-contract-start').value="+JSON.stringify(vendorStart)+";"+
+      "document.getElementById('ti-vendor-contract-end').value="+JSON.stringify(vendorEnd)+";"+
+      "document.getElementById('ti-vendor-contract-uptime').value='99.5';"+
+      "document.getElementById('ti-vendor-contract-response').value='4';"+
+      "document.getElementById('ti-vendors-contract-form').requestSubmit()");
+    await until("!document.getElementById('ti-vendors-contract-detail').hidden && "+
+      "document.getElementById('ti-vendors-contract-values').textContent.includes('CTR-BROWSER-01')",
+      'contract persisted with service and SLA');
+    assert.equal(await evalJs("document.getElementById('ti-vendors-contract-values').textContent.includes('Berakhir dalam 30 hari')"),true);
+    const contractRow=await db.query("SELECT id,vendor_id,sla_uptime_target FROM ti_vendor_contracts "+
+      "WHERE contract_code='CTR-BROWSER-01'");
+    assert.equal(contractRow.rowCount,1);
+    assert.equal(contractRow.rows[0].vendor_id,vendorRow.rows[0].id);
+    assert.equal(Number(contractRow.rows[0].sla_uptime_target),99.5);
+    await evalJs("document.getElementById('ti-vendors-add-review').click()");
+    await until("document.getElementById('ti-vendors-review-dialog').open",'service review dialog');
+    await evalJs("document.getElementById('ti-vendor-review-start').value="+
+      JSON.stringify(vendorReviewStart)+";"+
+      "document.getElementById('ti-vendor-review-end').value="+
+      JSON.stringify(new Date().toISOString().slice(0,10))+";"+
+      "document.getElementById('ti-vendor-review-uptime').value='99.2';"+
+      "document.getElementById('ti-vendor-review-response').value='6';"+
+      "document.getElementById('ti-vendor-review-summary').value='Waktu respons dan ketersediaan perlu perbaikan dan verifikasi vendor.';"+
+      "document.getElementById('ti-vendors-review-form').requestSubmit()");
+    await until("document.getElementById('ti-vendors-reviews').textContent.includes('Di bawah target numerik')",
+      'vendor SLA review saved and compared');
+    const vendorReviews=await db.query('SELECT sla_result FROM ti_vendor_service_reviews WHERE contract_id=$1',
+      [contractRow.rows[0].id]);
+    assert.equal(vendorReviews.rowCount,1);
+    assert.equal(vendorReviews.rows[0].sla_result,'below_targets');
+    await evalJs("document.getElementById('ti-vendors-edit-contract').click()");
+    await until("document.getElementById('ti-vendors-contract-dialog').open",'end contract dialog');
+    await evalJs("document.getElementById('ti-vendor-contract-status').value='ended';"+
+      "document.getElementById('ti-vendors-contract-form').requestSubmit()");
+    await until("document.getElementById('ti-vendors-contract-values').textContent.includes('Diakhiri')",
+      'vendor contract ended');
+    await evalJs("window.confirm=()=>true;document.getElementById('ti-vendors-archive-contract').click()");
+    await until("document.getElementById('ti-vendors-contract-values').textContent.includes('Diarsipkan')",
+      'vendor contract archive retains reviews');
+    await evalJs("window.confirm=()=>true;document.getElementById('ti-vendors-archive').click()");
+    await until("document.getElementById('ti-vendors-detail-values').textContent.includes('Diarsipkan')",
+      'vendor archived with contracts and reviews');
+    assert.equal((await db.query('SELECT count(*)::int n FROM ti_vendor_change_events WHERE vendor_id=$1',
+      [vendorRow.rows[0].id])).rows[0].n,5);
+    await evalJs("document.getElementById('asset-menu').click()");
     // Real inventory browser journey: create, persist, edit, filter, archive, audit.
     await until("!document.getElementById('asset-menu').hidden",'asset register navigation');
     await evalJs("document.getElementById('asset-menu').click()");
@@ -970,7 +1042,7 @@ async function runBrowser(base,db,fixture){
     await evalJs("document.getElementById('mfa-login-code').value="+JSON.stringify(codes[0])+";"+
       "document.getElementById('mfa-login-form').requestSubmit()");
     await until("!document.getElementById('app-screen').hidden",'recovery login accepted');
-    console.log('Browser E2E PASS: findings maker-checker, incidents, assets/risks, TI, PADK, MFA');
+    console.log('Browser E2E PASS: vendor contracts/SLA, findings maker-checker, incidents, TI, PADK, MFA');
   }finally{
     await stopChromium(browser);
   }
@@ -1014,6 +1086,15 @@ async function main(){
         submit:(db,args)=>submitFindingInTransaction(db,args),
         review:(db,args)=>reviewFindingInTransaction(db,args),
         archive:(db,args)=>archiveFindingInTransaction(db,args),
+      },
+      vendorHandlers:{
+        create:(db,args)=>createVendorInTransaction(db,args),
+        update:(db,args)=>updateVendorInTransaction(db,args),
+        archive:(db,args)=>archiveVendorInTransaction(db,args),
+        addContract:(db,args)=>createContractInTransaction(db,args),
+        editContract:(db,args)=>updateContractInTransaction(db,args),
+        endContract:(db,args)=>archiveContractInTransaction(db,args),
+        addReview:(db,args)=>addServiceReviewInTransaction(db,args),
       },
       evidenceKey:'ab'.repeat(32),
       padkEvidenceHandlers:{

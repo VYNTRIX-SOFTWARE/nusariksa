@@ -11,6 +11,7 @@ const ASSETS = new Map([
   ['/assets/ti-risks-ui.js', { file: 'assets/ti-risks-ui.js', type: 'text/javascript; charset=utf-8' }],
   ['/assets/ti-incidents-ui.js', { file: 'assets/ti-incidents-ui.js', type: 'text/javascript; charset=utf-8' }],
   ['/assets/ti-findings-ui.js', { file: 'assets/ti-findings-ui.js', type: 'text/javascript; charset=utf-8' }],
+  ['/assets/ti-vendors-ui.js', { file: 'assets/ti-vendors-ui.js', type: 'text/javascript; charset=utf-8' }],
   ['/assets/session.js', { file: 'assets/session.js', type: 'text/javascript; charset=utf-8' }],
   ['/assets/assessment-model.js', { file: 'assets/assessment-model.js', type: 'text/javascript; charset=utf-8' }],
   ['/assets/assessment-workspace-model.js', { file: 'assets/assessment-workspace-model.js', type: 'text/javascript; charset=utf-8' }],
