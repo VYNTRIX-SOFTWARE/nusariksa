@@ -1,0 +1,43 @@
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import {spawnSync} from 'node:child_process';
+import {test} from 'node:test';
+import {readExtractedTable3} from '../src/padk-draft-criteria.js';
+import {buildSourceReviewWorkpaper,toReviewCsv} from '../../../scripts/padk-source-workpaper.js';
+
+const draft=async n=>JSON.parse(await readFile(
+  new URL('../../../regulations/padk43/cyber/drafts/kategori-'+n+'.json',import.meta.url),'utf8'));
+test('workpaper verifikasi sumber berisi 140 indikator dan 400 kriteria unik tanpa approval otomatis',async()=>{
+  const drafts=await Promise.all([1,2].map(draft));
+  const source=await readExtractedTable3();
+  const workpaper=buildSourceReviewWorkpaper(drafts,source);
+  assert.deepEqual(workpaper.counts,{kategori1:80,kategori2:60,kriteriaUnik:400,total:540,verified:0});
+  assert.equal(workpaper.productionEligible,false);
+  assert.equal(workpaper.independentReviewCompleted,false);
+  assert.equal(new Set(workpaper.records.map(x=>x.id)).size,540);
+  assert.equal(workpaper.records.filter(x=>x.jenis==='INDIKATOR').length,140);
+  assert.equal(workpaper.records.filter(x=>x.jenis==='KRITERIA_TABEL_3').length,400);
+  assert.ok(workpaper.records.every(x=>x.verdict==='PENDING'&&x.reviewer===''&&x.sha256_pdf_resmi===''));
+  assert.equal(workpaper.records[0].id,'K1-I001');
+  assert.equal(workpaper.records[80].id,'K2-I001');
+  assert.equal(workpaper.records[140].id,'T3-I001-R1');
+  assert.equal(workpaper.records.at(-1).id,'T3-I080-R5');
+  const highC2=workpaper.records.filter(x=>x.prioritas==='REVIEW_PEMETAAN');
+  assert.deepEqual(highC2.map(x=>x.indikator),[3,18,19,20,24,29,32]);
+  assert.equal(workpaper.records.filter(x=>x.prioritas==='PERIKSA_TABEL_TERPECAH').length,25);
+  const csv=toReviewCsv(workpaper);
+  assert.equal(csv.trimEnd().split('\n').length>=541,true);
+  assert.match(csv,/PENDING/);
+  assert.throws(()=>buildSourceReviewWorkpaper([drafts[0],drafts[0]],source),/kategori ganda/);
+  assert.throws(()=>buildSourceReviewWorkpaper(drafts,source.slice(1)),/jumlah kategori/);
+});
+test('workpaper CLI tidak mengubah regulatory pack dan hanya melaporkan status pending',()=>{
+  const cli=new URL('../../../scripts/padk-source-workpaper.js',import.meta.url);
+  const run=spawnSync(process.execPath,[cli.pathname,'--format=json'],{encoding:'utf8',timeout:15000});
+  assert.equal(run.status,0,run.stderr);
+  const report=JSON.parse(run.stdout);
+  assert.equal(report.counts.total,540);
+  assert.equal(report.counts.verified,0);
+  assert.equal(report.productionEligible,false);
+  assert.match(run.stderr,/belum ada hasil yang disahkan/);
+});
