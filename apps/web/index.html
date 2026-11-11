@@ -139,6 +139,9 @@
         <button type="button" class="nav-link" data-page="ti-vendors" id="vendor-menu" title="Pengelolaan Vendor TI" hidden>
           <svg class="icon nav-icon"><use href="#i-clipboard"></use></svg><span class="nav-label">Vendor TI</span>
         </button>
+        <button type="button" class="nav-link" data-page="ti-recovery" id="recovery-menu" title="Rencana Pemulihan TI" hidden>
+          <svg class="icon nav-icon"><use href="#i-clipboard"></use></svg><span class="nav-label">Rencana Pemulihan TI</span>
+        </button>
         <div class="sidebar-section-label sidebar-gap" id="admin-menu-group" hidden>PENGATURAN</div>
         <button type="button" class="nav-link" data-page="admin-onboarding" id="admin-setup-menu" title="Kelola akses pengguna" hidden>
           <svg class="icon nav-icon"><use href="#i-clipboard"></use></svg><span class="nav-label">Akses Pengguna</span>
@@ -271,6 +274,62 @@
           </div>
         </section>
 
+        <section id="page-ti-recovery" class="page" aria-labelledby="ti-recovery-title" hidden>
+ <div class="page-intro"><div><p class="eyebrow">TATA KELOLA TI / KELANGSUNGAN LAYANAN</p>
+ <h1 id="ti-recovery-title">Rencana Pemulihan TI (BCP/DRP)</h1>
+ <p class="supporting-copy">Catat skenario, target RTO/RPO, PIC, prosedur pemulihan, dan hasil pengujian yang benar-benar dilakukan.</p></div>
+ <button class="button button-primary" type="button" id="ti-recovery-create" hidden>Tambah rencana</button></div>
+ <p class="workspace-help">Status “Dikelola” bukan persetujuan Direksi, hasil uji bukan sertifikasi kesiapan, dan aplikasi tidak menguji pemulihan secara otomatis.</p>
+ <p id="ti-recovery-message" class="workspace-message" role="status" aria-live="polite" hidden></p>
+ <section class="panel-card"><form id="ti-recovery-filter-form" class="ti-vendor-filters">
+ <label for="ti-recovery-search">Cari kode / layanan<input id="ti-recovery-search" maxlength="80" type="search"></label>
+ <label for="ti-recovery-view">Tampilan<select id="ti-recovery-view"><option value="active">Belum diarsipkan</option><option value="archived">Diarsipkan</option><option value="all">Semua</option></select></label>
+ <button class="button button-outline" type="submit">Cari</button></form>
+ <div id="ti-recovery-list" class="ti-assets-list"></div>
+ <div class="ti-asset-pagination"><span id="ti-recovery-position" class="workspace-help"></span>
+ <button id="ti-recovery-prev" class="button button-outline" type="button">Sebelumnya</button>
+ <button id="ti-recovery-next" class="button button-outline" type="button">Berikutnya</button></div></section>
+ <section id="ti-recovery-detail" class="panel-card" hidden><div class="panel-heading"><h2>Detail rencana</h2>
+ <div class="ti-assets-actions"><button class="button button-outline" type="button" id="ti-recovery-edit">Ubah rencana</button>
+ <button class="button button-outline" type="button" id="ti-recovery-archive">Arsipkan</button></div></div>
+ <dl id="ti-recovery-values" class="ti-assets-detail-values"></dl>
+ <div class="panel-heading"><h2>Riwayat uji pemulihan</h2><button id="ti-recovery-add-exercise" type="button" class="button button-outline">Catat pengujian</button></div>
+ <p class="workspace-help">Riwayat pengujian permanen. Koreksi hasil dicatat dengan pengujian baru, bukan mengubah catatan lama.</p>
+ <div id="ti-recovery-exercises" class="ti-assets-list"></div><p id="ti-recovery-exercise-note" class="workspace-help"></p>
+ <h3>Riwayat perubahan rencana</h3><div id="ti-recovery-history" class="ti-assets-list"></div></section>
+ </section>
+ <dialog id="ti-recovery-dialog" class="dialog"><form id="ti-recovery-form" method="dialog">
+ <h2 id="ti-recovery-dialog-title">Rencana pemulihan</h2><div class="ti-vendor-form-grid">
+ <label for="ti-recovery-field-plan-code">Kode rencana<input id="ti-recovery-field-plan-code" maxlength="32" required type="text" ></label>
+<label for="ti-recovery-field-service">Layanan kritikal<input id="ti-recovery-field-service" maxlength="200" required type="text" ></label>
+<label for="ti-recovery-field-scenario">Skenario gangguan<textarea id="ti-recovery-field-scenario" maxlength="2000" required rows="3"></textarea></label>
+<label for="ti-recovery-field-impact">Dampak terhadap bisnis<textarea id="ti-recovery-field-impact" maxlength="2000" required rows="3"></textarea></label>
+<label for="ti-recovery-field-activation">Kriteria aktivasi<textarea id="ti-recovery-field-activation" maxlength="2000" required rows="3"></textarea></label>
+<label for="ti-recovery-field-owner">PIC utama<input id="ti-recovery-field-owner" maxlength="120" required type="text" ></label>
+<label for="ti-recovery-field-alternate">PIC pengganti<input id="ti-recovery-field-alternate" maxlength="120"  type="text" ></label>
+<label for="ti-recovery-field-rto">RTO target (menit)<input id="ti-recovery-field-rto"   type="number" min="0" max="525600" step="1"></label>
+<label for="ti-recovery-field-rpo">RPO target (menit)<input id="ti-recovery-field-rpo"   type="number" min="0" max="525600" step="1"></label>
+<label for="ti-recovery-field-steps">Langkah pemulihan<textarea id="ti-recovery-field-steps" maxlength="10000" required rows="3"></textarea></label>
+<label for="ti-recovery-field-communication">Komunikasi dan eskalasi<textarea id="ti-recovery-field-communication" maxlength="4000"  rows="3"></textarea></label>
+<label for="ti-recovery-field-dependencies">Ketergantungan layanan<textarea id="ti-recovery-field-dependencies" maxlength="4000"  rows="3"></textarea></label>
+<label for="ti-recovery-field-backup">Referensi backup<textarea id="ti-recovery-field-backup" maxlength="2000"  rows="3"></textarea></label>
+<label for="ti-recovery-field-evidence">Lokasi penyimpanan bukti<textarea id="ti-recovery-field-evidence" maxlength="2000"  rows="3"></textarea></label>
+<label for="ti-recovery-field-status">Status pencatatan<select id="ti-recovery-field-status"  required><option value="draft">Draft</option><option value="maintained">Dikelola (bukan pengesahan)</option></select></label></div><p id="ti-recovery-form-error" class="workspace-message" hidden></p>
+ <div class="dialog-actions"><button type="button" id="ti-recovery-cancel" class="button button-outline">Batal</button>
+ <button type="submit" class="button button-primary" id="ti-recovery-save">Simpan</button></div></form></dialog>
+ <dialog id="ti-recovery-exercise-dialog" class="dialog"><form id="ti-recovery-exercise-form" method="dialog">
+ <h2>Catat hasil pengujian</h2><p class="workspace-help">Isi hasil berdasarkan pengujian aktual, bukan perkiraan.</p>
+ <div class="ti-vendor-form-grid"><label for="ti-recovery-test-date">Tanggal pengujian<input id="ti-recovery-test-date"  required type="date" ></label>
+<label for="ti-recovery-test-type">Metode uji<select id="ti-recovery-test-type"  required><option value="tabletop">Simulasi meja</option><option value="technical">Pengujian teknis</option><option value="restore">Uji pemulihan data</option></select></label>
+<label for="ti-recovery-test-rto">Waktu pemulihan aktual (menit)<input id="ti-recovery-test-rto"   type="number" min="0" max="525600" step="1"></label>
+<label for="ti-recovery-test-rpo">Kehilangan data aktual (menit)<input id="ti-recovery-test-rpo"   type="number" min="0" max="525600" step="1"></label>
+<label for="ti-recovery-test-outcome">Hasil yang dicatat petugas<select id="ti-recovery-test-outcome"  required><option value="not_assessed">Belum dinilai</option><option value="passed">Berhasil tercatat</option><option value="partial">Sebagian</option><option value="failed">Gagal</option></select></label>
+<label for="ti-recovery-test-summary">Uraian pengujian<textarea id="ti-recovery-test-summary" maxlength="4000" required rows="3"></textarea></label>
+<label for="ti-recovery-test-followup">Tindak lanjut<textarea id="ti-recovery-test-followup" maxlength="4000"  rows="3"></textarea></label>
+<label for="ti-recovery-test-evidence">Referensi bukti uji<textarea id="ti-recovery-test-evidence" maxlength="2000"  rows="3"></textarea></label></div>
+ <p id="ti-recovery-exercise-error" class="workspace-message" hidden></p>
+ <div class="dialog-actions"><button type="button" id="ti-recovery-exercise-cancel" class="button button-outline">Batal</button>
+ <button type="submit" id="ti-recovery-exercise-save" class="button button-primary">Simpan hasil</button></div></form></dialog>
         <section id="page-ti-vendors" class="page" aria-labelledby="ti-vendors-title" hidden>
           <div class="page-intro">
             <div><p class="eyebrow">TATA KELOLA TI / PIHAK KETIGA</p><h1 id="ti-vendors-title">Pengelolaan Vendor TI</h1>

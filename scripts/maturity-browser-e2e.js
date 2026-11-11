@@ -30,6 +30,9 @@ import {createFindingInTransaction,updateFindingInTransaction,submitFindingInTra
 import {createVendorInTransaction,updateVendorInTransaction,archiveVendorInTransaction,
   createContractInTransaction,updateContractInTransaction,archiveContractInTransaction,
   addServiceReviewInTransaction} from '../apps/api/src/ti-vendors.js';
+import {createRecoveryPlanInTransaction,updateRecoveryPlanInTransaction,
+ archiveRecoveryPlanInTransaction,addRecoveryExerciseInTransaction}
+ from '../apps/api/src/ti-recovery.js';
 import {writeAssessmentResultInTransaction} from '../apps/api/src/assessment-results.js';
 import {assignCatalogInTransaction} from '../apps/api/src/control-catalogs.js';
 import {savePadkIndicatorNoteInTransaction} from '../apps/api/src/padk-preparation-indicators.js';
@@ -321,6 +324,45 @@ async function runBrowser(base,db,fixture){
     assert.equal(await evalJs("document.getElementById('pdk-create-form').hidden"),false);
     await logout();
     await login('maker');
+
+    await until("!document.getElementById('recovery-menu').hidden",'recovery navigation');
+    await evalJs("document.getElementById('recovery-menu').click()");
+    await until("!document.getElementById('ti-recovery-create').hidden",'recovery create action');
+    await evalJs("document.getElementById('ti-recovery-create').click()");
+    await until("document.getElementById('ti-recovery-dialog').open",'recovery plan dialog');
+    await evalJs("document.getElementById('ti-recovery-field-plan-code').value='BCP-BROWSER-01';"+
+      "document.getElementById('ti-recovery-field-service').value='Layanan CBS dan transaksi';"+
+      "document.getElementById('ti-recovery-field-scenario').value='Server basis data utama tidak tersedia selama jam layanan.';"+
+      "document.getElementById('ti-recovery-field-impact').value='Transaksi dan pembukuan nasabah tidak dapat diproses.';"+
+      "document.getElementById('ti-recovery-field-activation').value='Aktivasi setelah konfirmasi gangguan dari petugas TI.';"+
+      "document.getElementById('ti-recovery-field-owner').value='Petugas TI';"+
+      "document.getElementById('ti-recovery-field-steps').value='Identifikasi sumber gangguan, pulihkan data, verifikasi layanan, dan rekonsiliasi.';"+
+      "document.getElementById('ti-recovery-field-rto').value='180';"+
+      "document.getElementById('ti-recovery-field-rpo').value='60';"+
+      "document.getElementById('ti-recovery-form').requestSubmit()");
+    await until("!document.getElementById('ti-recovery-detail').hidden && "+
+      "document.getElementById('ti-recovery-values').textContent.includes('BCP-BROWSER-01')",
+      'recovery plan persisted');
+    const recoveryRow=await db.query("SELECT id,rto_minutes,rpo_minutes FROM ti_recovery_plans WHERE plan_code='BCP-BROWSER-01'");
+    assert.equal(recoveryRow.rowCount,1);assert.equal(recoveryRow.rows[0].rto_minutes,180);
+    await evalJs("document.getElementById('ti-recovery-add-exercise').click()");
+    await until("document.getElementById('ti-recovery-exercise-dialog').open",'recovery exercise dialog');
+    await evalJs("document.getElementById('ti-recovery-test-date').value='2026-01-15';"+
+      "document.getElementById('ti-recovery-test-type').value='restore';"+
+      "document.getElementById('ti-recovery-test-rto').value='120';"+
+      "document.getElementById('ti-recovery-test-rpo').value='30';"+
+      "document.getElementById('ti-recovery-test-outcome').value='passed';"+
+      "document.getElementById('ti-recovery-test-summary').value='Data sintetis dipulihkan dan diuji melalui prosedur validasi.';"+
+      "document.getElementById('ti-recovery-test-evidence').value='BA-UJI-BROWSER-01';"+
+      "document.getElementById('ti-recovery-exercise-form').requestSubmit()");
+    await until("document.getElementById('ti-recovery-exercises').textContent.includes('BA-UJI-BROWSER-01')",
+      'recovery exercise persisted');
+    assert.equal((await db.query("SELECT count(*)::int n FROM ti_recovery_exercises WHERE plan_id=$1",
+      [recoveryRow.rows[0].id])).rows[0].n,1);
+    await evalJs("window.confirm=()=>true;document.getElementById('ti-recovery-archive').click()");
+    await until("document.getElementById('ti-recovery-values').textContent.includes('BCP-BROWSER-01') && "+
+      "document.getElementById('ti-recovery-archive').hidden",
+      'recovery plan archived');
     await until("!document.getElementById('vendor-menu').hidden",'vendor management navigation');
     await evalJs("document.getElementById('vendor-menu').click()");
     await until("!document.getElementById('ti-vendors-create').hidden",'vendor creation action');
@@ -1114,6 +1156,12 @@ async function main(){
           if(result.status)throw new MfaError(result.status,result.error);
           return result;
         },
+      },
+      recoveryHandlers:{
+        create:(db,args)=>createRecoveryPlanInTransaction(db,args),
+        update:(db,args)=>updateRecoveryPlanInTransaction(db,args),
+        archive:(db,args)=>archiveRecoveryPlanInTransaction(db,args),
+        addExercise:(db,args)=>addRecoveryExerciseInTransaction(db,args),
       },
       crosswalkHandlers:{
         submit:(db,args)=>recordMappingReviewInTransaction(db,args),

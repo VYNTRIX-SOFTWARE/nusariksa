@@ -19,6 +19,7 @@ import {createRiskRegisterUI} from './ti-risks-ui.js';
 import {createIncidentManagementUI} from './ti-incidents-ui.js';
 import {createFindingManagementUI} from './ti-findings-ui.js';
 import {createVendorManagementUI} from './ti-vendors-ui.js';
+import {createRecoveryUI} from './ti-recovery-ui.js';
 import {createCrosswalkReviewUI} from './padk-crosswalk-review-ui.js';
 
 const $ = (id) => document.getElementById(id);
@@ -29,7 +30,7 @@ const state = {
   userId: null, permissions: [], assessments: [], load: 'loading', page: 'overview',
   year: 'all', status: 'all', search: '', sort: 'newest', workspaceOrigin:'assessments',
 };
-const pages = {overview: 'Dashboard', assessments: 'Daftar Asesmen', reviews: 'Review & Persetujuan', reports: 'Laporan Asesmen', catalogs: 'Katalog Kontrol', maturity: 'Metodologi Maturitas', 'maturity-assessments': 'Penilaian Maturitas', 'padk-preparations':'Persiapan PADK', 'padk-crosswalk':'QA Pemetaan PADK', 'admin-onboarding':'Akses Pengguna', 'ti-assets':'Inventaris Aset TI', 'ti-risks':'Register Risiko TI', 'ti-incidents':'Insiden TI/Siber', 'ti-findings':'Tindak Lanjut Temuan', 'ti-vendors':'Vendor TI', workspace: 'Assessment Workspace'};
+const pages = {overview: 'Dashboard', assessments: 'Daftar Asesmen', reviews: 'Review & Persetujuan', reports: 'Laporan Asesmen', catalogs: 'Katalog Kontrol', maturity: 'Metodologi Maturitas', 'maturity-assessments': 'Penilaian Maturitas', 'padk-preparations':'Persiapan PADK', 'padk-crosswalk':'QA Pemetaan PADK', 'admin-onboarding':'Akses Pengguna', 'ti-assets':'Inventaris Aset TI', 'ti-risks':'Register Risiko TI', 'ti-incidents':'Insiden TI/Siber', 'ti-findings':'Tindak Lanjut Temuan', 'ti-vendors':'Vendor TI', 'ti-recovery':'Rencana Pemulihan TI', workspace: 'Assessment Workspace'};
 
 function show(screen) {
   for (const [name, element] of Object.entries(screens)) element.hidden = name !== screen;
@@ -83,6 +84,7 @@ function cleanSession() {
   incidentManagement.clear();
   findingManagement.clear();
   vendorManagement.clear();
+  recoveryManagement.clear();
   notice('');
 }
 function authFailure(error) {
@@ -145,8 +147,9 @@ function renderPermissions() {
   $('incident-menu').hidden=!state.permissions.includes('incidents:read');
   $('finding-menu').hidden=!state.permissions.includes('findings:read');
   $('vendor-menu').hidden=!state.permissions.includes('vendors:read');
+  $('recovery-menu').hidden=!state.permissions.includes('recovery:read');
   assetRegister.sync();riskRegister.sync();incidentManagement.sync();
-  findingManagement.sync();vendorManagement.sync();
+  findingManagement.sync();vendorManagement.sync();recoveryManagement.sync();
   renderGettingStarted();
   const hasRead=state.permissions.includes('assessments:read');
   $('assessment-menu').hidden=!hasRead;
@@ -320,6 +323,7 @@ function navigate(page) {
   if(page==='ti-incidents'&&!state.permissions.includes('incidents:read'))return false;
   if(page==='ti-findings'&&!state.permissions.includes('findings:read'))return false;
   if(page==='ti-vendors'&&!state.permissions.includes('vendors:read'))return false;
+  if(page==='ti-recovery'&&!state.permissions.includes('recovery:read'))return false;
   if(['reviews','padk-crosswalk'].includes(page)&&!state.permissions.includes('assessments:approve'))return false;
   if(state.page==='workspace' && page!=='workspace' && !workspace.confirmLeave())return false;
   if(state.page==='maturity' && page!=='maturity' && !maturity.confirmLeave())return false;
@@ -343,6 +347,7 @@ function navigate(page) {
   if(page==='ti-incidents')void incidentManagement.load();
   if(page==='ti-findings')void findingManagement.load();
   if(page==='ti-vendors')void vendorManagement.load();
+  if(page==='ti-recovery')void recoveryManagement.load();
   if(page==='catalogs') void catalogs.load();
   if(page==='maturity') void maturity.load();
   if(page==='maturity-assessments') void maturityAssessments.load();
@@ -663,6 +668,9 @@ $('detail-dialog').addEventListener('click',(event)=>{
 const padkCrosswalk=createCrosswalkReviewUI({
   api:requestJson,getPermissions:()=>state.permissions,
   getUserId:()=>state.userId,onAuthFailure:authFailure,
+});
+const recoveryManagement=createRecoveryUI({
+  api:requestJson,getPermissions:()=>state.permissions,onAuthFailure:authFailure,
 });
 const vendorManagement=createVendorManagementUI({
   api:requestJson,getPermissions:()=>state.permissions,onAuthFailure:authFailure,
