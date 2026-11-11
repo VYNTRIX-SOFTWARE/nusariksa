@@ -9,14 +9,18 @@ import {readExtractedTable3} from '../apps/api/src/padk-draft-criteria.js';
 const FIELDS=[
   'id','jenis','kategori','indikator','peringkat','domain','prioritas',
   'teks_draft','halaman_tercetak_draft','halaman_fisik_pdf','teks_sumber_diperiksa',
-  'verdict','catatan_review','reviewer','tanggal_review','sha256_pdf_resmi','url_sumber'
+  'verdict','catatan_review','catatan_sumber','reviewer','tanggal_review','sha256_pdf_resmi','url_sumber'
 ];
 const RISK_ROWS=new Set([2,26,36,74,79]);
 const RISK_C2=new Set([3,18,19,20,24,29,32]);
+const SOURCE_NOTES=new Map([
+  ['2:1','Kriteria peringkat 1 pada Tabel 3 nomor 2 memuat uraian strategi keamanan siber, sedangkan parameter nomor 2 membahas risk appetite. Periksa redaksi sumber dan klarifikasi sebelum digunakan sebagai dasar scoring.'],
+]);
 const AUTHORITY='https://ojk.go.id/id/regulasi/Pages/PADK-43-PADK03-2025-Penyelenggaraan-Teknologi-Informasi-oleh-BPR-BPRS.aspx';
 function fail(message){throw new TypeError('Workpaper verifikasi sumber tidak valid: '+message);}
 const digits=n=>String(n).padStart(3,'0');
 const blank={halaman_fisik_pdf:'',teks_sumber_diperiksa:'',verdict:'PENDING',
+  catatan_sumber:'',
   catatan_review:'',reviewer:'',tanggal_review:'',sha256_pdf_resmi:'',url_sumber:AUTHORITY};
 export function buildSourceReviewWorkpaper(drafts,table3){
   if(!Array.isArray(drafts)||drafts.length!==2||!Array.isArray(table3)||table3.length!==80)
@@ -65,10 +69,12 @@ export function buildSourceReviewWorkpaper(drafts,table3){
         indikator:entry.number,
         peringkat:criterion.rank,
         domain:'',
-        prioritas:RISK_ROWS.has(entry.number)?'PERIKSA_TABEL_TERPECAH':'NORMAL',
+        prioritas:SOURCE_NOTES.has(entry.number+':'+criterion.rank)
+          ?'PERIKSA_ANOMALI_REDAKSI':RISK_ROWS.has(entry.number)?'PERIKSA_TABEL_TERPECAH':'NORMAL',
         teks_draft:criterion.textDraft,
         halaman_tercetak_draft:entry.pdfPages.join('|'),
         ...blank,
+        catatan_sumber:SOURCE_NOTES.get(entry.number+':'+criterion.rank)??'',
       });
     }
   }
