@@ -133,6 +133,9 @@
         <button type="button" class="nav-link" data-page="ti-incidents" id="incident-menu" title="Insiden TI/Siber" hidden>
           <svg class="icon nav-icon"><use href="#i-clipboard"></use></svg><span class="nav-label">Insiden TI/Siber</span>
         </button>
+        <button type="button" class="nav-link" data-page="ti-findings" id="finding-menu" title="Tindak Lanjut Temuan" hidden>
+          <svg class="icon nav-icon"><use href="#i-clipboard"></use></svg><span class="nav-label">Tindak Lanjut Temuan</span>
+        </button>
         <div class="sidebar-section-label sidebar-gap" id="admin-menu-group" hidden>PENGATURAN</div>
         <button type="button" class="nav-link" data-page="admin-onboarding" id="admin-setup-menu" title="Kelola akses pengguna" hidden>
           <svg class="icon nav-icon"><use href="#i-clipboard"></use></svg><span class="nav-label">Akses Pengguna</span>
@@ -263,6 +266,91 @@
               <div id="admin-users-list" class="onboard-user-list" aria-live="polite"></div>
             </section>
           </div>
+        </section>
+
+        <section id="page-ti-findings" class="page" aria-labelledby="ti-findings-title" hidden>
+          <div class="page-intro">
+            <div><p class="eyebrow">PEMERIKSAAN &amp; PERBAIKAN</p><h1 id="ti-findings-title">Tindak Lanjut Temuan</h1>
+              <p class="supporting-copy">Catat temuan, tetapkan penanggung jawab dan tenggat, lalu ajukan hasil perbaikan untuk diperiksa oleh petugas lain.</p>
+            </div>
+            <button id="ti-findings-create" type="button" class="button button-primary workspace-primary" hidden>Tambah temuan</button>
+          </div>
+          <p id="ti-findings-message" class="workspace-message" role="status" aria-live="polite" hidden></p>
+          <section class="panel-card">
+            <form id="ti-findings-filter-form" class="ti-findings-filters">
+              <label for="ti-findings-search">Cari kode, judul atau PIC
+                <input id="ti-findings-search" type="search" maxlength="80" placeholder="Contoh: TEM-CBS-01">
+              </label>
+              <label for="ti-findings-view">Tampilan
+                <select id="ti-findings-view">
+                  <option value="active">Belum diarsipkan</option>
+                  <option value="archived">Diarsipkan</option><option value="all">Semua</option>
+                </select>
+              </label>
+              <label for="ti-findings-status-filter">Status
+                <select id="ti-findings-status-filter">
+                  <option value="all">Semua status</option>
+                  <option value="open">Terbuka</option><option value="in_progress">Dalam perbaikan</option>
+                  <option value="pending_verification">Menunggu pemeriksaan</option>
+                  <option value="changes_requested">Perlu perbaikan</option><option value="closed">Selesai</option>
+                </select>
+              </label>
+              <label for="ti-findings-priority-filter">Prioritas
+                <select id="ti-findings-priority-filter">
+                  <option value="all">Semua</option>
+                  <option value="low">Rendah</option><option value="medium">Sedang</option>
+                  <option value="high">Tinggi</option><option value="critical">Kritis</option>
+                </select>
+              </label>
+              <label for="ti-findings-source-filter">Asal temuan
+                <select id="ti-findings-source-filter">
+                  <option value="all">Semua</option>
+                  <option value="assessment">Hasil asesmen</option>
+                  <option value="risk">Register risiko</option>
+                  <option value="incident">Catatan insiden</option>
+                  <option value="manual">Pemeriksaan langsung</option>
+                </select>
+              </label>
+              <button type="submit" class="button button-outline">Cari</button>
+              <button id="ti-findings-refresh" type="button" class="button button-outline">Muat ulang</button>
+            </form>
+            <div id="ti-findings-list" class="ti-assets-list" aria-live="polite"></div>
+            <div class="ti-asset-pagination">
+              <span id="ti-findings-position" class="workspace-help">Belum dimuat</span>
+              <button id="ti-findings-prev" type="button" class="button button-outline" disabled>Sebelumnya</button>
+              <button id="ti-findings-next" type="button" class="button button-outline" disabled>Berikutnya</button>
+            </div>
+          </section>
+          <section id="ti-findings-detail" class="panel-card" aria-labelledby="ti-findings-detail-title" hidden>
+            <div class="panel-heading">
+              <h2 id="ti-findings-detail-title">Detail dan pemeriksaan tindak lanjut</h2>
+              <div class="ti-assets-actions">
+                <button id="ti-findings-edit" type="button" class="button button-outline">Perbarui perbaikan</button>
+                <button id="ti-findings-submit" type="button" class="button button-primary">Ajukan pemeriksaan</button>
+                <button id="ti-findings-archive" type="button" class="button button-outline">Arsipkan</button>
+              </div>
+            </div>
+            <dl id="ti-findings-detail-values" class="ti-assets-detail-values"></dl>
+            <form id="ti-findings-review-form" class="ti-finding-review-form" hidden>
+              <h3>Periksa hasil perbaikan</h3>
+              <p class="workspace-help">Baca rencana, tindakan, serta referensi bukti sebelum memberikan keputusan. Pemeriksa harus berbeda dari pembuat temuan.</p>
+              <label for="ti-findings-review-decision">Keputusan
+                <select id="ti-findings-review-decision">
+                  <option value="verify">Perbaikan telah diverifikasi</option>
+                  <option value="return">Kembalikan untuk perbaikan</option>
+                </select>
+              </label>
+              <label for="ti-findings-review-note">Catatan pemeriksa
+                <textarea id="ti-findings-review-note" required minlength="10" maxlength="2000" rows="3"
+                  placeholder="Tuliskan hasil pemeriksaan atau alasan pengembalian."></textarea>
+              </label>
+              <button id="ti-findings-review-save" class="button button-primary" type="submit">Simpan keputusan pemeriksa</button>
+            </form>
+            <div class="ti-finding-history-panel">
+              <h3>Riwayat tindak lanjut</h3>
+              <ol id="ti-findings-history" class="ti-finding-history-list"></ol>
+            </div>
+          </section>
         </section>
 
         <section id="page-ti-incidents" class="page" aria-labelledby="ti-incidents-title" hidden>
@@ -1627,6 +1715,69 @@
       <div class="workspace-save-actions">
         <button id="ti-incidents-save" type="submit" class="button button-primary">Simpan insiden</button>
         <button id="ti-incidents-cancel" type="button" class="button button-outline">Batal</button>
+      </div>
+    </form>
+  </dialog>
+  <dialog id="ti-findings-dialog" aria-labelledby="ti-findings-dialog-title" class="workspace-dialog">
+    <form id="ti-findings-form" class="maturity-edit-form">
+      <h2 id="ti-findings-dialog-title">Tambah temuan</h2>
+      <p class="workspace-help">Catat temuan berdasarkan pemeriksaan, risiko, atau insiden yang benar-benar terjadi.</p>
+      <label for="ti-finding-code">Kode temuan
+        <input id="ti-finding-code" required minlength="2" maxlength="32"
+          pattern="[A-Z][A-Z0-9_-]{1,31}" placeholder="TEM-CBS-01">
+      </label>
+      <label for="ti-finding-title">Judul temuan
+        <input id="ti-finding-title" required minlength="3" maxlength="200"
+          placeholder="Pengujian pemulihan sistem belum dilaksanakan">
+      </label>
+      <label for="ti-finding-description">Uraian kondisi yang ditemukan
+        <textarea id="ti-finding-description" rows="3" required minlength="10" maxlength="2000"
+          placeholder="Jelaskan kesenjangan atau kondisi yang perlu diperbaiki."></textarea>
+      </label>
+      <div class="ti-finding-cols">
+        <label for="ti-finding-priority">Prioritas
+          <select id="ti-finding-priority">
+            <option value="low">Rendah</option><option value="medium" selected>Sedang</option>
+            <option value="high">Tinggi</option><option value="critical">Kritis</option>
+          </select>
+        </label>
+        <label for="ti-finding-source-type">Asal temuan
+          <select id="ti-finding-source-type">
+            <option value="manual">Pemeriksaan langsung</option>
+            <option value="assessment">Hasil asesmen kontrol</option>
+            <option value="risk">Register risiko</option><option value="incident">Catatan insiden</option>
+          </select>
+        </label>
+      </div>
+      <label id="ti-finding-source-label" for="ti-finding-source" hidden>Sumber yang diperiksa
+        <select id="ti-finding-source"><option value="">Pilih sumber temuan</option></select>
+      </label>
+      <p id="ti-findings-source-hint" class="workspace-help">Sumber yang tersedia berasal dari data lembaga.</p>
+      <div class="ti-finding-cols">
+        <label for="ti-finding-pic">Penanggung jawab / PIC
+          <input id="ti-finding-pic" required minlength="2" maxlength="120" placeholder="Unit TI">
+        </label>
+        <label for="ti-finding-due-date">Target perbaikan
+          <input id="ti-finding-due-date" type="date" required>
+        </label>
+      </div>
+      <label for="ti-finding-action-plan">Rencana tindakan
+        <textarea id="ti-finding-action-plan" rows="3" maxlength="2000"
+          placeholder="Apa yang akan dilakukan untuk memperbaiki temuan?"></textarea>
+      </label>
+      <label for="ti-finding-progress-note">Hasil tindakan / perkembangan
+        <textarea id="ti-finding-progress-note" rows="3" maxlength="2000"
+          placeholder="Tuliskan pekerjaan yang benar-benar telah diselesaikan."></textarea>
+      </label>
+      <label for="ti-finding-evidence-reference">Referensi bukti penyelesaian
+        <textarea id="ti-finding-evidence-reference" rows="2" maxlength="2000"
+          placeholder="Nomor tiket, judul berita acara, atau lokasi dokumen internal."></textarea>
+      </label>
+      <p class="workspace-help">Sebelum mengajukan pemeriksaan, lengkapi rencana, hasil tindakan, dan referensi bukti. Dokumen bukti harus diperiksa oleh petugas yang berwenang.</p>
+      <p id="ti-findings-form-error" class="form-error" role="alert" hidden></p>
+      <div class="workspace-save-actions">
+        <button id="ti-findings-save" type="submit" class="button button-primary">Simpan temuan</button>
+        <button id="ti-findings-cancel" type="button" class="button button-outline">Batal</button>
       </div>
     </form>
   </dialog>

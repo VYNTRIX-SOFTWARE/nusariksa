@@ -134,7 +134,23 @@ Kronologi yang sudah tersimpan tidak dihapus atau diedit. Jika perlu membetulkan
 
 **Perhatikan:** pencatatan insiden di NusaRiksa **tidak otomatis mengirim laporan kepada OJK**. Petugas perlu memeriksa kewajiban pelaporan dan eskalasi berdasarkan jenis kejadian dan ketentuan yang berlaku.
 
-## 7. Dokumen bukti dan riwayat pemeriksaan
+## 7. Menindaklanjuti temuan pemeriksaan
+
+Gunakan menu **Tindak Lanjut Temuan** untuk mengelola masalah yang perlu diperbaiki berdasarkan hasil pemeriksaan, catatan risiko, atau insiden.
+
+1. Pilih **Tambah temuan**, lalu isi kode, judul, uraian kondisi, dan prioritas.
+2. Pilih asal temuan. Jika tersedia, tautkan ke **hasil kontrol asesmen**, **risiko**, atau **insiden** yang sudah tercatat. Pilih **Pemeriksaan langsung** bila tidak berasal dari salah satu daftar tersebut.
+3. Tentukan PIC dan tanggal target perbaikan.
+4. Isi rencana tindakan, perkembangan pekerjaan, dan referensi bukti, kemudian pilih **Simpan temuan**.
+5. Setelah tindakan selesai dan referensi bukti dapat diperiksa, buka detail temuan dan pilih **Ajukan pemeriksaan**.
+6. Pemeriksa yang berbeda dapat memilih **Perbaikan telah diverifikasi** atau **Kembalikan untuk perbaikan**, dengan catatan hasil pemeriksaan.
+7. Jika dikembalikan, petugas pengisi memperbaiki catatan dan mengajukan kembali. Temuan yang telah diverifikasi berstatus **Selesai** dan dapat diarsipkan.
+
+Daftar temuan dapat dicari serta difilter menurut prioritas, status, dan asal pemeriksaan. Setiap pembaruan dan keputusan tetap tersedia dalam **Riwayat tindak lanjut**.
+
+**Referensi bukti** berisi keterangan yang dapat ditelusuri, seperti nomor tiket, nama berita acara, atau lokasi dokumen internal. Kolom ini belum menggantikan pemeriksaan dokumen aslinya. Jangan mencantumkan kata sandi atau data nasabah yang tidak diperlukan.
+
+## 8. Dokumen bukti dan riwayat pemeriksaan
 
 Untuk hasil pemeriksaan yang memerlukan bukti, unggah berkas yang sesuai dengan kontrol atau indikator. Gunakan dokumen yang memang berlaku di lembaga, periksa isinya sebelum mengunggah, dan jangan membuat bukti hanya untuk memenuhi kolom aplikasi.
 
@@ -142,7 +158,7 @@ Riwayat perubahan membantu petugas menelusuri kapan informasi diperbarui. Pada p
 
 Jangan memasukkan password, token akses, kunci enkripsi, atau data pribadi nasabah yang tidak diperlukan ke dalam catatan dan lampiran.
 
-## 8. Jika mengalami kendala
+## 9. Jika mengalami kendala
 
 | Kondisi | Tindakan yang disarankan |
 | --- | --- |
@@ -152,9 +168,11 @@ Jangan memasukkan password, token akses, kunci enkripsi, atau data pribadi nasab
 | Aset tidak muncul sebagai pilihan risiko/insiden | Pastikan aset tercatat dan belum diarsipkan. |
 | Risiko tidak muncul sebagai pilihan insiden | Pastikan risiko masih aktif dan pilih aset yang sesuai jika risiko sudah tertaut ke aset tertentu. |
 | Insiden tidak dapat ditutup | Periksa status sebelumnya serta kelengkapan akar penyebab dan hasil pemulihan. |
+| Temuan tidak dapat diajukan | Periksa kelengkapan rencana, catatan hasil tindakan, dan referensi bukti. |
+| Tombol verifikasi tidak tersedia | Pastikan akun pemeriksa punya hak verifikasi dan bukan pembuat temuan. |
 | Bukti tidak dapat dibuka atau diunggah | Hubungi administrator untuk memeriksa izin berkas dan konfigurasi penyimpanan bukti. |
 
-## 9. Meninjau hasil sebelum digunakan
+## 10. Meninjau hasil sebelum digunakan
 
 Gunakan hasil asesmen dan catatan operasional sebagai bahan pemeriksaan serta pengambilan keputusan internal. Sebelum menjadikannya dasar laporan eksternal, petugas yang berwenang perlu meninjau ketepatan data, bukti, perhitungan, dan ketentuan yang relevan.
 

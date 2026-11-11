@@ -17,6 +17,7 @@ import { createControlCatalogsHandler } from './control-catalogs-http.js';
 import {createAssetHandler} from './ti-assets-http.js';
 import {createRiskHandler} from './ti-risks-http.js';
 import {createIncidentHandler} from './ti-incidents-http.js';
+import {createFindingHandler} from './ti-findings-http.js';
 import { checkDatabase, createPool } from './database.js';
 import { createLoginLimiter } from './login-limiter.js';
 import { createRolesHandler } from './roles-http.js';
@@ -45,6 +46,7 @@ export function createServer({
   assetHandlers,
   riskHandlers,
   incidentHandlers,
+  findingHandlers,
   resultHandlers,
   reviewHandlers,
   reportHandler,
@@ -72,6 +74,7 @@ export function createServer({
   const handleAssets = createAssetHandler({db:authDb,appOrigin,...assetHandlers});
   const handleRisks = createRiskHandler({db:authDb,appOrigin,...riskHandlers});
   const handleIncidents = createIncidentHandler({db:authDb,appOrigin,...incidentHandlers});
+  const handleFindings = createFindingHandler({db:authDb,appOrigin,...findingHandlers});
   const handleResults = createAssessmentResultsHandler({ db: authDb, appOrigin, ...resultHandlers });
   const handleReviews = createAssessmentReviewsHandler({ db: authDb, appOrigin, ...reviewHandlers });
   const handleReport = createAssessmentReportsHandler({ db: authDb, appOrigin, report: reportHandler });
@@ -156,6 +159,16 @@ export function createServer({
         } else {
           response.destroy();
         }
+      }
+      return;
+    }
+
+    if (request.url === '/findings' || request.url?.startsWith('/findings?')
+      || request.url?.startsWith('/findings/')) {
+      try{await handleFindings(request,response);}
+      catch{
+        if(!response.headersSent){response.writeHead(503);response.end(JSON.stringify({error:'Unavailable'}));}
+        else response.destroy();
       }
       return;
     }

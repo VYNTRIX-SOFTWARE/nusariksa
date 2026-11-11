@@ -17,6 +17,7 @@ import {createAdminOnboardingUI} from './admin-onboarding-ui.js';
 import {createAssetRegisterUI} from './ti-assets-ui.js';
 import {createRiskRegisterUI} from './ti-risks-ui.js';
 import {createIncidentManagementUI} from './ti-incidents-ui.js';
+import {createFindingManagementUI} from './ti-findings-ui.js';
 import {createCrosswalkReviewUI} from './padk-crosswalk-review-ui.js';
 
 const $ = (id) => document.getElementById(id);
@@ -27,7 +28,7 @@ const state = {
   userId: null, permissions: [], assessments: [], load: 'loading', page: 'overview',
   year: 'all', status: 'all', search: '', sort: 'newest', workspaceOrigin:'assessments',
 };
-const pages = {overview: 'Dashboard', assessments: 'Daftar Asesmen', reviews: 'Review & Persetujuan', reports: 'Laporan Asesmen', catalogs: 'Katalog Kontrol', maturity: 'Metodologi Maturitas', 'maturity-assessments': 'Penilaian Maturitas', 'padk-preparations':'Persiapan PADK', 'padk-crosswalk':'QA Pemetaan PADK', 'admin-onboarding':'Akses Pengguna', 'ti-assets':'Inventaris Aset TI', 'ti-risks':'Register Risiko TI', 'ti-incidents':'Insiden TI/Siber', workspace: 'Assessment Workspace'};
+const pages = {overview: 'Dashboard', assessments: 'Daftar Asesmen', reviews: 'Review & Persetujuan', reports: 'Laporan Asesmen', catalogs: 'Katalog Kontrol', maturity: 'Metodologi Maturitas', 'maturity-assessments': 'Penilaian Maturitas', 'padk-preparations':'Persiapan PADK', 'padk-crosswalk':'QA Pemetaan PADK', 'admin-onboarding':'Akses Pengguna', 'ti-assets':'Inventaris Aset TI', 'ti-risks':'Register Risiko TI', 'ti-incidents':'Insiden TI/Siber', 'ti-findings':'Tindak Lanjut Temuan', workspace: 'Assessment Workspace'};
 
 function show(screen) {
   for (const [name, element] of Object.entries(screens)) element.hidden = name !== screen;
@@ -79,6 +80,7 @@ function cleanSession() {
   assetRegister.clear();
   riskRegister.clear();
   incidentManagement.clear();
+  findingManagement.clear();
   notice('');
 }
 function authFailure(error) {
@@ -139,7 +141,8 @@ function renderPermissions() {
   $('asset-menu').hidden=!state.permissions.includes('assets:read');
   $('risk-menu').hidden=!state.permissions.includes('risks:read');
   $('incident-menu').hidden=!state.permissions.includes('incidents:read');
-  assetRegister.sync();riskRegister.sync();incidentManagement.sync();
+  $('finding-menu').hidden=!state.permissions.includes('findings:read');
+  assetRegister.sync();riskRegister.sync();incidentManagement.sync();findingManagement.sync();
   renderGettingStarted();
   const hasRead=state.permissions.includes('assessments:read');
   $('assessment-menu').hidden=!hasRead;
@@ -311,6 +314,7 @@ function navigate(page) {
   if(page==='ti-assets'&&!state.permissions.includes('assets:read'))return false;
   if(page==='ti-risks'&&!state.permissions.includes('risks:read'))return false;
   if(page==='ti-incidents'&&!state.permissions.includes('incidents:read'))return false;
+  if(page==='ti-findings'&&!state.permissions.includes('findings:read'))return false;
   if(['reviews','padk-crosswalk'].includes(page)&&!state.permissions.includes('assessments:approve'))return false;
   if(state.page==='workspace' && page!=='workspace' && !workspace.confirmLeave())return false;
   if(state.page==='maturity' && page!=='maturity' && !maturity.confirmLeave())return false;
@@ -332,6 +336,7 @@ function navigate(page) {
   if(page==='ti-assets')void assetRegister.load();
   if(page==='ti-risks')void riskRegister.load();
   if(page==='ti-incidents')void incidentManagement.load();
+  if(page==='ti-findings')void findingManagement.load();
   if(page==='catalogs') void catalogs.load();
   if(page==='maturity') void maturity.load();
   if(page==='maturity-assessments') void maturityAssessments.load();
@@ -652,6 +657,10 @@ $('detail-dialog').addEventListener('click',(event)=>{
 const padkCrosswalk=createCrosswalkReviewUI({
   api:requestJson,getPermissions:()=>state.permissions,
   getUserId:()=>state.userId,onAuthFailure:authFailure,
+});
+const findingManagement=createFindingManagementUI({
+  api:requestJson,getPermissions:()=>state.permissions,getUserId:()=>state.userId,
+  onAuthFailure:authFailure,
 });
 const incidentManagement=createIncidentManagementUI({
   api:requestJson,getPermissions:()=>state.permissions,onAuthFailure:authFailure,

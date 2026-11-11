@@ -768,3 +768,40 @@ h1,h2,p{margin-top:0}h1,h2{letter-spacing:-.027em}
 @media(max-width:700px){.ti-incidents-filters{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:580px){.ti-incidents-filters,.ti-incident-cols{grid-template-columns:1fr}
   .ti-incident-note-form .button{width:100%}}
+
+/* Pencatatan temuan, tindak lanjut, dan keputusan pemeriksa. */
+.ti-findings-filters{display:grid;grid-template-columns:minmax(170px,2fr) repeat(4,minmax(105px,1fr)) auto auto;
+  gap:12px;align-items:end;margin-bottom:18px}
+.ti-findings-filters label{display:grid;gap:5px;font-size:12px;font-weight:650;color:#505B70}
+.ti-findings-filters input,.ti-findings-filters select{width:100%;min-width:0;box-sizing:border-box;
+  padding:9px 10px;border:1px solid #D9DDE7;border-radius:8px}
+.ti-finding-row{border:1px solid #E3E6EF;background:#FFF;padding:13px 16px;border-radius:10px}
+.ti-finding-open{border:0;background:transparent;padding:0;text-align:left;color:#39345D;
+  font-size:14px;font-weight:700;cursor:pointer}
+.ti-finding-open:hover{text-decoration:underline}
+.ti-finding-row p{margin:7px 0 0}
+#ti-findings-dialog{width:min(660px,calc(100vw - 28px));max-height:calc(100vh - 48px);overflow:auto}
+#ti-findings-form{display:grid;gap:12px}
+#ti-findings-form label,#ti-findings-review-form label{display:grid;gap:6px;
+  font-size:12px;font-weight:650;color:#444E62}
+#ti-findings-form input,#ti-findings-form select,#ti-findings-form textarea,
+#ti-findings-review-form select,#ti-findings-review-form textarea{width:100%;box-sizing:border-box;
+  min-width:0;padding:10px;border:1px solid #CED3DF;border-radius:8px}
+.ti-finding-cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.ti-finding-review-form{display:grid;gap:12px;padding:16px;margin-top:24px;
+  border:1px solid #DEDEEE;background:#FBFAFF;border-radius:10px}
+.ti-finding-review-form[hidden]{display:none}
+.ti-finding-review-form h3{font-size:15px;margin:0}
+.ti-finding-review-form .button{width:fit-content}
+.ti-finding-history-panel{margin-top:24px;padding-top:16px;border-top:1px solid #E4E5EF}
+.ti-finding-history-panel h3{font-size:15px}
+.ti-finding-history-list{list-style:none;margin:12px 0;padding:0;display:grid;gap:10px}
+.ti-finding-history-item{display:grid;gap:6px;border:1px solid #E7E8F1;
+  padding:12px 15px;border-radius:10px;overflow-wrap:anywhere}
+.ti-finding-history-item strong{font-size:12px;color:#434060}
+.ti-finding-history-item span{font-size:11px;color:#767D8A}
+.ti-finding-history-item p{font-size:13px;line-height:1.6;color:#454D60;margin:0}
+@media(max-width:1200px){.ti-findings-filters{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:700px){.ti-findings-filters{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:580px){.ti-findings-filters,.ti-finding-cols{grid-template-columns:1fr}
+  .ti-finding-review-form .button{width:100%}}
