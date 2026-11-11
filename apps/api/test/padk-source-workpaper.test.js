@@ -24,10 +24,17 @@ test('workpaper verifikasi sumber berisi 140 indikator dan 400 kriteria unik tan
   assert.equal(workpaper.records.at(-1).id,'T3-I080-R5');
   const highC2=workpaper.records.filter(x=>x.prioritas==='REVIEW_PEMETAAN');
   assert.deepEqual(highC2.map(x=>x.indikator),[3,18,19,20,24,29,32]);
-  assert.equal(workpaper.records.filter(x=>x.prioritas==='PERIKSA_TABEL_TERPECAH').length,25);
+  assert.equal(workpaper.records.filter(x=>x.prioritas==='PERIKSA_TABEL_TERPECAH').length,24);
+  assert.equal(workpaper.records.filter(x=>['PERIKSA_TABEL_TERPECAH','PERIKSA_ANOMALI_REDAKSI'].includes(x.prioritas)).length,25);
+  const anomaly=workpaper.records.find(x=>x.id==='T3-I002-R1');
+  assert.equal(anomaly.prioritas,'PERIKSA_ANOMALI_REDAKSI');
+  assert.match(anomaly.catatan_sumber,/risk appetite/);
+  assert.equal(anomaly.verdict,'PENDING');
+  assert.equal(workpaper.records.find(x=>x.id==='T3-I002-R2').catatan_sumber,'');
   const csv=toReviewCsv(workpaper);
   assert.equal(csv.trimEnd().split('\n').length>=541,true);
   assert.match(csv,/PENDING/);
+  assert.match(csv,/PERIKSA_ANOMALI_REDAKSI/);
   assert.throws(()=>buildSourceReviewWorkpaper([drafts[0],drafts[0]],source),/kategori ganda/);
   assert.throws(()=>buildSourceReviewWorkpaper(drafts,source.slice(1)),/jumlah kategori/);
 });
