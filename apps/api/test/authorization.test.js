@@ -25,6 +25,14 @@ test('hak akses hanya diberikan pada peran yang dikenal', () => {
   assert.ok(permissionsForRoles(['REVIEWER']).includes('incidents:read'));
   assert.ok(!permissionsForRoles(['REVIEWER']).includes('incidents:write'));
   assert.ok(!permissionsForRoles(['VIEWER']).includes('incidents:write'));
+  assert.ok(permissionsForRoles(['IT_OFFICER']).includes('findings:write'));
+  assert.ok(permissionsForRoles(['COMPLIANCE_OFFICER']).includes('findings:write'));
+  assert.ok(permissionsForRoles(['COMPLIANCE_OFFICER']).includes('findings:verify'));
+  assert.ok(permissionsForRoles(['REVIEWER']).includes('findings:read'));
+  assert.ok(permissionsForRoles(['REVIEWER']).includes('findings:verify'));
+  assert.ok(!permissionsForRoles(['REVIEWER']).includes('findings:write'));
+  assert.ok(!permissionsForRoles(['VIEWER']).includes('findings:write'));
+  assert.ok(!permissionsForRoles(['SUPER_ADMIN']).includes('findings:verify'));
 });
 
 test('pemeriksa dapat menyetujui tanpa hak mengubah asesmen', () => {

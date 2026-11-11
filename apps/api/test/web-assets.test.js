@@ -39,6 +39,13 @@ test('antarmuka web dan aset dimuat dari origin API dengan header keamanan', asy
       'ti-incident-risk-id','ti-incidents-detail','ti-incidents-archive']){
       assert.match(source,new RegExp('id="'+id+'"'));
     }
+    for(const id of ['page-ti-findings','finding-menu','ti-findings-form',
+      'ti-findings-detail','ti-findings-review-form','ti-finding-source-type',
+      'ti-findings-submit','ti-findings-history','ti-findings-archive'])
+      assert.match(source,new RegExp('id="'+id+'"'));
+    const findingJs=await fetch(base+'/assets/ti-findings-ui.js');
+    assert.equal(findingJs.status,200);
+    assert.match(findingJs.headers.get('content-type'),/javascript/);
     const incidentJs=await fetch(base+'/assets/ti-incidents-ui.js');
     assert.equal(incidentJs.status,200);
     assert.match(incidentJs.headers.get('content-type'),/javascript/);

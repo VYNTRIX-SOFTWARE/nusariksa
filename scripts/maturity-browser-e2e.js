@@ -25,6 +25,8 @@ import {createRiskInTransaction,updateRiskInTransaction,archiveRiskInTransaction
 import {createIncidentInTransaction,updateIncidentInTransaction,
   appendIncidentTimelineInTransaction,archiveIncidentInTransaction}
   from '../apps/api/src/ti-incidents.js';
+import {createFindingInTransaction,updateFindingInTransaction,submitFindingInTransaction,
+  reviewFindingInTransaction,archiveFindingInTransaction} from '../apps/api/src/ti-findings.js';
 import {writeAssessmentResultInTransaction} from '../apps/api/src/assessment-results.js';
 import {assignCatalogInTransaction} from '../apps/api/src/control-catalogs.js';
 import {savePadkIndicatorNoteInTransaction} from '../apps/api/src/padk-preparation-indicators.js';
@@ -397,6 +399,40 @@ async function runBrowser(base,db,fixture){
     await until("document.getElementById('ti-risks-detail-values').textContent.includes('6/25')",
       'residual saved in risk detail');
     assert.equal((await db.query("SELECT revision FROM ti_risks WHERE risk_code='RSK-E2E-01'")).rows[0].revision,2);
+    await until("!document.getElementById('finding-menu').hidden",'finding register navigation');
+    await evalJs("document.getElementById('finding-menu').click()");
+    await until("!document.getElementById('ti-findings-create').hidden && "+
+      "[...document.querySelectorAll('#ti-findings-list .ti-finding-row')].length===0",
+      'finding creation ready');
+    await evalJs("document.getElementById('ti-findings-create').click()");
+    await until("document.getElementById('ti-findings-dialog').open",'finding form');
+    await evalJs("document.getElementById('ti-finding-source-type').value='risk';"+
+      "document.getElementById('ti-finding-source-type').dispatchEvent(new Event('change'))");
+    await until("[...document.querySelectorAll('#ti-finding-source option')].some(x=>x.value==="+
+      JSON.stringify(riskRow.rows[0].id)+")",'actual risk available as finding source');
+    await evalJs("document.getElementById('ti-finding-code').value='TEM-E2E-01';"+
+      "document.getElementById('ti-finding-title').value='Perbaikan prosedur pemulihan CBS';"+
+      "document.getElementById('ti-finding-description').value='Bukti uji pemulihan belum dilampirkan pada register risiko CBS.';"+
+      "document.getElementById('ti-finding-priority').value='high';"+
+      "document.getElementById('ti-finding-source').value="+JSON.stringify(riskRow.rows[0].id)+";"+
+      "document.getElementById('ti-finding-pic').value='Petugas TI';"+
+      "document.getElementById('ti-finding-due-date').value='2027-01-31';"+
+      "document.getElementById('ti-finding-action-plan').value='Uji pemulihan CBS dan dokumentasi prosedur.';"+
+      "document.getElementById('ti-finding-progress-note').value='Uji restore telah dilakukan bersama petugas operasional.';"+
+      "document.getElementById('ti-finding-evidence-reference').value='Berita acara pengujian BA-2027-012 disimpan di arsip TI.';"+
+      "document.getElementById('ti-findings-form').requestSubmit()");
+    await until("!document.getElementById('ti-findings-detail').hidden && "+
+      "document.getElementById('ti-findings-detail-values').textContent.includes('TEM-E2E-01')",
+      'finding created and visible');
+    const findingRow=await db.query("SELECT id,risk_id,created_by,revision FROM ti_findings "+
+      "WHERE finding_code='TEM-E2E-01'");
+    assert.equal(findingRow.rowCount,1);
+    assert.equal(findingRow.rows[0].risk_id,riskRow.rows[0].id);
+    await evalJs("window.confirm=()=>true;document.getElementById('ti-findings-submit').click()");
+    await until("document.getElementById('ti-findings-detail-values').textContent.includes('Menunggu pemeriksaan')",
+      'finding submitted for independent review');
+    assert.equal((await db.query("SELECT status,submission_cycle FROM ti_findings WHERE id=$1",
+      [findingRow.rows[0].id])).rows[0].submission_cycle,1);
     // Incident workflow: link a real asset + risk, record response, resolve and archive.
     await until("!document.getElementById('incident-menu').hidden",'incident register navigation');
     await evalJs("document.getElementById('incident-menu').click()");
@@ -701,6 +737,26 @@ async function runBrowser(base,db,fixture){
     await logout();
 
     await login('reviewer');
+    await until("!document.getElementById('finding-menu').hidden",'reviewer can read findings');
+    await evalJs("document.getElementById('finding-menu').click()");
+    await until("!!document.querySelector('#ti-findings-list .ti-finding-open')",
+      'pending finding appears in review list');
+    await evalJs("document.querySelector('#ti-findings-list .ti-finding-open').click()");
+    await until("!document.getElementById('ti-findings-review-form').hidden",
+      'separate reviewer has verification form');
+    assert.equal(await evalJs("document.getElementById('ti-findings-edit').hidden"),true);
+    await evalJs("document.getElementById('ti-findings-review-decision').value='verify';"+
+      "document.getElementById('ti-findings-review-note').value='Bukti pengujian restore dan berita acara telah diperiksa petugas reviewer.';"+
+      "document.getElementById('ti-findings-review-form').requestSubmit()");
+    await until("document.getElementById('ti-findings-detail-values').textContent.includes('Selesai')",
+      'independent reviewer closes finding');
+    const completedFinding=await db.query(
+      'SELECT status,verified_by,revision FROM ti_findings WHERE id=$1',[findingRow.rows[0].id]);
+    assert.equal(completedFinding.rows[0].status,'closed');
+    assert.equal(completedFinding.rows[0].revision,3);
+    assert.notEqual(completedFinding.rows[0].verified_by,findingRow.rows[0].created_by);
+    assert.equal((await db.query('SELECT count(*)::int n FROM ti_finding_events WHERE finding_id=$1',
+      [findingRow.rows[0].id])).rows[0].n,3);
     await openPadk();
     await until("document.querySelectorAll('#pdk-review-queue-list button').length===1",
       'PADK draft visible in reviewer queue');
@@ -914,7 +970,7 @@ async function runBrowser(base,db,fixture){
     await evalJs("document.getElementById('mfa-login-code').value="+JSON.stringify(codes[0])+";"+
       "document.getElementById('mfa-login-form').requestSubmit()");
     await until("!document.getElementById('app-screen').hidden",'recovery login accepted');
-    console.log('Browser E2E PASS: incident lifecycle/chronology linked to assets and risks, TI, PADK, MFA');
+    console.log('Browser E2E PASS: findings maker-checker, incidents, assets/risks, TI, PADK, MFA');
   }finally{
     await stopChromium(browser);
   }
@@ -951,6 +1007,13 @@ async function main(){
         update:(db,args)=>updateIncidentInTransaction(db,args),
         timeline:(db,args)=>appendIncidentTimelineInTransaction(db,args),
         archive:(db,args)=>archiveIncidentInTransaction(db,args),
+      },
+      findingHandlers:{
+        create:(db,args)=>createFindingInTransaction(db,args),
+        update:(db,args)=>updateFindingInTransaction(db,args),
+        submit:(db,args)=>submitFindingInTransaction(db,args),
+        review:(db,args)=>reviewFindingInTransaction(db,args),
+        archive:(db,args)=>archiveFindingInTransaction(db,args),
       },
       evidenceKey:'ab'.repeat(32),
       padkEvidenceHandlers:{
