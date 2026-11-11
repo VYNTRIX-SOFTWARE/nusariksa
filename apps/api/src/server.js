@@ -19,6 +19,7 @@ import {createRiskHandler} from './ti-risks-http.js';
 import {createIncidentHandler} from './ti-incidents-http.js';
 import {createFindingHandler} from './ti-findings-http.js';
 import {createVendorHandler} from './ti-vendors-http.js';
+import {createRecoveryHandler} from './ti-recovery-http.js';
 import { checkDatabase, createPool } from './database.js';
 import { createLoginLimiter } from './login-limiter.js';
 import { createRolesHandler } from './roles-http.js';
@@ -49,6 +50,7 @@ export function createServer({
   incidentHandlers,
   findingHandlers,
   vendorHandlers,
+  recoveryHandlers,
   resultHandlers,
   reviewHandlers,
   reportHandler,
@@ -78,6 +80,7 @@ export function createServer({
   const handleIncidents = createIncidentHandler({db:authDb,appOrigin,...incidentHandlers});
   const handleFindings = createFindingHandler({db:authDb,appOrigin,...findingHandlers});
   const handleVendors = createVendorHandler({db:authDb,appOrigin,...vendorHandlers});
+  const handleRecovery = createRecoveryHandler({db:authDb,appOrigin,...recoveryHandlers});
   const handleResults = createAssessmentResultsHandler({ db: authDb, appOrigin, ...resultHandlers });
   const handleReviews = createAssessmentReviewsHandler({ db: authDb, appOrigin, ...reviewHandlers });
   const handleReport = createAssessmentReportsHandler({ db: authDb, appOrigin, report: reportHandler });
@@ -166,6 +169,13 @@ export function createServer({
       return;
     }
 
+    if (request.url === '/recovery-plans' || request.url?.startsWith('/recovery-plans?')
+      || request.url?.startsWith('/recovery-plans/')) {
+      try{await handleRecovery(request,response);}
+      catch{if(!response.headersSent){response.writeHead(503);response.end(JSON.stringify({error:'Unavailable'}));}
+        else response.destroy();}
+      return;
+    }
     if (request.url === '/vendors' || request.url?.startsWith('/vendors?')
       || request.url?.startsWith('/vendors/')) {
       try{await handleVendors(request,response);}

@@ -88,3 +88,8 @@ Simpan kunci di luar repository dan bersama cadangan yang aman. Jangan menggunak
 ## Lisensi
 
 NusaRiksa menggunakan **AGPL-3.0-only**. Lihat [LICENSE](LICENSE), [NOTICE.md](NOTICE.md), dan [TRADEMARKS.md](TRADEMARKS.md) untuk ketentuan distribusi dan penggunaan identitas proyek.
+
+
+### Rencana pemulihan layanan TI
+
+Rencana Pemulihan TI membantu bank mencatat skenario gangguan, PIC, target RTO/RPO, prosedur pemulihan, referensi backup, dan riwayat pengujian. Data rencana dan hasil uji merupakan catatan bank, bukan verifikasi otomatis atau pengesahan dokumen.

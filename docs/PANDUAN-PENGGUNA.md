@@ -206,3 +206,10 @@ Jangan memasukkan password, token akses, kunci enkripsi, atau data pribadi nasab
 Gunakan hasil asesmen dan catatan operasional sebagai bahan pemeriksaan serta pengambilan keputusan internal. Sebelum menjadikannya dasar laporan eksternal, petugas yang berwenang perlu meninjau ketepatan data, bukti, perhitungan, dan ketentuan yang relevan.
 
 Untuk bantuan instalasi, akun, atau konfigurasi server, hubungi administrator NusaRiksa di lembaga Anda.
+
+
+## Rencana Pemulihan TI (BCP/DRP)
+
+Buka **Rencana Pemulihan TI**, lalu pilih **Tambah rencana**. Isi layanan yang terdampak, skenario gangguan, dampak bisnis, kriteria aktivasi, PIC utama dan pengganti, serta langkah pemulihan. RTO dan RPO ditulis dalam menit sesuai target yang telah ditetapkan bank; kosongkan apabila belum ditentukan. Catat komunikasi, ketergantungan, lokasi backup, dan bukti sesuai dokumen yang tersedia.
+
+Pilih rencana untuk melihat detailnya. Gunakan **Catat pengujian** setelah simulasi atau uji teknis benar-benar dilakukan, lalu isi tanggal, metode, hasil, waktu aktual dan referensi bukti. Catatan pengujian tidak dapat diubah; bila ada kekeliruan, tambahkan catatan pengujian yang benar dengan penjelasan. Gunakan **Arsipkan** untuk menyimpan rencana yang tidak lagi digunakan tanpa menghapus histori. Status **Dikelola** hanya status pencatatan dalam aplikasi dan tidak menggantikan persetujuan bank.
