@@ -82,6 +82,16 @@ test('PADK Table 3 criteria are displayed from local extracted source with PDF p
           cookies['criteria-maker@example.test'])).json();
         assert.equal(conflict20.table3CandidateNumber,21);
         assert.equal(conflict20.sourceConflict.code,'PARAMETER_KRITERIA_TIDAK_SELARAS');
+        // Kategori 2 nomor 21 dan 25 mengarah ke Tabel 3 nomor 22 dan 27.
+        for(const [indicator,table] of [[21,22],[25,27],[26,28],[27,29]]){
+          const response=await fetchSource(route(b.id,indicator),
+            cookies['criteria-maker@example.test']);
+          assert.equal(response.status,200);
+          const row=await response.json();
+          assert.equal(row.table3CandidateNumber,table);
+          assert.equal(row.sourceConflict.code,'PARAMETER_KRITERIA_TIDAK_SELARAS');
+          assert.equal(row.officialScoreAvailable,false);
+        }
         assert.equal((await fetchSource(route(b.id,61),
           cookies['criteria-maker@example.test'])).status,400);
         assert.equal((await fetchSource(route(
