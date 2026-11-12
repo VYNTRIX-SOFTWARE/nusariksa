@@ -44,27 +44,35 @@ test('first administrator and institution are created atomically', {
       const builtin=await client.query(
         "SELECT c.id,c.origin,c.code,v.id AS version_id,v.status FROM control_catalogs c "+
         "JOIN control_catalog_versions v ON v.catalog_id=c.id WHERE c.origin='builtin'");
-      assert.equal(builtin.rowCount,1);
-      assert.equal(builtin.rows[0].code,'NUSARIKSA_BPR_INTERNAL');
-      assert.equal(builtin.rows[0].status,'published');
+      assert.equal(builtin.rowCount,2);
+      const legacy=builtin.rows.find(x=>x.code==='NUSARIKSA_BPR_INTERNAL');
+      const referenced=builtin.rows.find(x=>x.code==='NUSARIKSA_TI_REFERENSI');
+      assert.ok(legacy);assert.ok(referenced);
+      assert.equal(legacy.status,'published');
+      assert.equal(referenced.status,'published');
       const count=await client.query(
         'SELECT count(*)::int AS total FROM control_definitions WHERE version_id=$1',
-        [builtin.rows[0].version_id]);
+        [referenced.version_id]);
       assert.equal(count.rows[0].total,26);
+      const references=await client.query(
+        'SELECT count(*)::int AS total FROM control_definitions WHERE version_id=$1 '+
+        'AND source_document=$2 AND source_section IS NOT NULL',
+        [referenced.version_id,'POJK Nomor 34 Tahun 2025']);
+      assert.equal(references.rows[0].total,26);
       const installedAgain=await client.query(
-        'SELECT ensure_builtin_control_catalog($1) AS id',[created.userId]);
-      assert.equal(installedAgain.rows[0].id,builtin.rows[0].version_id);
+        'SELECT ensure_referenced_control_catalog($1) AS id',[created.userId]);
+      assert.equal(installedAgain.rows[0].id,referenced.version_id);
       const unchanged=await client.query('SELECT count(*)::int AS total FROM control_catalog_versions');
-      assert.equal(unchanged.rows[0].total,1);
+      assert.equal(unchanged.rows[0].total,2);
       // Built-in v1 immutable; institution can create an extended v2 or its own catalog.
       await client.query("INSERT INTO user_roles(user_id,role) VALUES($1,'IT_OFFICER')",[created.userId]);
       await client.query('SAVEPOINT immutable_builtin');
       await assert.rejects(client.query(
         'UPDATE control_definitions SET title=$2 WHERE version_id=$1',
-        [builtin.rows[0].version_id,'Klaim yang diubah']),e=>e.code==='P0001');
+        [legacy.version_id,'Klaim yang diubah']),e=>e.code==='P0001');
       await client.query('ROLLBACK TO SAVEPOINT immutable_builtin');
       const v2=await createNextVersionInTransaction(client,{
-        actorId:created.userId,catalogId:builtin.rows[0].id});
+        actorId:created.userId,catalogId:legacy.id});
       assert.equal(v2.status,'draft');
       assert.equal((await listControls(client,created.userId,v2.id)).controls.length,26);
       await addControlInTransaction(client,{actorId:created.userId,versionId:v2.id,

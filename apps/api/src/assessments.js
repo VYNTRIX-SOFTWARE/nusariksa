@@ -124,9 +124,11 @@ export async function createReadyAssessmentInTransaction(db,{actorId,...input}){
     "SELECT v.id FROM control_catalog_versions v "+
     "JOIN control_catalogs c ON c.id=v.catalog_id "+
     "JOIN users actor ON actor.institution_id=c.institution_id AND actor.id=$1 "+
-    "WHERE c.origin='builtin' AND c.code='NUSARIKSA_BPR_INTERNAL' "+
+    "WHERE c.origin='builtin' AND c.code='NUSARIKSA_TI_REFERENSI' "+
     "AND v.version=1 AND v.status='published' "+
     "AND (SELECT count(*) FROM control_definitions d WHERE d.version_id=v.id)=26 "+
+    "AND (SELECT count(*) FROM control_definitions d WHERE d.version_id=v.id "+
+    "AND d.source_document='POJK Nomor 34 Tahun 2025' AND d.source_section IS NOT NULL)=26 "+
     "ORDER BY v.id LIMIT 1",
     [actorId],
   );

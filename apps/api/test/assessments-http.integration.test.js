@@ -87,7 +87,7 @@ test('API asesmen menegakkan sesi, izin, validasi dan status', {
           origin,'text/plain')).status,415);
         // Synthetic test bank: install the same internal baseline as bootstrap.
         await db.query("INSERT INTO user_roles(user_id,role) VALUES($1,'SUPER_ADMIN')",[owner]);
-        await db.query('SELECT ensure_builtin_control_catalog($1)',[owner]);
+        await db.query('SELECT ensure_referenced_control_catalog($1)',[owner]);
         const fast=await send('/assessments/start-default','POST',cookies.owner,{
           title:'Asesmen TI Cepat 2027',periodStart:'2027-01-01',periodEnd:'2027-12-31'});
         assert.equal(fast.status,201);
@@ -100,7 +100,7 @@ test('API asesmen menegakkan sesi, izin, validasi dan status', {
           'JOIN control_catalog_versions v ON v.id=aa.catalog_version_id '+
           'JOIN control_catalogs c ON c.id=v.catalog_id WHERE aa.assessment_id=$1',[ready.id]);
         assert.equal(attached.rowCount,1);
-        assert.equal(attached.rows[0].code,'NUSARIKSA_BPR_INTERNAL');
+        assert.equal(attached.rows[0].code,'NUSARIKSA_TI_REFERENSI');
         assert.equal(attached.rows[0].version,1);
         const actions=await db.query(
           'SELECT action FROM assessment_events WHERE assessment_id=$1 ORDER BY id',[ready.id]);

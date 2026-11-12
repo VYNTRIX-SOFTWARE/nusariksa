@@ -295,7 +295,7 @@ export function createWorkspace({
         const response=await api('/catalogs/'+encodeURIComponent(catalog.id)+'/versions');
         return (Array.isArray(response.versions)?response.versions:[])
           .filter(v=>v.status==='published').map(v=>({
-            id:v.id,builtin:catalog.origin==='builtin',
+            id:v.id,builtin:catalog.origin==='builtin',catalogCode:catalog.code,
             name:(catalog.origin==='builtin'?'KATALOG BAWAAN · ':'')+
               catalog.title+' / v'+v.version,
           }));
@@ -306,7 +306,8 @@ export function createWorkspace({
       for(const version of candidates)select.add(new Option(version.name,version.id));
       select.disabled=candidates.length===0;
       // Suggest but never attach silently: attachment is immutable.
-      const recommended=candidates.find(x=>x.builtin);
+      const recommended=candidates.find(x=>x.catalogCode==='NUSARIKSA_TI_REFERENSI')
+        ??candidates.find(x=>x.builtin);
       if(recommended)select.value=recommended.id;
       $('workspace-attach').disabled=select.disabled;
       $('workspace-default-catalog-hint').textContent=recommended

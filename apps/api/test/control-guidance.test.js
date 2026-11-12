@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {test} from 'node:test';
-import {BUILTIN_CATALOG_CODE,GUIDANCE_CODES,guideForControl,composeObservedNote}
+import {BUILTIN_CATALOG_CODE,REFERENCED_CATALOG_CODE,GUIDANCE_CODES,guideForControl,composeObservedNote}
   from '../../web/assets/control-guidance.js';
 
 test('NusaRiksa built-in guidance maps every published internal baseline control',async()=>{
@@ -19,6 +19,7 @@ test('NusaRiksa built-in guidance maps every published internal baseline control
     assert.ok(guide.evidence.every(x=>x.length>=12));
     assert.ok(guide.caution.length>=20);
   }
+  assert.ok(guideForControl(REFERENCED_CATALOG_CODE,'GOV_01'));
   assert.equal(guideForControl('KATALOG_LOKAL','GOV_01'),null);
   assert.equal(guideForControl(BUILTIN_CATALOG_CODE,'__proto__'),null);
   assert.equal(guideForControl(BUILTIN_CATALOG_CODE,'GOV_99'),null);
