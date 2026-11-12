@@ -93,3 +93,8 @@ NusaRiksa menggunakan **AGPL-3.0-only**. Lihat [LICENSE](LICENSE), [NOTICE.md](N
 ### Rencana pemulihan layanan TI
 
 Rencana Pemulihan TI membantu bank mencatat skenario gangguan, PIC, target RTO/RPO, prosedur pemulihan, referensi backup, dan riwayat pengujian. Data rencana dan hasil uji merupakan catatan bank, bukan verifikasi otomatis atau pengesahan dokumen.
+
+
+### Katalog asesmen dengan referensi POJK
+
+NusaRiksa menyediakan **Checklist Operasional TI BPR/BPRS — Acuan POJK 34/2025 (Internal)** sebagai katalog bawaan bagi assessment baru. Terdapat 26 kontrol dengan referensi pasal terkait, pertanyaan pemeriksaan, dan panduan evidence. Referensi tersebut adalah rujukan pendukung; checklist bukan kutipan resmi ketentuan OJK, bukan 26 kontrol yang dinyatakan resmi OJK, dan bukan bukti kepatuhan. Katalog bawaan sebelumnya dan assessment yang menggunakannya tidak diubah. Penilaian maturitas PADK tetap terpisah dan official scoring belum tersedia selama verifikasi instrumen berlangsung.

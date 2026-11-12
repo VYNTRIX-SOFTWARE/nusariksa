@@ -192,7 +192,7 @@ async function seed(db){
     "($1,'IT_OFFICER'),($2,'REVIEWER'),($3,'VIEWER'),($4,'SUPER_ADMIN')",
     [users.maker,users.reviewer,users.viewer,users.admin],
   );
-  const builtin=await db.query('SELECT ensure_builtin_control_catalog($1) AS version_id',[users.admin]);
+  const builtin=await db.query('SELECT ensure_referenced_control_catalog($1) AS version_id',[users.admin]);
   assert.ok(builtin.rows[0].version_id);
   const generalAssessment=await createAssessmentInTransaction(db,{
     actorId:users.maker,title:'Asesmen Kontrol TI Baseline 2026',
@@ -668,7 +668,7 @@ async function runBrowser(base,db,fixture){
       throw new Error(error.message+' | synthetic UI: '+JSON.stringify(ui)+
         ' | assignmentCount: '+check.rows[0].n);
     }
-    assert.equal(await evalJs("document.getElementById('workspace-catalog-tag').textContent.includes('NUSARIKSA_BPR_INTERNAL')"),true);
+    assert.equal(await evalJs("document.getElementById('workspace-catalog-tag').textContent.includes('NUSARIKSA_TI_REFERENSI')"),true);
     assert.equal(await evalJs("document.getElementById('workspace-control-count').textContent"),'26 kontrol');
     assert.equal(await evalJs("document.querySelector('#page-workspace .workspace-grid').compareDocumentPosition(document.getElementById('workspace-review-panel')) & Node.DOCUMENT_POSITION_FOLLOWING"),4);
     await evalJs("document.getElementById('workspace-start').click()");

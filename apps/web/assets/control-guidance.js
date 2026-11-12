@@ -4,6 +4,7 @@
 export const POJK_34_SOURCE='https://www.ojk.go.id/id/regulasi/Pages/POJK-34-Tahun-2025-Penyelenggaraan-Teknologi-Informasi-oleh-Bank-Perekonomian-Rakyat-dan-Bank-Perekonomian-Rakyat-Syariah.aspx';
 export const PADK_43_SOURCE='https://ojk.go.id/id/regulasi/Pages/PADK-43-PADK03-2025-Penyelenggaraan-Teknologi-Informasi-oleh-BPR-BPRS.aspx';
 export const BUILTIN_CATALOG_CODE='NUSARIKSA_BPR_INTERNAL';
+export const REFERENCED_CATALOG_CODE='NUSARIKSA_TI_REFERENSI';
 const ENTRIES=[
   [
     "GOV_01",
@@ -271,7 +272,7 @@ const GUIDE=Object.freeze(Object.fromEntries(ENTRIES.map(([code,question,evidenc
 ])));
 export const GUIDANCE_CODES=Object.freeze(Object.keys(GUIDE));
 export function guideForControl(catalogCode,controlCode){
-  return catalogCode===BUILTIN_CATALOG_CODE
+  return (catalogCode===BUILTIN_CATALOG_CODE||catalogCode===REFERENCED_CATALOG_CODE)
     &&typeof controlCode==='string'&&Object.hasOwn(GUIDE,controlCode)
     ?GUIDE[controlCode]:null;
 }
