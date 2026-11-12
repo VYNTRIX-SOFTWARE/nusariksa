@@ -921,7 +921,25 @@
                 <button type="button" id="pdk-indicator-next" class="button button-outline">Berikutnya</button>
                 <button type="button" id="pdk-indicator-next-pending" class="button button-outline">Ke indikator belum lengkap</button>
               </div>
-              <label for="pdk-indicator-list">Pilih indikator kategori penilaian</label>
+              <div class="pdk-indicator-filters" role="group" aria-label="Cari dan filter indikator">
+                <div>
+                  <label for="pdk-indicator-search">Cari indikator</label>
+                  <input id="pdk-indicator-search" type="search" maxlength="100"
+                    placeholder="Nomor atau kata kunci, mis. backup" autocomplete="off">
+                </div>
+                <div>
+                  <label for="pdk-indicator-status-filter">Status pengisian</label>
+                  <select id="pdk-indicator-status-filter">
+                    <option value="all">Semua indikator</option>
+                    <option value="pending">Belum lengkap</option>
+                    <option value="complete">Lengkap (draft)</option>
+                  </select>
+                </div>
+                <button type="button" id="pdk-indicator-filter-reset"
+                  class="button button-outline" disabled>Reset filter</button>
+              </div>
+              <p id="pdk-indicator-match-count" class="workspace-help" role="status" aria-live="polite"></p>
+              <label for="pdk-indicator-list">Buka indikator dari hasil pencarian</label>
               <select id="pdk-indicator-list"><option value="">Pilih indikator…</option></select>
               <p id="pdk-indicator-description" class="workspace-help pdk-source-reference"></p>
               <p id="pdk-indicator-message" class="workspace-message" role="status" aria-live="polite" hidden></p>

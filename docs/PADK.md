@@ -90,3 +90,8 @@ Pemeriksaan sumber perlu mencakup **parameter dan seluruh lima kriteria** per ba
 Master Tabel 3 memuat 80 parameter, masing-masing dengan lima kriteria kerja hasil ekstraksi. File `regulations/padk43/cyber/review/category-scope.json` merekam 60 penanda Kategori 2 untuk pembandingan internal dengan status `DRAFT_UNVERIFIED`. Dataset ini belum diverifikasi sebagai pemetaan regulatori. Redaksi 60 indikator Kategori 2 tetap berasal dari daftar kerja Tabel 2 yang terpisah; tidak ditimpa redaksi master.
 
 Aplikasi membandingkan kandidat pemetaan internal NusaRiksa dengan penanda pembanding. **59 dari 60** pasangan sama secara nomor; Kategori 2 nomor **29** berbeda: kandidat NusaRiksa ke Tabel 3 nomor **35** (simulasi phishing), sedangkan penanda pembanding ke nomor **32** (pelatihan). Kedua kriteria ditampilkan bersamaan sebagai referensi kerja; tombol memilih peringkat otomatis dinonaktifkan untuk indikator ini. Pengguna tetap dapat menuliskan peringkat sementara secara manual dengan justifikasi dan evidence. Tidak ada pemilihan otomatis, persetujuan mapping, atau scoring regulatori baru.
+
+
+## Navigasi cepat indikator
+
+Gunakan **Cari indikator** untuk menemukan nomor parameter atau kata kunci. Gunakan **Status pengisian** untuk menampilkan yang belum lengkap atau sudah lengkap untuk draft internal. Filter tidak mengubah status jawaban, tidak menyimpan data, dan tidak mempengaruhi skor. Indikator yang sedang dibuka tetap terlihat pada daftar meskipun tidak cocok dengan filter; tombol **Reset filter** mengembalikan seluruh indikator. Jika jawaban belum disimpan, aplikasi akan memperingatkan sebelum berpindah indikator, keluar dari halaman, logout, atau menutup tab. Status tersimpan hanya muncul setelah server mengonfirmasi penyimpanan.

@@ -737,6 +737,20 @@ async function runBrowser(base,db,fixture){
     await until("document.getElementById('pdk-message').textContent.includes('berhasil disimpan')",'PADK preparation persisted');
     await until("document.getElementById('pdk-indicator-list').options.length===81",
       '80 draft indicators listed');
+    // Petugas dapat mencari nomor dan memfilter tanpa kehilangan indikator yang sedang dibuka.
+    await evalJs("document.getElementById('pdk-indicator-search').value='2';"+
+      "document.getElementById('pdk-indicator-search').dispatchEvent(new Event('input',{bubbles:true}))");
+    assert.equal(await evalJs("document.getElementById('pdk-indicator-list').options.length"),3);
+    assert.equal(await evalJs("document.getElementById('pdk-indicator-list').value"),'1');
+    assert.equal(await evalJs("document.getElementById('pdk-indicator-match-count').textContent.includes('1 dari 80')"),true);
+    await evalJs("document.getElementById('pdk-indicator-filter-reset').click();"+
+      "document.getElementById('pdk-indicator-status-filter').value='complete';"+
+      "document.getElementById('pdk-indicator-status-filter').dispatchEvent(new Event('change',{bubbles:true}))");
+    assert.equal(await evalJs("document.getElementById('pdk-indicator-list').options.length"),2);
+    assert.equal(await evalJs("document.getElementById('pdk-indicator-match-count').textContent.includes('Tidak ada indikator')"),true);
+    await evalJs("document.getElementById('pdk-indicator-filter-reset').click()");
+    assert.equal(await evalJs("document.getElementById('pdk-indicator-list').options.length"),81);
+    assert.equal(await evalJs("document.getElementById('pdk-indicator-list').value"),'1');
     await until("document.querySelectorAll('#pdk-criteria-list .workspace-history-item').length===5",
       'PADK extracted Table 3 criteria visible');
     assert.equal(await evalJs("document.getElementById('pdk-criteria-source').textContent.includes('157')"),true);
@@ -793,6 +807,7 @@ async function runBrowser(base,db,fixture){
       "document.getElementById('pdk-indicator-notes').dispatchEvent(new Event('input',{bubbles:true}));"+
       "window.confirm=()=>false;document.getElementById('pdk-indicator-next-pending').click()");
     assert.equal(await evalJs("document.getElementById('pdk-indicator-list').value"),'1');
+    assert.equal(await evalJs("(()=>{const e=new Event('beforeunload',{cancelable:true});window.dispatchEvent(e);return e.defaultPrevented})()"),true);
     await evalJs("window.confirm=()=>true;document.getElementById('pdk-indicator-next-pending').click()");
     assert.equal(await evalJs("document.getElementById('pdk-indicator-list').value"),'2');
     await evalJs("document.getElementById('pdk-indicator-prev').click()");

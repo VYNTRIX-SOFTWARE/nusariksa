@@ -7,7 +7,7 @@ import {
   parseIndicatorNumber,validateIndicatorWorkingNotes,
 } from '../src/padk-preparation-indicators.js';
 import {validateDraftIndicatorList,isDraftIndicatorComplete,
-  summarizeDraftIndicatorProgress,nextPendingDraftIndicator}
+  summarizeDraftIndicatorProgress,nextPendingDraftIndicator,filterDraftIndicators}
   from '../../web/assets/padk-indicator-note-ui.js';
 
 test('indicator number must follow PADK category sizes',()=>{
@@ -75,4 +75,24 @@ test('MVP PADK resume navigation follows exact draft submission readiness',()=>{
   assert.deepEqual(summarizeDraftIndicatorProgress([]),
     {total:0,complete:0,pending:0,noted:0});
   assert.throws(()=>summarizeDraftIndicatorProgress(null),TypeError);
+});
+
+test('filter indikator mendukung pencarian nomor, teks dan kelengkapan tanpa mengubah data',()=>{
+  const done={number:1,workingSummary:'Kebijakan keamanan siber',
+    provisionalRank:2,justification:'Dokumen pengujian telah diperiksa bersama unit terkait.'};
+  const pending={number:2,workingSummary:'Pencadangan data penting',
+    provisionalRank:null,justification:''};
+  const noted={number:3,workingSummary:'Prosedur pencadangan dan recovery',
+    provisionalRank:3,justification:'Kurang cukup'};
+  const indicators=[done,pending,noted];
+  assert.deepEqual(filterDraftIndicators(indicators,{query:'2'}),[pending]);
+  assert.deepEqual(filterDraftIndicators(indicators,{query:'PENCADANGAN'}),[pending,noted]);
+  assert.deepEqual(filterDraftIndicators(indicators,{status:'complete'}),[done]);
+  assert.deepEqual(filterDraftIndicators(indicators,{status:'pending'}),[pending,noted]);
+  assert.deepEqual(filterDraftIndicators(indicators,{query:'kebijakan',status:'pending'}),[]);
+  assert.equal(filterDraftIndicators(indicators).length,3);
+  assert.deepEqual(indicators,[done,pending,noted]);
+  assert.throws(()=>filterDraftIndicators(null),TypeError);
+  assert.throws(()=>filterDraftIndicators(indicators,{status:'invalid'}),TypeError);
+  assert.throws(()=>filterDraftIndicators(indicators,{query:12}),TypeError);
 });

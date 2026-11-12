@@ -848,3 +848,13 @@ h1,h2,p{margin-top:0}h1,h2{letter-spacing:-.027em}
 @media(max-width:1200px){.ti-vendor-filters{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:700px){.ti-vendor-filters{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:580px){.ti-vendor-filters,.ti-vendor-cols{grid-template-columns:1fr}}
+
+/* Navigation tools for long PADK indicator lists. */
+.pdk-indicator-filters{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(180px,1fr) auto;gap:12px;align-items:end;margin:17px 0 8px}
+.pdk-indicator-filters>div{min-width:0}
+.pdk-indicator-filters label{display:block;margin-bottom:6px;font-size:13px;font-weight:700}
+.pdk-indicator-filters input,.pdk-indicator-filters select{width:100%;min-width:0;margin:0}
+.pdk-indicator-filters .button{min-width:0;white-space:nowrap}
+#pdk-indicator-match-count{margin:0 0 10px;font-size:12px}
+@media(max-width:760px){.pdk-indicator-filters{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.pdk-indicator-filters .button{grid-column:1 / -1}}
+@media(max-width:480px){.pdk-indicator-filters{grid-template-columns:1fr}.pdk-indicator-filters .button{grid-column:auto;width:100%}}

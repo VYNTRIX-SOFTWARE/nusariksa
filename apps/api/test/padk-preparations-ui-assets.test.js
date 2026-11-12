@@ -34,6 +34,8 @@ test('PADK preparation page and module are served with CSP',async()=>{
       'pdk-criteria-panel','pdk-criteria-status','pdk-criteria-source',
       'pdk-criteria-list',
       'pdk-indicator-progress','pdk-indicator-prev','pdk-indicator-next',
+      'pdk-indicator-search','pdk-indicator-status-filter','pdk-indicator-filter-reset',
+      'pdk-indicator-match-count',
       'pdk-indicator-next-pending','pdk-indicator-position',
       'pdk-indicator-state','pdk-indicator-title','pdk-indicator-save-state',
       'pdk-indicator-save-next','pdk-indicator-ready-hint','pdk-indicator-optional',
