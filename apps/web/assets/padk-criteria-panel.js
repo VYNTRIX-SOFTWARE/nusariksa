@@ -21,6 +21,42 @@ export function validateDraftCriteriaResponse(data,{id,category,number}){
     ||!Object.hasOwn(data,'sourceConflict')
     ||!Array.isArray(data.criteria)||data.criteria.length!==5)
     throw new TypeError('Kriteria hasil ekstraksi tidak dapat dipercaya.');
+  const comparison=data.referenceComparison;
+  const extras=data.supplementaryCriteria;
+  if(!comparison||comparison.status!=='DRAFT_UNVERIFIED'
+    ||comparison.masterParameterCount!==80||comparison.category2MarkerCount!==60
+    ||comparison.officialMappingAvailable!==false
+    ||comparison.referenceStatus!=='INTERNAL_DRAFT_UNVERIFIED'
+    ||!Array.isArray(comparison.candidateTable3Numbers)
+    ||comparison.candidateTable3Numbers[0]!==data.table3CandidateNumber
+    ||(category===1&&comparison.comparisonTable3Number!==null)
+    ||(category===2&&(!Number.isInteger(comparison.comparisonTable3Number)
+      ||comparison.comparisonTable3Number<1||comparison.comparisonTable3Number>80))
+    ||comparison.candidateDisagreement!==
+      (comparison.comparisonTable3Number!==null
+        &&comparison.comparisonTable3Number!==data.table3CandidateNumber)
+    ||comparison.candidateTable3Numbers.length!==(comparison.candidateDisagreement?2:1)
+    ||(comparison.candidateDisagreement
+      &&comparison.candidateTable3Numbers[1]!==comparison.comparisonTable3Number)
+    ||!Array.isArray(extras)||extras.length!==(comparison.candidateDisagreement?1:0))
+    throw new TypeError('Referensi master 80/60 tidak valid.');
+  for(const extra of extras){
+    if(!extra||extra.table3Number!==comparison.candidateTable3Numbers[1]
+      ||extra.category2ComparisonMarker!==true
+      ||!Array.isArray(extra.pdfPages)||extra.pdfPages.length<1
+      ||extra.pdfPages.some(p=>!Number.isInteger(p)||p<157||p>198)
+      ||!Array.isArray(extra.criteria)||extra.criteria.length!==5
+      ||!(extra.sourceConflict===null||(extra.sourceConflict?.code===
+        'PARAMETER_KRITERIA_TIDAK_SELARAS'&&typeof extra.sourceConflict.message==='string')))
+      throw new TypeError('Kriteria pembanding tidak valid.');
+    for(let i=0;i<5;i++){
+      const rank=extra.criteria[i];
+      if(rank?.rank!==i+1||rank.label!==NAMES[i]
+        ||typeof rank.textDraft!=='string'||rank.textDraft.length<10
+        ||!Array.isArray(rank.pdfPages)||rank.pdfPages.join(',')!==extra.pdfPages.join(','))
+        throw new TypeError('Kriteria pembanding tidak lengkap.');
+    }
+  }
   const hasConflict=[2,20,21,22,27,28,29].includes(data.table3CandidateNumber);
   if(hasConflict){
     if(!data.sourceConflict||data.sourceConflict.code!=='PARAMETER_KRITERIA_TIDAK_SELARAS'
@@ -53,8 +89,13 @@ export function createPadkCriteriaPanel({api,onAuthFailure,canSelect}){
     $('pdk-criteria-list').replaceChildren();
   }
   function show(data){
-    sourceConflict=Boolean(data.sourceConflict);
-    $('pdk-criteria-status').textContent=data.sourceConflict
+    sourceConflict=Boolean(data.sourceConflict)||data.referenceComparison.candidateDisagreement;
+    $('pdk-criteria-status').textContent=data.referenceComparison.candidateDisagreement
+      ?'PERLU REVIEW MAPPING: NusaRiksa memakai kandidat Tabel 3 #'+
+        data.table3CandidateNumber+', sedangkan kandidat pembanding internal menunjuk #'+
+        data.referenceComparison.comparisonTable3Number+
+        '. Keduanya ditampilkan untuk dibandingkan. Pemilihan peringkat otomatis dinonaktifkan.'
+      :data.sourceConflict
       ?'PERHATIAN: '+data.sourceConflict.message+
         ' Kriteria tetap ditampilkan untuk pemeriksaan sumber, tetapi pemilihan peringkat langsung dinonaktifkan.'
       :data.category===2
@@ -66,8 +107,9 @@ export function createPadkCriteriaPanel({api,onAuthFailure,canSelect}){
       :'Nomor parameter Tabel 3 #'+data.table3CandidateNumber+
         ' — teks belum diperiksa secara independen.';
     $('pdk-criteria-source').textContent=
-      'Rujukan PDF unggahan halaman '+data.table3PdfPages.join(', ')+
-      '. Kriteria berikut adalah HASIL EKSTRAKSI MESIN, bukan teks final terverifikasi.';
+      'Master Tabel 3: 80 parameter, 5 peringkat. Referensi kerja internal menandai 60 parameter Kategori 2. '+
+      'PDF sumber halaman '+data.table3PdfPages.join(', ')+
+      '. Ini HASIL EKSTRAKSI dan mapping DRAFT, bukan instrumen final terverifikasi.';
     const list=$('pdk-criteria-list');list.replaceChildren();rows=[];
     for(const criterion of data.criteria){
       const entry=make('div','');entry.className='workspace-history-item';
@@ -83,6 +125,18 @@ export function createPadkCriteriaPanel({api,onAuthFailure,canSelect}){
         select.dispatchEvent(new Event('change',{bubbles:true}));
       });
       rows.push(button);entry.append(heading,body,button);list.append(entry);
+    }
+    for(const additional of data.supplementaryCriteria){
+      const heading=make('strong','Kandidat pembanding Tabel 3 #'+additional.table3Number+
+        ' · halaman PDF '+additional.pdfPages.join(', ')+
+        ' (pembanding Kategori 2; belum diverifikasi)');
+      list.append(heading);
+      for(const item of additional.criteria){
+        const entry=make('div','');entry.className='workspace-history-item';
+        entry.append(make('strong','Peringkat '+item.rank+' — '+item.label),
+          make('p',item.textDraft));
+        list.append(entry);
+      }
     }
     sync();
   }

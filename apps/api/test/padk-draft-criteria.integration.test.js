@@ -61,6 +61,10 @@ test('PADK Table 3 criteria are displayed from local extracted source with PDF p
         assert.equal(first.table3CandidateNumber,1);
         assert.deepEqual(first.table3PdfPages,[157]);
         assert.equal(first.criteria.length,5);
+        assert.equal(first.referenceComparison.masterParameterCount,80);
+        assert.equal(first.referenceComparison.category2MarkerCount,60);
+        assert.deepEqual(first.referenceComparison.candidateTable3Numbers,[1]);
+        assert.deepEqual(first.supplementaryCriteria,[]);
         assert.match(first.criteria[0].textDraft,/Wewenang dan tanggung jawab/);
         assert.equal((await fetchSource(path,cookies['criteria-viewer@example.test'],'POST')).status,404);
         const candidate=await fetchSource(route(b.id,32),
@@ -73,6 +77,17 @@ test('PADK Table 3 criteria are displayed from local extracted source with PDF p
         assert.equal(c.criteriaVerified,false);
         assert.equal(c.finalReportAvailable,false);
         assert.equal(c.criteria.length,5);
+        assert.deepEqual(c.referenceComparison.candidateTable3Numbers,[36]);
+        assert.equal(c.referenceComparison.candidateDisagreement,false);
+        const ambiguous=await (await fetchSource(route(b.id,29),
+          cookies['criteria-maker@example.test'])).json();
+        assert.deepEqual(ambiguous.referenceComparison.candidateTable3Numbers,[35,32]);
+        assert.equal(ambiguous.referenceComparison.comparisonTable3Number,32);
+        assert.equal(ambiguous.referenceComparison.candidateDisagreement,true);
+        assert.equal(ambiguous.supplementaryCriteria.length,1);
+        assert.equal(ambiguous.supplementaryCriteria[0].table3Number,32);
+        assert.equal(ambiguous.supplementaryCriteria[0].criteria.length,5);
+        assert.equal(ambiguous.officialScoreAvailable,false);
         assert.equal(c.sourceConflict,null);
         const conflict19=await (await fetchSource(route(b.id,19),
           cookies['criteria-maker@example.test'])).json();
