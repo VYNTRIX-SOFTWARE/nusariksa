@@ -18,8 +18,17 @@ export function validateDraftCriteriaResponse(data,{id,category,number}){
     ||(category===2&&!['SOURCE_REVIEW_REQUIRED','CANDIDATE_NOT_APPROVED']
       .includes(data.category2MappingRisk))
     ||(category===1&&data.category2MappingRisk!==null)
+    ||!Object.hasOwn(data,'sourceConflict')
     ||!Array.isArray(data.criteria)||data.criteria.length!==5)
     throw new TypeError('Kriteria hasil ekstraksi tidak dapat dipercaya.');
+  const hasConflict=[2,20,21].includes(data.table3CandidateNumber);
+  if(hasConflict){
+    if(!data.sourceConflict||data.sourceConflict.code!=='PARAMETER_KRITERIA_TIDAK_SELARAS'
+      ||typeof data.sourceConflict.message!=='string'
+      ||data.sourceConflict.message.length<40)
+      throw new TypeError('Status konflik redaksi sumber tidak valid.');
+  }else if(data.sourceConflict!==null)
+    throw new TypeError('Status konflik redaksi sumber tidak valid.');
   for(let i=0;i<5;i++){
     const row=data.criteria[i];
     if(!row||row.rank!==i+1||row.label!==NAMES[i]
@@ -31,20 +40,24 @@ export function validateDraftCriteriaResponse(data,{id,category,number}){
   return data;
 }
 export function createPadkCriteriaPanel({api,onAuthFailure,canSelect}){
-  let active=null,request=0,rows=[];
+  let active=null,request=0,rows=[],sourceConflict=false;
   function sync(){
-    const writable=Boolean(active&&canSelect());
+    const writable=Boolean(active&&canSelect()&&!sourceConflict);
     for(const button of rows)button.disabled=!writable;
   }
   function clear(){
-    request++;active=null;rows=[];
+    request++;active=null;rows=[];sourceConflict=false;
     $('pdk-criteria-panel').hidden=true;
     $('pdk-criteria-status').textContent='';
     $('pdk-criteria-source').textContent='';
     $('pdk-criteria-list').replaceChildren();
   }
   function show(data){
-    $('pdk-criteria-status').textContent=data.category===2
+    sourceConflict=Boolean(data.sourceConflict);
+    $('pdk-criteria-status').textContent=data.sourceConflict
+      ?'PERHATIAN: '+data.sourceConflict.message+
+        ' Kriteria tetap ditampilkan untuk pemeriksaan sumber, tetapi pemilihan peringkat langsung dinonaktifkan.'
+      :data.category===2
       ?'Kandidat pemetaan Kategori 2 #'+data.indicatorNumber+
         ' → Tabel 3 #'+data.table3CandidateNumber+
         (data.category2MappingRisk==='SOURCE_REVIEW_REQUIRED'
@@ -64,7 +77,7 @@ export function createPadkCriteriaPanel({api,onAuthFailure,canSelect}){
       const button=make('button','Pilih peringkat '+criterion.rank+' (draft)');
       button.type='button';button.className='button button-outline';
       button.addEventListener('click',()=>{
-        if(!canSelect())return;
+        if(sourceConflict||!canSelect())return;
         const select=$('pdk-indicator-rank');
         select.value=String(criterion.rank);
         select.dispatchEvent(new Event('change',{bubbles:true}));

@@ -11,6 +11,7 @@ const BASE={
   sourcePdfSha256:'63868e2fe99a48485b17646618934c1fffb27b125811929e12bd70d170081e1b',
   mappingVerified:false,criteriaVerified:false,sourceTextVerified:false,
   sourceAuthenticityVerified:false,officialScoreAvailable:false,finalReportAvailable:false,
+  sourceConflict:null,
 };
 test('uploaded Table 3 extraction contains exactly 80 rows and 400 nonempty rank texts',async()=>{
   const rows=await readExtractedTable3();
@@ -38,6 +39,7 @@ test('criteria UI accepts only an explicitly unverified extracted source',async(
     {table3CandidateNumber:81},{table3PdfPages:[0]},
     {criteria:criteria.slice(1)},
     {criteria:criteria.map((x,i)=>i===0?{...x,rank:5}:x)},
+    {sourceConflict:{code:'PARAMETER_KRITERIA_TIDAK_SELARAS',message:'Invalid on normal row'}},
   ])assert.throws(()=>validateDraftCriteriaResponse({...valid,...change},context));
 });
 test('category 2 validation requires explicit candidate-mapping risk',async()=>{
@@ -48,4 +50,17 @@ test('category 2 validation requires explicit candidate-mapping risk',async()=>{
   assert.equal(validateDraftCriteriaResponse(value,{id:ID,category:2,number:32}),value);
   assert.throws(()=>validateDraftCriteriaResponse({...value,category2MappingRisk:null},
     {id:ID,category:2,number:32}));
+});
+
+test('konflik sumber memblokir pemilihan langsung dari kriteria',async()=>{
+  const rows=await readExtractedTable3();
+  for(const n of [2,20,21]){
+    const context={id:ID,category:1,number:n};
+    const value={...BASE,indicatorNumber:n,table3CandidateNumber:n,
+      table3PdfPages:rows[n-1].pdfPages,criteria:rows[n-1].ranks,
+      sourceConflict:{code:'PARAMETER_KRITERIA_TIDAK_SELARAS',
+        message:'Parameter dan kriteria pada PDF Lampiran IV tidak selaras; perlu review sumber.'}};
+    assert.equal(validateDraftCriteriaResponse(value,context),value);
+    assert.throws(()=>validateDraftCriteriaResponse({...value,sourceConflict:null},context));
+  }
 });
