@@ -15,10 +15,14 @@ test('assessment workspace disajikan dalam shell dan modul same-origin yang aman
     const html=await response.text();
     for(const id of ['assessment-create','assessment-create-dialog','assessment-create-form',
       'page-workspace','workspace-catalog','workspace-attach','workspace-start',
-      'workspace-result-form','workspace-rating','workspace-note','workspace-save',
+      'workspace-result-form','workspace-rating','workspace-note',
+      'workspace-note-feedback','workspace-save',
       'workspace-history','workspace-reload','workspace-back']){
       assert.ok(html.includes('id="'+id+'"'),id+' is missing');
     }
+    assert.match(html,/class="workspace-list-inner"/);
+    assert.match(html,/aria-describedby="workspace-note-feedback"/);
+    assert.match(html,/aria-invalid="false"/);
     assert.doesNotMatch(html,/<script(?![^>]*\bsrc=)[^>]*>[\s\S]*?<\/script>/i);
     for(const asset of ['/assets/assessment-workspace.js',
       '/assets/assessment-workspace-model.js']){
