@@ -3,6 +3,7 @@ import {brotliDecompressSync} from 'node:zlib';
 import {createHash} from 'node:crypto';
 import {getPadkPreparation,PadkPreparationError} from './padk-preparations.js';
 import {parseIndicatorNumber} from './padk-preparation-indicators.js';
+import {readPadkDraftCategoryScope,resolvePadkDraftReferences} from './padk-category-scope.js';
 
 const SOURCE_FILE=new URL('../../../regulations/padk43/cyber/drafts/table3-criteria-source.br',import.meta.url);
 const MAP_FILE=new URL('../../../regulations/padk43/cyber/review/category2-candidates.json',import.meta.url);
@@ -79,10 +80,25 @@ export async function getPadkDraftCriteria(db,{actorId,id,number}){
   const entries=await readExtractedTable3();
   const entry=entries[criteriaNumber-1];
   if(!entry||entry.number!==criteriaNumber)fail('Draft criterion number unavailable');
+  const scope=await readPadkDraftCategoryScope();
+  const referenceComparison=resolvePadkDraftReferences(scope,{
+    category:preparation.category,indicator,primaryNumber:criteriaNumber,
+  });
+  // A second candidate is a source comparison, not a second regulatory score.
+  const supplementaryCriteria=referenceComparison.candidateTable3Numbers.slice(1).map(n=>{
+    const alternative=entries[n-1];
+    if(!alternative||alternative.number!==n)fail('Draft alternative criterion unavailable');
+    return {table3Number:n,pdfPages:alternative.pdfPages,
+      criteria:alternative.ranks,category2ComparisonMarker:true,
+      sourceConflict:SOURCE_CONFLICTS.has(n)
+        ?{code:'PARAMETER_KRITERIA_TIDAK_SELARAS',message:SOURCE_CONFLICTS.get(n)}
+        :null};
+  });
   return {
     preparationId:id,category:preparation.category,indicatorNumber:indicator,
     table3CandidateNumber:criteriaNumber,table3PdfPages:entry.pdfPages,
     criteria:entry.ranks,category2MappingRisk:mapping?.risk??null,
+    referenceComparison,supplementaryCriteria,
     sourceConflict:SOURCE_CONFLICTS.has(criteriaNumber)
       ?{code:'PARAMETER_KRITERIA_TIDAK_SELARAS',message:SOURCE_CONFLICTS.get(criteriaNumber)}
       :null,
@@ -91,7 +107,7 @@ export async function getPadkDraftCriteria(db,{actorId,id,number}){
     officialScoreAvailable:false,finalReportAvailable:false,
     status:'EXTRACTED_SOURCE_UNVERIFIED',
     note:preparation.category===2
-      ?'Category 2 candidate mapping has not been approved. Compare Tables 2 and 3 with the source PDF before choosing a provisional rank.'
+      ?'Category 2 candidate mapping has not been approved. The internal 80/60 marker is a comparison only, not an official mapping. Compare Tables 2 and 3 before choosing a provisional rank.'
       :'Text is machine-extracted from Table 3. Verify every criterion visually against the source PDF.',
   };
 }

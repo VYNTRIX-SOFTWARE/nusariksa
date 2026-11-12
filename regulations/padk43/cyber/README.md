@@ -34,3 +34,8 @@ npm run regulatory:release-gate
 Setiap pack wajib memuat identitas sumber (`source.url` dan `source.pdfSha256`), kategori, daftar indikator lengkap, kriteria rank, nomor halaman, penyusun, dan attestasi reviewer yang berbeda.
 
 **Jangan mengisi placeholder agar pemeriksaan lulus.** Data yang belum diperiksa harus tetap berstatus draft. Alat pembanding PDF lokal dijelaskan di [panduan review](../../../tools/padk-review/README.md).
+
+
+### Penanda Kategori 2 pada master Tabel 3
+
+`review/category-scope.json` menyimpan 60 nomor master yang digunakan sebagai penanda pembanding Kategori 2 dengan status `DRAFT_UNVERIFIED`. Penanda tersebut merupakan **referensi kerja untuk membandingkan crosswalk**, bukan ketentuan resmi ataupun otorisasi untuk menggunakan kriteria tertentu. Untuk perbedaan indikator Kategori 2 nomor 29, panel menampilkan dua kandidat (Tabel 3 nomor 35 dan 32) tanpa memilih salah satunya. Redaksi indikator dari Tabel 2 tetap berdiri sendiri. Jangan menghapus release gate regulatori.

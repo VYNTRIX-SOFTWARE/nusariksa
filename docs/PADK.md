@@ -83,3 +83,10 @@ Tabel 3 pada PDF salinan kerja memiliki beberapa perbedaan antara kolom paramete
 
 
 Pemeriksaan sumber perlu mencakup **parameter dan seluruh lima kriteria** per baris, bukan hanya kriteria peringkat pertama. Rangkaian ketidaksesuaian pada nomor 20–22 dan 27–29 tidak boleh diselesaikan dengan memindahkan rank ke nomor lain tanpa keputusan substansi dan review independen.
+
+
+## Master 80 dengan penanda Kategori 2
+
+Master Tabel 3 memuat 80 parameter, masing-masing dengan lima kriteria kerja hasil ekstraksi. File `regulations/padk43/cyber/review/category-scope.json` merekam 60 penanda Kategori 2 untuk pembandingan internal dengan status `DRAFT_UNVERIFIED`. Dataset ini belum diverifikasi sebagai pemetaan regulatori. Redaksi 60 indikator Kategori 2 tetap berasal dari daftar kerja Tabel 2 yang terpisah; tidak ditimpa redaksi master.
+
+Aplikasi membandingkan kandidat pemetaan internal NusaRiksa dengan penanda pembanding. **59 dari 60** pasangan sama secara nomor; Kategori 2 nomor **29** berbeda: kandidat NusaRiksa ke Tabel 3 nomor **35** (simulasi phishing), sedangkan penanda pembanding ke nomor **32** (pelatihan). Kedua kriteria ditampilkan bersamaan sebagai referensi kerja; tombol memilih peringkat otomatis dinonaktifkan untuk indikator ini. Pengguna tetap dapat menuliskan peringkat sementara secara manual dengan justifikasi dan evidence. Tidak ada pemilihan otomatis, persetujuan mapping, atau scoring regulatori baru.
