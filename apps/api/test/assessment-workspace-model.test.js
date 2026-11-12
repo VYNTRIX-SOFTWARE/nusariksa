@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import {
   RATING_LABELS, canWriteAssessment, canAttachCatalog, canStartAssessment,
   canEditResult, combineControls, validateAssessmentDraft, validateRatingDraft,
-  nextUnassessedControl, neighborControl,
+  validateRatingNote, nextUnassessedControl, neighborControl,
 } from '../../web/assets/assessment-workspace-model.js';
 
 const maker='00000000-0000-4000-8000-000000000001';
@@ -101,4 +101,18 @@ test('MVP navigasi mengutamakan kontrol belum dinilai dan mempertahankan urutan 
   assert.equal(neighborControl(controls,'d',1),null);
   assert.equal(neighborControl(controls,'a',-1),null);
   assert.equal(neighborControl(controls,'a',0),null);
+});
+
+test('validasi catatan lokal mengikuti aturan backend dan tidak memaksa catatan hasil Memenuhi',()=>{
+  assert.equal(validateRatingNote({rating:'compliant',note:''}),null);
+  assert.equal(validateRatingNote({rating:'non_compliant',note:'singkat'}),
+    'Catatan minimal 10 karakter untuk hasil selain Memenuhi.');
+  assert.equal(validateRatingNote({rating:'partially_compliant',note:'Sudah ada rencana, belum lengkap.'}),null);
+  assert.equal(validateRatingNote({rating:'not_applicable',note:'Tidak relevan untuk lembaga ini.'}),null);
+  assert.equal(validateRatingNote({rating:'non_compliant',note:'      '}), 
+    'Catatan minimal 10 karakter untuk hasil selain Memenuhi.');
+  assert.equal(validateRatingNote({rating:'',note:''}),null);
+  assert.equal(validateRatingNote({rating:'compliant',note:'x'.repeat(2001)}),
+    'Catatan tidak valid atau lebih dari 2.000 karakter.');
+  assert.equal(validateRatingDraft({rating:'',note:''}),'Pilih hasil penilaian.');
 });

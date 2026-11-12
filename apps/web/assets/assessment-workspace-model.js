@@ -60,14 +60,18 @@ export function validateAssessmentDraft({title,periodStart,periodEnd}) {
   return null;
 }
 
-export function validateRatingDraft({rating,note}) {
-  if(!RATINGS.has(rating))return 'Pilih hasil penilaian.';
+// Return the same field-level rule that the backend enforces on save.
+export function validateRatingNote({rating,note}) {
   if(typeof note!=='string'||note.length>2000
     || /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/.test(note))
     return 'Catatan tidak valid atau lebih dari 2.000 karakter.';
-  if(rating!=='compliant' && note.trim().length<10)
+  if(RATINGS.has(rating)&&rating!=='compliant'&&note.trim().length<10)
     return 'Catatan minimal 10 karakter untuk hasil selain Memenuhi.';
   return null;
+}
+export function validateRatingDraft({rating,note}) {
+  if(!RATINGS.has(rating))return 'Pilih hasil penilaian.';
+  return validateRatingNote({rating,note});
 }
 
 /** The next incomplete control after current, wrapping once without reselecting current. */

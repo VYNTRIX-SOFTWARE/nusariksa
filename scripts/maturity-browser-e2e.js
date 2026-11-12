@@ -725,6 +725,22 @@ async function runBrowser(base,db,fixture){
     assert.equal(await evalJs("document.querySelectorAll('#workspace-guide-evidence li').length"),2);
     assert.equal(await evalJs("document.getElementById('workspace-rating').value"),'');
     assert.equal(await evalJs("document.getElementById('workspace-note-helper').hidden"),false);
+    await c.command('Emulation.setDeviceMetricsOverride',{width:1440,height:900,deviceScaleFactor:1,mobile:false});
+    assert.equal(await evalJs("getComputedStyle(document.querySelector('.workspace-list-inner')).position"),'sticky');
+    assert.equal(await evalJs("document.querySelector('.workspace-list-panel').getBoundingClientRect().height >= document.querySelector('.workspace-editor').getBoundingClientRect().height"),true);
+    assert.equal(await evalJs("document.getElementById('workspace-controls').scrollHeight > document.getElementById('workspace-controls').clientHeight"),true);
+    await c.command('Emulation.clearDeviceMetricsOverride');
+    // Kesalahan catatan ditampilkan di field, bukan spanduk di atas halaman.
+    await evalJs("document.getElementById('workspace-rating').value='non_compliant';"+
+      "document.getElementById('workspace-rating').dispatchEvent(new Event('change',{bubbles:true}))");
+    assert.equal(await evalJs("document.getElementById('workspace-note').getAttribute('aria-invalid')"),'true');
+    assert.equal(await evalJs("document.getElementById('workspace-note-feedback').textContent.includes('minimal 10 karakter')"),true);
+    await evalJs("document.getElementById('workspace-save').click()");
+    assert.equal(await evalJs("document.activeElement?.id"),'workspace-note');
+    assert.equal(await evalJs("document.getElementById('workspace-message').hidden"),true);
+    await evalJs("document.getElementById('workspace-rating').value='';"+
+      "document.getElementById('workspace-rating').dispatchEvent(new Event('change',{bubbles:true}))");
+    assert.equal(await evalJs("document.getElementById('workspace-note').getAttribute('aria-invalid')"),'false');
     await evalJs("document.getElementById('workspace-note-helper').open=true;"+
       "document.getElementById('workspace-observed-condition').value='Belum ada SK penanggung jawab pengelolaan TI yang disahkan.';"+
       "document.getElementById('workspace-observed-evidence').value='Inventaris dokumen organisasi dan wawancara petugas.';"+
@@ -755,8 +771,10 @@ async function runBrowser(base,db,fixture){
       'navigate back to persisted result');
     assert.equal(await evalJs("document.getElementById('workspace-rating').value"),'non_compliant');
     assert.equal(await evalJs("document.getElementById('workspace-save-indicator').dataset.state"),'saved');
+    assert.equal(await evalJs("document.getElementById('workspace-note').getAttribute('aria-invalid')"),'false');
     await c.command('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:1,mobile:true});
     assert.equal(await evalJs("getComputedStyle(document.querySelector('#page-workspace .workspace-grid')).gridTemplateColumns.split(' ').length"),1);
+    assert.equal(await evalJs("getComputedStyle(document.querySelector('.workspace-list-inner')).position"),'static');
     await c.command('Emulation.clearDeviceMetricsOverride');
     await openPadk();
     await until("!document.getElementById('pdk-create-toggle').hidden && !document.getElementById('pdk-create-toggle').disabled",'PADK create permission');

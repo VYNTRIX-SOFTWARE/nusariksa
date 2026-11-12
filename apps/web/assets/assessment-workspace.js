@@ -3,7 +3,7 @@ import { createEvidenceUI } from './assessment-evidence.js';
 import {
   RATING_LABELS, canWriteAssessment, canAttachCatalog, canStartAssessment,
   canEditResult, combineControls, validateAssessmentDraft, validateRatingDraft,
-  nextUnassessedControl, neighborControl,
+  validateRatingNote, nextUnassessedControl, neighborControl,
 } from './assessment-workspace-model.js';
 import { ApiError } from './session.js';
 import {guideForControl,composeObservedNote} from './control-guidance.js';
@@ -201,6 +201,20 @@ export function createWorkspace({
     renderControls();renderEditor();showMessage('');
     document.querySelector('.workspace-editor')?.scrollIntoView({block:'start',behavior:'smooth'});
   }
+  function renderFieldGuidance(){
+    const rating=$('workspace-rating').value;
+    const note=$('workspace-note').value;
+    const issue=validateRatingNote({rating,note});
+    const invalid=editable()&&rating!==''&&Boolean(issue);
+    const field=$('workspace-note');
+    field.setAttribute('aria-invalid',String(invalid));
+    const feedback=$('workspace-note-feedback');
+    feedback.dataset.state=invalid?'error':rating!==''&&note.trim()?'valid':'hint';
+    feedback.textContent=!editable()?'Catatan ditampilkan dalam mode baca saja.'
+      :invalid?issue
+      :rating==='compliant'?'Catatan opsional untuk hasil Memenuhi.'
+      :rating?'Catatan sudah memenuhi ketentuan pengisian.':'Pilih hasil penilaian dahulu. Catatan wajib untuk hasil selain Memenuhi.';
+  }
   function draftState(){
     const control=selected();
     if(!control)return;
@@ -218,6 +232,7 @@ export function createWorkspace({
         :control.revision>0?'Penilaian kontrol ini tersimpan di server.':'Kontrol ini belum dinilai.';
     $('workspace-save-indicator').dataset.state=state.dirty?'dirty':control.revision>0?'saved':'pending';
     renderNavigation();
+    renderFieldGuidance();
     $('workspace-submit-review').disabled=state.pending||state.conflict||state.dirty
       || !canSubmitReview(state.assessment,getUserId(),getPermissions(),state.catalog,state.controls);
   }
@@ -259,6 +274,7 @@ export function createWorkspace({
     message('workspace-control-revision',control.revision>0?'Revisi '+control.revision:'Belum dinilai');
     $('workspace-rating').value=control.rating==='not_assessed'?'':control.rating;
     $('workspace-note').value=control.note||'';
+    renderFieldGuidance();
     $('workspace-rating').disabled=!editable();
     $('workspace-note').disabled=!editable();
     $('workspace-save').hidden=!editable();
@@ -406,7 +422,16 @@ export function createWorkspace({
     }
     const rating=$('workspace-rating').value,note=$('workspace-note').value;
     const messageText=validateRatingDraft({rating,note});
-    if(messageText){showMessage(messageText,'error');return;}
+    if(messageText){
+      if(validateRatingNote({rating,note})){
+        renderFieldGuidance();
+        $('workspace-note').focus();
+      }else{
+        showMessage(messageText,'error');
+        $('workspace-rating').focus();
+      }
+      return;
+    }
     const gen=state.generation;
     const saveAndNext=event.submitter?.id==='workspace-save-next';
     renderBusy(true);

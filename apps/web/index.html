@@ -1544,12 +1544,14 @@
 
             <div class="workspace-grid">
               <aside class="workspace-list-panel" aria-label="Daftar kontrol">
+                <div class="workspace-list-inner">
                 <div class="workspace-list-head"><h2>Daftar kontrol</h2><span id="workspace-control-count">0 kontrol</span></div>
                 <label for="workspace-filter">Tampilkan</label>
                 <select id="workspace-filter"><option value="all">Semua kontrol</option>
                   <option value="not_assessed">Belum dinilai</option><option value="assessed">Sudah dinilai</option></select>
                 <div id="workspace-controls" class="workspace-controls" aria-live="polite">
                   <p class="empty-note">Kontrol belum tersedia.</p>
+                </div>
                 </div>
               </aside>
               <section class="workspace-editor" aria-label="Penilaian kontrol">
@@ -1601,8 +1603,12 @@
                       <option value="not_applicable">Tidak relevan</option>
                     </select>
                     <label for="workspace-note">Catatan pemeriksaan</label>
-                    <textarea id="workspace-note" maxlength="2000" rows="5" placeholder="Tuliskan kondisi serta dasar penilaian."></textarea>
-                    <p class="workspace-help">Catatan minimal 10 karakter untuk hasil selain Memenuhi. Bukti pendukung dikelola terpisah dari hasil penilaian.</p>
+                    <textarea id="workspace-note" maxlength="2000" rows="5"
+                      aria-describedby="workspace-note-feedback" aria-invalid="false"
+                      placeholder="Tuliskan kondisi serta dasar penilaian."></textarea>
+                    <p id="workspace-note-feedback" class="workspace-field-feedback" data-state="hint"
+                      role="status" aria-live="polite">Catatan minimal 10 karakter untuk hasil selain Memenuhi.</p>
+                    <p class="workspace-help">Bukti pendukung dikelola terpisah dari hasil penilaian.</p>
                     <details id="workspace-note-helper" class="workspace-note-helper" hidden>
                       <summary>Permudah input: susun catatan dari temuan nyata</summary>
                       <p class="workspace-help">Isi sesuai hasil pemeriksaan BPR. Template tidak mengisi jawaban, bukti, atau penilaian otomatis.</p>
