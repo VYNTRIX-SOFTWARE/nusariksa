@@ -75,3 +75,8 @@ Perintah terakhir memang harus gagal sampai persyaratan rilis terpenuhi. Untuk b
 ## Mengisi indikator melalui aplikasi
 
 Ruang kerja indikator didahulukan daripada review dan simulasi. Di layar lebar, kriteria dan jawaban ditampilkan berdampingan; di layar kecil disusun satu kolom. Gunakan **Simpan & lanjut** untuk menyimpan dan berpindah ke indikator belum lengkap. Catatan tambahan disimpan dalam panel opsional; catatan yang sudah ada otomatis ditampilkan kembali. Progres hanya menyatakan kelengkapan draft internal, bukan verifikasi PADK resmi.
+
+
+## Perbedaan redaksi parameter dan kriteria sumber
+
+Tabel 3 pada PDF salinan kerja memiliki beberapa perbedaan antara kolom parameter dan kriteria peringkat. Untuk nomor 2, 20, dan 21, panel kriteria menampilkan peringatan serta menonaktifkan tombol pemilihan peringkat langsung berdasarkan kriteria tersebut. Kriteria masih dapat dibaca sebagai bahan pemeriksaan. Catatan draft dan proses review internal tetap tersedia; ini **tidak** berarti redaksi sumber telah diperbaiki ataupun official scoring telah diaktifkan. Perbedaan harus ditindaklanjuti melalui pemeriksaan substansi terhadap PDF resmi dan review independen.

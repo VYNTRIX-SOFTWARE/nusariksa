@@ -73,6 +73,15 @@ test('PADK Table 3 criteria are displayed from local extracted source with PDF p
         assert.equal(c.criteriaVerified,false);
         assert.equal(c.finalReportAvailable,false);
         assert.equal(c.criteria.length,5);
+        assert.equal(c.sourceConflict,null);
+        const conflict19=await (await fetchSource(route(b.id,19),
+          cookies['criteria-maker@example.test'])).json();
+        assert.equal(conflict19.table3CandidateNumber,20);
+        assert.equal(conflict19.sourceConflict.code,'PARAMETER_KRITERIA_TIDAK_SELARAS');
+        const conflict20=await (await fetchSource(route(b.id,20),
+          cookies['criteria-maker@example.test'])).json();
+        assert.equal(conflict20.table3CandidateNumber,21);
+        assert.equal(conflict20.sourceConflict.code,'PARAMETER_KRITERIA_TIDAK_SELARAS');
         assert.equal((await fetchSource(route(b.id,61),
           cookies['criteria-maker@example.test'])).status,400);
         assert.equal((await fetchSource(route(

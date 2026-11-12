@@ -10,6 +10,12 @@ const SOURCE_PDF_SHA='63868e2fe99a48485b17646618934c1fffb27b125811929e12bd70d170
 const EXTRACT_SHA='91edaaadcad31247ff3f703fe1e2dddbb470e99860e3bb07a00280c1c5fd4c60';
 const NAMES=['Sangat Memadai','Memadai','Cukup Memadai','Kurang Memadai','Tidak Memadai'];
 const ISSUE_NUMBERS=new Set([3,18,19,20,24,29,32]);
+// Catatan langsung dari tabel PDF Lampiran IV. Belum ada keputusan koreksi sumber.
+const SOURCE_CONFLICTS=new Map([
+  [2,'Kriteria peringkat 1 membahas strategi keamanan siber, sedangkan parameter nomor 2 membahas risk appetite (halaman fisik PDF 157).'],
+  [20,'Kriteria peringkat membahas kaji ulang manajemen risiko, sedangkan parameter nomor 20 membahas audit intern TI (halaman fisik PDF 167).'],
+  [21,'Kriteria peringkat membahas program budaya siber, sedangkan parameter nomor 21 membahas kaji ulang manajemen risiko (halaman fisik PDF 167).'],
+]);
 const fail=(message)=>{throw new PadkPreparationError(503,message);};
 
 export async function readExtractedTable3(){
@@ -73,6 +79,9 @@ export async function getPadkDraftCriteria(db,{actorId,id,number}){
     preparationId:id,category:preparation.category,indicatorNumber:indicator,
     table3CandidateNumber:criteriaNumber,table3PdfPages:entry.pdfPages,
     criteria:entry.ranks,category2MappingRisk:mapping?.risk??null,
+    sourceConflict:SOURCE_CONFLICTS.has(criteriaNumber)
+      ?{code:'PARAMETER_KRITERIA_TIDAK_SELARAS',message:SOURCE_CONFLICTS.get(criteriaNumber)}
+      :null,
     mappingVerified:false,criteriaVerified:false,sourceTextVerified:false,
     sourceAuthenticityVerified:false,sourcePdfSha256:SOURCE_PDF_SHA,
     officialScoreAvailable:false,finalReportAvailable:false,
