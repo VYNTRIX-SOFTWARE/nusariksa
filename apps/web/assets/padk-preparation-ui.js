@@ -90,6 +90,8 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
     state.loaded=false;
     state.queue=[];state.queueMore=false;state.queueBusy=false;
     $('pdk-review-queue-list').replaceChildren();
+    for(const id of ['pdk-review-queue-disclosure','pdk-report-disclosure',
+      'pdk-review-disclosure','pdk-preparation-history-disclosure'])$(id).open=false;
     indicatorUI.clear();previewUI.clear();
     $('pdk-draft-review-panel').hidden=true;
     $('pdk-review-form').reset();
@@ -122,6 +124,7 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
     $('pdk-review-form').hidden=!allowedReview;
     $('pdk-review-decision-submit').disabled=!allowedReview||state.busy;
     $('pdk-review-queue').hidden=!getPermissions().includes('assessments:approve');
+    $('pdk-review-queue-disclosure').hidden=!getPermissions().includes('assessments:approve');
     $('pdk-review-queue-refresh').disabled=state.queueBusy;
     const report=$('pdk-workpaper-download');
     report.hidden=!state.detail;
@@ -214,7 +217,7 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
       message('');
       if(request!==state.request)return;
       void refreshReviewQueue();
-      if(preferredId)await open(preferredId);
+      if(preferredId)await open(preferredId,{focusWorkspace:true});
     }catch(error){if(request===state.request)fail(error,'Gagal memuat persiapan PADK.');}
     finally{if(request===state.request){state.busy=false;render();}}
   }
@@ -239,10 +242,12 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
       if(request===state.request){panel.replaceChildren(text('p','Riwayat gagal dimuat.'));fail(error,'Riwayat gagal dimuat.');}
     }
   }
-  async function open(id){
+  async function open(id,{focusWorkspace=false}={}){
     if(!UUID.test(id))return;
     const request=++state.request;state.busy=true;state.detail=null;state.workflow=null;state.dirty=false;
     indicatorUI.clear();previewUI.clear();
+    for(const id of ['pdk-report-disclosure','pdk-review-disclosure',
+      'pdk-preparation-history-disclosure'])$(id).open=false;
     $('pdk-note-form').reset();render();message('Memuat catatan…');
     try{
       const data=validatePreparationResponse(await api(ENDPOINT+'/'+encodeURIComponent(id)));
@@ -253,9 +258,14 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
       state.dirty=false;message('');render();
       await reviewStatus();
       if(request!==state.request)return;
-      void indicatorUI.load(data);
+      await indicatorUI.load(data);
+      if(request!==state.request)return;
       void previewUI.load(data);
       void history();
+      if(focusWorkspace&&!$('pdk-indicator-section').hidden){
+        $('pdk-indicator-heading').focus({preventScroll:true});
+        $('pdk-indicator-heading').scrollIntoView({block:'start',behavior:'auto'});
+      }
     }catch(error){if(request===state.request)fail(error,'Catatan gagal dibuka.');}
     finally{if(request===state.request){state.busy=false;render();}}
   }
@@ -342,6 +352,7 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
       if(!confirmLeave())return;
     }
     const panel=$('pdk-draft-review-panel');
+    $('pdk-review-disclosure').open=true;
     if(!panel.hidden)panel.scrollIntoView({block:'start',behavior:'smooth'});
   });
   $('pdk-review-queue-refresh').addEventListener('click',()=>void refreshReviewQueue());
@@ -411,7 +422,7 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
       $('pdk-create-form').reset();$('pdk-create-form').hidden=true;
       suggestedTitle='';updateCategoryDescription();updatePeriodDescription();
       await list(created.id);
-      message('Persiapan berhasil dibuat. Isi rencana kerja dan bukti yang perlu disiapkan.','success');
+      message('Draft dibuat. Kerjakan indikator pertama: baca kriteria, pilih peringkat sementara, dan tulis alasan pemeriksaan.','success');
     }catch(error){fail(error,'Gagal membuat persiapan PADK.');}
     finally{state.busy=false;render();}
   });

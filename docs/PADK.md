@@ -105,3 +105,8 @@ Kolom jawaban menampilkan tiga tahapan yang berubah langsung saat petugas mengis
 ## Mulai penilaian tanpa mengisi semuanya dari nol
 
 Ketika membuka **Buat persiapan**, NusaRiksa mengisi usulan nama penilaian dan rentang tahun kalender berjalan (1 Januari hingga 31 Desember) untuk mendukung penilaian tahunan posisi akhir Desember. Nama dan tanggal boleh diedit. Tombol **Gunakan saran** mengembalikan nama otomatis berdasarkan tahun akhir periode. Kategori **tidak dipilih otomatis** karena harus berdasarkan karakteristik layanan BPR/BPRS dan dikonfirmasi petugas. Kategori 1 berisi 80 indikator, Kategori 2 berisi 60 indikator. Penginian dapat menggunakan periode yang disesuaikan; rentang kalender pada formulir adalah metadata kertas kerja dan bukan klaim penetapan kewajiban pelaporan. Status instrumen tetap `DRAFT_UNVERIFIED`.
+
+
+## Workspace PADK terfokus pada indikator aktif
+
+Alur utama dibuat lebih ringkas agar petugas dapat memulai dari indikator pertama: nama indikator dan progres, lima kriteria dalam panel yang dapat dibuka satu per satu, pilihan peringkat sementara, justifikasi, serta penyimpanan. Pencarian, detail sumber, evidence, histori, review kelengkapan, simulasi, dan unduhan draft dipindahkan ke bagian sekunder yang dapat dibuka sesuai kebutuhan. Pengguna tidak kehilangan akses ke referensi sumber; status `DRAFT_UNVERIFIED` tetap terlihat, sementara rincian teknis hanya muncul bila diminta. Peringkat, evidence, dan laporan tetap merupakan **bahan kerja internal yang belum tervalidasi regulator**.
