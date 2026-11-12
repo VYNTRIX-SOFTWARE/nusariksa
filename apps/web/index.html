@@ -865,9 +865,12 @@
             </div>
             <button id="pdk-refresh" type="button" class="button button-outline">Muat ulang</button>
           </div>
-          <div class="info-message" role="status">
-            <strong>Belum dapat dinilai atau disahkan.</strong>
-            <p>Seluruh indikator dan kriteria Lampiran IV masih menunggu pemeriksaan sumber OJK serta review independen. Catatan di halaman ini bukan hasil asesmen, skor komposit, atau laporan resmi. Pengisian peringkat sementara, unggah bukti, pemeriksaan kelengkapan draft, dan PDF kertas kerja draft sudah tersedia. Skor resmi, pengesahan final, dan laporan untuk OJK belum tersedia.</p>
+          <div class="pdk-mode-notice" role="note">
+            <strong>Mode kertas kerja internal</strong>
+            <span>Indikator dan kriteria masih draft, belum boleh digunakan sebagai laporan resmi OJK.</span>
+            <details class="pdk-mode-detail"><summary>Mengapa belum resmi?</summary>
+              <p>Instrumen, pemetaan, dan perhitungan masih membutuhkan verifikasi sumber serta pemeriksaan independen. Anda dapat mengisi peringkat sementara, menyimpan bukti, mengajukan review kelengkapan internal, dan mengunduh PDF draft. Skor resmi dan laporan OJK belum tersedia.</p>
+            </details>
           </div>
           <section id="pdk-first-run" class="onboard-hero onboard-padk-start" hidden>
             <div class="onboard-hero-main">
@@ -879,7 +882,9 @@
             <div class="onboard-hero-aside" aria-hidden="true"><span class="onboard-step-number">01</span><strong>Buat</strong><span>Isi</span><span>Ajukan draft</span></div>
           </section>
           <p id="pdk-message" class="workspace-message" role="status" aria-live="polite" hidden></p>
-          <section id="pdk-review-queue" class="panel-card"
+          <details id="pdk-review-queue-disclosure" class="pdk-secondary-disclosure" hidden>
+            <summary>Untuk pemeriksa: lihat antrean draft</summary>
+            <section id="pdk-review-queue" class="panel-card"
                    aria-label="Antrean pemeriksaan draft PADK internal" hidden>
             <div class="panel-heading">
               <div>
@@ -890,12 +895,13 @@
             </div>
             <div id="pdk-review-queue-list" aria-live="polite"></div>
           </section>
+          </details>
           <div class="panel-card">
             <div class="panel-heading">
               <div><h2>Persiapan penilaian</h2><p id="pdk-count" class="panel-caption">Belum dimuat.</p></div>
               <button id="pdk-create-toggle" class="button button-primary" type="button" hidden>Buat persiapan</button>
             </div>
-            <label for="pdk-list">Pilih periode penilaian</label>
+            <label for="pdk-list">Pilih penilaian untuk dilanjutkan</label>
             <select id="pdk-list"><option value="">Pilih persiapan…</option></select>
             <form id="pdk-create-form" class="maturity-edit-form" hidden>
               <h3>Mulai penilaian keamanan siber</h3>
@@ -927,25 +933,21 @@
           <section id="pdk-detail" class="panel-card" aria-labelledby="pdk-detail-heading" hidden>
             <div class="panel-heading">
               <div>
-                <h2 id="pdk-detail-heading">Catatan persiapan</h2>
+                <h2 id="pdk-detail-heading">Penilaian yang sedang dikerjakan</h2>
                 <p id="pdk-summary" class="panel-caption"></p>
               </div>
-              <span class="status-chip" data-status="draft">Persiapan saja</span>
+              <span class="status-chip" data-status="draft">Draft internal</span>
             </div>
-            <p class="workspace-help">PDF draft memuat jawaban tersimpan, inventaris bukti, pemeriksaan internal, rata-rata lima domain dan komposit simulasi bila lengkap. <strong>Bukan laporan resmi PADK/OJK.</strong></p>
-            <a id="pdk-workpaper-download" class="button button-outline" href="#" download hidden>
-              Unduh PDF ringkasan penilaian (draft)
-            </a>
+            <details id="pdk-report-disclosure" class="pdk-secondary-disclosure">
+              <summary>Unduh kertas kerja PDF (draft internal)</summary>
+              <p class="workspace-help">PDF berisi jawaban tersimpan, inventaris bukti, status review internal, dan simulasi bila tersedia. Bukan laporan resmi PADK/OJK.</p>
+              <a id="pdk-workpaper-download" class="button button-outline" href="#" download hidden>Unduh PDF ringkasan penilaian (draft)</a>
+            </details>
             <section id="pdk-indicator-section" class="pdk-primary-workspace" aria-labelledby="pdk-indicator-heading" hidden>
               <div class="maturity-rubric-heading">
-                <h3 id="pdk-indicator-heading">Ruang kerja penilaian · langkah 1</h3>
-                <button type="button" id="pdk-jump-review" class="button button-outline">Ke pemeriksaan draft</button>
+                <h3 id="pdk-indicator-heading" tabindex="-1">Kerjakan satu indikator pada satu waktu</h3>
               </div>
-              <p class="workspace-disclaimer">
-                Ringkasan indikator di bawah masih DRAFT_UNVERIFIED, bukan teks resmi final.
-                Peringkat sementara, bukti aktual, dan review kelengkapan draft tidak berarti
-                penilaian, approval, atau laporan PADK resmi sudah tersedia.
-              </p>
+              <p class="pdk-workspace-intro">Baca indikator, bandingkan kriteria, lalu catat hasil pemeriksaan. Simpan untuk melanjutkan. Semua jawaban adalah draft internal.</p>
               <div class="pdk-current-indicator" aria-live="polite">
                 <div class="pdk-current-indicator-top">
                   <span id="pdk-indicator-position">MEMUAT INDIKATOR</span>
@@ -962,9 +964,11 @@
               <div class="pdk-navigation-row">
                 <button type="button" id="pdk-indicator-prev" class="button button-outline">Sebelumnya</button>
                 <button type="button" id="pdk-indicator-next" class="button button-outline">Berikutnya</button>
-                <button type="button" id="pdk-indicator-next-pending" class="button button-outline">Ke indikator belum lengkap</button>
+                <button type="button" id="pdk-indicator-next-pending" class="button button-outline">Cari yang belum lengkap</button>
               </div>
-              <div class="pdk-indicator-filters" role="group" aria-label="Cari dan filter indikator">
+              <details id="pdk-find-indicator" class="pdk-secondary-disclosure pdk-search-disclosure">
+                <summary>Cari atau pilih indikator lain</summary>
+               <div class="pdk-indicator-filters" role="group" aria-label="Cari dan filter indikator">
                 <div>
                   <label for="pdk-indicator-search">Cari indikator</label>
                   <input id="pdk-indicator-search" type="search" maxlength="100"
@@ -984,29 +988,26 @@
               <p id="pdk-indicator-match-count" class="workspace-help" role="status" aria-live="polite"></p>
               <label for="pdk-indicator-list">Buka indikator dari hasil pencarian</label>
               <select id="pdk-indicator-list"><option value="">Pilih indikator…</option></select>
-              <p id="pdk-indicator-description" class="workspace-help pdk-source-reference"></p>
+              </details>
+              <details class="pdk-secondary-disclosure pdk-indicator-source-disclosure">
+                <summary>Lihat rujukan dan sumber indikator</summary>
+                <p id="pdk-indicator-description" class="workspace-help pdk-source-reference"></p>
+              </details>
               <p id="pdk-indicator-message" class="workspace-message" role="status" aria-live="polite" hidden></p>
               <form id="pdk-indicator-form" class="maturity-edit-form" hidden>
                 <div class="pdk-answer-layout">
                 <div class="pdk-reference-column">
                 <p class="pdk-section-step">01 / PERIKSA KRITERIA</p>
-                <p class="workspace-help">
-                  <strong>DRAFT — belum boleh dilaporkan.</strong> Baca dan bandingkan
-                  lima kriteria hasil ekstraksi Tabel 3 Lampiran IV PADK 43/PADK.03/2025 sebelum
-                  menentukan peringkat sementara. Teks ini belum diverifikasi secara independen;
-                  pilihan ini tidak menghasilkan skor, komposit, atau persetujuan resmi.
-                  <a href="https://ojk.go.id/id/regulasi/Pages/PADK-43-PADK03-2025-Penyelenggaraan-Teknologi-Informasi-oleh-BPR-BPRS.aspx"
-                     target="_blank" rel="noopener noreferrer">Buka sumber regulasi OJK</a>.
-                </p>
+                <p class="workspace-help">Bandingkan kelima tingkat. Buka salah satu untuk membaca uraian kriteria lengkap sebelum memilih peringkat sementara.</p>
                 <section id="pdk-criteria-panel" aria-label="Kriteria peringkat hasil ekstraksi PADK" hidden>
-                  <div class="maturity-rubric-heading"><h3>Kriteria peringkat Tabel 3 (belum diverifikasi)</h3></div>
-                  <p class="workspace-disclaimer"><strong>TEKS HASIL EKSTRAKSI — BUKAN SUMBER FINAL TERVALIDASI.</strong>
-                    Cocokkan setiap kriteria secara visual dengan PDF PADK sebelum memilih peringkat.
-                    Khusus Kategori 2, kecocokan nomor Tabel 2–Tabel 3 masih berupa kandidat.
-                  </p>
+                  <div class="maturity-rubric-heading"><h3>Bandingkan 5 kriteria</h3></div>
                   <p id="pdk-criteria-status" role="status" aria-live="polite"></p>
-                  <p id="pdk-criteria-source" class="workspace-help"></p>
-                  <div id="pdk-criteria-list" tabindex="0" aria-label="Lima kriteria peringkat, gulir untuk membaca semuanya"></div>
+                  <div id="pdk-criteria-list" aria-label="Lima kriteria peringkat draft yang dapat dibuka satu per satu"></div>
+                  <details class="pdk-secondary-disclosure pdk-criteria-source-disclosure">
+                    <summary>Detail sumber dan verifikasi kriteria</summary>
+                    <p id="pdk-criteria-source" class="workspace-help"></p>
+                    <p class="workspace-help">Teks kriteria hasil ekstraksi mesin belum diverifikasi secara independen. <a href="https://ojk.go.id/id/regulasi/Pages/PADK-43-PADK03-2025-Penyelenggaraan-Teknologi-Informasi-oleh-BPR-BPRS.aspx" target="_blank" rel="noopener noreferrer">Buka dokumen PADK di OJK</a> untuk mencocokkan redaksi sebelum menggunakan peringkat sementara.</p>
+                  </details>
                 </section>
                 </div>
                 <div class="pdk-answer-column">
@@ -1057,6 +1058,8 @@
                 </div>
                 </div>
               </form>
+              <details id="pdk-evidence-disclosure" class="pdk-secondary-disclosure">
+                <summary>Dokumen bukti pendukung (setelah menyimpan)</summary>
               <section id="pdk-evidence-panel" class="pdk-workspace-evidence" aria-label="Bukti aktual indikator PADK" hidden>
                 <div class="maturity-rubric-heading">
                   <h3>03 / Dokumen bukti aktual</h3>
@@ -1082,13 +1085,20 @@
                 </form>
                 <div id="pdk-evidence-list" aria-live="polite"></div>
               </section>
+              </details>
+              <details id="pdk-indicator-history-disclosure" class="pdk-secondary-disclosure">
+              <summary>Riwayat perubahan indikator</summary>
               <div class="maturity-rubric-heading">
                 <h3>Riwayat catatan indikator</h3>
                 <button id="pdk-indicator-history-refresh" type="button" class="button button-outline">Muat riwayat</button>
               </div>
               <div id="pdk-indicator-history" aria-live="polite"></div>
+              </details>
             </section>
-            <div class="pdk-stage-boundary"><strong>LANGKAH BERIKUTNYA · REVIEW DRAFT</strong><p>Periksa ringkasan, lalu ajukan kertas kerja untuk pemeriksaan internal. Bukan persetujuan resmi OJK.</p></div>
+            <details id="pdk-review-disclosure" class="pdk-secondary-disclosure">
+              <summary>Langkah berikutnya: pemeriksaan kelengkapan draft</summary>
+              <p class="workspace-help">Sesudah semua indikator lengkap, ajukan draft kepada pemeriksa internal. Bukan persetujuan OJK.</p>
+              <button type="button" id="pdk-jump-review" class="button button-outline">Buka pemeriksaan draft</button>
             <section id="pdk-draft-review-panel" aria-label="Pemeriksaan draft penilaian PADK" hidden>
               <div class="maturity-rubric-heading">
                 <h3>Alur pemeriksaan draft PADK</h3>
@@ -1120,6 +1130,7 @@
               <h3>Riwayat pemeriksaan draft</h3>
               <div id="pdk-review-events" aria-live="polite"></div>
             </section>
+            </details>
             <details class="pdk-secondary-disclosure"><summary>Rincian simulasi perhitungan (draft)</summary>
             <section id="pdk-score-preview" aria-labelledby="pdk-score-title" hidden>
               <div class="maturity-rubric-heading">
@@ -1145,11 +1156,14 @@
               <textarea id="pdk-evidence-plan" rows="5" maxlength="4000" placeholder="Dokumen dan bukti yang perlu disiapkan; jangan menempel data nasabah atau rahasia dalam catatan."></textarea>
               <button id="pdk-save" type="submit" class="button button-primary" hidden>Simpan perubahan</button>
             </form></details>
-            <div class="maturity-rubric-heading">
-              <h3>Riwayat perubahan</h3>
-              <button id="pdk-history-refresh" class="button button-outline" type="button">Muat riwayat</button>
-            </div>
-            <div id="pdk-history" aria-live="polite"><p>Belum ada riwayat.</p></div>
+            <details id="pdk-preparation-history-disclosure" class="pdk-secondary-disclosure">
+              <summary>Riwayat perubahan persiapan</summary>
+              <div class="maturity-rubric-heading">
+                <h3>Riwayat perubahan</h3>
+                <button id="pdk-history-refresh" class="button button-outline" type="button">Muat riwayat</button>
+              </div>
+              <div id="pdk-history" aria-live="polite"><p>Belum ada riwayat.</p></div>
+            </details>
           </section>
         </section>
         <section id="page-padk-crosswalk" class="page" aria-labelledby="padk-crosswalk-title" hidden>

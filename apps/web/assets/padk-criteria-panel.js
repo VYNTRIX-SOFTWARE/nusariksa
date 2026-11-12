@@ -91,52 +91,51 @@ export function createPadkCriteriaPanel({api,onAuthFailure,canSelect}){
   function show(data){
     sourceConflict=Boolean(data.sourceConflict)||data.referenceComparison.candidateDisagreement;
     $('pdk-criteria-status').textContent=data.referenceComparison.candidateDisagreement
-      ?'PERLU REVIEW MAPPING: NusaRiksa memakai kandidat Tabel 3 #'+
-        data.table3CandidateNumber+', sedangkan kandidat pembanding internal menunjuk #'+
-        data.referenceComparison.comparisonTable3Number+
-        '. Keduanya ditampilkan untuk dibandingkan. Pemilihan peringkat otomatis dinonaktifkan.'
+      ?'Perlu review pemetaan: ada dua referensi kriteria untuk indikator ini. Bandingkan keduanya; gunakan pilihan peringkat manual sementara.'
       :data.sourceConflict
-      ?'PERHATIAN: '+data.sourceConflict.message+
-        ' Kriteria tetap ditampilkan untuk pemeriksaan sumber, tetapi pemilihan peringkat langsung dinonaktifkan.'
-      :data.category===2
-      ?'Kandidat pemetaan Kategori 2 #'+data.indicatorNumber+
-        ' → Tabel 3 #'+data.table3CandidateNumber+
-        (data.category2MappingRisk==='SOURCE_REVIEW_REQUIRED'
-          ?' — PERBEDAAN REDAKSI, PERLU PERIKSA KHUSUS.'
-          :' — pasangan belum disahkan.')
-      :'Nomor parameter Tabel 3 #'+data.table3CandidateNumber+
-        ' — teks belum diperiksa secara independen.';
+        ?'Perlu review sumber: redaksi kriteria terindikasi tidak selaras. Bandingkan dengan PADK sebelum mengisi peringkat manual.'
+        :'Kriteria belum diverifikasi. Buka uraian setiap peringkat dan cocokkan dengan sumber sebelum memilih.';
     $('pdk-criteria-source').textContent=
-      'Master Tabel 3: 80 parameter, 5 peringkat. Referensi kerja internal menandai 60 parameter Kategori 2. '+
+      'Master Tabel 3: 80 parameter, lima kriteria peringkat. Referensi internal untuk 60 indikator Kategori 2 belum disahkan. '+
       'PDF sumber halaman '+data.table3PdfPages.join(', ')+
-      '. Ini HASIL EKSTRAKSI dan mapping DRAFT, bukan instrumen final terverifikasi.';
+      '; kandidat Tabel 3 #'+data.table3CandidateNumber+
+      (data.referenceComparison.candidateDisagreement
+        ?'; pembanding #'+data.referenceComparison.comparisonTable3Number:'')+
+      (data.sourceConflict?' · Perbedaan sumber: '+data.sourceConflict.message:'')+
+      '. Ini ekstraksi dan pemetaan DRAFT, bukan instrumen resmi terverifikasi.';
     const list=$('pdk-criteria-list');list.replaceChildren();rows=[];
     for(const criterion of data.criteria){
-      const entry=make('div','');entry.className='workspace-history-item';
+      const entry=make('details','');
+      entry.className='pdk-criterion-card workspace-history-item';
+      const summary=make('summary','');
       const heading=make('strong','Peringkat '+criterion.rank+' — '+criterion.label);
+      const hint=make('span','Baca kriteria');hint.className='pdk-criterion-hint';
+      summary.append(heading,hint);
       const body=make('p',criterion.textDraft);
-      body.style.whiteSpace='pre-wrap';
-      const button=make('button','Pilih peringkat '+criterion.rank+' (draft)');
+      body.className='pdk-criterion-description';
+      const button=make('button','Gunakan peringkat '+criterion.rank+' (draft)');
       button.type='button';button.className='button button-outline';
       button.addEventListener('click',()=>{
         if(sourceConflict||!canSelect())return;
         const select=$('pdk-indicator-rank');
         select.value=String(criterion.rank);
         select.dispatchEvent(new Event('change',{bubbles:true}));
+        select.focus({preventScroll:true});
       });
-      rows.push(button);entry.append(heading,body,button);list.append(entry);
+      rows.push(button);entry.append(summary,body,button);list.append(entry);
     }
     for(const additional of data.supplementaryCriteria){
-      const heading=make('strong','Kandidat pembanding Tabel 3 #'+additional.table3Number+
-        ' · halaman PDF '+additional.pdfPages.join(', ')+
-        ' (pembanding Kategori 2; belum diverifikasi)');
-      list.append(heading);
+      const alternative=make('details','');
+      alternative.className='pdk-comparison-details';
+      alternative.append(make('summary','Buka lima kriteria pembanding Tabel 3 #'+
+        additional.table3Number+' (belum diverifikasi)'));
       for(const item of additional.criteria){
-        const entry=make('div','');entry.className='workspace-history-item';
+        const entry=make('div','');entry.className='pdk-comparison-criterion';
         entry.append(make('strong','Peringkat '+item.rank+' — '+item.label),
           make('p',item.textDraft));
-        list.append(entry);
+        alternative.append(entry);
       }
+      list.append(alternative);
     }
     sync();
   }

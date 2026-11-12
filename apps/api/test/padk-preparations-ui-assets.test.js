@@ -25,6 +25,9 @@ test('PADK preparation page and module are served with CSP',async()=>{
       'activation-confirm','activation-success',
       'pdk-create-toggle','pdk-create-form','pdk-title','pdk-category',
       'pdk-title-suggest','pdk-category-help','pdk-period-help',
+      'pdk-find-indicator','pdk-evidence-disclosure','pdk-review-disclosure',
+      'pdk-report-disclosure','pdk-indicator-history-disclosure',
+      'pdk-review-queue-disclosure',
       'pdk-period-start','pdk-period-end','pdk-list','pdk-detail',
       'pdk-note-form','pdk-notes','pdk-evidence-plan','pdk-save','pdk-history',
       'pdk-evidence-panel','pdk-evidence-upload','pdk-evidence-file',
@@ -44,13 +47,19 @@ test('PADK preparation page and module are served with CSP',async()=>{
       'pdk-indicator-save-next','pdk-indicator-ready-hint','pdk-indicator-optional',
       'pdk-jump-review','pdk-review-queue','pdk-review-queue-refresh','pdk-review-queue-list',
     ])assert.ok(html.includes('id="'+id+'"'),id+' missing');
-    assert.match(html,/Belum dapat dinilai atau disahkan/);
+    assert.match(html,/Mode kertas kerja internal/);
+    assert.match(html,/belum boleh digunakan sebagai laporan resmi OJK/);
     assert.ok(html.indexOf('id="pdk-indicator-section"')<
       html.indexOf('id="pdk-draft-review-panel"'),
       'PADK primary input must precede review and auxiliary sections');
     assert.match(html,/Simpan &amp; lanjut|Simpan & lanjut/);
     assert.doesNotMatch(html,/Fitur pengisian peringkat, review, approval dan PDF final belum diaktifkan/);
-    assert.match(html,/aria-label="Lima kriteria peringkat, gulir untuk membaca semuanya"/);
+    assert.match(html,/aria-label="Lima kriteria peringkat draft yang dapat dibuka satu per satu"/);
+    assert.match(html,/Mode kertas kerja internal/);
+    assert.match(html,/Kerjakan satu indikator pada satu waktu/);
+    assert.ok(html.indexOf('id="pdk-indicator-form"')<
+      html.indexOf('id="pdk-review-disclosure"'),
+      'indicators precede the optional review flow');
     const module=await fetch(base+'/assets/padk-preparation-ui.js');
     assert.equal(module.status,200);
     assert.match(module.headers.get('content-security-policy'),/script-src 'self'/);

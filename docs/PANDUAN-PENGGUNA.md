@@ -223,3 +223,10 @@ Saat membuat asesmen internal, biarkan opsi **Gunakan katalog TI bawaan dan lang
 ## Aktivasi akun yang dipandu
 
 Pada halaman masuk, gunakan tombol **Lihat** untuk memeriksa kata sandi jika perlu. Untuk akun baru, klik **Aktifkan akun**: langkah pertama memasukkan kode undangan dari administrator, lalu langkah kedua membuat dan mengonfirmasi kata sandi minimal 12 karakter. Informasi kecocokan kata sandi tampil sebelum tombol aktivasi aktif. Kode undangan baru diverifikasi oleh server saat proses aktivasi dikirim. Jangan membagikan kode undangan atau kata sandi melalui tangkapan layar.
+
+
+## Alur penilaian PADK yang disederhanakan (draft)
+
+Setelah membuat persiapan penilaian, NusaRiksa membuka **indikator pertama** dan mengarahkan fokus ke ruang kerja penilaian. Kerjakan satu indikator pada satu waktu: baca ringkasannya, buka tingkat kriteria yang ingin dibandingkan, periksa uraian terhadap sumber PADK, pilih **peringkat sementara**, tulis **justifikasi**, lalu tekan **Simpan & lanjut**. Ini adalah catatan kerja, bukan nilai yang sudah divalidasi regulator.
+
+Gunakan **Cari yang belum lengkap** untuk melanjutkan indikator yang belum selesai. Pilihan **Cari atau pilih indikator lain** menyediakan pencarian nomor, kata kunci, dan filter status tanpa memenuhi layar awal. Jika ingin menambahkan bukti pada indikator yang sama, tekan **Simpan indikator ini**; bagian **Dokumen bukti pendukung** dapat dibuka setelah jawaban tersimpan. Rincian sumber, riwayat, review, simulasi, dan PDF draft disajikan sebagai bagian lanjutan yang bisa dibuka bila diperlukan. Status kertas kerja internal tetap terlihat; dokumen dan skor resmi PADK/OJK tidak dihasilkan secara otomatis.

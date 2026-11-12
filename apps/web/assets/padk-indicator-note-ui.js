@@ -179,10 +179,8 @@ export function createPadkIndicatorNoteUI({api,onAuthFailure,getUserId,getPermis
     $('pdk-indicator-progress').max=progress.total||1;
     $('pdk-indicator-progress').value=progress.complete;
     $('pdk-indicator-count').textContent=progress.total
-      ?progress.complete+' dari '+progress.total+
-        ' indikator lengkap untuk pengajuan draft (peringkat + justifikasi); '+
-        progress.pending+' belum lengkap. '+progress.noted+
-        ' memiliki catatan. Ini bukan hasil penilaian resmi PADK.'
+      ?progress.complete+' dari '+progress.total+' indikator lengkap · '+
+        progress.pending+' belum lengkap (draft internal).'
       :'Memuat daftar indikator…';
     $('pdk-indicator-prev').disabled=state.busy||!state.active||state.active.number<=1;
     $('pdk-indicator-next').disabled=state.busy||!state.active
@@ -196,6 +194,8 @@ export function createPadkIndicatorNoteUI({api,onAuthFailure,getUserId,getPermis
     $('pdk-indicator-search').value='';
     $('pdk-indicator-status-filter').value='all';
     $('pdk-indicator-match-count').textContent='';
+    for(const id of ['pdk-find-indicator','pdk-evidence-disclosure',
+      'pdk-indicator-history-disclosure'])$(id).open=false;
     evidenceUI.clear();criteriaUI.clear();
     $('pdk-indicator-list').replaceChildren();
     $('pdk-indicator-form').reset();
@@ -230,6 +230,8 @@ export function createPadkIndicatorNoteUI({api,onAuthFailure,getUserId,getPermis
     const item=state.items.find(x=>x.number===Number(number));
     state.active=item??null;state.dirty=false;
     $('pdk-indicator-form').reset();message('');
+    $('pdk-evidence-disclosure').open=false;
+    $('pdk-indicator-history-disclosure').open=false;
     if(!item){
       evidenceUI.clear();criteriaUI.clear();
       $('pdk-indicator-description').textContent='';
@@ -389,7 +391,9 @@ export function createPadkIndicatorNoteUI({api,onAuthFailure,getUserId,getPermis
       }else if(saveAndNext){
         message('Catatan tersimpan, tetapi indikator belum lengkap. Pilih peringkat dan isi justifikasi minimal 20 karakter untuk melanjutkan.','warning');
       }else{
-        message('Draft indikator tersimpan. Belum menjadi nilai PADK final.','success');
+        if(getPermissions().includes('evidence:read'))
+          $('pdk-evidence-disclosure').open=true;
+        message('Jawaban draft tersimpan. Bukti pendukung dapat dilampirkan pada bagian di bawah.','success');
       }
       void history();
       onDraftSaved();

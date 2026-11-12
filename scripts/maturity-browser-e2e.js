@@ -767,6 +767,13 @@ async function runBrowser(base,db,fixture){
       "document.getElementById('pdk-period-end').value='2026-12-31';"+
       "document.getElementById('pdk-create-form').requestSubmit()");
     await until("!document.getElementById('pdk-detail').hidden",'PADK created through UI');
+    await until("document.getElementById('pdk-indicator-title').textContent.length>10 && "+
+      "document.activeElement?.id==='pdk-indicator-heading'",
+      'new draft focuses first indicator');
+    assert.equal(await evalJs("document.getElementById('pdk-find-indicator').open"),false);
+    assert.equal(await evalJs("document.getElementById('pdk-report-disclosure').open"),false);
+    assert.equal(await evalJs("document.getElementById('pdk-review-disclosure').open"),false);
+    assert.equal(await evalJs("document.getElementById('pdk-evidence-disclosure').open"),false);
     await until("document.getElementById('pdk-review-state').textContent.includes('Sedang dikerjakan')",
       'PADK draft status loaded');
     await until("document.getElementById('pdk-score-status').textContent.includes('Terisi 0 dari 80')",
@@ -779,7 +786,9 @@ async function runBrowser(base,db,fixture){
     await until("document.getElementById('pdk-message').textContent.includes('berhasil disimpan')",'PADK preparation persisted');
     await until("document.getElementById('pdk-indicator-list').options.length===81",
       '80 draft indicators listed');
-    // Petugas dapat mencari nomor dan memfilter tanpa kehilangan indikator yang sedang dibuka.
+    // Petugas mencari nomor hanya setelah membuka navigasi tambahan.
+    await evalJs("document.querySelector('#pdk-find-indicator summary').click()");
+    assert.equal(await evalJs("document.getElementById('pdk-find-indicator').open"),true);
     await evalJs("document.getElementById('pdk-indicator-search').value='2';"+
       "document.getElementById('pdk-indicator-search').dispatchEvent(new Event('input',{bubbles:true}))");
     assert.equal(await evalJs("document.getElementById('pdk-indicator-list').options.length"),3);
@@ -796,8 +805,11 @@ async function runBrowser(base,db,fixture){
     await until("document.querySelectorAll('#pdk-criteria-list .workspace-history-item').length===5",
       'PADK extracted Table 3 criteria visible');
     assert.equal(await evalJs("document.getElementById('pdk-criteria-source').textContent.includes('157')"),true);
-    assert.equal(await evalJs("document.getElementById('pdk-criteria-status').textContent.includes('belum diperiksa')"),true);
-    await evalJs("document.querySelector('#pdk-criteria-list button').click()");
+    assert.equal(await evalJs("document.getElementById('pdk-criteria-status').textContent.includes('belum diverifikasi')"),true);
+    assert.equal(await evalJs("document.querySelector('#pdk-criteria-list .pdk-criterion-card').open"),false);
+    await evalJs("document.querySelector('#pdk-criteria-list .pdk-criterion-card summary').click()");
+    assert.equal(await evalJs("document.querySelector('#pdk-criteria-list .pdk-criterion-card').open"),true);
+    await evalJs("document.querySelector('#pdk-criteria-list .pdk-criterion-card button').click()");
     assert.equal(await evalJs("document.getElementById('pdk-indicator-rank').value"),'1');
     await evalJs("document.getElementById('pdk-indicator-notes').value='Validasi pemilik kontrol dan kebijakan.';"+
       "document.getElementById('pdk-indicator-evidence').value='SOP TI dan notulen rapat manajemen.';"+
@@ -805,8 +817,9 @@ async function runBrowser(base,db,fixture){
       "document.getElementById('pdk-indicator-justification').value='Penilaian sementara: dokumen ada tetapi pelaksanaan belum dievaluasi menyeluruh.';"+
       "document.getElementById('pdk-indicator-rank').dispatchEvent(new Event('change',{bubbles:true}));"+
       "document.getElementById('pdk-indicator-form').requestSubmit()");
-    await until("document.getElementById('pdk-indicator-message').textContent.includes('Draft indikator tersimpan')",
+    await until("document.getElementById('pdk-indicator-message').textContent.includes('Jawaban draft tersimpan')",
       'PADK draft item note persisted');
+    assert.equal(await evalJs("document.getElementById('pdk-evidence-disclosure').open"),true);
     await until("document.getElementById('pdk-score-status').textContent.includes('Terisi 1 dari 80')",
       'PADK preview refreshed on saved rank');
     assert.equal(await evalJs("document.getElementById('pdk-score-composite').textContent.includes('belum dihitung')"),true);
