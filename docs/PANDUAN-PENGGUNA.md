@@ -218,3 +218,8 @@ Pilih rencana untuk melihat detailnya. Gunakan **Catat pengujian** setelah simul
 ## Katalog TI bawaan dengan referensi POJK
 
 Saat membuat asesmen internal, biarkan opsi **Gunakan katalog TI bawaan dan langsung mulai** aktif. NusaRiksa otomatis memasang 26 kontrol operasional yang sudah berisi pertanyaan, contoh evidence, dan referensi pasal terkait POJK 34/2025. Petugas cukup mengisi kondisi sebenarnya di bank dan melampirkan bukti yang relevan. Referensi pasal adalah acuan pendukung, bukan transkripsi hukum yang menggantikan pembacaan peraturan. Katalog lama dan seluruh assessment historis tetap dipertahankan.
+
+
+## Aktivasi akun yang dipandu
+
+Pada halaman masuk, gunakan tombol **Lihat** untuk memeriksa kata sandi jika perlu. Untuk akun baru, klik **Aktifkan akun**: langkah pertama memasukkan kode undangan dari administrator, lalu langkah kedua membuat dan mengonfirmasi kata sandi minimal 12 karakter. Informasi kecocokan kata sandi tampil sebelum tombol aktivasi aktif. Kode undangan baru diverifikasi oleh server saat proses aktivasi dikirim. Jangan membagikan kode undangan atau kata sandi melalui tangkapan layar.

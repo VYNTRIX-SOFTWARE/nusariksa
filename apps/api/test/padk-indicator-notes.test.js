@@ -7,7 +7,8 @@ import {
   parseIndicatorNumber,validateIndicatorWorkingNotes,
 } from '../src/padk-preparation-indicators.js';
 import {validateDraftIndicatorList,isDraftIndicatorComplete,
-  summarizeDraftIndicatorProgress,nextPendingDraftIndicator,filterDraftIndicators}
+  summarizeDraftIndicatorProgress,nextPendingDraftIndicator,filterDraftIndicators,
+  getPadkIndicatorGuidance}
   from '../../web/assets/padk-indicator-note-ui.js';
 
 test('indicator number must follow PADK category sizes',()=>{
@@ -95,4 +96,44 @@ test('filter indikator mendukung pencarian nomor, teks dan kelengkapan tanpa men
   assert.throws(()=>filterDraftIndicators(null),TypeError);
   assert.throws(()=>filterDraftIndicators(indicators,{status:'invalid'}),TypeError);
   assert.throws(()=>filterDraftIndicators(indicators,{query:12}),TypeError);
+});
+
+test('panduan pengisian PADK membedakan kelengkapan dan pengakuan simpan server',()=>{
+  const empty=getPadkIndicatorGuidance({
+    rank:null,justification:'',dirty:false,revision:0});
+  assert.equal(empty.rankDone,false);
+  assert.match(empty.nextAction,/Pilih peringkat/);
+  const missing=getPadkIndicatorGuidance({
+    rank:2,justification:'Alasan singkat',dirty:true,revision:0});
+  assert.equal(missing.rankDone,true);
+  assert.equal(missing.reasonDone,false);
+  assert.match(missing.nextAction,/minimal 20/);
+  const ready=getPadkIndicatorGuidance({
+    rank:2,justification:'Bukti kontrol telah diperiksa dengan pemilik risiko.',
+    dirty:true,revision:0});
+  assert.equal(ready.reasonDone,true);
+  assert.equal(ready.saved,false);
+  assert.match(ready.nextAction,/Simpan & lanjut/);
+  const ack=getPadkIndicatorGuidance({
+    rank:2,justification:'Bukti kontrol telah diperiksa dengan pemilik risiko.',
+    dirty:false,revision:1});
+  assert.equal(ack.saved,true);
+  assert.match(ack.nextAction,/sudah tersimpan/);
+  const unsaved=getPadkIndicatorGuidance({
+    rank:2,justification:'Bukti kontrol telah diperiksa dengan pemilik risiko.',
+    dirty:true,revision:1});
+  assert.equal(unsaved.saved,false);
+  const readOnly=getPadkIndicatorGuidance({
+    rank:2,justification:'Bukti kontrol telah diperiksa dengan pemilik risiko.',
+    dirty:false,revision:1,editable:false});
+  assert.match(readOnly.nextAction,/Mode baca saja/);
+  const spaced=getPadkIndicatorGuidance({
+    rank:2,justification:'  Bukti kontrol diperiksa bersama pihak yang terkait.  ',
+    dirty:true,revision:1});
+  assert.equal(spaced.reasonDone,false);
+  for(const invalid of [{rank:6,justification:'',dirty:false,revision:0},
+    {rank:null,justification:'',dirty:'no',revision:0},
+    {rank:null,justification:'',dirty:false,revision:-1}]){
+    assert.throws(()=>getPadkIndicatorGuidance(invalid),TypeError);
+  }
 });

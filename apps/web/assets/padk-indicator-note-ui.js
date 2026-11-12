@@ -68,6 +68,29 @@ export function filterDraftIndicators(items,{query='',status='all'}={}){
     return String(item.workingSummary??'').toLocaleLowerCase('id-ID').includes(term);
   });
 }
+/**
+ * Explain the next action using form input, but call data "saved" only after
+ * the server has acknowledged the new revision. Never imply official scoring.
+ */
+export function getPadkIndicatorGuidance({rank,justification,dirty,revision,editable=true}){
+  if(!(rank===null||(Number.isInteger(rank)&&rank>=1&&rank<=5))
+    ||typeof justification!=='string'||typeof dirty!=='boolean'
+    ||!Number.isSafeInteger(revision)||revision<0||typeof editable!=='boolean')
+    throw new TypeError('Status panduan indikator tidak valid.');
+  const reasonCount=justification.trim().length;
+  const rankDone=rank!==null;
+  const reasonDone=rankDone&&reasonCount>=20
+    &&justification===justification.trim()&&!CONTROL.test(justification);
+  const saved=revision>0&&!dirty;
+  let nextAction;
+  if(!editable)nextAction='Mode baca saja. Periksa alasan penilaian dan dokumen bukti yang tersedia.';
+  else if(!rankDone)nextAction='Pilih peringkat sementara setelah membandingkan kriteria.';
+  else if(!reasonDone)nextAction='Lengkapi justifikasi minimal 20 karakter berdasarkan kondisi dan bukti yang diperiksa.';
+  else if(dirty)nextAction='Jawaban siap disimpan. Pilih Simpan & lanjut, atau Simpan indikator ini jika ingin melampirkan bukti terlebih dahulu.';
+  else if(saved)nextAction='Jawaban sudah tersimpan. Lanjut ke indikator belum lengkap atau periksa dokumen bukti.';
+  else nextAction='Simpan jawaban agar progres tercatat di server.';
+  return {rankDone,reasonDone,saved,reasonCount,nextAction};
+}
 export function createPadkIndicatorNoteUI({api,onAuthFailure,getUserId,getPermissions,canEditDraft=()=>true,onDraftSaved=()=>{}}){
   const state={preparation:null,items:[],active:null,dirty:false,busy:false,request:0,
     search:'',filter:'all'};
@@ -86,6 +109,34 @@ export function createPadkIndicatorNoteUI({api,onAuthFailure,getUserId,getPermis
     if(onAuthFailure(error))return;
     message(error instanceof TypeError?error.message:fallback,'error');
   };
+  function renderGuide(){
+    if(!state.active){
+      $('pdk-guide-rank').textContent='Pilih indikator untuk mulai.';
+      $('pdk-guide-reason').textContent='Tulis justifikasi setelah memilih peringkat.';
+      $('pdk-guide-save').textContent='Isian belum dimuat.';
+      $('pdk-guide-next').textContent='';
+      $('pdk-indicator-reason-counter').textContent='';
+      return;
+    }
+    const raw=$('pdk-indicator-rank').value;
+    const guide=getPadkIndicatorGuidance({
+      rank:raw===''?null:Number(raw),justification:$('pdk-indicator-justification').value,
+      dirty:state.dirty,revision:state.active.revision,editable:owner(),
+    });
+    $('pdk-guide-rank').textContent=guide.rankDone
+      ?'Peringkat '+raw+' dipilih (draft)':'Peringkat belum dipilih';
+    $('pdk-guide-rank').dataset.state=guide.rankDone?'done':'pending';
+    $('pdk-guide-reason').textContent=guide.reasonDone
+      ?'Justifikasi memenuhi syarat pengisian draft'
+      :'Justifikasi belum lengkap (minimal 20 karakter)';
+    $('pdk-guide-reason').dataset.state=guide.reasonDone?'done':'pending';
+    $('pdk-guide-save').textContent=state.dirty?'Perubahan belum disimpan'
+      :guide.saved?'Isian tersimpan di server':'Belum ada isian tersimpan';
+    $('pdk-guide-save').dataset.state=guide.saved?'done':'pending';
+    $('pdk-guide-next').textContent=guide.nextAction;
+    $('pdk-indicator-reason-counter').textContent=
+      guide.reasonCount+' karakter · minimal 20 karakter untuk justifikasi peringkat (spasi awal/akhir tidak dihitung).';
+  }
   function render(){
     evidenceUI.sync();criteriaUI.sync();
     $('pdk-indicator-section').hidden=!state.preparation;
@@ -137,6 +188,7 @@ export function createPadkIndicatorNoteUI({api,onAuthFailure,getUserId,getPermis
     $('pdk-indicator-next').disabled=state.busy||!state.active
       ||state.active.number>=progress.total;
     $('pdk-indicator-next-pending').disabled=state.busy||!state.active||!progress.pending;
+    renderGuide();
   }
   function clear(){
     state.request++;state.preparation=null;state.items=[];state.active=null;

@@ -858,3 +858,53 @@ h1,h2,p{margin-top:0}h1,h2{letter-spacing:-.027em}
 #pdk-indicator-match-count{margin:0 0 10px;font-size:12px}
 @media(max-width:760px){.pdk-indicator-filters{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.pdk-indicator-filters .button{grid-column:1 / -1}}
 @media(max-width:480px){.pdk-indicator-filters{grid-template-columns:1fr}.pdk-indicator-filters .button{grid-column:auto;width:100%}}
+
+/* Action-oriented PADK guidance: display only readiness, not official scores. */
+.pdk-guided-checklist{padding:14px 16px;border:1px solid #DADFED;border-radius:10px;background:#F9FAFE;margin:12px 0 17px}
+.pdk-guided-title{font-weight:800;font-size:12px;color:#39445B;margin:0 0 11px}
+.pdk-guided-steps{list-style:none;counter-reset:pdk-steps;display:grid;gap:9px;margin:0;padding:0}
+.pdk-guided-steps li{counter-increment:pdk-steps;display:flex;align-items:flex-start;gap:9px;font-size:12px;line-height:1.5;color:#5B6475}
+.pdk-guided-steps li::before{content:counter(pdk-steps);display:grid;place-items:center;flex:0 0 21px;height:21px;border-radius:50%;font-size:11px;font-weight:750;background:#E9ECF5;color:#5F6A81}
+.pdk-guided-steps li[data-state="done"]{color:#246448}
+.pdk-guided-steps li[data-state="done"]::before{content:"✓";background:#E4F4E8;color:#246448}
+.pdk-guided-next{font-size:12px;font-weight:600;line-height:1.6;color:#39445B;border-top:1px solid #E5E7F2;margin:12px 0 0;padding-top:10px}
+.pdk-save-guidance{font-size:12px;line-height:1.5}
+
+/* First-use authentication: visible focus, readable steps and safe password reveal. */
+.password-visibility-field{display:flex;position:relative;align-items:stretch;min-width:0}
+.password-visibility-field input{min-width:0;flex:1;padding-right:99px!important}
+.password-visibility-toggle{position:absolute;right:6px;top:50%;transform:translateY(-50%);font-size:12px;font-weight:700;border:0;background:transparent;color:#4F46A5;padding:9px 10px;cursor:pointer;border-radius:6px}
+.password-visibility-toggle:hover{background:#F1EFFD}
+.password-visibility-toggle:focus-visible,.activation-cancel:focus-visible{outline:2px solid #7564D4;outline-offset:2px}
+#login-form .password-visibility-field{margin-bottom:22px}
+#login-form .password-visibility-field input{margin-bottom:0}
+#activation-form{display:grid;gap:0}
+#activation-form[hidden]{display:none}
+.activation-intro{margin-bottom:18px}
+.activation-intro .eyebrow{margin-bottom:5px}
+.activation-intro h2{margin-bottom:9px}
+.activation-intro .supporting-copy{margin-bottom:18px}
+.activation-step-label{font-size:12px;font-weight:750;color:#54458C;margin:0 0 9px}
+.activation-step-track{width:100%;height:5px;border-radius:100px;background:#E7E6F0;overflow:hidden}
+.activation-step-track span{display:block;width:50%;height:100%;background:#7363C8;transition:width .16s}
+#activation-form label{display:block;font-size:13px;font-weight:700;margin:0 0 8px}
+#activation-form input{width:100%;min-width:0;border:1px solid #D1D5DB;border-radius:8px;padding:11px 13px;font-size:14px;min-height:44px;background:#fff}
+#activation-form .password-visibility-field{margin-bottom:7px}
+#activation-form .activation-field-hint{font-size:12px;line-height:1.6;color:#5F6777;margin:8px 0 16px}
+#activation-next{width:100%}
+.activation-action-row{display:grid;grid-template-columns:auto minmax(0,1fr);gap:9px;margin-top:12px}
+.activation-action-row .button{min-width:0}
+#activation-message{margin-top:12px}
+.activation-cancel{margin-top:16px;justify-self:start}
+@media(max-width:420px){.activation-action-row{grid-template-columns:1fr}.activation-action-row .button{width:100%}}
+@media(prefers-reduced-motion:reduce){.activation-step-track span{transition:none}}
+
+/* Guided first PADK assessment setup. No institution-specific category is assumed. */
+#pdk-create-form{max-width:720px}
+#pdk-create-form label{font-weight:700}
+.pdk-setup-explanation{font-size:12px;color:#586375;line-height:1.65;margin:6px 0 18px}
+.pdk-form-caption{font-size:13px;font-weight:700;color:#31384A;margin:16px 0 9px}
+.pdk-title-suggestion{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:start;gap:10px}
+.pdk-title-suggestion input{min-width:0;width:100%}
+.pdk-title-suggestion .button{white-space:nowrap}
+@media(max-width:580px){.pdk-title-suggestion{grid-template-columns:1fr}.pdk-title-suggestion .button{width:100%}}

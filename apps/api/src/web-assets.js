@@ -6,6 +6,7 @@ const ASSETS = new Map([
   ['/index.html', { file: 'index.html', type: 'text/html; charset=utf-8' }],
   ['/assets/styles.css', { file: 'assets/styles.css', type: 'text/css; charset=utf-8' }],
   ['/assets/app.js', { file: 'assets/app.js', type: 'text/javascript; charset=utf-8' }],
+  ['/assets/account-access-model.js', { file: 'assets/account-access-model.js', type: 'text/javascript; charset=utf-8' }],
   ['/assets/admin-onboarding-ui.js', { file: 'assets/admin-onboarding-ui.js', type: 'text/javascript; charset=utf-8' }],
   ['/assets/ti-assets-ui.js', { file: 'assets/ti-assets-ui.js', type: 'text/javascript; charset=utf-8' }],
   ['/assets/ti-risks-ui.js', { file: 'assets/ti-risks-ui.js', type: 'text/javascript; charset=utf-8' }],
