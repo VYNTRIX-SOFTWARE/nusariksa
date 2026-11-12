@@ -23,6 +23,15 @@ test('antarmuka web dan aset dimuat dari origin API dengan header keamanan', asy
     const source = await html.text();
     assert.match(source, /<html lang="id">/);
     assert.match(source, /id="login-form"/);
+    assert.match(source, /id="login-welcome"/);
+    assert.match(source, /id="login-help"/);
+    for(const id of ['activation-token-step','activation-password-step','activation-next',
+      'activation-back','activation-step-label','activation-password-hint','activation-confirm-hint']){
+      assert.match(source,new RegExp('id="'+id+'"'));
+    }
+    for(const field of ['login-password','activation-password','activation-confirm']){
+      assert.match(source,new RegExp('data-password-toggle="'+field+'"'));
+    }
     assert.match(source, /id="app-screen"/);
     assert.match(source,/id="assessment-quick-start"/);
     assert.match(source,/id="assessment-quick-start-hint"/);
@@ -84,6 +93,9 @@ test('antarmuka web dan aset dimuat dari origin API dengan header keamanan', asy
     assert.equal(app.status, 200);
     assert.match(app.headers.get('content-type'), /text\/javascript/);
     assert.match(await app.text(), /restoreSession/);
+    const accessModel=await fetch(base+'/assets/account-access-model.js');
+    assert.equal(accessModel.status,200);
+    assert.match(accessModel.headers.get('content-security-policy'),/script-src 'self'/);
     for(const id of ['workspace-guidance','workspace-guide-question','workspace-guide-evidence',
       'workspace-note-helper','workspace-observed-condition','workspace-observed-evidence',
       'workspace-observed-followup','workspace-compose-note','workspace-guide-regulation']){

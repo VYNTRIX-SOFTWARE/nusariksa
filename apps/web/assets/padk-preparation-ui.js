@@ -11,6 +11,19 @@ const text=(tag,content,className)=>{
   if(className)element.className=className;
   return element;
 };
+// A date suggestion is a convenience, not evidence of a regulatory determination.
+export function suggestPadkAnnualPreparation(date=new Date()){
+  if(!(date instanceof Date)||Number.isNaN(date.getTime()))
+    throw new TypeError('Tanggal saran penilaian tidak valid.');
+  const year=date.getFullYear();
+  return {title:'Penilaian Maturitas Keamanan Siber — '+year,
+    periodStart:year+'-01-01',periodEnd:year+'-12-31'};
+}
+export function suggestPadkTitleFromEnd(periodEnd){
+  if(typeof periodEnd!=='string'||!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(periodEnd))
+    throw new TypeError('Tanggal akhir penilaian tidak valid.');
+  return 'Penilaian Maturitas Keamanan Siber — '+periodEnd.slice(0,4);
+}
 export function validatePreparationInput({title,category,periodStart,periodEnd}){
   if(typeof title!=='string'||title!==title.trim()||title.length<3||title.length>200
     ||control.test(title)||![1,2].includes(category)
@@ -333,13 +346,48 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
   });
   $('pdk-review-queue-refresh').addEventListener('click',()=>void refreshReviewQueue());
   $('pdk-refresh').addEventListener('click',()=>{if(confirmLeave())void list();});
+  let suggestedTitle='';
+  function updateCategoryDescription(){
+    const value=$('pdk-category').value;
+    $('pdk-category-help').textContent=value==='1'
+      ?'Kategori 1 · 80 indikator. Untuk BPR/BPRS dengan layanan digital dan/atau koneksi ke sistem aplikasi/infrastruktur TI mitra kerja.'
+      :value==='2'?'Kategori 2 · 60 indikator. Untuk BPR/BPRS yang menyelenggarakan layanan perbankan dasar.'
+        :'Pilih kategori sesuai karakteristik layanan BPR/BPRS. Terdapat dua kategori pada instrumen ini.';
+  }
+  function updatePeriodDescription(){
+    const start=$('pdk-period-start').value,end=$('pdk-period-end').value;
+    $('pdk-period-help').textContent=
+      /^[0-9]{4}-01-01$/.test(start)&&end===start.slice(0,4)+'-12-31'
+        ?'Rentang kalender tahunan disarankan otomatis; posisi penilaian tahunan adalah akhir Desember. Periksa kesesuaian tanggal untuk BPR Anda.'
+        :'Tanggal diubah. Untuk penilaian tahunan, periksa kembali posisi akhir Desember; penginian dapat dilakukan sewaktu-waktu.';
+  }
+  function updateSuggestedTitle(force=false){
+    const end=$('pdk-period-end').value;
+    if(!end)return;
+    const next=suggestPadkTitleFromEnd(end);
+    const title=$('pdk-title');
+    if(force||!title.value.trim()||title.value===suggestedTitle){
+      title.value=next;
+      suggestedTitle=next;
+    }
+  }
   function openFirstPreparation(){
     if(!writable()||state.busy)return;
     $('pdk-create-form').hidden=false;
-    const year=new Date().getFullYear();
-    if(!$('pdk-period-start').value)$('pdk-period-start').value=year+'-01-01';
-    if(!$('pdk-period-end').value)$('pdk-period-end').value=year+'-12-31';
-    $('pdk-title').focus();
+    const suggested=suggestPadkAnnualPreparation();
+    if(!$('pdk-period-start').value)$('pdk-period-start').value=suggested.periodStart;
+    if(!$('pdk-period-end').value)$('pdk-period-end').value=suggested.periodEnd;
+    updateSuggestedTitle();updateCategoryDescription();updatePeriodDescription();
+    $('pdk-category').focus();
+  }
+  $('pdk-category').addEventListener('change',updateCategoryDescription);
+  $('pdk-title-suggest').addEventListener('click',()=>{
+    updateSuggestedTitle(true);$('pdk-title').focus();
+  });
+  for(const id of ['pdk-period-start','pdk-period-end']){
+    $(id).addEventListener('change',()=>{
+      updatePeriodDescription();updateSuggestedTitle();
+    });
   }
   $('pdk-empty-start').addEventListener('click',openFirstPreparation);
   $('pdk-create-toggle').addEventListener('click',()=>{
@@ -361,6 +409,7 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
     try{
       const created=validatePreparationResponse(await api(ENDPOINT,{method:'POST',body:data}));
       $('pdk-create-form').reset();$('pdk-create-form').hidden=true;
+      suggestedTitle='';updateCategoryDescription();updatePeriodDescription();
       await list(created.id);
       message('Persiapan berhasil dibuat. Isi rencana kerja dan bukti yang perlu disiapkan.','success');
     }catch(error){fail(error,'Gagal membuat persiapan PADK.');}

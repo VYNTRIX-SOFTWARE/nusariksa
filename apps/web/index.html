@@ -33,17 +33,23 @@
     <section class="login-panel">
       <div class="login-box">
         <div class="login-topline"><span class="small-brand-mark">N</span><span>Akses NusaRiksa</span></div>
-        <p class="eyebrow">SELAMAT DATANG</p>
-        <h2>Masuk ke ruang kerja</h2>
-        <p class="supporting-copy">Gunakan akun yang telah diaktifkan oleh administrator lembaga.</p>
+        <div id="login-welcome">
+          <p class="eyebrow">SELAMAT DATANG</p>
+          <h2>Masuk ke ruang kerja</h2>
+          <p class="supporting-copy">Gunakan akun yang telah diaktifkan oleh administrator lembaga.</p>
+        </div>
 
         <form id="login-form" autocomplete="on">
           <label for="login-email">Alamat email</label>
           <input id="login-email" name="email" type="email" placeholder="nama@lembaga.co.id"
             autocomplete="username" maxlength="254" required>
           <label for="login-password">Kata sandi</label>
-          <input id="login-password" name="password" type="password" placeholder="Masukkan kata sandi"
-            autocomplete="current-password" required>
+          <div class="password-visibility-field">
+            <input id="login-password" name="password" type="password" placeholder="Masukkan kata sandi"
+              autocomplete="current-password" required>
+            <button class="password-visibility-toggle" type="button" data-password-toggle="login-password"
+              aria-controls="login-password" aria-pressed="false" aria-label="Tampilkan kata sandi">Lihat</button>
+          </div>
           <p id="login-error" class="form-error" role="alert" hidden></p>
           <button id="login-submit" class="button button-primary" type="submit">Masuk <span aria-hidden="true">→</span></button>
         </form>
@@ -58,20 +64,48 @@
           <button id="mfa-login-cancel" class="button button-outline" type="button">Kembali</button>
         </form>
         <form id="activation-form" autocomplete="off" hidden>
-          <p class="supporting-copy">Akun baru? Masukkan kode undangan dari administrator lembaga dan buat password pribadi.</p>
-          <label for="activation-token">Kode undangan</label>
-          <input id="activation-token" type="text" required maxlength="43" minlength="43"
-                 autocomplete="off" autocapitalize="off" spellcheck="false"
-                 placeholder="Kode undangan satu kali">
-          <label for="activation-password">Password baru (minimal 12 karakter)</label>
-          <input id="activation-password" type="password" minlength="12" required autocomplete="new-password">
-          <label for="activation-confirm">Konfirmasi password</label>
-          <input id="activation-confirm" type="password" minlength="12" required autocomplete="new-password">
+          <div class="activation-intro">
+            <p class="eyebrow">AKTIVASI AKUN</p>
+            <h2>Siapkan akses pertama</h2>
+            <p class="supporting-copy">Dua langkah untuk mulai menggunakan NusaRiksa.</p>
+            <p id="activation-step-label" class="activation-step-label" aria-live="polite">Langkah 1 dari 2 · Kode undangan</p>
+            <div class="activation-step-track" aria-hidden="true"><span id="activation-step-progress"></span></div>
+          </div>
+          <div id="activation-token-step">
+            <label for="activation-token">Kode undangan dari administrator</label>
+            <input id="activation-token" type="text" required maxlength="43" minlength="43"
+                   autocomplete="off" autocapitalize="off" spellcheck="false"
+                   aria-describedby="activation-token-hint" placeholder="Tempel kode undangan di sini">
+            <p id="activation-token-hint" class="activation-field-hint">Kode berisi 43 karakter. Jika belum memilikinya, minta administrator mengundang akun Anda.</p>
+            <button id="activation-next" class="button button-primary" type="button">Lanjut buat kata sandi</button>
+          </div>
+          <div id="activation-password-step" hidden>
+            <p class="activation-field-hint">Kode akan diperiksa server pada langkah aktivasi terakhir.</p>
+            <label for="activation-password">Buat kata sandi</label>
+            <div class="password-visibility-field">
+              <input id="activation-password" type="password" minlength="12" maxlength="1024" required autocomplete="new-password"
+                     aria-describedby="activation-password-hint" placeholder="Minimal 12 karakter">
+              <button class="password-visibility-toggle" type="button" data-password-toggle="activation-password"
+                aria-controls="activation-password" aria-pressed="false" aria-label="Tampilkan kata sandi">Lihat</button>
+            </div>
+            <p id="activation-password-hint" class="activation-field-hint" aria-live="polite">Gunakan minimal 12 karakter.</p>
+            <label for="activation-confirm">Ulangi kata sandi</label>
+            <div class="password-visibility-field">
+              <input id="activation-confirm" type="password" minlength="12" maxlength="1024" required autocomplete="new-password"
+                     aria-describedby="activation-confirm-hint">
+              <button class="password-visibility-toggle" type="button" data-password-toggle="activation-confirm"
+                aria-controls="activation-confirm" aria-pressed="false" aria-label="Tampilkan kata sandi">Lihat</button>
+            </div>
+            <p id="activation-confirm-hint" class="activation-field-hint" aria-live="polite">Ketik ulang kata sandi yang sama.</p>
+            <div class="activation-action-row">
+              <button id="activation-back" class="button button-outline" type="button">Kembali</button>
+              <button id="activation-submit" class="button button-primary" type="submit" disabled>Aktifkan akun</button>
+            </div>
+          </div>
           <p id="activation-message" class="workspace-message" role="status" aria-live="polite" hidden></p>
-          <button id="activation-submit" class="button button-primary" type="submit">Aktifkan akun</button>
-          <button id="activation-cancel" class="button button-outline" type="button">Kembali ke login</button>
+          <button id="activation-cancel" class="button button-link activation-cancel" type="button">Kembali ke halaman login</button>
         </form>
-        <div class="login-help">Belum punya akun? Minta undangan administrator lembaga.
+        <div id="login-help" class="login-help">Belum punya akun? Minta undangan administrator lembaga.
           <button id="activation-open" type="button" class="button button-link">Sudah punya kode undangan? Aktifkan akun</button>
         </div>
       </div>
@@ -864,21 +898,30 @@
             <label for="pdk-list">Pilih periode penilaian</label>
             <select id="pdk-list"><option value="">Pilih persiapan…</option></select>
             <form id="pdk-create-form" class="maturity-edit-form" hidden>
-              <h3>Persiapan baru</h3>
-              <label for="pdk-title">Nama penilaian</label>
-              <input id="pdk-title" type="text" minlength="3" maxlength="200" required placeholder="Penilaian keamanan siber tahun 2026">
-              <label for="pdk-category">Kategori penilaian</label>
-              <select id="pdk-category" required>
-                <option value="">Pilih kategori</option>
-                <option value="1">Kategori 1 (80 indikator — belum diverifikasi)</option>
-                <option value="2">Kategori 2 (60 indikator — belum diverifikasi)</option>
+              <h3>Mulai penilaian keamanan siber</h3>
+              <p class="workspace-help">Nama dan periode tahunan sudah disiapkan. Anda cukup memastikan kategori dan kesesuaian datanya.</p>
+              <label for="pdk-category">1. Kategori BPR/BPRS</label>
+              <select id="pdk-category" required aria-describedby="pdk-category-help">
+                <option value="">Pilih kategori sesuai layanan BPR/BPRS</option>
+                <option value="1">Kategori 1 — 80 indikator</option>
+                <option value="2">Kategori 2 — 60 indikator</option>
               </select>
+              <p id="pdk-category-help" class="pdk-setup-explanation">Ada dua kategori pada instrumen penilaian ini. Pilih berdasarkan karakteristik layanan lembaga Anda.</p>
+              <label for="pdk-title">2. Nama penilaian</label>
+              <div class="pdk-title-suggestion">
+                <input id="pdk-title" type="text" minlength="3" maxlength="200" required
+                  placeholder="Nama akan disiapkan otomatis">
+                <button id="pdk-title-suggest" type="button" class="button button-outline">Gunakan saran</button>
+              </div>
+              <p class="pdk-setup-explanation">Nama dibuat otomatis berdasarkan tahun dan boleh diubah.</p>
+              <p class="pdk-form-caption">3. Periode penilaian</p>
               <div class="workspace-date-grid">
                 <div><label for="pdk-period-start">Awal periode</label><input id="pdk-period-start" type="date" required></div>
-                <div><label for="pdk-period-end">Akhir periode</label><input id="pdk-period-end" type="date" required></div>
+                <div><label for="pdk-period-end">Akhir periode / posisi penilaian</label><input id="pdk-period-end" type="date" required></div>
               </div>
-              <p class="workspace-help">Kategori dan periode dikunci setelah dibuat untuk menjaga jejak penilaian. Pilih sesuai kondisi institusi setelah dikonfirmasi oleh pejabat terkait.</p>
-              <button id="pdk-create-submit" type="submit" class="button button-primary">Buat dan buka</button>
+              <p id="pdk-period-help" class="pdk-setup-explanation">Default penilaian tahunan: posisi akhir Desember. Untuk penginian, tanggal dapat disesuaikan.</p>
+              <p class="workspace-help">Kategori dan periode tidak dapat diubah setelah dibuat. Data indikator dan kriteria masih draft internal, belum terverifikasi sebagai instrumen pelaporan resmi.</p>
+              <button id="pdk-create-submit" type="submit" class="button button-primary">Buat & mulai penilaian</button>
             </form>
           </div>
           <section id="pdk-detail" class="panel-card" aria-labelledby="pdk-detail-heading" hidden>
@@ -968,6 +1011,15 @@
                 </div>
                 <div class="pdk-answer-column">
                 <p class="pdk-section-step">02 / ISI HASIL PENGAMATAN</p>
+                <div class="pdk-guided-checklist" aria-label="Panduan pengisian indikator">
+                  <p class="pdk-guided-title">Yang perlu diselesaikan</p>
+                  <ol class="pdk-guided-steps">
+                    <li id="pdk-guide-rank" data-state="pending">Pilih peringkat sementara</li>
+                    <li id="pdk-guide-reason" data-state="pending">Tulis justifikasi</li>
+                    <li id="pdk-guide-save" data-state="pending">Simpan jawaban ke server</li>
+                  </ol>
+                  <p id="pdk-guide-next" class="pdk-guided-next" role="status" aria-live="polite"></p>
+                </div>
                 <label for="pdk-indicator-rank">Peringkat sementara (bukan nilai final)</label>
                 <select id="pdk-indicator-rank">
                   <option value="">Belum dipilih</option>
@@ -979,8 +1031,9 @@
                 </select>
                 <label for="pdk-indicator-justification">Justifikasi peringkat sementara</label>
                 <textarea id="pdk-indicator-justification" rows="5" maxlength="4000"
+                  aria-describedby="pdk-indicator-reason-counter"
                   placeholder="Dasar pemeriksaan terhadap kriteria dan kondisi BPR; minimal 20 karakter."></textarea>
-                <p class="workspace-help">Justifikasi minimal 20 karakter wajib saat memilih peringkat. Hanya untuk draft internal.</p>
+                <p id="pdk-indicator-reason-counter" class="workspace-help">Minimal 20 karakter. Hanya untuk draft internal.</p>
                 <details id="pdk-indicator-optional" class="pdk-optional-notes">
                   <summary>Catatan kerja dan rencana bukti (opsional)</summary>
                   <div class="pdk-optional-notes-fields">
@@ -992,6 +1045,7 @@
                       placeholder="Dokumen yang akan dikumpulkan; bukti aktual diunggah setelah simpan."></textarea>
                   </div>
                 </details>
+                <p class="workspace-help pdk-save-guidance">Untuk melampirkan bukti pada indikator ini, pilih <strong>Simpan indikator ini</strong> terlebih dahulu. <strong>Simpan & lanjut</strong> berpindah ke indikator berikutnya setelah jawaban lengkap.</p>
                 <div class="pdk-save-actions">
                   <button type="submit" id="pdk-indicator-save" class="button button-outline" hidden>
                     Simpan indikator ini

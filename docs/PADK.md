@@ -95,3 +95,13 @@ Aplikasi membandingkan kandidat pemetaan internal NusaRiksa dengan penanda pemba
 ## Navigasi cepat indikator
 
 Gunakan **Cari indikator** untuk menemukan nomor parameter atau kata kunci. Gunakan **Status pengisian** untuk menampilkan yang belum lengkap atau sudah lengkap untuk draft internal. Filter tidak mengubah status jawaban, tidak menyimpan data, dan tidak mempengaruhi skor. Indikator yang sedang dibuka tetap terlihat pada daftar meskipun tidak cocok dengan filter; tombol **Reset filter** mengembalikan seluruh indikator. Jika jawaban belum disimpan, aplikasi akan memperingatkan sebelum berpindah indikator, keluar dari halaman, logout, atau menutup tab. Status tersimpan hanya muncul setelah server mengonfirmasi penyimpanan.
+
+
+## Panduan pengisian per indikator
+
+Kolom jawaban menampilkan tiga tahapan yang berubah langsung saat petugas mengisi formulir: memilih peringkat sementara, menulis justifikasi minimal 20 karakter, dan menyimpan. Label **tersimpan di server** hanya muncul setelah permintaan penyimpanan berhasil dan revisi diperbarui; mengetik saja tidak dihitung sebagai progres. Peringkat serta justifikasi tetap merupakan **draft internal**, bukan hasil resmi. Bila ingin melampirkan bukti untuk indikator yang sedang dibuka, gunakan **Simpan indikator ini** sebelum berpindah dengan **Simpan & lanjut**. Petugas dengan akses baca melihat petunjuk pemeriksaan, bukan instruksi mengedit.
+
+
+## Mulai penilaian tanpa mengisi semuanya dari nol
+
+Ketika membuka **Buat persiapan**, NusaRiksa mengisi usulan nama penilaian dan rentang tahun kalender berjalan (1 Januari hingga 31 Desember) untuk mendukung penilaian tahunan posisi akhir Desember. Nama dan tanggal boleh diedit. Tombol **Gunakan saran** mengembalikan nama otomatis berdasarkan tahun akhir periode. Kategori **tidak dipilih otomatis** karena harus berdasarkan karakteristik layanan BPR/BPRS dan dikonfirmasi petugas. Kategori 1 berisi 80 indikator, Kategori 2 berisi 60 indikator. Penginian dapat menggunakan periode yang disesuaikan; rentang kalender pada formulir adalah metadata kertas kerja dan bukan klaim penetapan kewajiban pelaporan. Status instrumen tetap `DRAFT_UNVERIFIED`.

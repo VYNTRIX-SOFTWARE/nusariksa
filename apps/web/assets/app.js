@@ -21,11 +21,33 @@ import {createFindingManagementUI} from './ti-findings-ui.js';
 import {createVendorManagementUI} from './ti-vendors-ui.js';
 import {createRecoveryUI} from './ti-recovery-ui.js';
 import {createCrosswalkReviewUI} from './padk-crosswalk-review-ui.js';
+import {invitationCodeLooksValid,passwordReadiness} from './account-access-model.js';
 
 const $ = (id) => document.getElementById(id);
 const screens = {
   loading: $('loading-screen'), login: $('login-screen'), app: $('app-screen'),
 };
+// Visibility toggles do not retain, send, or log password values.
+function resetPasswordVisibility(inputId){
+  const input=$(inputId);
+  const button=document.querySelector('[data-password-toggle="'+inputId+'"]');
+  if(!input||!button)return;
+  input.type='password';button.textContent='Lihat';
+  button.setAttribute('aria-pressed','false');
+  button.setAttribute('aria-label','Tampilkan kata sandi');
+}
+for(const button of document.querySelectorAll('[data-password-toggle]')){
+  button.addEventListener('click',()=>{
+    const input=$(button.dataset.passwordToggle);
+    if(!input)return;
+    const showing=input.type==='password';
+    input.type=showing?'text':'password';
+    button.textContent=showing?'Sembunyikan':'Lihat';
+    button.setAttribute('aria-pressed',String(showing));
+    button.setAttribute('aria-label',showing?'Sembunyikan kata sandi':'Tampilkan kata sandi');
+    input.focus({preventScroll:true});
+  });
+}
 const state = {
   userId: null, permissions: [], assessments: [], load: 'loading', page: 'overview',
   year: 'all', status: 'all', search: '', sort: 'newest', workspaceOrigin:'assessments',
@@ -66,6 +88,7 @@ function cleanSession() {
   state.search = '';
   state.sort = 'newest';
   $('login-password').value = '';
+  resetPasswordVisibility('login-password');
   $('change-password-form').reset();
   $('change-password-dialog').close?.();
   $('detail-dialog').close?.();
@@ -461,6 +484,7 @@ $('login-form').addEventListener('submit',async(event)=>{
   submit.disabled=true;submit.firstChild.textContent='Memeriksa akun ';
   try {
     const result=await signIn(email,password);$('login-password').value='';
+    resetPasswordVisibility('login-password');
     if(result.mfaRequired){
       pendingMfaChallenge=result.challengeToken;
       $('login-form').hidden=true;
@@ -761,43 +785,92 @@ $('review-queue-table').addEventListener('click',(event)=>{
 });
 $('review-queue-reload').addEventListener('click',()=>void loadWorkspace());
 
+let activationBusy=false;
+function activationStep(step){
+  $('activation-token-step').hidden=step!==1;
+  $('activation-password-step').hidden=step!==2;
+  $('activation-step-label').textContent=step===1
+    ?'Langkah 1 dari 2 · Kode undangan':'Langkah 2 dari 2 · Kata sandi';
+  $('activation-step-progress').style.width=step===1?'50%':'100%';
+  $('activation-token').readOnly=step===2;
+  updateActivationReadiness();
+}
+function updateActivationReadiness(){
+  const value=passwordReadiness($('activation-password').value,$('activation-confirm').value);
+  $('activation-password-hint').textContent=value.longEnough
+    ?'Panjang kata sandi memenuhi syarat.':'Gunakan minimal 12 karakter.';
+  $('activation-confirm-hint').textContent=$('activation-confirm').value
+    ?value.match?'Kata sandi cocok.':'Kata sandi belum sama.'
+    :'Ketik ulang kata sandi yang sama.';
+  $('activation-submit').disabled=activationBusy||!value.ready
+    ||!invitationCodeLooksValid($('activation-token').value);
+}
+function activationMessage(value,kind='error'){
+  const root=$('activation-message');
+  root.hidden=!value;root.dataset.kind=kind;root.textContent=value??'';
+}
 function resetActivation(){
+  activationBusy=false;
   $('activation-form').hidden=true;
   $('activation-success').hidden=true;
   $('login-form').hidden=false;
+  $('login-welcome').hidden=false;
+  $('login-help').hidden=false;
   $('activation-form').reset();
-  $('activation-message').hidden=true;
-  $('activation-message').textContent='';
+  for(const id of ['activation-password','activation-confirm'])resetPasswordVisibility(id);
+  activationMessage('');
+  activationStep(1);
 }
 $('activation-open').addEventListener('click',()=>{
   resetMfaLogin();
   $('login-form').hidden=true;
+  $('login-welcome').hidden=true;
+  $('login-help').hidden=true;
   $('activation-form').hidden=false;
+  activationStep(1);
   $('activation-token').focus();
 });
-$('activation-cancel').addEventListener('click',resetActivation);
+$('activation-token').addEventListener('input',()=>activationMessage(''));
+$('activation-next').addEventListener('click',()=>{
+  const token=$('activation-token').value.trim();
+  if(!invitationCodeLooksValid(token)){
+    activationMessage('Kode undangan harus berisi 43 karakter yang valid. Salin ulang kode dari administrator.');
+    $('activation-token').focus();return;
+  }
+  $('activation-token').value=token;activationMessage('');
+  activationStep(2);$('activation-password').focus();
+});
+$('activation-back').addEventListener('click',()=>{
+  if(activationBusy)return;
+  activationMessage('');activationStep(1);$('activation-token').focus();
+});
+for(const id of ['activation-password','activation-confirm']){
+  $(id).addEventListener('input',()=>{updateActivationReadiness();activationMessage('');});
+}
+$('activation-cancel').addEventListener('click',()=>{
+  if(activationBusy)return;
+  resetActivation();$('login-email').focus();
+});
 $('activation-form').addEventListener('submit',async event=>{
   event.preventDefault();
+  if(activationBusy||$('activation-password-step').hidden)return;
   const token=$('activation-token').value.trim();
   const password=$('activation-password').value;
-  const confirm=$('activation-confirm').value;
-  const message=$('activation-message');
-  if(!/^[A-Za-z0-9_-]{43}$/.test(token)||password.length<12||password!==confirm){
-    message.hidden=false;message.dataset.kind='error';
-    message.textContent='Periksa kode undangan dan password (minimal 12 karakter, harus sama).';
-    return;
+  const confirmation=$('activation-confirm').value;
+  if(!invitationCodeLooksValid(token)||!passwordReadiness(password,confirmation).ready){
+    activationMessage('Periksa kode undangan dan kedua kata sandi sebelum mengaktifkan akun.');
+    updateActivationReadiness();return;
   }
-  $('activation-submit').disabled=true;
+  activationBusy=true;updateActivationReadiness();activationMessage('');
   try{
     const result=await requestJson('/auth/activate',{method:'POST',body:{token,password}});
     if(result.activated!==true)throw new TypeError('Aktivasi tidak valid');
-    resetActivation();
-    loginError('');
+    resetActivation();loginError('');
     $('activation-success').hidden=false;
+    $('login-email').focus();
   }catch{
-    message.hidden=false;message.dataset.kind='error';
-    message.textContent='Aktivasi gagal. Pastikan kode belum dipakai dan belum kedaluwarsa.';
-  }finally{$('activation-submit').disabled=false;}
+    activationMessage('Aktivasi belum berhasil. Periksa apakah kode undangan masih berlaku dan belum digunakan.');
+  }finally{activationBusy=false;updateActivationReadiness();}
 });
 $('activation-open').addEventListener('click',()=>$('activation-success').hidden=true);
 $('first-run-action').addEventListener('click',()=>{

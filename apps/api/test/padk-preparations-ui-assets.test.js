@@ -2,7 +2,8 @@ import assert from 'node:assert/strict';
 import {once} from 'node:events';
 import {test} from 'node:test';
 import {createServer} from '../src/server.js';
-import {validatePreparationInput,validatePreparationResponse,validatePadkReviewQueue}
+import {validatePreparationInput,validatePreparationResponse,validatePadkReviewQueue,
+  suggestPadkAnnualPreparation,suggestPadkTitleFromEnd}
   from '../../web/assets/padk-preparation-ui.js';
 
 test('PADK preparation page and module are served with CSP',async()=>{
@@ -23,6 +24,7 @@ test('PADK preparation page and module are served with CSP',async()=>{
       'activation-form','activation-token','activation-password',
       'activation-confirm','activation-success',
       'pdk-create-toggle','pdk-create-form','pdk-title','pdk-category',
+      'pdk-title-suggest','pdk-category-help','pdk-period-help',
       'pdk-period-start','pdk-period-end','pdk-list','pdk-detail',
       'pdk-note-form','pdk-notes','pdk-evidence-plan','pdk-save','pdk-history',
       'pdk-evidence-panel','pdk-evidence-upload','pdk-evidence-file',
@@ -35,7 +37,8 @@ test('PADK preparation page and module are served with CSP',async()=>{
       'pdk-criteria-list',
       'pdk-indicator-progress','pdk-indicator-prev','pdk-indicator-next',
       'pdk-indicator-search','pdk-indicator-status-filter','pdk-indicator-filter-reset',
-      'pdk-indicator-match-count',
+      'pdk-indicator-match-count','pdk-guide-rank','pdk-guide-reason',
+      'pdk-guide-save','pdk-guide-next','pdk-indicator-reason-counter',
       'pdk-indicator-next-pending','pdk-indicator-position',
       'pdk-indicator-state','pdk-indicator-title','pdk-indicator-save-state',
       'pdk-indicator-save-next','pdk-indicator-ready-hint','pdk-indicator-optional',
@@ -87,4 +90,16 @@ test('PADK review queue accepts only scoped submitted-draft metadata',()=>{
     {...sample,drafts:[{...sample.drafts[0],submittedAt:'not a date'}]},
     {...sample,drafts:Array(51).fill(sample.drafts[0])},
   ])assert.throws(()=>validatePadkReviewQueue(changed),TypeError);
+});
+
+test('saran PADK menggunakan tahun posisi Desember tanpa memilih kategori otomatis',()=>{
+  const recommendation=suggestPadkAnnualPreparation(new Date(2026,10,12));
+  assert.deepEqual(recommendation,{title:'Penilaian Maturitas Keamanan Siber — 2026',
+    periodStart:'2026-01-01',periodEnd:'2026-12-31'});
+  assert.equal(suggestPadkTitleFromEnd('2027-12-31'),
+    'Penilaian Maturitas Keamanan Siber — 2027');
+  assert.throws(()=>suggestPadkTitleFromEnd('next december'),TypeError);
+  assert.throws(()=>suggestPadkAnnualPreparation(new Date(NaN)),TypeError);
+  assert.deepEqual(validatePreparationInput({...recommendation,category:2}),
+    {...recommendation,category:2});
 });

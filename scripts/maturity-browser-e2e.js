@@ -270,6 +270,14 @@ async function runBrowser(base,db,fixture){
   try{
     await c.command('Page.navigate',{url:base+'/'});
     // A real first-use flow: admin invitation, user activation, role assignment, first PADK form.
+    // Password is masked by default and user can toggle visibility without submitting.
+    await until("document.getElementById('login-screen') && !document.getElementById('login-screen').hidden",
+      'login screen ready for visibility control');
+    assert.equal(await evalJs("document.getElementById('login-password').type"),'password');
+    await evalJs("document.querySelector('[data-password-toggle=login-password]').click()");
+    assert.equal(await evalJs("document.getElementById('login-password').type"),'text');
+    await evalJs("document.querySelector('[data-password-toggle=login-password]').click()");
+    assert.equal(await evalJs("document.getElementById('login-password').type"),'password');
     await login('admin');
     await until("!document.getElementById('admin-setup-menu').hidden",
       'administrator setup navigation');
@@ -289,12 +297,32 @@ async function runBrowser(base,db,fixture){
     await evalJs("document.getElementById('activation-open').click()");
     await until("!document.getElementById('activation-form').hidden",
       'account activation visible');
+    assert.equal(await evalJs("document.getElementById('login-welcome').hidden"),true);
+    assert.equal(await evalJs("document.getElementById('login-help').hidden"),true);
+    assert.equal(await evalJs("document.getElementById('activation-password-step').hidden"),true);
+    await evalJs("document.getElementById('activation-token').value='bad';"+
+      "document.getElementById('activation-next').click()");
+    assert.equal(await evalJs("document.getElementById('activation-message').textContent.includes('43 karakter')"),true);
+    assert.equal(await evalJs("document.getElementById('activation-token-step').hidden"),false);
     await evalJs("document.getElementById('activation-token').value="+JSON.stringify(inviteToken)+";"+
-      "document.getElementById('activation-password').value="+JSON.stringify(fixture.password)+";"+
-      "document.getElementById('activation-confirm').value="+JSON.stringify(fixture.password)+";"+
-      "document.getElementById('activation-form').requestSubmit()");
+      "document.getElementById('activation-next').click()");
+    assert.equal(await evalJs("document.getElementById('activation-token-step').hidden"),true);
+    assert.equal(await evalJs("document.getElementById('activation-password-step').hidden"),false);
+    assert.equal(await evalJs("document.getElementById('activation-submit').disabled"),true);
+    await evalJs("document.getElementById('activation-password').value="+JSON.stringify(fixture.password)+";"+
+      "document.getElementById('activation-password').dispatchEvent(new Event('input',{bubbles:true}));"+
+      "document.getElementById('activation-confirm').value='NotTheSamePassword';"+
+      "document.getElementById('activation-confirm').dispatchEvent(new Event('input',{bubbles:true}))");
+    assert.equal(await evalJs("document.getElementById('activation-submit').disabled"),true);
+    await evalJs("document.getElementById('activation-confirm').value="+JSON.stringify(fixture.password)+";"+
+      "document.getElementById('activation-confirm').dispatchEvent(new Event('input',{bubbles:true}));"+
+      "document.querySelector('[data-password-toggle=activation-password]').click()");
+    assert.equal(await evalJs("document.getElementById('activation-password').type"),'text');
+    assert.equal(await evalJs("document.getElementById('activation-submit').disabled"),false);
+    await evalJs("document.getElementById('activation-form').requestSubmit()");
     await until("!document.getElementById('activation-success').hidden",
       'invited staff activated');
+    assert.equal(await evalJs("document.getElementById('login-welcome').hidden"),false);
     await login('newstaff');
     await until("document.getElementById('dashboard-access') && !document.getElementById('dashboard-access').hidden",
       'staff blocked from assessment before role');
@@ -322,6 +350,20 @@ async function runBrowser(base,db,fixture){
       'first assessment empty state visible');
     await evalJs("document.getElementById('pdk-empty-start').click()");
     assert.equal(await evalJs("document.getElementById('pdk-create-form').hidden"),false);
+    assert.equal(await evalJs("document.getElementById('pdk-category').value"),'');
+    assert.equal(await evalJs("document.getElementById('pdk-period-end').value.endsWith('-12-31')"),true);
+    assert.equal(await evalJs("document.getElementById('pdk-period-start').value.endsWith('-01-01')"),true);
+    assert.equal(await evalJs("document.getElementById('pdk-title').value.includes('Penilaian Maturitas Keamanan Siber')"),true);
+    await evalJs("document.getElementById('pdk-category').value='2';"+
+      "document.getElementById('pdk-category').dispatchEvent(new Event('change',{bubbles:true}))");
+    assert.equal(await evalJs("document.getElementById('pdk-category-help').textContent.includes('60 indikator')"),true);
+    await evalJs("document.getElementById('pdk-title').value='Nama khusus lembaga';"+
+      "document.getElementById('pdk-title').dispatchEvent(new Event('input',{bubbles:true}));"+
+      "document.getElementById('pdk-period-end').value='2027-12-31';"+
+      "document.getElementById('pdk-period-end').dispatchEvent(new Event('change',{bubbles:true}))");
+    assert.equal(await evalJs("document.getElementById('pdk-title').value"),'Nama khusus lembaga');
+    await evalJs("document.getElementById('pdk-title-suggest').click()");
+    assert.equal(await evalJs("document.getElementById('pdk-title').value.endsWith('2027')"),true);
     await logout();
     await login('maker');
 
@@ -802,6 +844,10 @@ async function runBrowser(base,db,fixture){
     assert.equal(workpaper.hasEvidenceSha,true);
     // MVP usability: progress reflects saved rank+reason, navigate pending and protect unsaved edits.
     assert.equal(await evalJs("document.getElementById('pdk-indicator-progress').value"),1);
+    assert.equal(await evalJs("document.getElementById('pdk-guide-rank').dataset.state"),'done');
+    assert.equal(await evalJs("document.getElementById('pdk-guide-reason').dataset.state"),'done');
+    assert.equal(await evalJs("document.getElementById('pdk-guide-save').dataset.state"),'done');
+    assert.equal(await evalJs("document.getElementById('pdk-guide-next').textContent.includes('tersimpan')"),true);
     assert.equal(await evalJs("document.getElementById('pdk-indicator-count').textContent.includes('79 belum lengkap')"),true);
     await evalJs("document.getElementById('pdk-indicator-notes').value='Perubahan belum disimpan';"+
       "document.getElementById('pdk-indicator-notes').dispatchEvent(new Event('input',{bubbles:true}));"+
@@ -819,8 +865,10 @@ async function runBrowser(base,db,fixture){
     // Real save-and-next goes through PUT, updates the saved revision and chooses the next incomplete item.
     await evalJs("document.getElementById('pdk-indicator-justification').value="+
       JSON.stringify('Justifikasi sementara diperbaiki setelah pemeriksaan dokumen dan kontrol internal.')+";"+
-      "document.getElementById('pdk-indicator-justification').dispatchEvent(new Event('input',{bubbles:true}));"+
-      "document.getElementById('pdk-indicator-save-next').click()");
+      "document.getElementById('pdk-indicator-justification').dispatchEvent(new Event('input',{bubbles:true}))");
+    assert.equal(await evalJs("document.getElementById('pdk-guide-save').dataset.state"),'pending');
+    assert.equal(await evalJs("document.getElementById('pdk-guide-next').textContent.includes('Simpan & lanjut')"),true);
+    await evalJs("document.getElementById('pdk-indicator-save-next').click()");
     await until("document.getElementById('pdk-indicator-list').value==='2'",
       'save and continue advanced to next pending indicator');
     assert.equal(await evalJs("document.getElementById('pdk-indicator-state').dataset.kind"),'pending');
