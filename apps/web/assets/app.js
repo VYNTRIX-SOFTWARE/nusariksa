@@ -604,6 +604,7 @@ $('change-password-form').addEventListener('submit',async event=>{
   }finally{submit.disabled=false;}
 });
 $('logout-button').addEventListener('click',async()=>{
+  if(state.page==='padk-preparations'&&!padkPreparations.confirmLeave())return;
   const btn=$('logout-button');btn.disabled=true;
   try{
     await signOut();cleanSession();show('login');$('login-email').focus();

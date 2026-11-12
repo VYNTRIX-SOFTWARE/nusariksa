@@ -54,8 +54,23 @@ export function nextPendingDraftIndicator(items,currentNumber=0){
   const pending=items.filter(x=>!isDraftIndicatorComplete(x));
   return pending.find(x=>x.number>currentNumber)?.number??pending[0]?.number??null;
 }
+// Filtering changes navigation only; all indicators remain in the assessment.
+export function filterDraftIndicators(items,{query='',status='all'}={}){
+  if(!Array.isArray(items)||typeof query!=='string'
+    ||!['all','pending','complete'].includes(status))
+    throw new TypeError('Filter indikator tidak valid.');
+  const term=query.trim().toLocaleLowerCase('id-ID');
+  return items.filter(item=>{
+    if(status==='pending'&&isDraftIndicatorComplete(item))return false;
+    if(status==='complete'&&!isDraftIndicatorComplete(item))return false;
+    if(!term)return true;
+    if(/^[0-9]+$/.test(term))return String(item.number)===String(Number(term));
+    return String(item.workingSummary??'').toLocaleLowerCase('id-ID').includes(term);
+  });
+}
 export function createPadkIndicatorNoteUI({api,onAuthFailure,getUserId,getPermissions,canEditDraft=()=>true,onDraftSaved=()=>{}}){
-  const state={preparation:null,items:[],active:null,dirty:false,busy:false,request:0};
+  const state={preparation:null,items:[],active:null,dirty:false,busy:false,request:0,
+    search:'',filter:'all'};
   const evidenceUI=createPadkEvidenceUI({api,onAuthFailure,getUserId,getPermissions,canEditDraft});
   const owner=()=>Boolean(state.preparation
     &&state.preparation.ownerUserId===getUserId()
@@ -80,6 +95,10 @@ export function createPadkIndicatorNoteUI({api,onAuthFailure,getUserId,getPermis
     $('pdk-indicator-save').disabled=state.busy||!state.dirty;
     $('pdk-indicator-save-next').disabled=state.busy||!state.dirty;
     $('pdk-indicator-list').disabled=state.busy||!state.items.length;
+    $('pdk-indicator-search').disabled=state.busy||!state.items.length;
+    $('pdk-indicator-status-filter').disabled=state.busy||!state.items.length;
+    $('pdk-indicator-filter-reset').disabled=state.busy
+      ||(!state.search&&state.filter==='all');
     $('pdk-indicator-rank').disabled=!owner()||state.busy;
     for(const id of ['pdk-indicator-notes','pdk-indicator-evidence','pdk-indicator-justification']){
       $(id).readOnly=!owner()||state.busy;
@@ -121,7 +140,10 @@ export function createPadkIndicatorNoteUI({api,onAuthFailure,getUserId,getPermis
   }
   function clear(){
     state.request++;state.preparation=null;state.items=[];state.active=null;
-    state.dirty=false;state.busy=false;
+    state.dirty=false;state.busy=false;state.search='';state.filter='all';
+    $('pdk-indicator-search').value='';
+    $('pdk-indicator-status-filter').value='all';
+    $('pdk-indicator-match-count').textContent='';
     evidenceUI.clear();criteriaUI.clear();
     $('pdk-indicator-list').replaceChildren();
     $('pdk-indicator-form').reset();
@@ -131,14 +153,26 @@ export function createPadkIndicatorNoteUI({api,onAuthFailure,getUserId,getPermis
   }
   function choices(){
     const list=$('pdk-indicator-list'),selected=state.active?.number??'';
+    const matches=filterDraftIndicators(state.items,{query:state.search,status:state.filter});
     list.replaceChildren(new Option('Pilih indikator…',''));
-    for(const item of state.items){
+    // Keep the opened indicator selectable even when it does not match a filter.
+    const current=state.active;
+    if(current&&!matches.some(x=>x.number===current.number)){
+      list.add(new Option('No. '+current.number+' · Sedang dibuka (di luar filter)',
+        String(current.number)));
+    }
+    for(const item of matches){
       const label='No. '+item.number+' · '+item.workingSummary.slice(0,100)
         +(isDraftIndicatorComplete(item)?' · Lengkap (draft)'
           :item.revision>0?' · Belum lengkap':' · Belum diisi');
       list.add(new Option(label,String(item.number)));
     }
     list.value=selected?String(selected):'';
+    $('pdk-indicator-match-count').textContent=state.items.length===0
+      ?'Belum ada indikator yang dimuat.'
+      :matches.length===0?'Tidak ada indikator yang cocok. Ubah pencarian atau filter.'
+      :'Menampilkan '+matches.length+' dari '+state.items.length+
+        ' indikator. Pilih hasil pencarian untuk membukanya.';
   }
   function selectIndicator(number){
     const item=state.items.find(x=>x.number===Number(number));
@@ -215,6 +249,20 @@ export function createPadkIndicatorNoteUI({api,onAuthFailure,getUserId,getPermis
       return;
     selectIndicator(number);
   }
+  $('pdk-indicator-search').addEventListener('input',event=>{
+    state.search=event.target.value;
+    choices();render();
+  });
+  $('pdk-indicator-status-filter').addEventListener('change',event=>{
+    state.filter=event.target.value;
+    choices();render();
+  });
+  $('pdk-indicator-filter-reset').addEventListener('click',()=>{
+    state.search='';state.filter='all';
+    $('pdk-indicator-search').value='';
+    $('pdk-indicator-status-filter').value='all';
+    choices();render();$('pdk-indicator-search').focus();
+  });
   $('pdk-indicator-list').addEventListener('change',event=>{
     if(state.dirty&&!window.confirm('Catatan indikator belum disimpan. Abaikan perubahan?')){
       event.target.value=state.active?.number??'';return;

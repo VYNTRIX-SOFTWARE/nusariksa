@@ -404,6 +404,12 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
     finally{state.busy=false;render();}
   });
   $('pdk-history-refresh').addEventListener('click',()=>void history());
+  // Same unsaved-answer protection when a user reloads or closes the browser tab.
+  window.addEventListener('beforeunload',event=>{
+    if($('page-padk-preparations').hidden||(!state.dirty&&!indicatorUI.isDirty()))return;
+    event.preventDefault();
+    event.returnValue='';
+  });
   render();
   return {load:()=>list(),clear,sync:render,confirmLeave};
 }
