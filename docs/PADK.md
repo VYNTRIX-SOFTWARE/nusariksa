@@ -79,4 +79,7 @@ Ruang kerja indikator didahulukan daripada review dan simulasi. Di layar lebar, 
 
 ## Perbedaan redaksi parameter dan kriteria sumber
 
-Tabel 3 pada PDF salinan kerja memiliki beberapa perbedaan antara kolom parameter dan kriteria peringkat. Untuk nomor 2, 20, dan 21, panel kriteria menampilkan peringatan serta menonaktifkan tombol pemilihan peringkat langsung berdasarkan kriteria tersebut. Kriteria masih dapat dibaca sebagai bahan pemeriksaan. Catatan draft dan proses review internal tetap tersedia; ini **tidak** berarti redaksi sumber telah diperbaiki ataupun official scoring telah diaktifkan. Perbedaan harus ditindaklanjuti melalui pemeriksaan substansi terhadap PDF resmi dan review independen.
+Tabel 3 pada PDF salinan kerja memiliki beberapa perbedaan antara kolom parameter dan kriteria peringkat. Untuk nomor **2, 20, 21, 22, 27, 28, dan 29**, panel kriteria menampilkan peringatan serta menonaktifkan tombol pemilihan peringkat langsung berdasarkan kriteria tersebut. Halaman fisik PDF sumber yang diperiksa: **157, 167–168, dan 170–171**. Kriteria masih dapat dibaca sebagai bahan pemeriksaan. Catatan draft dan proses review internal tetap tersedia; ini **tidak** berarti redaksi sumber telah diperbaiki ataupun official scoring telah diaktifkan. Perbedaan harus ditindaklanjuti melalui pemeriksaan substansi terhadap PDF resmi dan review independen.
+
+
+Pemeriksaan sumber perlu mencakup **parameter dan seluruh lima kriteria** per baris, bukan hanya kriteria peringkat pertama. Rangkaian ketidaksesuaian pada nomor 20–22 dan 27–29 tidak boleh diselesaikan dengan memindahkan rank ke nomor lain tanpa keputusan substansi dan review independen.

@@ -21,7 +21,7 @@ export function validateDraftCriteriaResponse(data,{id,category,number}){
     ||!Object.hasOwn(data,'sourceConflict')
     ||!Array.isArray(data.criteria)||data.criteria.length!==5)
     throw new TypeError('Kriteria hasil ekstraksi tidak dapat dipercaya.');
-  const hasConflict=[2,20,21].includes(data.table3CandidateNumber);
+  const hasConflict=[2,20,21,22,27,28,29].includes(data.table3CandidateNumber);
   if(hasConflict){
     if(!data.sourceConflict||data.sourceConflict.code!=='PARAMETER_KRITERIA_TIDAK_SELARAS'
       ||typeof data.sourceConflict.message!=='string'

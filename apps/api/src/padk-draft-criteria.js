@@ -15,6 +15,10 @@ const SOURCE_CONFLICTS=new Map([
   [2,'Kriteria peringkat 1 membahas strategi keamanan siber, sedangkan parameter nomor 2 membahas risk appetite (halaman fisik PDF 157).'],
   [20,'Kriteria peringkat membahas kaji ulang manajemen risiko, sedangkan parameter nomor 20 membahas audit intern TI (halaman fisik PDF 167).'],
   [21,'Kriteria peringkat membahas program budaya siber, sedangkan parameter nomor 21 membahas kaji ulang manajemen risiko (halaman fisik PDF 167).'],
+  [22,'Kriteria peringkat membahas pengukuran kerentanan, sedangkan parameter nomor 22 membahas budaya dan kesadaran keamanan siber (halaman fisik PDF 167–168).'],
+  [27,'Kriteria peringkat membahas pengujian keamanan, sedangkan parameter nomor 27 membahas Business Impact Analysis/BIA (halaman fisik PDF 170).'],
+  [28,'Kriteria peringkat membahas kaji ulang kebijakan keamanan siber, sedangkan parameter nomor 28 membahas vulnerability assessment dan penetration testing (halaman fisik PDF 170–171).'],
+  [29,'Kriteria peringkat membahas identifikasi risiko dan risk register, sedangkan parameter nomor 29 membahas kaji ulang kebijakan keamanan siber (halaman fisik PDF 171).'],
 ]);
 const fail=(message)=>{throw new PadkPreparationError(503,message);};
 

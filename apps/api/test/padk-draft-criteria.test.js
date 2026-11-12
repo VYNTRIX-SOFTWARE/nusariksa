@@ -54,7 +54,7 @@ test('category 2 validation requires explicit candidate-mapping risk',async()=>{
 
 test('konflik sumber memblokir pemilihan langsung dari kriteria',async()=>{
   const rows=await readExtractedTable3();
-  for(const n of [2,20,21]){
+  for(const n of [2,20,21,22,27,28,29]){
     const context={id:ID,category:1,number:n};
     const value={...BASE,indicatorNumber:n,table3CandidateNumber:n,
       table3PdfPages:rows[n-1].pdfPages,criteria:rows[n-1].ranks,
