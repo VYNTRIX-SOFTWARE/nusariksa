@@ -128,7 +128,7 @@ class Cdp {
   }
   close(){this.socket.close();}
 }
-async function launchChromium(){
+async function launchChromiumAttempt(){
   const profile=await mkdtemp(join(tmpdir(),'nusariksa-chromium-'));
   const child=spawn(chromePath(),[
     '--headless=new','--no-sandbox','--disable-dev-shm-usage',
@@ -142,7 +142,7 @@ async function launchChromium(){
       const contents=await readFile(join(profile,'DevToolsActivePort'),'utf8');
       const value=Number(contents.split('\n')[0]);
       return Number.isSafeInteger(value)&&value>0?value:null;
-    },'Chromium DevToolsActivePort');
+    },'Chromium DevToolsActivePort',20000);
     const target=await waitFor(async()=>{
       const response=await fetch('http://127.0.0.1:'+port+'/json/list');
       const pages=await response.json();
@@ -159,8 +159,24 @@ async function launchChromium(){
     return {cdp,child,profile};
   }catch(error){
     child.kill('SIGKILL');
+    await delay(150);
+    await rm(profile,{recursive:true,force:true}).catch(()=>{});
     throw new Error(error.message+'\n'+stderr);
   }
+}
+async function launchChromium(){
+  let previousError;
+  for(let attempt=1;attempt<=2;attempt++){
+    try{return await launchChromiumAttempt();}
+    catch(error){
+      previousError=error;
+      if(attempt===1){
+        process.stderr.write('Chromium belum berhasil dimulai; mengulangi peluncuran dengan profil baru.\n');
+        await delay(650);
+      }
+    }
+  }
+  throw previousError;
 }
 async function stopChromium(browser){
   if(!browser)return;
@@ -393,6 +409,16 @@ async function runBrowser(base,db,fixture){
     await until("!document.getElementById('ti-recovery-create').hidden",'recovery create action');
     await evalJs("document.getElementById('ti-recovery-create').click()");
     await until("document.getElementById('ti-recovery-dialog').open",'recovery plan dialog');
+    assert.equal(await evalJs("document.querySelectorAll('#ti-recovery-form .recovery-form-section').length"),4);
+    assert.equal(await evalJs("document.getElementById('ti-recovery-field-rto').value"),'');
+    assert.equal(await evalJs("document.getElementById('ti-recovery-field-rpo').value"),'');
+    assert.equal(await evalJs("document.getElementById('ti-recovery-field-owner').value"),'');
+    await evalJs("document.getElementById('ti-recovery-template').value='cbs';"+
+      "document.getElementById('ti-recovery-use-template').click()");
+    assert.equal(await evalJs("document.getElementById('ti-recovery-field-service').value.includes('Core Banking')"),true);
+    assert.equal(await evalJs("document.getElementById('ti-recovery-field-rto').value"),'');
+    assert.equal(await evalJs("document.getElementById('ti-recovery-field-rpo').value"),'');
+    assert.equal(await evalJs("document.getElementById('ti-recovery-field-owner').value"),'');
     await evalJs("document.getElementById('ti-recovery-field-plan-code').value='BCP-BROWSER-01';"+
       "document.getElementById('ti-recovery-field-service').value='Layanan CBS dan transaksi';"+
       "document.getElementById('ti-recovery-field-scenario').value='Server basis data utama tidak tersedia selama jam layanan.';"+
@@ -408,18 +434,28 @@ async function runBrowser(base,db,fixture){
       'recovery plan persisted');
     const recoveryRow=await db.query("SELECT id,rto_minutes,rpo_minutes FROM ti_recovery_plans WHERE plan_code='BCP-BROWSER-01'");
     assert.equal(recoveryRow.rowCount,1);assert.equal(recoveryRow.rows[0].rto_minutes,180);
+    assert.equal(await evalJs("document.getElementById('ti-recovery-detail-summary').textContent.includes('Layanan CBS dan transaksi')"),true);
+    assert.equal(await evalJs("document.querySelectorAll('#ti-recovery-values .recovery-detail-section').length"),3);
+    assert.equal(await evalJs("document.querySelector('#ti-recovery-list .recovery-record-action')!==null"),true);
     await evalJs("document.getElementById('ti-recovery-add-exercise').click()");
     await until("document.getElementById('ti-recovery-exercise-dialog').open",'recovery exercise dialog');
+    assert.equal(await evalJs("document.querySelectorAll('#ti-recovery-exercise-form .recovery-form-section').length"),3);
+    assert.equal(await evalJs("document.getElementById('ti-recovery-test-date').value"),'');
+    assert.equal(await evalJs("document.getElementById('ti-recovery-test-type').value"),'');
+    assert.equal(await evalJs("document.getElementById('ti-recovery-test-outcome').value"),'');
+    assert.equal(await evalJs("document.getElementById('ti-recovery-exercise-form').checkValidity()"),false);
     await evalJs("document.getElementById('ti-recovery-test-date').value='2026-01-15';"+
       "document.getElementById('ti-recovery-test-type').value='restore';"+
       "document.getElementById('ti-recovery-test-rto').value='120';"+
       "document.getElementById('ti-recovery-test-rpo').value='30';"+
       "document.getElementById('ti-recovery-test-outcome').value='passed';"+
+      "document.getElementById('ti-recovery-test-outcome').dispatchEvent(new Event('change'));"+
       "document.getElementById('ti-recovery-test-summary').value='Data sintetis dipulihkan dan diuji melalui prosedur validasi.';"+
       "document.getElementById('ti-recovery-test-evidence').value='BA-UJI-BROWSER-01';"+
       "document.getElementById('ti-recovery-exercise-form').requestSubmit()");
     await until("document.getElementById('ti-recovery-exercises').textContent.includes('BA-UJI-BROWSER-01')",
       'recovery exercise persisted');
+    assert.equal(await evalJs("document.getElementById('ti-recovery-next-step').textContent.includes('1 catatan pengujian')"),true);
     assert.equal((await db.query("SELECT count(*)::int n FROM ti_recovery_exercises WHERE plan_id=$1",
       [recoveryRow.rows[0].id])).rows[0].n,1);
     await evalJs("window.confirm=()=>true;document.getElementById('ti-recovery-archive').click()");

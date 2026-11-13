@@ -218,9 +218,20 @@ Untuk bantuan instalasi, akun, atau konfigurasi server, hubungi administrator Nu
 
 ## Rencana Pemulihan TI (BCP/DRP)
 
-Buka **Rencana Pemulihan TI**, lalu pilih **Tambah rencana**. Isi layanan yang terdampak, skenario gangguan, dampak bisnis, kriteria aktivasi, PIC utama dan pengganti, serta langkah pemulihan. RTO dan RPO ditulis dalam menit sesuai target yang telah ditetapkan bank; kosongkan apabila belum ditentukan. Catat komunikasi, ketergantungan, lokasi backup, dan bukti sesuai dokumen yang tersedia.
+Buka **Rencana Pemulihan TI**, lalu pilih **Tambah rencana**. Daftar rencana menampilkan kode, layanan, PIC, status, target RTO/RPO, dan jumlah pengujian yang tercatat. Gunakan pencarian dan **Reset filter** bila diperlukan. Jumlah hasil menunjukkan isi halaman yang sedang ditampilkan, bukan total seluruh rencana.
 
-Pilih rencana untuk melihat detailnya. Gunakan **Catat pengujian** setelah simulasi atau uji teknis benar-benar dilakukan, lalu isi tanggal, metode, hasil, waktu aktual dan referensi bukti. Catatan pengujian tidak dapat diubah; bila ada kekeliruan, tambahkan catatan pengujian yang benar dengan penjelasan. Gunakan **Arsipkan** untuk menyimpan rencana yang tidak lagi digunakan tanpa menghapus histori. Status **Dikelola** hanya status pencatatan dalam aplikasi dan tidak menggantikan persetujuan bank.
+Formulir rencana dibagi menjadi **empat kelompok pekerjaan**:
+
+1. **Layanan dan gangguan:** pilih **Kerangka contoh** bila relevan lalu klik **Gunakan kerangka**. Contoh hanya membantu teks nama layanan, skenario, dampak, kriteria aktivasi, dan urutan langkah pemulihan. Periksa seluruh contoh berdasarkan keadaan dan kebijakan bank. Petugas dapat menulis rencana sendiri tanpa contoh. Kode rencana dapat disarankan dengan **Buat saran kode** dan harus unik sebelum disimpan.
+2. **PIC dan sasaran pemulihan:** tetapkan PIC utama/pengganti. Isi **RTO** (target lama waktu memulihkan layanan) dan **RPO** (batas toleransi kehilangan data diukur dalam waktu) dalam satuan menit **hanya jika ditetapkan bank**. Keduanya independen; kolom kosong berarti **belum ditetapkan**, bukan nol menit atau tidak ada risiko.
+3. **Prosedur pemulihan:** isi langkah pemulihan sesuai urutan kerja yang disetujui. Masukkan komunikasi, eskalasi, serta ketergantungan layanan bila sudah ditentukan.
+4. **Dokumen pendukung:** catat referensi backup dan bukti nyata bila tersedia. Status **Draft** berarti masih disusun; **Dikelola** hanya status pencatatan, bukan pengesahan oleh Direksi maupun jaminan siap pulih.
+
+Pilih salah satu rencana untuk melihat detailnya dalam tiga bagian: layanan/aktivasi, PIC/target, serta prosedur/dokumen. Teks **Langkah berikutnya** membantu mengingat apakah rencana belum diuji atau sudah memiliki riwayat pengujian.
+
+Gunakan **Catat pengujian** hanya setelah pengujian sungguh dilaksanakan. Petugas **wajib memilih sendiri tanggal, metode, dan hasil pengujian**; NusaRiksa tidak memberikan hasil **Berhasil** secara otomatis. RTO/RPO aktual hanya diisi bila benar-benar terukur. Untuk hasil **Berhasil**, diperlukan bukti dan RTO aktual; jika target RPO pada rencana ada, RPO aktual juga wajib diukur. Pengujian berhasil harus memenuhi target yang ditetapkan. Riwayat pengujian bersifat permanen; koreksi ditambahkan sebagai catatan baru, tidak mengubah catatan lama.
+
+Gunakan **Arsipkan** untuk rencana yang tidak lagi dipakai tanpa menghapus jejak perubahannya. **NusaRiksa tidak menjalankan prosedur pemulihan maupun mengesahkan kesiapan layanan secara otomatis.**
 
 
 ## Katalog TI bawaan dengan referensi POJK
