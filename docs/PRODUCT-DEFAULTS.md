@@ -44,3 +44,7 @@ Semua paket standar harus memiliki kode stabil, versi immutable setelah terbit, 
 ## Kriteria UAT
 
 UAT pengguna baru sukses jika dari login mereka dapat memilih penilaian yang siap pakai, menyimpan jawaban pertama dalam beberapa langkah tanpa membuka halaman metodologi/katalog kontrol, meninjau status penyimpanan, mengirim review internal, dan mengunduh hasil tanpa mencari dokumentasi teknis.
+
+## Standar keluaran dokumen (Report Engine V2)
+
+Dua alur yang sudah memiliki ekspor PDF internal menggunakan komponen layout bersama dengan header/footer, pagination, tipografi, ringkasan yang dapat ditelusuri, dan detail data tersimpan. Laporan hanya boleh menampilkan informasi yang tersedia di snapshot server; tidak boleh menambahkan hasil, temuan, tanda tangan, rencana aksi aktual, atau skor yang tidak ada. Ini berlaku untuk seluruh modul baru. Tidak boleh menyamakan **Asesmen TI operasional** (26 kontrol NusaRiksa) dengan instrumen **PADK maturitas keamanan siber** (kategori 1/2, 80/60 indikator). PADK tetap berstatus `DRAFT_UNVERIFIED` sampai regulator release gate ditutup secara formal setelah verifikasi.

@@ -861,7 +861,7 @@ async function runBrowser(base,db,fixture){
       "return {status:r.status,marker:bytes.startsWith('%PDF-1.4')}})()");
     assert.equal(evidenceDownloaded.status,200);
     assert.equal(evidenceDownloaded.marker,true);
-    const workpaper=await evalJs("(async()=>{const link=document.getElementById('pdk-workpaper-download');const r=await fetch(link.href);const pdf=await r.text();return {visible:!link.hidden,status:r.status,type:r.headers.get('content-type'),disposition:r.headers.get('content-disposition'),hasPdf:pdf.startsWith('%PDF-1.4'),hasSavedNote:pdf.includes('Validasi pemilik kontrol dan kebijakan.'),hasDraftRank:pdf.includes('Peringkat sementara: 2'),hasReason:pdf.includes('Penilaian sementara: dokumen ada'),hasDraftMark:pdf.includes('BUKAN HASIL PENILAIAN PADK'),partial:pdf.includes('Komposit SIMULASI: BELUM TERSEDIA'),hasEvidenceSha:pdf.includes('SHA-256')}})()");
+    const workpaper=await evalJs("(async()=>{const link=document.getElementById('pdk-workpaper-download');const r=await fetch(link.href);const pdf=await r.text();return {visible:!link.hidden,status:r.status,type:r.headers.get('content-type'),disposition:r.headers.get('content-disposition'),hasPdf:pdf.startsWith('%PDF-1.4'),hasSavedNote:pdf.includes('Validasi pemilik kontrol dan kebijakan.'),hasDraftRank:pdf.includes('Peringkat sementara: 2'),hasReason:pdf.includes('Penilaian sementara: dokumen ada'),hasDraftMark:pdf.includes('BUKAN HASIL PENILAIAN PADK'),partial:pdf.includes('KOMPOSIT SIMULASI: BELUM TERSEDIA'),hasEvidenceSha:pdf.includes('SHA-256')}})()");
     assert.equal(workpaper.visible,true);
     assert.equal(workpaper.status,200);
     assert.equal(workpaper.type,'application/pdf');
@@ -926,7 +926,7 @@ async function runBrowser(base,db,fixture){
       'PADK five-domain composite preview from saved ranks');
     assert.equal(await evalJs("document.getElementById('pdk-score-composite').textContent.includes('BELUM SAH')"),true);
     const draftPdf=await evalJs("(async()=>{const r=await fetch(document.getElementById('pdk-workpaper-download').href);"+
-      "const text=await r.text();return {status:r.status,composite:text.includes('Komposit SIMULASI: 2.00'),"+
+      "const text=await r.text();return {status:r.status,composite:text.includes('KOMPOSIT SIMULASI: 2.00'),"+
       "warning:text.includes('BUKAN HASIL PENILAIAN PADK')}})()");
     assert.equal(draftPdf.status,200);
     assert.equal(draftPdf.composite,true);
