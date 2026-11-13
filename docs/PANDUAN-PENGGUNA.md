@@ -85,14 +85,20 @@ Anda dapat membuka **Riwayat perubahan aset** untuk melihat catatan pembaruan.
 
 ## 5. Mencatat dan memantau risiko TI
 
-Buka **Register Risiko TI** untuk mendokumentasikan risiko terhadap layanan, proses, atau aset lembaga.
+Buka **Register Risiko TI**. Setiap instalasi NusaRiksa menyediakan **24 skenario risiko umum dalam PostgreSQL**, termasuk catatan **daftar awal lembaga berstatus Belum dinilai**. Ini bukan hasil asesmen, kejadian faktual, atau rating risiko lembaga; jangan menghitungnya sebagai risiko yang sudah dinilai.
 
-1. Klik **Tambah risiko**.
-2. Isi kode, judul, dan skenario risiko. Jelaskan apa yang dapat terjadi serta dampaknya.
-3. Pilih aset terkait jika risiko berkaitan dengan perangkat atau aplikasi tertentu. Untuk risiko proses, aset boleh dikosongkan.
-4. Nilai **kemungkinan** dan **dampak** pada skala 1–5.
-5. Isi PIC, tanggal target, dan rencana mitigasi.
-6. Simpan risiko.
+Pada tab **Risiko Lembaga**, gunakan daftar awal untuk memulai dari skenario yang sudah tersedia. Klik **Nilai dan catat** untuk mengisi kode, nama, dan skenario secara otomatis dalam formulir; sesuaikan redaksi bila perlu. Petugas masih harus menetapkan kemungkinan, dampak, PIC, dan tanggal target berdasarkan kondisi aktual. Setelah disimpan, data berpindah menjadi risiko lembaga yang sudah dinilai dan mendapat audit trail. Klik **Tidak relevan** untuk mengesampingkan contoh tanpa menghapus atau menciptakan nilai fiktif.
+
+Tab **Referensi Risiko TI** menampilkan seluruh katalog dari database, termasuk potensi dampak, hal yang perlu diperiksa dan opsi pengendalian. Referensi yang dinyatakan tidak relevan dapat dikembalikan ke daftar awal. Skenario yang telah dipakai tidak dapat diadopsi lagi untuk menghindari duplikasi dari referensi yang sama.
+
+**Penting:** tidak ada kemungkinan, dampak, hasil residual, PIC, mitigasi, atau tanggal target yang otomatis dianggap nyata hanya karena skenario sudah disediakan. Nilai faktual harus diputuskan petugas.
+1. Klik **Tambah risiko**. Pada bagian identifikasi, pilih contoh dari **Pustaka contoh risiko BPR/BPRS** bila relevan, lalu klik **Gunakan contoh**, atau tulis sendiri.
+2. Periksa dan sesuaikan nama serta skenario dengan keadaan bank. Contoh bukan pernyataan bahwa risiko tersebut telah terjadi atau sudah dinilai.
+3. Isi kode sendiri atau pilih **Buat saran kode**, lalu periksa keunikannya. Pilih aset terkait jika memang relevan.
+4. **Pilih sendiri** kemungkinan dan dampak (skala 1–5). Formulir baru tidak mengisi 3×3 atau nilai lain. Skor inheren hanya muncul sesudah kedua nilai dipilih.
+5. Buka panel **Penilaian risiko residual** hanya jika pengendalian sudah dievaluasi. Kedua nilai residual boleh dibiarkan kosong.
+6. Isi PIC, target penyelesaian, status, dan rencana mitigasi sesuai informasi faktual. Target tanggal tidak ditetapkan otomatis.
+7. Klik **Simpan risiko**, kemudian periksa kartu register dan detail penilaian serta tindak lanjutnya.
 
 NusaRiksa menghitung **risiko inheren** dari kemungkinan × dampak. Tingkat yang ditampilkan adalah acuan kerja internal:
 

@@ -15,7 +15,7 @@ test('migrasi dapat dijalankan ulang tanpa mengubah riwayat', {
     const migrations = await pool.query(
       'SELECT id, checksum FROM schema_migrations ORDER BY id',
     );
-    assert.equal(migrations.rowCount, 32);
+    assert.equal(migrations.rowCount, 33);
     assert.deepEqual(migrations.rows.map((row) => row.id), [
       '0001_create_institutions.sql',
       '0002_create_identity_tables.sql',
@@ -49,6 +49,7 @@ test('migrasi dapat dijalankan ulang tanpa mengubah riwayat', {
       '0030_create_ti_recovery_plans.sql',
       '0031_seed_referenced_bpr_catalog.sql',
       '0032_seed_nusariksa_internal_maturity.sql',
+      '0033_seed_risk_reference_register.sql',
     ]);
     assert.match(migrations.rows[0].checksum.trim(), /^[a-f0-9]{64}$/);
 
