@@ -731,6 +731,79 @@ h1,h2,p{margin-top:0}h1,h2{letter-spacing:-.027em}
 @media(max-width:700px){.ti-risk-filters{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:580px){.ti-risk-filters,.ti-risk-two-col{grid-template-columns:1fr}}
 
+/* Register risiko: daftar terbaca, penilaian eksplisit, dan referensi skenario. */
+.risk-list-summary{font-size:12px;line-height:1.7;color:#626D80;margin:0 0 14px}
+.risk-record{display:grid;gap:11px;padding:17px 19px}
+.risk-record-head,.risk-detail-summary{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.risk-record-title,.risk-detail-heading{display:grid;gap:5px;min-width:0}
+.risk-record-title strong{font-size:15px;line-height:1.5;color:#293047}
+.risk-record-code{font-size:11px;color:#667087;letter-spacing:.045em;font-weight:750}
+.risk-record-meta{display:flex;gap:6px 16px;flex-wrap:wrap;font-size:12px;color:#637086}
+.risk-record-action{justify-self:start;font-size:12px}
+.risk-level-pill{padding:5px 10px;border-radius:99px;background:#EDF0F6;color:#3E4E65;white-space:nowrap;font-size:11px;font-weight:750}
+.risk-level-low{background:#E7F5EC;color:#24664A}
+.risk-level-medium{background:#FFF1DE;color:#855619}
+.risk-level-high{background:#FCE9E4;color:#96503C}
+.risk-level-critical{background:#FAE5E7;color:#9A253A}
+.risk-empty-state{padding:28px;text-align:center;border:1px dashed #CBD2DF;border-radius:12px;background:#F9FAFD}
+.risk-empty-state p{color:#626E82;line-height:1.65;font-size:13px;margin:9px 0 0}
+.risk-detail-summary{margin:8px 0 22px}
+.risk-detail-heading h3{font-size:18px;margin:0}
+.risk-detail-heading p{font-size:12px;color:#657083;margin:0}
+.risk-detail-layout{display:grid;gap:21px}
+.risk-detail-section h3{font-size:14px;color:#293448;margin:0 0 12px}
+.risk-detail-section dl{margin:0}
+#ti-risks-dialog{width:min(780px,calc(100vw - 24px))}
+#ti-risks-form{background:#FFF;border:0;padding:0;margin:0;gap:18px}
+#ti-risks-form .risk-form-intro{font-size:13px;color:#5D687D;line-height:1.65;margin:0}
+.risk-form-section{display:grid;gap:12px;margin:0;padding:19px;background:#FBFCFE;border:1px solid #E2E6F0;border-radius:12px;min-width:0}
+.risk-form-section legend{font-weight:750;font-size:14px;color:#303C52;padding:0 8px}
+.risk-field-help{font-size:12px;line-height:1.65;color:#667186;margin:0}
+.risk-reference-panel{display:grid;gap:10px;padding:14px;background:#EFF3FA;border:1px solid #DCE4F2;border-radius:10px}
+.risk-reference-panel .button,.risk-inline-action .button{justify-self:start;font-size:12px}
+.risk-inline-action{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.risk-optional-details{border:1px solid #DCE2EC;border-radius:9px;padding:12px 14px;background:#FFF}
+.risk-optional-details summary{cursor:pointer;color:#3B4564;font-weight:750;font-size:13px}
+.risk-optional-details[open]{display:grid;gap:13px}
+.risk-optional-details[open] summary{margin-bottom:8px}
+.risk-form-actions{position:sticky;bottom:0;background:#FFF;padding:14px 0 3px;border-top:1px solid #E1E5ED;z-index:2}
+@media(max-width:680px){.risk-record-head,.risk-detail-summary{flex-direction:column}}
+
+/* Data awal yang tersimpan di bank: belum dinilai sampai diverifikasi petugas. */
+.risk-starting-panel{display:grid;gap:14px;margin-bottom:18px}
+.risk-starting-list{display:grid;gap:9px;max-height:650px;overflow-y:auto;padding:2px 4px 2px 1px}
+.risk-starting-item{border:1px solid #E0E5F0;border-radius:10px;background:#FBFCFF;
+  padding:13px 16px;display:flex;justify-content:space-between;align-items:center;gap:18px}
+.risk-starting-content{display:grid;gap:4px;min-width:0}
+.risk-starting-content strong{font-size:14px;color:#29374C}
+.risk-starting-content p{font-size:12px;color:#58677B;line-height:1.6;margin:0}
+.risk-starting-actions{display:flex;gap:8px;flex-wrap:wrap;flex-shrink:0}
+.risk-starting-actions .button{font-size:12px;padding:8px 12px}
+.risk-reference-status{font-size:11px;font-weight:700;color:#50617C}
+@media(max-width:760px){.risk-starting-item{align-items:stretch;flex-direction:column}
+  .risk-starting-actions .button{flex:1}}
+/* Referensi risiko tersedia langsung dari halaman register, tanpa mengisi risiko faktual. */
+.risk-pane-nav{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 18px}
+.risk-pane-nav .button[aria-pressed="true"]{background:#353053;color:#FFF;border-color:#353053}
+.risk-reference-catalog{display:grid;gap:19px}
+.risk-reference-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:18px}
+.risk-reference-heading h2{font-size:18px;margin:0 0 8px}
+.risk-reference-heading p{font-size:13px;line-height:1.7;color:#5B687D;margin:0;max-width:76ch}
+.risk-reference-count{font-size:12px;color:#485472;background:#F0F2F8;border-radius:99px;padding:6px 12px;white-space:nowrap}
+.risk-reference-filters{display:grid;grid-template-columns:minmax(200px,2fr) minmax(180px,1fr);gap:14px}
+.risk-reference-filters label{display:grid;gap:6px;font-size:12px;font-weight:700;color:#48536A}
+.risk-reference-filters input,.risk-reference-filters select{width:100%;border:1px solid #D2D8E6;border-radius:8px;padding:10px;font:inherit;min-width:0}
+.risk-reference-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.risk-reference-item{border:1px solid #E1E5EF;border-radius:12px;padding:17px;background:#FFF;display:grid;align-content:start;gap:10px}
+.risk-reference-item h3{margin:0;color:#283248;font-size:15px;line-height:1.5}
+.risk-reference-item p{font-size:12px;line-height:1.65;color:#515D70;margin:0}
+.risk-reference-meta{font-size:11px;color:#606E83;font-weight:700}
+.risk-reference-item dl{margin:0;display:grid;gap:8px}
+.risk-reference-item dt{font-size:11px;color:#647087;font-weight:700}
+.risk-reference-item dd{font-size:12px;line-height:1.65;color:#3E4C60;margin:3px 0 0}
+.risk-reference-item button{justify-self:start;margin-top:4px}
+.risk-reference-empty{grid-column:1/-1;background:#F9FAFD;border:1px dashed #CBD1DD;border-radius:10px;padding:20px;color:#606B7D;font-size:13px}
+@media(max-width:760px){.risk-reference-list,.risk-reference-filters{grid-template-columns:1fr}.risk-reference-heading{flex-direction:column}}
 /* Daftar insiden dan kronologi penanganan. */
 .ti-incident-advisory{padding:12px 15px;border:1px solid #E4DCCB;border-left:3px solid #AD8B4D;
   background:#FDFBF6;color:#6B5940;border-radius:8px;font-size:12px;line-height:1.65;margin:0 0 16px}

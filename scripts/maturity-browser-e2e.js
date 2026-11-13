@@ -560,17 +560,52 @@ async function runBrowser(base,db,fixture){
     const riskAsset=(await db.query("SELECT id FROM ti_assets WHERE asset_code='SRV-RISK-E2E'")).rows[0].id;
     await until("!document.getElementById('risk-menu').hidden",'risk register navigation');
     await evalJs("document.getElementById('risk-menu').click()");
+    await until("!document.getElementById('ti-risks-register-panel').hidden",
+      'bank starter register shown first');
+    await until("document.querySelectorAll('#ti-risk-starting-list .risk-starting-item').length===24",
+      '24 saved bank starter entries');
+    assert.equal(await evalJs("document.getElementById('ti-risk-reference-panel').hidden"),true);
+    assert.equal((await db.query("SELECT count(*)::int AS n FROM ti_risk_reference_register")).rows[0].n,24);
+    assert.equal((await db.query("SELECT count(*)::int AS n FROM ti_risks")).rows[0].n,0);
+    await evalJs("document.querySelector('#ti-risk-starting-list .risk-starting-item button').click()");
+    await until("document.getElementById('ti-risks-dialog').open",
+      'starter entry opens an unscored record');
+    assert.equal(await evalJs("document.getElementById('ti-risk-title').value.length>0"),true);
+    assert.equal(await evalJs("document.getElementById('ti-risk-code').value.startsWith('RSK-')"),true);
+    assert.equal(await evalJs("document.getElementById('ti-risk-likelihood').value"),'');
+    assert.equal(await evalJs("document.getElementById('ti-risk-impact').value"),'');
+    assert.equal(await evalJs("document.getElementById('ti-risk-pic').value"),'');
+    assert.equal(await evalJs("document.getElementById('ti-risk-due-date').value"),'');
+    await evalJs("document.getElementById('ti-risks-cancel').click()");
+    assert.equal((await db.query("SELECT count(*)::int AS n FROM ti_risks")).rows[0].n,0);
+    await evalJs("document.getElementById('ti-risks-show-references').click()");
+    await until("!document.getElementById('ti-risk-reference-panel').hidden",
+      'reference catalog opened');
+    assert.equal(await evalJs("document.querySelectorAll('#ti-risk-reference-list .risk-reference-item').length"),24);
+    await evalJs("document.getElementById('ti-risks-show-register').click()");
+
     await until("!document.getElementById('ti-risks-create').hidden && "+
       "[...document.querySelectorAll('#ti-risk-asset-id option')].some(x=>x.value==="+
       JSON.stringify(riskAsset)+")",'risk form loads real active assets');
     await evalJs("document.getElementById('ti-risks-create').click()");
     await until("document.getElementById('ti-risks-dialog').open",'new risk dialog');
+    assert.equal(await evalJs("document.getElementById('ti-risk-likelihood').value"),'');
+    assert.equal(await evalJs("document.getElementById('ti-risk-impact').value"),'');
+    assert.equal(await evalJs("document.getElementById('ti-risk-due-date').value"),'');
+    assert.equal(await evalJs("document.getElementById('ti-risk-inherent-preview').textContent.includes('Belum dihitung')"),true);
+    assert.equal(await evalJs("document.getElementById('ti-risks-form').checkValidity()"),false);
+    await evalJs("document.getElementById('ti-risk-example').value='CBS_GANGGUAN';"+
+      "document.getElementById('ti-risk-use-example').click()");
+    assert.equal(await evalJs("document.getElementById('ti-risk-title').value.includes('core banking')"),true);
+    assert.equal(await evalJs("document.getElementById('ti-risk-likelihood').value"),'');
+    assert.equal(await evalJs("document.getElementById('ti-risk-impact').value"),'');
     await evalJs("document.getElementById('ti-risk-code').value='RSK-E2E-01';"+
       "document.getElementById('ti-risk-title').value='Gangguan server saat transaksi';"+
       "document.getElementById('ti-risk-scenario').value='Kegagalan server dapat menghentikan transaksi harian pada BPR.';"+
       "document.getElementById('ti-risk-asset-id').value="+JSON.stringify(riskAsset)+";"+
       "document.getElementById('ti-risk-likelihood').value='4';"+
       "document.getElementById('ti-risk-impact').value='5';"+
+      "document.getElementById('ti-risk-due-date').value='2027-01-31';"+
       "document.getElementById('ti-risk-pic').value='Petugas Infrastruktur';"+
       "document.getElementById('ti-risks-form').requestSubmit()");
     await until("!document.getElementById('ti-risks-detail').hidden && "+
@@ -582,6 +617,11 @@ async function runBrowser(base,db,fixture){
     assert.equal(riskRow.rows[0].asset_id,riskAsset);
     assert.equal(riskRow.rows[0].score,20);
     assert.equal(riskRow.rows[0].residual_likelihood,null);
+    assert.equal((await db.query("SELECT state FROM ti_risk_reference_register WHERE reference_code='CBS_GANGGUAN'")).rows[0].state,'adopted');
+    assert.equal((await db.query("SELECT count(*)::int AS n FROM ti_risk_reference_register WHERE state='pending'")).rows[0].n,23);
+    assert.equal(await evalJs("document.getElementById('ti-risks-detail-summary').textContent.includes('Gangguan server saat transaksi')"),true);
+    assert.equal(await evalJs("document.getElementById('ti-risks-detail-values').textContent.includes('Penanganan dan PIC')"),true);
+    assert.equal(await evalJs("document.querySelector('#ti-risks-list .risk-record-action').textContent.includes('Lihat penilaian')"),true);
     await evalJs("document.getElementById('ti-risks-edit').click()");
     await until("document.getElementById('ti-risks-dialog').open",'risk edit dialog');
     await evalJs("document.getElementById('ti-risk-mitigation').value='Pengujian backup dan prosedur restore rutin.';"+

@@ -121,6 +121,39 @@ export async function listRisks(db,{actorId,q='',view='active',status='all',leve
     ' ORDER BY r.updated_at DESC,r.id DESC LIMIT 51 OFFSET $'+args.length,args);
   return {risks:rows.rows.slice(0,50).map(decorate),hasMore:rows.rowCount>50,offset};
 }
+export async function listRiskStarterRegister(db,{actorId}){
+  await permission(db,actorId,'risks:read');
+  const rows=await db.query(
+    'SELECT c.code AS id,c.group_name AS "group",c.title,c.scenario,'+
+    'c.review_guidance AS review,c.control_options AS controls,c.version,'+
+    's.state,s.adopted_risk_id FROM ti_risk_reference_register s '+
+    'JOIN ti_risk_reference_catalog c ON c.code=s.reference_code '+
+    'JOIN users u ON u.institution_id=s.institution_id AND u.id=$1 '+
+    'ORDER BY c.group_name,c.code LIMIT 201',[actorId]);
+  if(rows.rowCount>200)throw new RiskError(409,'Jumlah referensi melebihi batas layanan');
+  return {references:rows.rows};
+}
+export async function markRiskStarterStateInTransaction(db,{actorId,referenceCode,state}){
+  await permission(db,actorId,'risks:write');
+  if(typeof referenceCode!=='string'||!/^[A-Z][A-Z0-9_]{2,63}$/.test(referenceCode)
+    ||!['pending','not_applicable'].includes(state))
+    throw new RiskError(400,'Perubahan status referensi tidak valid');
+  const existing=await db.query(
+    'SELECT s.state FROM ti_risk_reference_register s '+
+    'JOIN users u ON u.institution_id=s.institution_id AND u.id=$1 '+
+    'WHERE s.reference_code=$2 FOR UPDATE OF s',[actorId,referenceCode]);
+  if(existing.rowCount!==1)throw new RiskError(404,'Referensi risiko tidak ditemukan');
+  if(existing.rows[0].state==='adopted')
+    throw new RiskError(409,'Referensi sudah digunakan untuk risiko yang tercatat');
+  const result=await db.query(
+    'UPDATE ti_risk_reference_register SET state=$3,'+
+    'reviewed_by=CASE WHEN $3=\'pending\' THEN NULL ELSE $1 END,'+
+    'reviewed_at=CASE WHEN $3=\'pending\' THEN NULL ELSE now() END '+
+    'WHERE institution_id=(SELECT institution_id FROM users WHERE id=$1) '+
+    'AND reference_code=$2 RETURNING reference_code AS id,state',
+    [actorId,referenceCode,state]);
+  return result.rows[0];
+}
 export async function riskHistory(db,{actorId,id}){
   await getRisk(db,{actorId,id});
   const rows=await db.query('SELECT e.id,e.action,e.actor_user_id,e.revision,e.old_values,'+
@@ -151,9 +184,20 @@ async function lockRisk(db,actorId,id){
   if(row.rowCount!==1)throw new RiskError(404,'Risiko tidak ditemukan');
   return row.rows[0];
 }
-export async function createRiskInTransaction(db,{actorId,...input}){
+export async function createRiskInTransaction(db,{actorId,referenceCode,...input}){
   await permission(db,actorId,'risks:write');
   const d=validateRisk(input);
+  if(referenceCode!==undefined){
+    if(typeof referenceCode!=='string'||!/^[A-Z][A-Z0-9_]{2,63}$/.test(referenceCode))
+      throw new RiskError(400,'Kode referensi tidak valid');
+    const starter=await db.query(
+      'SELECT s.state FROM ti_risk_reference_register s '+
+      'JOIN users u ON u.institution_id=s.institution_id AND u.id=$1 '+
+      'WHERE s.reference_code=$2 FOR UPDATE OF s',[actorId,referenceCode]);
+    if(starter.rowCount!==1)throw new RiskError(404,'Referensi tidak tersedia pada lembaga');
+    if(starter.rows[0].state!=='pending')
+      throw new RiskError(409,'Referensi sudah ditinjau atau dinyatakan tidak relevan');
+  }
   await referencedAsset(db,actorId,d.assetId);
   try{
     const result=await db.query(
@@ -165,6 +209,16 @@ export async function createRiskInTransaction(db,{actorId,...input}){
         d.residualLikelihood,d.residualImpact,d.mitigation,d.pic,d.dueDate,d.status,d.note]);
     if(result.rowCount!==1)throw new RiskError(403,'Forbidden');
     await event(db,result.rows[0],actorId,'CREATED');
+    if(referenceCode!==undefined){
+      const adopted=await db.query(
+        'UPDATE ti_risk_reference_register SET state=\'adopted\','+
+        'reviewed_by=$1,reviewed_at=now(),adopted_risk_id=$3 '+
+        'WHERE institution_id=(SELECT institution_id FROM users WHERE id=$1) '+
+        'AND reference_code=$2 AND state=\'pending\'',
+        [actorId,referenceCode,result.rows[0].id]);
+      if(adopted.rowCount!==1)
+        throw new RiskError(409,'Referensi sudah diproses pengguna lain');
+    }
     return one(db,actorId,result.rows[0].id);
   }catch(e){duplicate(e);}
 }
@@ -210,5 +264,6 @@ async function tx(pool,fn){
   finally{client.release();}
 }
 export const createRisk=(pool,args)=>tx(pool,db=>createRiskInTransaction(db,args));
+export const setRiskStarterState=(pool,args)=>tx(pool,db=>markRiskStarterStateInTransaction(db,args));
 export const updateRisk=(pool,args)=>tx(pool,db=>updateRiskInTransaction(db,args));
 export const archiveRisk=(pool,args)=>tx(pool,db=>archiveRiskInTransaction(db,args));

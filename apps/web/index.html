@@ -621,6 +621,23 @@
             <button id="ti-risks-create" type="button" class="button button-primary workspace-primary" hidden>Tambah risiko</button>
           </div>
           <p id="ti-risks-message" class="workspace-message" role="status" aria-live="polite" hidden></p>
+          <nav class="risk-pane-nav" aria-label="Pilih area Register Risiko TI">
+            <button id="ti-risks-show-references" type="button" class="button button-outline" aria-controls="ti-risk-reference-panel" aria-pressed="false">Referensi Risiko TI</button>
+            <button id="ti-risks-show-register" type="button" class="button button-outline" aria-controls="ti-risks-register-panel" aria-pressed="true">Risiko Lembaga</button>
+          </nav>
+          <div id="ti-risks-register-panel">
+          <section id="ti-risk-starting-panel" class="panel-card risk-starting-panel" aria-labelledby="ti-risk-starting-title">
+            <div class="risk-reference-heading">
+              <div>
+                <h2 id="ti-risk-starting-title">Daftar awal risiko TI — belum dinilai</h2>
+                <p>NusaRiksa telah menyiapkan skenario umum hingga spesifik di database lembaga.
+                  Data ini <strong>bukan hasil identifikasi faktual atau penilaian risiko bank</strong>.
+                  Pilih <strong>Nilai dan catat</strong> untuk melengkapi penilaian aktual; tandai yang tidak relevan tanpa menghapus referensinya.</p>
+              </div>
+              <span id="ti-risk-starting-count" class="risk-reference-count" aria-live="polite">Memuat daftar awal…</span>
+            </div>
+            <div id="ti-risk-starting-list" class="risk-starting-list" aria-live="polite"></div>
+          </section>
           <section class="panel-card">
             <div class="ti-risk-rubric">
               <strong>Skala risiko internal NusaRiksa</strong>
@@ -651,7 +668,9 @@
               </label>
               <button type="submit" class="button button-outline">Cari</button>
               <button id="ti-risks-refresh" type="button" class="button button-outline">Muat ulang</button>
+              <button id="ti-risks-clear-filters" type="button" class="button button-ghost">Reset filter</button>
             </form>
+            <p id="ti-risks-list-summary" class="risk-list-summary" aria-live="polite">Daftar risiko sesuai filter.</p>
             <div id="ti-risks-list" class="ti-assets-list" aria-live="polite"></div>
             <div class="ti-asset-pagination">
               <span id="ti-risks-position" class="workspace-help">Belum dimuat</span>
@@ -666,11 +685,33 @@
                 <button id="ti-risks-archive" type="button" class="button button-outline">Arsipkan</button>
               </div>
             </div>
-            <dl id="ti-risks-detail-values" class="ti-assets-detail-values"></dl>
+            <div id="ti-risks-detail-summary" class="risk-detail-summary"></div>
+            <div id="ti-risks-detail-values" class="risk-detail-layout"></div>
             <details class="ti-assets-history-details">
               <summary>Riwayat perubahan risiko</summary>
               <ol id="ti-risks-history"></ol>
             </details>
+          </section>
+          </div>
+          <section id="ti-risk-reference-panel" class="panel-card risk-reference-catalog" aria-label="Pustaka referensi risiko TI" hidden>
+            <div class="risk-reference-heading">
+              <div>
+                <h2>Referensi Risiko TI untuk BPR/BPRS</h2>
+                <p>Semua referensi ini berasal dari PostgreSQL. Statusnya mengikuti peninjauan lembaga.
+                  Referensi yang belum dinilai juga tersedia sebagai daftar awal di tab Risiko Lembaga.
+                  Tinjau kondisi bank sebelum menetapkan angka, PIC atau mitigasi.</p>
+              </div>
+              <span id="ti-risk-reference-count" class="risk-reference-count">Referensi umum</span>
+            </div>
+            <div class="risk-reference-filters">
+              <label for="ti-risk-reference-search">Cari referensi
+                <input id="ti-risk-reference-search" type="search" maxlength="100" placeholder="Contoh: backup, core banking, akses">
+              </label>
+              <label for="ti-risk-reference-group">Kelompok
+                <select id="ti-risk-reference-group"><option value="all">Semua kelompok</option></select>
+              </label>
+            </div>
+            <div id="ti-risk-reference-list" class="risk-reference-list" aria-live="polite"></div>
           </section>
         </section>
 
@@ -1853,75 +1894,104 @@
   <dialog id="ti-risks-dialog" aria-labelledby="ti-risks-dialog-title" class="workspace-dialog">
     <form id="ti-risks-form" class="maturity-edit-form">
       <h2 id="ti-risks-dialog-title">Tambah risiko TI</h2>
-      <p class="workspace-help">Isi sesuai risiko yang benar-benar diidentifikasi BPR. Jangan memasukkan data rahasia nasabah.</p>
-      <label for="ti-risk-code">Kode risiko
-        <input id="ti-risk-code" required minlength="2" maxlength="32" pattern="[A-Z][A-Z0-9_-]{1,31}" placeholder="RSK-CBS-01">
-      </label>
-      <label for="ti-risk-title">Nama risiko
-        <input id="ti-risk-title" required minlength="3" maxlength="200" placeholder="Gangguan layanan core banking">
-      </label>
-      <label for="ti-risk-scenario">Skenario / dampak risiko
-        <textarea id="ti-risk-scenario" rows="3" required minlength="10" maxlength="2000"
-          placeholder="Uraikan peristiwa, penyebab dan potensi dampak operasional."></textarea>
-      </label>
-      <label for="ti-risk-asset-id">Aset terkait (opsional)
-        <select id="ti-risk-asset-id"><option value="">Tidak terkait aset tertentu</option></select>
-      </label>
-      <p id="ti-risk-assets-limit" class="workspace-help">Hanya aset aktif yang dapat dipilih untuk tautan baru.</p>
-      <div class="ti-risk-two-col">
-        <label for="ti-risk-likelihood">Kemungkinan (1–5)
-          <select id="ti-risk-likelihood">
-            <option value="1">1 · Sangat jarang</option><option value="2">2 · Jarang</option>
-            <option value="3" selected>3 · Mungkin</option><option value="4">4 · Sering</option>
-            <option value="5">5 · Hampir pasti</option></select>
+      <p class="risk-form-intro">Catat risiko yang memang sudah diidentifikasi petugas. Contoh skenario hanya bahan referensi, bukan data temuan bank.</p>
+      <fieldset class="risk-form-section">
+        <legend>1. Kenali risiko yang akan dicatat</legend>
+        <div class="risk-reference-panel" id="ti-risk-example-panel">
+          <label for="ti-risk-example">Pustaka contoh risiko BPR/BPRS (opsional)
+            <select id="ti-risk-example"><option value="">Tulis sendiri tanpa contoh</option></select>
+          </label>
+          <p id="ti-risk-example-hint" class="risk-field-help">Pilih contoh bila relevan, kemudian klik Gunakan contoh. Judul dan skenario tetap bisa diubah.</p>
+          <button id="ti-risk-use-example" type="button" class="button button-outline">Gunakan contoh</button>
+        </div>
+        <label for="ti-risk-title">Nama risiko
+          <input id="ti-risk-title" required minlength="3" maxlength="200" placeholder="Contoh: Gangguan layanan core banking">
         </label>
-        <label for="ti-risk-impact">Dampak (1–5)
-          <select id="ti-risk-impact">
-            <option value="1">1 · Sangat rendah</option><option value="2">2 · Rendah</option>
-            <option value="3" selected>3 · Sedang</option><option value="4">4 · Tinggi</option>
-            <option value="5">5 · Sangat berat</option></select>
+        <label for="ti-risk-scenario">Skenario dan kemungkinan dampaknya
+          <textarea id="ti-risk-scenario" rows="3" required minlength="10" maxlength="2000" placeholder="Apa yang bisa terjadi, aset/proses terdampak, dan bagaimana pengaruhnya terhadap layanan?"></textarea>
         </label>
-      </div>
-      <p class="ti-risk-preview">Risiko inheren: <strong id="ti-risk-inherent-preview">9/25 · Sedang</strong></p>
-      <label for="ti-risk-mitigation">Rencana mitigasi / tindakan
-        <textarea id="ti-risk-mitigation" rows="3" maxlength="2000"
-          placeholder="Langkah yang sudah/akan dilakukan oleh PIC."></textarea>
-      </label>
-      <div class="ti-risk-two-col">
-        <label for="ti-risk-residual-likelihood">Kemungkinan residual
-          <select id="ti-risk-residual-likelihood">
-            <option value="">Belum dinilai</option><option value="1">1</option><option value="2">2</option>
-            <option value="3">3</option><option value="4">4</option><option value="5">5</option>
+        <label for="ti-risk-code">Kode risiko permanen
+          <input id="ti-risk-code" required minlength="2" maxlength="32" pattern="[A-Z][A-Z0-9_-]{1,31}" placeholder="Contoh: RSK-CBS-01">
+        </label>
+        <div class="risk-inline-action">
+          <button id="ti-risk-suggest-code" type="button" class="button button-outline">Buat saran kode</button>
+          <span id="ti-risk-code-hint" class="risk-field-help" role="status">Kode dapat diedit sebelum disimpan. Pastikan tidak digunakan risiko lain.</span>
+        </div>
+        <label for="ti-risk-asset-id">Aset terkait (opsional)
+          <select id="ti-risk-asset-id"><option value="">Tidak terkait aset tertentu</option></select>
+        </label>
+        <p id="ti-risk-assets-limit" class="risk-field-help">Aset diarsipkan tidak dapat dipilih untuk tautan baru.</p>
+      </fieldset>
+      <fieldset class="risk-form-section">
+        <legend>2. Nilai kemungkinan dan dampak aktual</legend>
+        <p class="risk-field-help">Pertimbangkan kejadian sebelumnya, pengendalian yang ada, kerentanan, potensi gangguan transaksi, dan dampak pada nasabah. Tidak ada nilai awal yang dipilih otomatis.</p>
+        <div class="ti-risk-two-col">
+          <label for="ti-risk-likelihood">Kemungkinan (1–5)
+            <select id="ti-risk-likelihood" required aria-describedby="ti-risk-likelihood-hint">
+              <option value="" selected disabled>Pilih kemungkinan</option>
+              <option value="1">1 · Sangat jarang</option><option value="2">2 · Jarang</option>
+              <option value="3">3 · Mungkin</option><option value="4">4 · Sering</option>
+              <option value="5">5 · Hampir pasti</option>
+            </select>
+          </label>
+          <label for="ti-risk-impact">Dampak (1–5)
+            <select id="ti-risk-impact" required aria-describedby="ti-risk-impact-hint">
+              <option value="" selected disabled>Pilih dampak</option>
+              <option value="1">1 · Sangat rendah</option><option value="2">2 · Rendah</option>
+              <option value="3">3 · Sedang</option><option value="4">4 · Tinggi</option>
+              <option value="5">5 · Sangat berat</option>
+            </select>
+          </label>
+        </div>
+        <p id="ti-risk-likelihood-hint" class="risk-field-help">Kemungkinan mempertimbangkan paparan dan frekuensi, bukan angka tebakan.</p>
+        <p id="ti-risk-impact-hint" class="risk-field-help">Dampak mempertimbangkan layanan, keuangan, data, dan reputasi lembaga.</p>
+        <p class="ti-risk-preview" aria-live="polite">Risiko inheren: <strong id="ti-risk-inherent-preview">Belum dihitung</strong></p>
+        <details id="ti-risk-residual-details" class="risk-optional-details">
+          <summary>Penilaian risiko residual (opsional, setelah pengendalian dinilai)</summary>
+          <p class="risk-field-help">Jika belum menilai efektivitas pengendalian, biarkan kedua nilai ini kosong. Jangan menggunakan angka awal otomatis.</p>
+          <div class="ti-risk-two-col">
+            <label for="ti-risk-residual-likelihood">Kemungkinan residual
+              <select id="ti-risk-residual-likelihood">
+                <option value="">Belum dinilai</option><option value="1">1</option><option value="2">2</option>
+                <option value="3">3</option><option value="4">4</option><option value="5">5</option>
+              </select>
+            </label>
+            <label for="ti-risk-residual-impact">Dampak residual
+              <select id="ti-risk-residual-impact">
+                <option value="">Belum dinilai</option><option value="1">1</option><option value="2">2</option>
+                <option value="3">3</option><option value="4">4</option><option value="5">5</option>
+              </select>
+            </label>
+          </div>
+          <p class="ti-risk-preview">Risiko residual: <strong id="ti-risk-residual-preview">Belum dinilai</strong></p>
+        </details>
+      </fieldset>
+      <fieldset class="risk-form-section">
+        <legend>3. Tentukan penanggung jawab dan tindak lanjut</legend>
+        <label for="ti-risk-mitigation">Rencana mitigasi / tindakan
+          <textarea id="ti-risk-mitigation" rows="3" maxlength="2000" placeholder="Rencana yang diputuskan petugas; kosongkan jika belum ditetapkan."></textarea>
+        </label>
+        <div class="ti-risk-two-col">
+          <label for="ti-risk-pic">PIC tindak lanjut
+            <input id="ti-risk-pic" required minlength="2" maxlength="120" placeholder="Penanggung jawab TI">
+          </label>
+          <label for="ti-risk-due-date">Target penyelesaian
+            <input id="ti-risk-due-date" type="date" required>
+          </label>
+        </div>
+        <label for="ti-risk-status">Status penanganan
+          <select id="ti-risk-status">
+            <option value="open">Teridentifikasi</option><option value="mitigating">Dalam mitigasi</option>
+            <option value="monitoring">Pemantauan</option><option value="closed">Ditutup</option>
           </select>
         </label>
-        <label for="ti-risk-residual-impact">Dampak residual
-          <select id="ti-risk-residual-impact">
-            <option value="">Belum dinilai</option><option value="1">1</option><option value="2">2</option>
-            <option value="3">3</option><option value="4">4</option><option value="5">5</option>
-          </select>
+        <p class="risk-field-help">Penutupan memerlukan mitigasi dan hasil residual yang memenuhi kebijakan internal. Keputusan penerimaan risiko tetap memerlukan kewenangan lembaga.</p>
+        <label for="ti-risk-note">Catatan tambahan (opsional)
+          <textarea id="ti-risk-note" rows="2" maxlength="2000"></textarea>
         </label>
-      </div>
-      <p class="ti-risk-preview">Risiko residual: <strong id="ti-risk-residual-preview">Belum dinilai</strong></p>
-      <div class="ti-risk-two-col">
-        <label for="ti-risk-pic">PIC tindak lanjut
-          <input id="ti-risk-pic" required minlength="2" maxlength="120" placeholder="Penanggung jawab TI">
-        </label>
-        <label for="ti-risk-due-date">Target penyelesaian
-          <input id="ti-risk-due-date" type="date" required>
-        </label>
-      </div>
-      <label for="ti-risk-status">Status penanganan
-        <select id="ti-risk-status">
-          <option value="open">Teridentifikasi</option><option value="mitigating">Dalam mitigasi</option>
-          <option value="monitoring">Pemantauan</option><option value="closed">Ditutup</option>
-        </select>
-      </label>
-      <p class="workspace-help">Untuk status Ditutup, diperlukan mitigasi nyata dan hasil residual maksimal Sedang. Persetujuan penerimaan risiko di luar alur ini belum disediakan.</p>
-      <label for="ti-risk-note">Catatan tambahan
-        <textarea id="ti-risk-note" rows="2" maxlength="2000"></textarea>
-      </label>
+      </fieldset>
       <p id="ti-risks-form-error" class="form-error" role="alert" hidden></p>
-      <div class="workspace-save-actions">
+      <div class="workspace-save-actions risk-form-actions">
         <button id="ti-risks-save" type="submit" class="button button-primary">Simpan risiko</button>
         <button id="ti-risks-cancel" type="button" class="button button-outline">Batal</button>
       </div>
