@@ -367,6 +367,27 @@ async function runBrowser(base,db,fixture){
     await logout();
     await login('maker');
 
+    // Akun yang sudah aktif mendapat rubrik NusaRiksa terbit tanpa konfigurasi manual.
+    // Form penilaian memilih metodologi tersebut secara otomatis.
+    await until("!document.getElementById('maturity-assessments-menu').hidden",
+      'menu penilaian maturitas');
+    await evalJs("document.getElementById('maturity-assessments-menu').click()");
+    await until("!document.getElementById('ma-create-toggle').hidden",
+      'tombol buat penilaian maturitas');
+    await evalJs("document.getElementById('ma-create-toggle').click()");
+    await until("document.getElementById('ma-create-model').selectedOptions[0]?.textContent.includes('NUSARIKSA_INTERNAL') && "+
+      "!!document.getElementById('ma-create-version').value",
+      'rubrik maturitas internal terpilih otomatis');
+    assert.equal(await evalJs("document.getElementById('ma-create-title').value.includes('Penilaian Maturitas TI Internal')"),true);
+    const defaultVersion=await evalJs("document.getElementById('ma-create-version').value");
+    const defaultCount=await db.query(
+      'SELECT count(*)::int AS domains FROM maturity_domains WHERE version_id=$1',
+      [defaultVersion],
+    );
+    assert.equal(defaultCount.rows[0].domains,6);
+    assert.equal(await evalJs("document.getElementById('ma-create-start').value.length"),10);
+    assert.equal(await evalJs("document.getElementById('ma-create-end').value.length"),10);
+
     await until("!document.getElementById('recovery-menu').hidden",'recovery navigation');
     await evalJs("document.getElementById('recovery-menu').click()");
     await until("!document.getElementById('ti-recovery-create').hidden",'recovery create action');

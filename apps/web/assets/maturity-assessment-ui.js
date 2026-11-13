@@ -295,6 +295,12 @@ export function createMaturityAssessmentUI({
       state.models=found;
       const root=$('ma-create-model');root.replaceChildren(option('Pilih model',''));
       for(const m of found)root.add(option(m.code+' · '+m.title,m.id));
+      // Preselect the published NusaRiksa rubric. Custom models remain available.
+      const recommended=found.find(m=>m.code==='NUSARIKSA_INTERNAL');
+      if(recommended){
+        root.value=recommended.id;
+        await versions(recommended.id);
+      }
     }catch(error){
       if(gen!==state.createGeneration)return;
       failure(error,'Model maturitas gagal dimuat.');
@@ -313,6 +319,14 @@ export function createMaturityAssessmentUI({
       root.replaceChildren(option('Pilih versi terbit',''));
       for(const version of state.versions)
         root.add(option('Versi '+version.version,version.id));
+      if(state.versions.length){
+        root.value=state.versions[0].id;
+        const year=String(new Date().getFullYear());
+        if(!$('ma-create-title').value.trim())
+          $('ma-create-title').value='Penilaian Maturitas TI Internal — '+year;
+        if(!$('ma-create-start').value)$('ma-create-start').value=year+'-01-01';
+        if(!$('ma-create-end').value)$('ma-create-end').value=year+'-12-31';
+      }
       if(!state.versions.length)
         message('Model belum memiliki versi terbit. Siapkan metodologi di menu Metodologi Maturitas.','warning');
     }catch(error){
