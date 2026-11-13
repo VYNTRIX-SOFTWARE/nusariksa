@@ -639,6 +639,13 @@ async function runBrowser(base,db,fixture){
       'finding creation ready');
     await evalJs("document.getElementById('ti-findings-create').click()");
     await until("document.getElementById('ti-findings-dialog').open",'finding form');
+    assert.equal(await evalJs("document.querySelectorAll('#ti-findings-form .finding-form-section').length"),3);
+    assert.equal(await evalJs("document.getElementById('ti-finding-priority').value"),'');
+    assert.equal(await evalJs("document.getElementById('ti-finding-source-type').value"),'');
+    assert.equal(await evalJs("document.getElementById('ti-findings-form').checkValidity()"),false);
+    await evalJs("document.getElementById('ti-finding-title').value='Perbaikan prosedur pemulihan CBS';"+
+      "document.getElementById('ti-finding-suggest-code').click()");
+    assert.equal(await evalJs("document.getElementById('ti-finding-code').value.startsWith('TEM-')"),true);
     await evalJs("document.getElementById('ti-finding-source-type').value='risk';"+
       "document.getElementById('ti-finding-source-type').dispatchEvent(new Event('change'))");
     await until("[...document.querySelectorAll('#ti-finding-source option')].some(x=>x.value==="+
@@ -661,6 +668,10 @@ async function runBrowser(base,db,fixture){
       "WHERE finding_code='TEM-E2E-01'");
     assert.equal(findingRow.rowCount,1);
     assert.equal(findingRow.rows[0].risk_id,riskRow.rows[0].id);
+    assert.equal(await evalJs("document.getElementById('ti-findings-detail-summary').textContent.includes('Perbaikan prosedur pemulihan CBS')"),true);
+    assert.equal(await evalJs("document.querySelectorAll('#ti-findings-ready-checklist .finding-check-ready').length"),3);
+    assert.equal(await evalJs("document.getElementById('ti-findings-submit').disabled"),false);
+    assert.equal(await evalJs("document.querySelector('#ti-findings-list .finding-record .ti-finding-open')!==null"),true);
     await evalJs("window.confirm=()=>true;document.getElementById('ti-findings-submit').click()");
     await until("document.getElementById('ti-findings-detail-values').textContent.includes('Menunggu pemeriksaan')",
       'finding submitted for independent review');
@@ -1029,6 +1040,7 @@ async function runBrowser(base,db,fixture){
     await evalJs("document.querySelector('#ti-findings-list .ti-finding-open').click()");
     await until("!document.getElementById('ti-findings-review-form').hidden",
       'separate reviewer has verification form');
+    assert.equal(await evalJs("document.getElementById('ti-findings-review-decision').value"),'');
     assert.equal(await evalJs("document.getElementById('ti-findings-edit').hidden"),true);
     await evalJs("document.getElementById('ti-findings-review-decision').value='verify';"+
       "document.getElementById('ti-findings-review-note').value='Bukti pengujian restore dan berita acara telah diperiksa petugas reviewer.';"+

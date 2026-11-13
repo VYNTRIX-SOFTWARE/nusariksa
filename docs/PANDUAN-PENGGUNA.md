@@ -145,15 +145,16 @@ Kronologi yang sudah tersimpan tidak dihapus atau diedit. Jika perlu membetulkan
 
 Gunakan menu **Tindak Lanjut Temuan** untuk mengelola masalah yang perlu diperbaiki berdasarkan hasil pemeriksaan, catatan risiko, atau insiden.
 
-1. Pilih **Tambah temuan**, lalu isi kode, judul, uraian kondisi, dan prioritas.
-2. Pilih asal temuan. Jika tersedia, tautkan ke **hasil kontrol asesmen**, **risiko**, atau **insiden** yang sudah tercatat. Pilih **Pemeriksaan langsung** bila tidak berasal dari salah satu daftar tersebut.
-3. Tentukan PIC dan tanggal target perbaikan.
-4. Isi rencana tindakan, perkembangan pekerjaan, dan referensi bukti, kemudian pilih **Simpan temuan**.
-5. Setelah tindakan selesai dan referensi bukti dapat diperiksa, buka detail temuan dan pilih **Ajukan pemeriksaan**.
-6. Pemeriksa yang berbeda dapat memilih **Perbaikan telah diverifikasi** atau **Kembalikan untuk perbaikan**, dengan catatan hasil pemeriksaan.
-7. Jika dikembalikan, petugas pengisi memperbaiki catatan dan mengajukan kembali. Temuan yang telah diverifikasi berstatus **Selesai** dan dapat diarsipkan.
+1. Pilih **Tambah temuan**. Formulir dibagi menjadi tiga kelompok: **Temuan dan sumber pemeriksaan**, **Penanggung jawab dan target perbaikan**, serta **Hasil tindakan dan bukti**.
+2. Isi judul dan kondisi yang benar-benar ditemukan. Kode dapat ditulis sendiri atau dibuat melalui **Buat saran kode**; periksa keunikannya. Pilih **prioritas** berdasarkan dampak aktual; formulir tidak menetapkan otomatis prioritas Sedang.
+3. Pilih asal temuan secara eksplisit. Jika tersedia, tautkan ke **hasil kontrol asesmen**, **risiko**, atau **insiden** yang sudah tercatat. Pilih **Pemeriksaan langsung** untuk sumber yang diperiksa di luar daftar tersebut.
+4. Tetapkan PIC, target penyelesaian, dan rencana perbaikan sesuai hasil pemeriksaan. Tidak ada tanggal, PIC, atau tindakan otomatis.
+5. Temuan dapat **disimpan lebih dulu** meskipun pekerjaan belum selesai dan bukti belum tersedia. Perbarui hasil tindakan dan referensi bukti setelah petugas benar-benar menyelesaikannya.
+6. Buka detail temuan untuk melihat **langkah berikutnya** dan tiga pemeriksaan kelengkapan: rencana tindakan, hasil tindakan, serta referensi bukti. Tombol **Ajukan pemeriksaan** baru aktif bagi pembuat temuan setelah ketiganya terisi minimal 10 karakter. Kelengkapan teks bukan bukti keberhasilan faktual.
+7. Pemeriksa yang berbeda wajib memilih **Perbaikan telah diverifikasi** atau **Kembalikan untuk perbaikan** secara eksplisit, kemudian menulis hasil pemeriksaan. NusaRiksa tidak memilih keputusan verifikasi otomatis.
+8. Jika dikembalikan, petugas meninjau catatan pemeriksa di **Riwayat tindak lanjut**, memperbarui hasil dan bukti, lalu mengajukan kembali. Temuan yang telah diverifikasi berstatus **Selesai** dan dapat diarsipkan.
 
-Daftar temuan dapat dicari serta difilter menurut prioritas, status, dan asal pemeriksaan. Setiap pembaruan dan keputusan tetap tersedia dalam **Riwayat tindak lanjut**.
+Daftar temuan menampilkan kartu dengan judul, status, prioritas, PIC, target, dan sumber secara langsung. Pencarian dan filter dapat dibersihkan melalui **Reset filter**. Jumlah hasil menunjukkan **isi halaman saat ini**, bukan total temuan seluruh lembaga. Setiap pembaruan dan keputusan tetap tersedia dalam **Riwayat tindak lanjut**.
 
 **Referensi bukti** berisi keterangan yang dapat ditelusuri, seperti nomor tiket, nama berita acara, atau lokasi dokumen internal. Kolom ini belum menggantikan pemeriksaan dokumen aslinya. Jangan mencantumkan kata sandi atau data nasabah yang tidak diperlukan.
 

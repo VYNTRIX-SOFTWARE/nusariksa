@@ -8,6 +8,37 @@ const SOURCES={manual:'Pemeriksaan langsung',assessment:'Hasil asesmen kontrol',
 const ACTIONS={CREATED:'Temuan dicatat',UPDATED:'Perbaikan diperbarui',
   SUBMITTED:'Diajukan untuk pemeriksaan',RETURNED:'Dikembalikan untuk perbaikan',
   VERIFIED:'Perbaikan diverifikasi',ARCHIVED:'Temuan diarsipkan'};
+const PRIORITY_GUIDANCE={
+  low:'Rendah: gangguan terbatas; penanganan dapat dijadwalkan secara wajar.',
+  medium:'Sedang: memengaruhi pekerjaan atau kontrol, tetapi dampaknya masih terkendali.',
+  high:'Tinggi: berdampak besar pada layanan, keamanan data, atau pengendalian penting.',
+  critical:'Kritis: berpotensi mengganggu layanan utama atau menimbulkan dampak material yang membutuhkan penanganan segera.',
+};
+export const findingPriorityGuidance=value=>PRIORITY_GUIDANCE[value]??
+  'Pilih berdasarkan urgensi dan dampak aktual. Tidak ada prioritas otomatis.';
+export function suggestFindingCode(title){
+  if(typeof title!=='string')return '';
+  const code=title.normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toUpperCase()
+    .replace(/[^A-Z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+  return code?'TEM-'+code.slice(0,28).replace(/-+$/g,''):'';
+}
+export function findingSubmissionChecklist(record){
+  return [
+    {key:'plan',label:'Rencana perbaikan',complete:typeof record?.action_plan==='string'&&record.action_plan.trim().length>=10},
+    {key:'result',label:'Hasil tindakan',complete:typeof record?.progress_note==='string'&&record.progress_note.trim().length>=10},
+    {key:'evidence',label:'Referensi bukti yang dapat diperiksa',complete:typeof record?.evidence_reference==='string'&&record.evidence_reference.trim().length>=10},
+  ];
+}
+export function findingNextStep(record){
+  if(record?.archived_at)return 'Temuan telah diarsipkan; catatan dan riwayat tetap tersedia.';
+  if(!record)return 'Pilih temuan untuk melihat langkah berikutnya.';
+  if(record.status==='closed')return 'Perbaikan telah diverifikasi oleh pemeriksa yang berwenang.';
+  if(record.status==='pending_verification')return 'Menunggu pemeriksaan oleh petugas lain yang berwenang, bukan pembuat atau pengaju temuan.';
+  if(record.status==='changes_requested')return 'Pemeriksa meminta perbaikan. Periksa catatan pada riwayat, perbarui tindakan dan bukti, lalu ajukan kembali.';
+  return findingSubmissionChecklist(record).every(x=>x.complete)
+    ?'Semua persyaratan administrasi pengajuan telah terisi. Pembuat temuan dapat mengajukan hasil perbaikan untuk diperiksa.'
+    :'Lengkapi rencana, hasil tindakan, dan referensi bukti sebelum mengajukan pemeriksaan. Simpan perkembangan secara bertahap.';
+}
 const el=(tag,value,cls)=>{
   const n=document.createElement(tag);n.textContent=String(value??'');
   if(cls)n.className=cls;return n;
@@ -42,7 +73,8 @@ export function createFindingManagementUI({api,getPermissions,getUserId,onAuthFa
     $('ti-findings-save').disabled=state.busy||!write();
     $('ti-findings-edit').hidden=!editable;
     $('ti-findings-submit').hidden=!editable;
-    $('ti-findings-submit').disabled=state.busy;
+    $('ti-findings-submit').disabled=state.busy||
+      !findingSubmissionChecklist(f).every(x=>x.complete);
     $('ti-findings-archive').hidden=!write()||!owner(f)||!f||!!f.archived_at||f.status!=='closed';
     $('ti-findings-archive').disabled=state.busy;
     $('ti-findings-review-form').hidden=!verify()||!f||!!f.archived_at
@@ -59,22 +91,55 @@ export function createFindingManagementUI({api,getPermissions,getUserId,onAuthFa
     $('ti-findings-search').value='';$('ti-findings-view').value='active';
     $('ti-findings-status-filter').value='all';$('ti-findings-priority-filter').value='all';
     $('ti-findings-source-filter').value='all';
+    $('ti-findings-list-summary').textContent='Daftar temuan belum dimuat.';
+    $('ti-findings-detail-summary').replaceChildren();
+    $('ti-findings-next-step').replaceChildren();
+    $('ti-findings-ready-checklist').replaceChildren();
     message('');sync();
+  }
+  function hasFilters(){
+    return Boolean($('ti-findings-search').value.trim())||
+      $('ti-findings-view').value!=='active'||
+      $('ti-findings-status-filter').value!=='all'||
+      $('ti-findings-priority-filter').value!=='all'||
+      $('ti-findings-source-filter').value!=='all';
   }
   function renderList(){
     const root=$('ti-findings-list');root.replaceChildren();
-    if(!state.loaded){root.append(el('p','Memuat daftar temuan…','workspace-help'));return;}
-    if(!state.items.length)root.append(el('p',
-      'Belum ada temuan untuk filter ini. Pilih Tambah temuan untuk mencatat tindak lanjut.','workspace-help'));
+    const summary=$('ti-findings-list-summary');
+    if(!state.loaded){
+      summary.textContent='Memuat daftar temuan…';
+      root.append(el('p','Memuat temuan dari lembaga…','workspace-help'));return;
+    }
+    summary.textContent=state.items.length
+      ?'Menampilkan '+state.items.length+' temuan pada halaman ini. Buka rincian untuk melihat langkah berikutnya, perbaikan, dan riwayat.'
+      :hasFilters()?'Tidak ada temuan yang cocok. Ubah pencarian atau reset filter.':
+        'Belum ada temuan tercatat. Mulailah dari hasil pemeriksaan, asesmen, risiko, atau insiden nyata.';
+    if(!state.items.length){
+      const empty=el('div','','finding-empty-state');
+      empty.append(el('strong',hasFilters()?'Tidak ada hasil pencarian':'Belum ada temuan'),
+        el('p',hasFilters()?'Gunakan Reset filter untuk kembali ke daftar awal.':
+          'Klik Tambah temuan untuk mencatat kondisi yang sudah ditemukan. Contoh bukan bukti pemeriksaan.'));
+      root.append(empty);
+    }
     for(const item of state.items){
-      const row=el('div','','ti-finding-row');
-      const open=el('button',item.finding_code+' · '+item.title,'ti-finding-open');
+      const row=el('article','','ti-finding-row finding-record');
+      const head=el('div','','finding-record-head');
+      const title=el('div','','finding-record-title');
+      title.append(el('span',item.finding_code,'finding-record-code'));
+      const open=el('button',item.title,'ti-finding-open');
       open.type='button';open.addEventListener('click',()=>void detail(item.id));
-      row.append(open,el('p',
-        PRIORITY[item.priority]+' · '+STATUS[item.status]+' · '+item.pic+
-        ' · '+SOURCES[item.source_type]+
-        (item.archived_at?' · Diarsipkan':''),'workspace-help'));
-      root.append(row);
+      title.append(open);
+      head.append(title,el('span',STATUS[item.status]??'Status belum dikenal',
+        'finding-status-pill finding-status-'+item.status));
+      const badges=el('div','','finding-record-meta');
+      badges.append(el('span','Prioritas: '+PRIORITY[item.priority]),
+        el('span','PIC: '+item.pic),el('span','Target: '+item.due_date),
+        el('span','Sumber: '+SOURCES[item.source_type]),
+        el('span',item.archived_at?'Diarsipkan':'Aktif'));
+      const act=el('button','Lihat tindak lanjut dan riwayat','button button-outline finding-record-action');
+      act.type='button';act.addEventListener('click',()=>void detail(item.id));
+      row.append(head,badges,act);root.append(row);
     }
     $('ti-findings-position').textContent=state.items.length
       ?'Menampilkan '+(state.offset+1)+'–'+(state.offset+state.items.length):'Tidak ada hasil';
@@ -118,8 +183,8 @@ export function createFindingManagementUI({api,getPermissions,getUserId,onAuthFa
     const type=$('ti-finding-source-type').value,select=$('ti-finding-source');
     const label=$('ti-finding-source-label');
     select.replaceChildren();
-    if(type==='manual'){
-      select.add(new Option('Pemeriksaan tanpa tautan langsung',''));
+    if(!type||type==='manual'){
+      select.add(new Option(type==='manual'?'Pemeriksaan tanpa tautan langsung':'Pilih sumber temuan terlebih dahulu',''));
       select.disabled=true;label.hidden=true;return;
     }
     select.disabled=false;label.hidden=false;
@@ -146,8 +211,13 @@ export function createFindingManagementUI({api,getPermissions,getUserId,onAuthFa
     $('ti-finding-code').readOnly=!!record;
     $('ti-finding-title').value=record?.title??'';
     $('ti-finding-description').value=record?.description??'';
-    $('ti-finding-priority').value=record?.priority??'medium';
-    $('ti-finding-source-type').value=record?.source_type??'manual';
+    $('ti-finding-priority').value=record?.priority??'';
+    $('ti-finding-source-type').value=record?.source_type??'';
+    $('ti-finding-suggest-code').hidden=Boolean(record);
+    $('ti-finding-code-hint').textContent=record
+      ?'Kode temuan permanen untuk menjaga riwayat pencatatan.'
+      :'Saran kode dapat diubah. Pastikan unik sebelum disimpan.';
+    $('ti-finding-priority-hint').textContent=findingPriorityGuidance($('ti-finding-priority').value);
     $('ti-finding-source-type').disabled=!!record;
     sourceOptions(formSourceValue(record));
     if(record)$('ti-finding-source').disabled=true;
@@ -193,22 +263,56 @@ export function createFindingManagementUI({api,getPermissions,getUserId,onAuthFa
     if(record.source_type==='incident')return record.incident_code+' · '+record.incident_title;
     return 'Pemeriksaan langsung';
   }
+  function renderSubmissionGuide(record){
+    const list=$('ti-findings-ready-checklist');list.replaceChildren();
+    const checks=findingSubmissionChecklist(record);
+    for(const check of checks){
+      const li=el('li',(check.complete?'Sudah diisi: ':'Perlu dilengkapi: ')+check.label,
+        check.complete?'finding-check-ready':'finding-check-missing');
+      list.append(li);
+    }
+    const editable=write()&&owner(record)&&!record.archived_at&&
+      ['open','in_progress','changes_requested'].includes(record.status);
+    $('ti-findings-submission-guide').hidden=!editable;
+    $('ti-findings-submit-hint').textContent=checks.every(x=>x.complete)
+      ?'Isian minimum untuk pengajuan lengkap; pemeriksa tetap wajib menilai bukti dan hasilnya.'
+      :'Simpan temuan lebih dulu bila pekerjaan belum selesai. Pengajuan baru aktif setelah ketiga bagian lengkap.';
+  }
   function renderDetail(record){
     state.selected=record;
+    const summary=$('ti-findings-detail-summary');summary.replaceChildren();
+    const head=el('div','','finding-detail-head');
+    head.append(el('span',record.finding_code,'finding-record-code'),
+      el('h3',record.title),el('p',SOURCES[record.source_type]+' · PIC: '+record.pic));
+    summary.append(head,el('span',STATUS[record.status],
+      'finding-status-pill finding-status-'+record.status));
+    $('ti-findings-next-step').textContent=findingNextStep(record);
+    renderSubmissionGuide(record);
     const root=$('ti-findings-detail-values');root.replaceChildren();
-    for(const [label,value] of [
-      ['Kode',record.finding_code],['Temuan',record.title],
-      ['Uraian',record.description],['Prioritas',PRIORITY[record.priority]],
-      ['Sumber',sourceName(record)],['PIC',record.pic],['Target',record.due_date],
-      ['Status',STATUS[record.status]],['Rencana perbaikan',record.action_plan||'Belum diisi'],
-      ['Hasil tindakan',record.progress_note||'Belum dicatat'],
-      ['Referensi bukti',record.evidence_reference||'Belum dicatat'],
-      ['Siklus pengajuan',record.submission_cycle],
-      ['Pemeriksa',record.verified_by?'Sudah diverifikasi':'Belum diverifikasi'],
-      ['Revisi',record.revision],['Arsip',record.archived_at?'Diarsipkan':'Aktif'],
+    for(const [name,fields] of [
+      ['Identitas dan dasar temuan',[
+        ['Kode',record.finding_code],['Kondisi yang ditemukan',record.description],
+        ['Prioritas',PRIORITY[record.priority]],['Sumber',sourceName(record)],
+        ['Penanggung jawab',record.pic],['Target perbaikan',record.due_date],
+      ]],
+      ['Pekerjaan dan bukti tindak lanjut',[
+        ['Rencana tindakan',record.action_plan||'Belum diisi'],
+        ['Hasil tindakan',record.progress_note||'Belum dicatat'],
+        ['Referensi bukti',record.evidence_reference||'Belum dicatat'],
+      ]],
+      ['Pemeriksaan dan administrasi',[
+        ['Status',STATUS[record.status]],['Siklus pengajuan',record.submission_cycle],
+        ['Hasil pemeriksaan',record.verified_by?'Sudah diverifikasi':'Belum diverifikasi'],
+        ['Revisi',record.revision],['Arsip',record.archived_at?'Diarsipkan':'Aktif'],
+      ]],
     ]){
-      const row=el('div','','ti-asset-detail-item');
-      row.append(el('dt',label),el('dd',value));root.append(row);
+      const section=el('section','','finding-detail-section');
+      const dl=el('dl','','ti-assets-detail-values');
+      for(const [label,value] of fields){
+        const row=el('div','','ti-asset-detail-item');
+        row.append(el('dt',label),el('dd',value));dl.append(row);
+      }
+      section.append(el('h3',name),dl);root.append(section);
     }
     $('ti-findings-detail').hidden=false;sync();
   }
@@ -219,6 +323,7 @@ export function createFindingManagementUI({api,getPermissions,getUserId,onAuthFa
       const item=validFinding(await api('/findings/'+id));
       if(request!==state.detailRequest)return;
       renderDetail(item);
+      $('ti-findings-detail').scrollIntoView?.({block:'nearest'});
       const events=await api('/findings/'+id+'/history');
       if(request!==state.detailRequest)return;
       if(!Array.isArray(events.events))throw new TypeError('Invalid history');
@@ -235,6 +340,25 @@ export function createFindingManagementUI({api,getPermissions,getUserId,onAuthFa
       if(!onAuthFailure(error))message('Detail atau riwayat temuan tidak dapat dibuka.','error');
     }
   }
+  $('ti-finding-priority').addEventListener('change',()=>{
+    $('ti-finding-priority-hint').textContent=findingPriorityGuidance($('ti-finding-priority').value);
+  });
+  $('ti-finding-suggest-code').addEventListener('click',()=>{
+    const title=$('ti-finding-title');
+    if(!title.value.trim()){
+      title.focus();$('ti-finding-code-hint').textContent='Isi judul temuan terlebih dahulu.';return;
+    }
+    const code=suggestFindingCode(title.value);
+    if(code){
+      $('ti-finding-code').value=code;
+      $('ti-finding-code-hint').textContent='Kode usulan: '+code+'. Periksa keunikan sebelum menyimpan.';
+    }
+  });
+  $('ti-findings-reset-filters').addEventListener('click',()=>{
+    $('ti-findings-search').value='';$('ti-findings-view').value='active';
+    $('ti-findings-status-filter').value='all';$('ti-findings-priority-filter').value='all';
+    $('ti-findings-source-filter').value='all';void load();
+  });
   $('ti-findings-create').addEventListener('click',()=>fillForm(null));
   $('ti-finding-source-type').addEventListener('change',()=>sourceOptions());
   $('ti-findings-edit').addEventListener('click',()=>{
