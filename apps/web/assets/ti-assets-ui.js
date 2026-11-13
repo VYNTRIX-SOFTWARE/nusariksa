@@ -3,6 +3,23 @@ const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]
 const TYPES={server:'Server',workstation:'PC/Laptop',network:'Jaringan',software:'Aplikasi',storage:'Storage',other:'Lainnya'};
 const PRIORITIES={low:'Rendah',medium:'Sedang',high:'Tinggi'};
 const STATES={active:'Aktif',maintenance:'Pemeliharaan',retired:'Tidak digunakan'};
+const TYPE_GUIDANCE=Object.freeze({
+  server:'Contoh: server core banking, VM aplikasi atau server backup. Catat tiap aset sesuai peran aktualnya.',
+  workstation:'Contoh: PC teller, laptop operasional atau workstation admin. Gunakan nama/kode inventaris sendiri.',
+  network:'Contoh: router, firewall, switch, access point atau perangkat koneksi antar-kantor.',
+  software:'Contoh: aplikasi core banking, aplikasi pelaporan, sistem operasi atau layanan berbasis perangkat lunak.',
+  storage:'Contoh: NAS, perangkat penyimpanan backup atau media penyimpanan terkelola.',
+  other:'Gunakan untuk aset TI yang tidak masuk jenis lain. Jelaskan kategorinya dalam catatan.',
+});
+const CRITICALITY_GUIDANCE=Object.freeze({
+  low:'Rendah: gangguan tidak menghambat layanan utama dan alternatifnya memadai. Pastikan dampak aktual memang kecil.',
+  medium:'Sedang: gangguan mengurangi efektivitas kerja atau layanan, tetapi masih ada cara kerja sementara yang layak.',
+  high:'Tinggi: gangguan berpotensi menghentikan transaksi/layanan kritis, menimbulkan dampak material, atau mengancam keamanan data.',
+});
+export const assetTypeGuidance=kind=>TYPE_GUIDANCE[kind]??
+  'Pilih jenis berdasarkan fungsi aset. Contoh tidak berarti aset sudah tercatat.';
+export const assetCriticalityGuidance=level=>CRITICALITY_GUIDANCE[level]??
+  'Tentukan berdasarkan dampak gangguan pada transaksi, layanan nasabah, data, dan alternatif pemulihan. Tidak ada nilai otomatis.';
 const el=(tag,value,cls)=>{
   const node=document.createElement(tag);
   node.textContent=String(value??'');
@@ -102,21 +119,26 @@ export function createAssetRegisterUI({api,getPermissions,onAuthFailure}){
       if(!onAuthFailure(error))message('Gagal memuat inventaris TI.','error');
     }finally{if(request===state.request){state.loaded=true;renderList();}}
   }
+  function renderGuidance(){
+    $('ti-asset-kind-hint').textContent=assetTypeGuidance($('ti-asset-kind').value);
+    $('ti-asset-criticality-hint').textContent=assetCriticalityGuidance($('ti-asset-criticality').value);
+  }
   function fillForm(asset){
     $('ti-assets-form').reset();
     $('ti-asset-code').value=asset?.asset_code??'';
     $('ti-asset-code').readOnly=Boolean(asset);
     $('ti-asset-title').value=asset?.title??'';
-    $('ti-asset-kind').value=asset?.kind??'server';
+    $('ti-asset-kind').value=asset?.kind??'';
     $('ti-asset-owner').value=asset?.owner_name??'';
     $('ti-asset-location').value=asset?.location??'';
-    $('ti-asset-criticality').value=asset?.criticality??'medium';
+    $('ti-asset-criticality').value=asset?.criticality??'';
     $('ti-asset-operational-status').value=asset?.operational_status??'active';
     $('ti-asset-note').value=asset?.note??'';
     $('ti-assets-form').dataset.editId=asset?.id??'';
     $('ti-assets-form').dataset.revision=String(asset?.revision??0);
     $('ti-assets-dialog-title').textContent=asset?'Ubah aset TI':'Tambah aset TI';
     $('ti-assets-error').hidden=true;$('ti-assets-error').textContent='';
+    renderGuidance();
     $('ti-assets-dialog').showModal();
   }
   function renderDetail(asset){
@@ -153,6 +175,8 @@ export function createAssetRegisterUI({api,getPermissions,onAuthFailure}){
       if(!onAuthFailure(error))message('Gagal membuka aset atau riwayat.','error');
     }
   }
+  $('ti-asset-kind').addEventListener('change',renderGuidance);
+  $('ti-asset-criticality').addEventListener('change',renderGuidance);
   $('ti-assets-create').addEventListener('click',()=>fillForm(null));
   $('ti-assets-edit').addEventListener('click',()=>{if(state.selected&&!state.selected.archived_at)fillForm(state.selected);});
   $('ti-assets-refresh').addEventListener('click',()=>void load({resetOffset:false}));

@@ -70,9 +70,10 @@ Buka **Inventaris Aset TI** untuk mencatat perangkat dan aplikasi yang digunakan
 
 1. Klik **Tambah aset**.
 2. Isi kode dan nama aset, misalnya `SRV-CBS-01` dan `Server Core Banking`.
-3. Pilih jenis aset serta isi penanggung jawab/PIC dan lokasi.
-4. Pilih tingkat kritikalitas dan status operasional.
-5. Tambahkan catatan jika diperlukan, kemudian klik **Simpan aset**.
+3. Pilih **jenis aset** berdasarkan fungsi aktual. Petunjuk di bawah pilihan menyediakan contoh aset BPR/BPRS, seperti server core banking, PC teller, router, aplikasi, dan perangkat backup. Contoh tersebut bukan aset yang otomatis tercatat.
+4. Isi penanggung jawab/PIC dan lokasi.
+5. Pilih **kritikalitas** setelah meninjau dampak jika aset berhenti: apakah transaksi atau layanan kritis terhenti, apakah data terdampak, dan apakah alternatif tersedia. Nilai rendah/sedang/tinggi harus ditentukan petugas; formulir baru tidak memilihkannya otomatis.
+6. Pilih status operasional, tambahkan catatan bila diperlukan, lalu klik **Simpan aset**. Nilai aset baru disimpan setelah petugas mengonfirmasi seluruh isian.
 
 Gunakan kolom pencarian untuk mencari kode, nama, atau PIC. Filter membantu menampilkan aset berdasarkan jenis, kritikalitas, dan kondisi arsip.
 

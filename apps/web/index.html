@@ -1794,10 +1794,14 @@
         <input id="ti-asset-title" required minlength="3" maxlength="200" placeholder="Server Core Banking">
       </label>
       <label for="ti-asset-kind">Jenis
-        <select id="ti-asset-kind"><option value="server">Server</option><option value="workstation">PC/Laptop</option>
+        <select id="ti-asset-kind" required aria-describedby="ti-asset-kind-hint">
+          <option value="" selected disabled>Pilih jenis aset</option>
+          <option value="server">Server</option><option value="workstation">PC/Laptop</option>
           <option value="network">Perangkat jaringan</option><option value="software">Aplikasi</option>
-          <option value="storage">Storage</option><option value="other">Lainnya</option></select>
+          <option value="storage">Storage</option><option value="other">Lainnya</option>
+        </select>
       </label>
+      <p id="ti-asset-kind-hint" class="workspace-help" role="status" aria-live="polite">Pilih jenis aset berdasarkan fungsi sebenarnya, bukan contoh yang ditampilkan.</p>
       <label for="ti-asset-owner">Pemilik / PIC
         <input id="ti-asset-owner" required minlength="2" maxlength="120" placeholder="Bagian Operasional TI">
       </label>
@@ -1805,9 +1809,13 @@
         <input id="ti-asset-location" required minlength="2" maxlength="200" placeholder="Ruang Server Kantor Pusat">
       </label>
       <label for="ti-asset-criticality">Kritikalitas
-        <select id="ti-asset-criticality"><option value="low">Rendah</option>
-          <option value="medium" selected>Sedang</option><option value="high">Tinggi</option></select>
+        <select id="ti-asset-criticality" required aria-describedby="ti-asset-criticality-hint">
+          <option value="" selected disabled>Pilih berdasarkan dampak gangguan</option>
+          <option value="low">Rendah</option><option value="medium">Sedang</option>
+          <option value="high">Tinggi</option>
+        </select>
       </label>
+      <p id="ti-asset-criticality-hint" class="workspace-help" role="status" aria-live="polite">Pertimbangkan dampak ketika aset berhenti: transaksi, layanan nasabah, data, dan alternatif pemulihan. Nilai harus ditentukan petugas.</p>
       <label for="ti-asset-operational-status">Status operasional
         <select id="ti-asset-operational-status"><option value="active">Aktif</option>
           <option value="maintenance">Pemeliharaan</option><option value="retired">Tidak digunakan</option></select>

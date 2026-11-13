@@ -501,6 +501,15 @@ async function runBrowser(base,db,fixture){
     await until("!document.getElementById('ti-assets-create').hidden",'asset register create ready');
     await evalJs("document.getElementById('ti-assets-create').click()");
     await until("document.getElementById('ti-assets-dialog').open",'asset creation form');
+    assert.equal(await evalJs("document.getElementById('ti-asset-kind').value"),'');
+    assert.equal(await evalJs("document.getElementById('ti-asset-criticality').value"),'');
+    assert.equal(await evalJs("document.getElementById('ti-assets-form').checkValidity()"),false);
+    await evalJs("document.getElementById('ti-asset-kind').value='server';"+
+      "document.getElementById('ti-asset-kind').dispatchEvent(new Event('change'))");
+    assert.equal(await evalJs("document.getElementById('ti-asset-kind-hint').textContent.includes('core banking')"),true);
+    await evalJs("document.getElementById('ti-asset-criticality').value='high';"+
+      "document.getElementById('ti-asset-criticality').dispatchEvent(new Event('change'))");
+    assert.equal(await evalJs("document.getElementById('ti-asset-criticality-hint').textContent.includes('transaksi')"),true);
     await evalJs("document.getElementById('ti-asset-code').value='SRV-BROWSER-01';"+
       "document.getElementById('ti-asset-title').value='Server Browser Uji';"+
       "document.getElementById('ti-asset-owner').value='IT Internal';"+
@@ -534,7 +543,10 @@ async function runBrowser(base,db,fixture){
     // Create one active asset to exercise the actual risk-to-asset foreign key in the browser.
     await evalJs("document.getElementById('ti-assets-create').click()");
     await until("document.getElementById('ti-assets-dialog').open",'second asset form');
+    assert.equal(await evalJs("document.getElementById('ti-asset-criticality').value"),'');
     await evalJs("document.getElementById('ti-asset-code').value='SRV-RISK-E2E';"+
+      "document.getElementById('ti-asset-kind').value='server';"+
+      "document.getElementById('ti-asset-criticality').value='high';"+
       "document.getElementById('ti-asset-title').value='Server Aset Risiko Browser';"+
       "document.getElementById('ti-asset-owner').value='Bagian TI';"+
       "document.getElementById('ti-asset-location').value='Ruang Server';"+
