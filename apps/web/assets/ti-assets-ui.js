@@ -20,6 +20,13 @@ export const assetTypeGuidance=kind=>TYPE_GUIDANCE[kind]??
   'Pilih jenis berdasarkan fungsi aset. Contoh tidak berarti aset sudah tercatat.';
 export const assetCriticalityGuidance=level=>CRITICALITY_GUIDANCE[level]??
   'Tentukan berdasarkan dampak gangguan pada transaksi, layanan nasabah, data, dan alternatif pemulihan. Tidak ada nilai otomatis.';
+const CODE_PREFIX={server:'SRV',workstation:'PC',network:'NET',software:'APP',storage:'STO',other:'AST'};
+export function suggestAssetCode(title,kind){
+  if(typeof title!=='string'||typeof kind!=='string'||!Object.hasOwn(CODE_PREFIX,kind))return '';
+  const slug=title.normalize('NFKD').replace(/[\u0300-\u036f]/g,'')
+    .toUpperCase().replace(/[^A-Z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+  return slug?(CODE_PREFIX[kind]+'-'+slug.slice(0,32-CODE_PREFIX[kind].length-1).replace(/-+$/g,'')):'';
+}
 const el=(tag,value,cls)=>{
   const node=document.createElement(tag);
   node.textContent=String(value??'');
@@ -74,21 +81,47 @@ export function createAssetRegisterUI({api,getPermissions,onAuthFailure}){
       note:$('ti-asset-note').value,
     };
   }
+  function hasAssetFilters(){
+    return Boolean($('ti-assets-search').value.trim())||
+      $('ti-assets-status').value!=='active'||
+      $('ti-assets-kind-filter').value!=='all'||
+      $('ti-assets-priority-filter').value!=='all';
+  }
   function renderList(){
     const root=$('ti-assets-list');root.replaceChildren();
+    const summary=$('ti-assets-list-summary');
     if(!state.loaded){
+      summary.textContent='Memuat daftar aset…';
       root.append(el('p','Memuat inventaris TI…','workspace-help'));return;
     }
+    summary.textContent=state.items.length
+      ?'Menampilkan '+state.items.length+' aset pada halaman ini. Pilih satu aset untuk melihat detail dan riwayatnya.'
+      :hasAssetFilters()?'Belum ada aset yang cocok dengan filter. Coba reset filter.':
+        'Inventaris belum memiliki aset. Mulai dari perangkat atau aplikasi yang benar-benar digunakan lembaga.';
     if(!state.items.length){
-      root.append(el('p','Tidak ada aset untuk filter ini. Gunakan Tambah aset untuk mulai mencatat inventaris TI.','workspace-help'));
+      const empty=el('div','','asset-empty-state');
+      empty.append(el('strong',hasAssetFilters()?'Tidak ada hasil pencarian':'Belum ada aset tercatat'),
+        el('p',hasAssetFilters()?'Ubah pencarian atau gunakan Reset filter untuk kembali ke daftar.':
+          'Gunakan Tambah aset untuk mencatat data yang benar-benar ada. Contoh pada formulir hanya panduan.'));
+      root.append(empty);
     }
     for(const asset of state.items){
-      const row=el('div','','ti-asset-item');
-      const open=el('button',asset.asset_code+' · '+asset.title,'ti-asset-open');
+      const row=el('article','','ti-asset-item asset-record');
+      const head=el('div','','asset-record-head');
+      const title=el('div','','asset-record-title');
+      title.append(el('span',asset.asset_code,'asset-record-code'),
+        el('strong',asset.title));
+      const priority=el('span',PRIORITIES[asset.criticality],
+        'asset-status-pill asset-criticality-'+asset.criticality);
+      head.append(title,priority);
+      const meta=el('div','','asset-record-meta');
+      meta.append(el('span',TYPES[asset.kind]),
+        el('span','Lokasi: '+asset.location),
+        el('span','PIC: '+asset.owner_name),
+        el('span',asset.archived_at?'Diarsipkan':STATES[asset.operational_status]));
+      const open=el('button','Lihat rincian dan riwayat','button button-outline asset-record-action');
       open.type='button';open.addEventListener('click',()=>void detail(asset.id));
-      const meta=el('p',TYPES[asset.kind]+' · '+asset.location+' · '+PRIORITIES[asset.criticality]+
-        ' · '+(asset.archived_at?'Diarsipkan':STATES[asset.operational_status]),'workspace-help');
-      row.append(open,meta);root.append(row);
+      row.append(head,meta,open);root.append(row);
     }
     $('ti-assets-position').textContent=state.items.length
       ?'Menampilkan '+(state.offset+1)+'–'+(state.offset+state.items.length):'Tidak ada hasil';
@@ -137,12 +170,23 @@ export function createAssetRegisterUI({api,getPermissions,onAuthFailure}){
     $('ti-assets-form').dataset.editId=asset?.id??'';
     $('ti-assets-form').dataset.revision=String(asset?.revision??0);
     $('ti-assets-dialog-title').textContent=asset?'Ubah aset TI':'Tambah aset TI';
+    $('ti-asset-suggest-code').hidden=Boolean(asset);
+    $('ti-asset-code-hint').textContent=asset
+      ?'Kode permanen untuk menjaga riwayat aset.':'Saran dapat diubah. Periksa keunikannya sebelum disimpan.';
     $('ti-assets-error').hidden=true;$('ti-assets-error').textContent='';
     renderGuidance();
     $('ti-assets-dialog').showModal();
   }
   function renderDetail(asset){
     state.selected=asset;
+    const summary=$('ti-assets-detail-summary');
+    summary.replaceChildren();
+    const heading=el('div','','asset-detail-heading');
+    heading.append(el('span',asset.asset_code,'asset-record-code'),
+      el('h3',asset.title),
+      el('p',TYPES[asset.kind]+' · '+(asset.archived_at?'Diarsipkan':STATES[asset.operational_status])));
+    summary.append(heading,el('span','Kritikalitas '+PRIORITIES[asset.criticality],
+      'asset-status-pill asset-criticality-'+asset.criticality));
     const root=$('ti-assets-detail-values');root.replaceChildren();
     for(const [label,value] of [
       ['Kode',asset.asset_code],['Nama',asset.title],['Jenis',TYPES[asset.kind]],
@@ -162,6 +206,7 @@ export function createAssetRegisterUI({api,getPermissions,onAuthFailure}){
     try{
       const asset=validateAssetResponse(await api('/assets/'+id));
       renderDetail(asset);
+      $('ti-assets-detail').scrollIntoView?.({block:'nearest'});
       const history=await api('/assets/'+id+'/history');
       const root=$('ti-assets-history');root.replaceChildren();
       if(!Array.isArray(history.events))throw new TypeError('Invalid history');
@@ -175,6 +220,21 @@ export function createAssetRegisterUI({api,getPermissions,onAuthFailure}){
       if(!onAuthFailure(error))message('Gagal membuka aset atau riwayat.','error');
     }
   }
+  $('ti-asset-suggest-code').addEventListener('click',()=>{
+    const title=$('ti-asset-title'),kind=$('ti-asset-kind');
+    if(!title.value.trim()){title.focus();$('ti-asset-code-hint').textContent='Isi nama aset terlebih dahulu.';return;}
+    if(!kind.value){kind.focus();$('ti-asset-code-hint').textContent='Pilih jenis aset terlebih dahulu.';return;}
+    const code=suggestAssetCode(title.value,kind.value);
+    if(code){
+      $('ti-asset-code').value=code;
+      $('ti-asset-code-hint').textContent='Kode usulan: '+code+'. Periksa keunikan dan sesuaikan bila diperlukan.';
+    }
+  });
+  $('ti-assets-clear-filters').addEventListener('click',()=>{
+    $('ti-assets-search').value='';$('ti-assets-status').value='active';
+    $('ti-assets-kind-filter').value='all';$('ti-assets-priority-filter').value='all';
+    void load();
+  });
   $('ti-asset-kind').addEventListener('change',renderGuidance);
   $('ti-asset-criticality').addEventListener('change',renderGuidance);
   $('ti-assets-create').addEventListener('click',()=>fillForm(null));

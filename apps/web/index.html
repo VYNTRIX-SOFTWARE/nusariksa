@@ -704,7 +704,9 @@
               </label>
               <button type="submit" class="button button-outline">Cari</button>
               <button id="ti-assets-refresh" type="button" class="button button-outline">Muat ulang</button>
+              <button id="ti-assets-clear-filters" type="button" class="button button-ghost">Reset filter</button>
             </form>
+            <p id="ti-assets-list-summary" class="asset-list-summary" aria-live="polite">Daftar aset yang sesuai filter.</p>
             <div id="ti-assets-list" class="ti-assets-list" aria-live="polite"></div>
             <div class="ti-asset-pagination">
               <span id="ti-assets-position" class="workspace-help">Belum dimuat</span>
@@ -719,6 +721,7 @@
                 <button id="ti-assets-archive" type="button" class="button button-outline">Arsipkan</button>
               </div>
             </div>
+            <div id="ti-assets-detail-summary" class="asset-detail-summary"></div>
             <dl id="ti-assets-detail-values" class="ti-assets-detail-values"></dl>
             <details class="ti-assets-history-details">
               <summary>Riwayat perubahan aset</summary>
@@ -1786,45 +1789,62 @@
   <dialog id="ti-assets-dialog" aria-labelledby="ti-assets-dialog-title" class="workspace-dialog">
     <form id="ti-assets-form" class="maturity-edit-form">
       <h2 id="ti-assets-dialog-title">Tambah aset TI</h2>
-      <p class="workspace-help">Kode aset permanen agar riwayat dapat ditelusuri.</p>
-      <label for="ti-asset-code">Kode aset
-        <input id="ti-asset-code" required minlength="2" maxlength="32" pattern="[A-Z][A-Z0-9_-]{1,31}" placeholder="SRV-CBS-01">
-      </label>
-      <label for="ti-asset-title">Nama aset
-        <input id="ti-asset-title" required minlength="3" maxlength="200" placeholder="Server Core Banking">
-      </label>
-      <label for="ti-asset-kind">Jenis
-        <select id="ti-asset-kind" required aria-describedby="ti-asset-kind-hint">
-          <option value="" selected disabled>Pilih jenis aset</option>
-          <option value="server">Server</option><option value="workstation">PC/Laptop</option>
-          <option value="network">Perangkat jaringan</option><option value="software">Aplikasi</option>
-          <option value="storage">Storage</option><option value="other">Lainnya</option>
-        </select>
-      </label>
-      <p id="ti-asset-kind-hint" class="workspace-help" role="status" aria-live="polite">Pilih jenis aset berdasarkan fungsi sebenarnya, bukan contoh yang ditampilkan.</p>
-      <label for="ti-asset-owner">Pemilik / PIC
-        <input id="ti-asset-owner" required minlength="2" maxlength="120" placeholder="Bagian Operasional TI">
-      </label>
-      <label for="ti-asset-location">Lokasi
-        <input id="ti-asset-location" required minlength="2" maxlength="200" placeholder="Ruang Server Kantor Pusat">
-      </label>
-      <label for="ti-asset-criticality">Kritikalitas
-        <select id="ti-asset-criticality" required aria-describedby="ti-asset-criticality-hint">
-          <option value="" selected disabled>Pilih berdasarkan dampak gangguan</option>
-          <option value="low">Rendah</option><option value="medium">Sedang</option>
-          <option value="high">Tinggi</option>
-        </select>
-      </label>
-      <p id="ti-asset-criticality-hint" class="workspace-help" role="status" aria-live="polite">Pertimbangkan dampak ketika aset berhenti: transaksi, layanan nasabah, data, dan alternatif pemulihan. Nilai harus ditentukan petugas.</p>
-      <label for="ti-asset-operational-status">Status operasional
-        <select id="ti-asset-operational-status"><option value="active">Aktif</option>
-          <option value="maintenance">Pemeliharaan</option><option value="retired">Tidak digunakan</option></select>
-      </label>
-      <label for="ti-asset-note">Catatan tambahan (opsional)
-        <textarea id="ti-asset-note" rows="3" maxlength="2000"></textarea>
-      </label>
+      <p class="asset-dialog-intro">Catat perangkat, aplikasi, atau layanan TI yang benar-benar digunakan lembaga. Isi tiga kelompok informasi berikut.</p>
+      <fieldset class="asset-form-section">
+        <legend>1. Identitas aset</legend>
+        <p class="asset-section-caption">Nama dan kode harus dapat dikenali saat audit atau penanganan insiden.</p>
+        <label for="ti-asset-title">Nama aset
+          <input id="ti-asset-title" required minlength="3" maxlength="200" placeholder="Contoh: Server Core Banking">
+        </label>
+        <label for="ti-asset-kind">Jenis
+          <select id="ti-asset-kind" required aria-describedby="ti-asset-kind-hint">
+            <option value="" selected disabled>Pilih jenis aset</option>
+            <option value="server">Server</option><option value="workstation">PC/Laptop</option>
+            <option value="network">Perangkat jaringan</option><option value="software">Aplikasi</option>
+            <option value="storage">Storage</option><option value="other">Lainnya</option>
+          </select>
+        </label>
+        <p id="ti-asset-kind-hint" class="workspace-help" role="status" aria-live="polite">Contoh digunakan sebagai panduan, bukan data aset lembaga.</p>
+        <label for="ti-asset-code">Kode inventaris permanen
+          <input id="ti-asset-code" required minlength="2" maxlength="32" pattern="[A-Z][A-Z0-9_-]{1,31}" placeholder="Contoh: SRV-CBS-01" aria-describedby="ti-asset-code-hint">
+        </label>
+        <div class="asset-inline-action">
+          <button id="ti-asset-suggest-code" type="button" class="button button-outline">Buat saran kode</button>
+          <span id="ti-asset-code-hint" class="asset-section-caption" role="status">Saran dapat diubah. Kode harus unik di lembaga dan tidak bisa diubah setelah disimpan.</span>
+        </div>
+      </fieldset>
+      <fieldset class="asset-form-section">
+        <legend>2. Penanggung jawab dan lokasi</legend>
+        <p class="asset-section-caption">Isi dengan PIC dan lokasi yang dapat dihubungi atau ditemukan petugas.</p>
+        <div class="asset-field-grid">
+          <label for="ti-asset-owner">Pemilik / PIC
+            <input id="ti-asset-owner" required minlength="2" maxlength="120" placeholder="Contoh: Bagian Operasional TI">
+          </label>
+          <label for="ti-asset-location">Lokasi
+            <input id="ti-asset-location" required minlength="2" maxlength="200" placeholder="Contoh: Ruang Server Kantor Pusat">
+          </label>
+        </div>
+      </fieldset>
+      <fieldset class="asset-form-section">
+        <legend>3. Dampak layanan dan kondisi aset</legend>
+        <label for="ti-asset-criticality">Kritikalitas
+          <select id="ti-asset-criticality" required aria-describedby="ti-asset-criticality-hint">
+            <option value="" selected disabled>Pilih berdasarkan dampak gangguan</option>
+            <option value="low">Rendah</option><option value="medium">Sedang</option>
+            <option value="high">Tinggi</option>
+          </select>
+        </label>
+        <p id="ti-asset-criticality-hint" class="workspace-help" role="status" aria-live="polite">Tentukan dampaknya terhadap transaksi, layanan nasabah, data, dan alternatif pemulihan.</p>
+        <label for="ti-asset-operational-status">Status operasional
+          <select id="ti-asset-operational-status"><option value="active">Aktif</option>
+            <option value="maintenance">Pemeliharaan</option><option value="retired">Tidak digunakan</option></select>
+        </label>
+        <label for="ti-asset-note">Catatan tambahan (opsional)
+          <textarea id="ti-asset-note" rows="3" maxlength="2000" placeholder="Nomor inventaris lain, fungsi layanan, atau keterangan yang relevan. Jangan isi password atau data nasabah."></textarea>
+        </label>
+      </fieldset>
       <p id="ti-assets-error" class="form-error" role="alert" hidden></p>
-      <div class="workspace-save-actions">
+      <div class="workspace-save-actions asset-form-actions">
         <button id="ti-assets-save" type="submit" class="button button-primary">Simpan aset</button>
         <button id="ti-assets-cancel" type="button" class="button button-outline">Batal</button>
       </div>

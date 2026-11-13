@@ -501,6 +501,8 @@ async function runBrowser(base,db,fixture){
     await until("!document.getElementById('ti-assets-create').hidden",'asset register create ready');
     await evalJs("document.getElementById('ti-assets-create').click()");
     await until("document.getElementById('ti-assets-dialog').open",'asset creation form');
+    assert.equal(await evalJs("document.querySelectorAll('#ti-assets-form .asset-form-section').length"),3);
+    assert.equal(await evalJs("document.getElementById('ti-asset-suggest-code').hidden"),false);
     assert.equal(await evalJs("document.getElementById('ti-asset-kind').value"),'');
     assert.equal(await evalJs("document.getElementById('ti-asset-criticality').value"),'');
     assert.equal(await evalJs("document.getElementById('ti-assets-form').checkValidity()"),false);
@@ -522,6 +524,8 @@ async function runBrowser(base,db,fixture){
     const assetId=(await db.query(
       "SELECT id FROM ti_assets WHERE asset_code='SRV-BROWSER-01'")).rows[0].id;
     assert.ok(assetId);
+    assert.equal(await evalJs("document.getElementById('ti-assets-detail-summary').textContent.includes('Server Browser Uji')"),true);
+    assert.equal(await evalJs("document.querySelector('#ti-assets-list .asset-record-action').textContent.includes('Lihat rincian')"),true);
     await evalJs("document.getElementById('ti-assets-edit').click()");
     await until("document.getElementById('ti-assets-dialog').open",'asset editing form');
     await evalJs("document.getElementById('ti-asset-owner').value='Tim Sistem Informasi';"+
