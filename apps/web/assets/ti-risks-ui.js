@@ -3,6 +3,47 @@ const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]
 const LEVEL={low:'Rendah',medium:'Sedang',high:'Tinggi',critical:'Kritis'};
 const STATUS={open:'Teridentifikasi',mitigating:'Dalam mitigasi',
   monitoring:'Pemantauan',closed:'Ditutup'};
+export const RISK_EXAMPLES=Object.freeze([
+  {id:'CBS_GANGGUAN',group:'Layanan core banking',title:'Gangguan layanan core banking',
+    scenario:'Gangguan aplikasi atau infrastruktur core banking berpotensi menghentikan transaksi dan layanan nasabah.'},
+  {id:'CBS_DATA',group:'Layanan core banking',title:'Kerusakan atau inkonsistensi database CBS',
+    scenario:'Kerusakan data atau kegagalan sinkronisasi database CBS berpotensi mengganggu integritas transaksi dan laporan bank.'},
+  {id:'CBS_INTEGRASI',group:'Layanan core banking',title:'Kegagalan integrasi sistem transaksi',
+    scenario:'Gangguan pertukaran data antara CBS dan aplikasi pendukung berpotensi menyebabkan transaksi tertunda atau data tidak konsisten.'},
+  {id:'BACKUP_GAGAL',group:'Backup dan pemulihan',title:'Kegagalan proses backup',
+    scenario:'Backup tidak berhasil atau media salinan tidak tersedia saat diperlukan sehingga pemulihan layanan dan data terhambat.'},
+  {id:'RESTORE_UJI',group:'Backup dan pemulihan',title:'Pemulihan data belum teruji',
+    scenario:'Prosedur restore belum diuji secara memadai sehingga durasi dan keberhasilan pemulihan layanan kritis tidak diketahui.'},
+  {id:'RANSOMWARE',group:'Keamanan siber',title:'Serangan ransomware pada perangkat TI',
+    scenario:'Malware dapat mengenkripsi atau menghambat akses data serta layanan TI penting dan memengaruhi kelangsungan operasional.'},
+  {id:'AKSES_TIDAK_SAH',group:'Keamanan siber',title:'Akses tidak sah ke sistem bank',
+    scenario:'Akun atau hak akses yang tidak sesuai dapat disalahgunakan untuk melihat, mengubah, atau mengambil data sensitif.'},
+  {id:'PHISHING',group:'Keamanan siber',title:'Pengambilalihan akun akibat phishing',
+    scenario:'Pengguna dapat menyerahkan kredensial melalui pesan palsu sehingga akun dan layanan internal berisiko disalahgunakan.'},
+  {id:'KEBOCORAN_DATA',group:'Data dan privasi',title:'Kebocoran data nasabah atau operasional',
+    scenario:'Kesalahan konfigurasi, pengiriman, atau pengendalian akses berpotensi membuat data rahasia terekspos tanpa izin.'},
+  {id:'PERANGKAT_HILANG',group:'Data dan privasi',title:'Kehilangan perangkat kerja berisi data bank',
+    scenario:'Perangkat yang hilang atau dicuri dapat mengakibatkan akses tidak sah apabila penyimpanan dan akses tidak dilindungi.'},
+  {id:'JARINGAN_PUTUS',group:'Infrastruktur',title:'Gangguan koneksi jaringan atau internet',
+    scenario:'Terputusnya jalur jaringan atau koneksi antar-kantor berpotensi menghambat penggunaan sistem dan layanan transaksi.'},
+  {id:'LISTRIK',group:'Infrastruktur',title:'Gangguan listrik pada layanan kritis',
+    scenario:'Pemadaman atau kegagalan UPS dapat menyebabkan perangkat penting berhenti dan memicu kerusakan atau kehilangan data.'},
+  {id:'PATCH_TERTUNDA',group:'Infrastruktur',title:'Pembaruan keamanan sistem tertunda',
+    scenario:'Kerentanan yang tidak ditangani pada server atau endpoint dapat dimanfaatkan untuk mengganggu layanan atau mengambil data.'},
+  {id:'VENDOR_LAYANAN',group:'Penyedia jasa TI',title:'Gangguan layanan penyedia TI',
+    scenario:'Kegagalan layanan atau dukungan vendor dapat menghambat operasional dan memperpanjang pemulihan layanan yang bergantung padanya.'},
+  {id:'VENDOR_AKSES',group:'Penyedia jasa TI',title:'Akses vendor tidak terkendali',
+    scenario:'Akses jarak jauh penyedia jasa yang tidak dibatasi atau diawasi dapat meningkatkan risiko perubahan sistem dan kebocoran data.'},
+  {id:'KOLEKSI_SYNC',group:'Aplikasi lapangan',title:'Kegagalan sinkronisasi transaksi lapangan',
+    scenario:'Gangguan komunikasi aplikasi petugas lapangan dengan sistem pusat berpotensi menimbulkan keterlambatan atau selisih data transaksi.'},
+]);
+export const riskExampleById=id=>RISK_EXAMPLES.find(x=>x.id===id)??null;
+export function suggestRiskCode(title){
+  if(typeof title!=='string')return '';
+  const slug=title.normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toUpperCase()
+    .replace(/[^A-Z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+  return slug?'RSK-'+slug.slice(0,28).replace(/-+$/g,''):'';
+}
 const text=(tag,value,cls)=>{
   const node=document.createElement(tag);
   node.textContent=String(value??'');
@@ -28,6 +69,15 @@ export function createRiskRegisterUI({api,getPermissions,onAuthFailure}){
   const canWrite=()=>getPermissions().includes('risks:write');
   function message(value,kind='info'){
     const n=$('ti-risks-message');n.textContent=value??'';n.hidden=!value;n.dataset.kind=kind;
+  }
+  const examples=$('ti-risk-example');
+  const groupLookup=new Map();
+  for(const example of RISK_EXAMPLES){
+    if(!groupLookup.has(example.group)){
+      const optgroup=document.createElement('optgroup');optgroup.label=example.group;
+      groupLookup.set(example.group,optgroup);examples.append(optgroup);
+    }
+    groupLookup.get(example.group).append(new Option(example.title,example.id));
   }
   function sync(){
     $('ti-risks-create').hidden=!canWrite();
@@ -73,21 +123,40 @@ export function createRiskRegisterUI({api,getPermissions,onAuthFailure}){
       ?'Inventaris lebih dari 1.000 aset. Hubungi administrator untuk penyesuaian.'
       :'Aset yang sudah diarsipkan tidak dapat ditautkan ke risiko baru.';
   }
+  function hasRiskFilters(){
+    return Boolean($('ti-risks-search').value.trim())||
+      $('ti-risks-view').value!=='active'||$('ti-risks-status-filter').value!=='all'||
+      $('ti-risks-level-filter').value!=='all'||$('ti-risks-asset-filter').value!=='all';
+  }
   function render(){
     const root=$('ti-risks-list');root.replaceChildren();
-    if(!state.loaded){root.append(text('p','Memuat register risiko…','workspace-help'));return;}
-    if(!state.risks.length)root.append(text('p',
-      'Belum ada risiko pada filter ini. Pilih Tambah risiko untuk mencatat skenario yang diperiksa.','workspace-help'));
+    const summary=$('ti-risks-list-summary');
+    if(!state.loaded){summary.textContent='Memuat register risiko…';return;}
+    summary.textContent=state.risks.length
+      ?'Menampilkan '+state.risks.length+' risiko pada halaman ini. Pilih satu untuk melihat kondisi dan tindak lanjutnya.'
+      :hasRiskFilters()?'Tidak ada risiko yang cocok dengan filter. Coba reset filter.':
+        'Belum ada risiko yang dicatat. Pustaka contoh tersedia saat menambah risiko.';
+    if(!state.risks.length){
+      const empty=text('div','','risk-empty-state');
+      empty.append(text('strong',hasRiskFilters()?'Tidak ada hasil pencarian':'Belum ada risiko tercatat'),
+        text('p',hasRiskFilters()?'Sesuaikan pencarian atau gunakan Reset filter.':
+          'Klik Tambah risiko untuk mencatat hasil identifikasi; contoh skenario tidak menjadi risiko faktual sebelum disimpan.'));
+      root.append(empty);
+    }
     for(const risk of state.risks){
-      const row=text('div','','ti-risk-list-item');
-      const open=text('button',risk.risk_code+' · '+risk.title,'ti-risk-open');
+      const row=text('article','','ti-risk-list-item risk-record');
+      const head=text('div','','risk-record-head');
+      const title=text('div','','risk-record-title');
+      title.append(text('span',risk.risk_code,'risk-record-code'),text('strong',risk.title));
+      head.append(title,text('span',risk.inherent_score+'/25 · '+LEVEL[risk.inherent_level],
+        'risk-level-pill risk-level-'+risk.inherent_level));
+      const meta=text('div','','risk-record-meta');
+      meta.append(text('span',STATUS[risk.status]+(risk.archived_at?' · Diarsipkan':'')),
+        text('span','PIC: '+risk.pic),
+        text('span',risk.asset_code?'Aset: '+risk.asset_code:'Tanpa aset khusus'));
+      const open=text('button','Lihat penilaian dan tindak lanjut','button button-outline risk-record-action');
       open.type='button';open.addEventListener('click',()=>void detail(risk.id));
-      const meta=text('p',
-        'Inheren '+risk.inherent_score+'/25 · '+LEVEL[risk.inherent_level]+
-        ' · '+STATUS[risk.status]+' · '+risk.pic+
-        (risk.asset_code?' · '+risk.asset_code:' · Tanpa aset')+
-        (risk.archived_at?' · Diarsipkan':''),'workspace-help');
-      row.append(open,meta);root.append(row);
+      row.append(head,meta,open);root.append(row);
     }
     $('ti-risks-position').textContent=state.risks.length
       ?'Menampilkan '+(state.offset+1)+'–'+(state.offset+state.risks.length):'Tidak ada hasil';
@@ -121,7 +190,7 @@ export function createRiskRegisterUI({api,getPermissions,onAuthFailure}){
     const inherent=localRiskLevel(Number($('ti-risk-likelihood').value),
       Number($('ti-risk-impact').value));
     $('ti-risk-inherent-preview').textContent=inherent
-      ?inherent.score+'/25 · '+LEVEL[inherent.level]:'Pilih kemungkinan dan dampak';
+      ?inherent.score+'/25 · '+LEVEL[inherent.level]:'Belum dihitung: pilih kemungkinan dan dampak';
     const rl=$('ti-risk-residual-likelihood').value,ri=$('ti-risk-residual-impact').value;
     const residual=rl&&ri?localRiskLevel(Number(rl),Number(ri)):null;
     $('ti-risk-residual-preview').textContent=residual
@@ -137,17 +206,18 @@ export function createRiskRegisterUI({api,getPermissions,onAuthFailure}){
     if(risk?.asset_id&&![...select.options].some(o=>o.value===risk.asset_id))
       select.add(new Option((risk.asset_code??'Aset arsip')+' (tertaut sebelumnya)',risk.asset_id));
     select.value=risk?.asset_id??'';
-    $('ti-risk-likelihood').value=String(risk?.likelihood??'3');
-    $('ti-risk-impact').value=String(risk?.impact??'3');
+    $('ti-risk-likelihood').value=String(risk?.likelihood??'');
+    $('ti-risk-impact').value=String(risk?.impact??'');
     $('ti-risk-residual-likelihood').value=String(risk?.residual_likelihood??'');
     $('ti-risk-residual-impact').value=String(risk?.residual_impact??'');
     $('ti-risk-mitigation').value=risk?.mitigation??'';
     $('ti-risk-pic').value=risk?.pic??'';
-    if(!risk){
-      const d=new Date();d.setDate(d.getDate()+30);
-      const part=n=>String(n).padStart(2,'0');
-      $('ti-risk-due-date').value=d.getFullYear()+'-'+part(d.getMonth()+1)+'-'+part(d.getDate());
-    }else $('ti-risk-due-date').value=risk.due_date;
+    $('ti-risk-due-date').value=risk?.due_date??'';
+    $('ti-risk-example').value='';
+    $('ti-risk-suggest-code').hidden=Boolean(risk);
+    $('ti-risk-use-example').hidden=Boolean(risk);
+    $('ti-risk-example').disabled=Boolean(risk);
+    $('ti-risk-residual-details').open=Boolean(risk?.residual_likelihood||risk?.residual_impact);
     $('ti-risk-status').value=risk?.status??'open';
     $('ti-risk-note').value=risk?.note??'';
     form.dataset.editId=risk?.id??'';
@@ -172,20 +242,40 @@ export function createRiskRegisterUI({api,getPermissions,onAuthFailure}){
     };
   }
   function renderDetail(r){
-    state.selected=r;const root=$('ti-risks-detail-values');root.replaceChildren();
-    for(const [name,value] of [
-      ['Kode',r.risk_code],['Risiko',r.title],['Skenario',r.scenario],
-      ['Aset',r.asset_code? r.asset_code+' · '+r.asset_title:'Tidak terkait aset tertentu'],
-      ['Risiko inheren',r.inherent_score+'/25 · '+LEVEL[r.inherent_level]],
-      ['Risiko residual',r.residual_score===null?'Belum dinilai':
-        r.residual_score+'/25 · '+LEVEL[r.residual_level]],
-      ['Mitigasi',r.mitigation||'Belum dicatat'],['PIC',r.pic],
-      ['Target',r.due_date],['Status',STATUS[r.status]],
-      ['Revisi',r.revision],['Arsip',r.archived_at?'Diarsipkan':'Aktif'],
-      ['Catatan',r.note||'—'],
-    ]){
-      const wrap=text('div','','ti-asset-detail-item');
-      wrap.append(text('dt',name),text('dd',value));root.append(wrap);
+    state.selected=r;
+    const head=$('ti-risks-detail-summary');head.replaceChildren();
+    const heading=text('div','','risk-detail-heading');
+    heading.append(text('span',r.risk_code,'risk-record-code'),
+      text('h3',r.title),text('p',STATUS[r.status]+(r.archived_at?' · Diarsipkan':'')));
+    head.append(heading,text('span',r.inherent_score+'/25 · '+LEVEL[r.inherent_level],
+      'risk-level-pill risk-level-'+r.inherent_level));
+    const root=$('ti-risks-detail-values');root.replaceChildren();
+    const groups=[
+      ['Identifikasi risiko',[
+        ['Skenario dan dampak',r.scenario],
+        ['Aset terkait',r.asset_code?r.asset_code+' · '+r.asset_title:'Tidak terkait aset tertentu'],
+        ['Nilai inheren',r.inherent_score+'/25 · '+LEVEL[r.inherent_level]],
+        ['Nilai residual',r.residual_score===null?'Belum dinilai':
+          r.residual_score+'/25 · '+LEVEL[r.residual_level]],
+      ]],
+      ['Penanganan dan PIC',[
+        ['Rencana mitigasi',r.mitigation||'Belum dicatat'],
+        ['PIC',r.pic],['Target',r.due_date],
+        ['Status',STATUS[r.status]],['Catatan',r.note||'—'],
+      ]],
+      ['Informasi pencatatan',[
+        ['Kode',r.risk_code],['Revisi',r.revision],
+        ['Arsip',r.archived_at?'Diarsipkan':'Aktif'],
+      ]],
+    ];
+    for(const [title,fields] of groups){
+      const group=text('section','','risk-detail-section');
+      const dl=text('dl','','ti-assets-detail-values');
+      for(const [name,value] of fields){
+        const item=text('div','','ti-asset-detail-item');
+        item.append(text('dt',name),text('dd',value));dl.append(item);
+      }
+      group.append(text('h3',title),dl);root.append(group);
     }
     $('ti-risks-detail').hidden=false;sync();
   }
@@ -196,6 +286,7 @@ export function createRiskRegisterUI({api,getPermissions,onAuthFailure}){
       const record=validateRiskResponse(await api('/risks/'+id));
       if(req!==state.detailRequest)return;
       renderDetail(record);
+      $('ti-risks-detail').scrollIntoView?.({block:'nearest'});
       const history=await api('/risks/'+id+'/history');
       if(req!==state.detailRequest)return;
       if(!Array.isArray(history.events))throw new TypeError('History invalid');
@@ -209,6 +300,35 @@ export function createRiskRegisterUI({api,getPermissions,onAuthFailure}){
       }
     }catch(e){if(!onAuthFailure(e))message('Gagal membuka risiko atau riwayat.','error');}
   }
+  $('ti-risk-example').addEventListener('change',()=>{
+    const example=riskExampleById($('ti-risk-example').value);
+    $('ti-risk-example-hint').textContent=example?
+      'Contoh: '+example.scenario+' Pilih Gunakan contoh jika sesuai.':
+      'Pilih contoh bila relevan, lalu gunakan dan sesuaikan berdasarkan kondisi lembaga.';
+  });
+  $('ti-risk-use-example').addEventListener('click',()=>{
+    const chosen=riskExampleById($('ti-risk-example').value);
+    if(!chosen){$('ti-risk-example').focus();return;}
+    if(($('ti-risk-title').value.trim()||$('ti-risk-scenario').value.trim())&&
+      !window.confirm('Ganti judul dan skenario saat ini dengan contoh? Nilai risiko dan aset terkait tidak berubah.'))return;
+    $('ti-risk-title').value=chosen.title;
+    $('ti-risk-scenario').value=chosen.scenario;
+    $('ti-risk-example-hint').textContent='Contoh diterapkan. Sesuaikan dengan kondisi aktual, lalu nilai kemungkinan dan dampaknya sendiri.';
+  });
+  $('ti-risk-suggest-code').addEventListener('click',()=>{
+    const title=$('ti-risk-title');
+    if(!title.value.trim()){title.focus();$('ti-risk-code-hint').textContent='Isi nama risiko terlebih dahulu.';return;}
+    const code=suggestRiskCode(title.value);
+    if(code){
+      $('ti-risk-code').value=code;
+      $('ti-risk-code-hint').textContent='Kode usulan: '+code+'. Periksa keunikan sebelum menyimpan.';
+    }
+  });
+  $('ti-risks-clear-filters').addEventListener('click',()=>{
+    $('ti-risks-search').value='';$('ti-risks-view').value='active';
+    $('ti-risks-status-filter').value='all';$('ti-risks-level-filter').value='all';
+    $('ti-risks-asset-filter').value='all';void load();
+  });
   $('ti-risks-create').addEventListener('click',()=>setForm(null));
   $('ti-risks-edit').addEventListener('click',()=>{if(state.selected&&!state.selected.archived_at)setForm(state.selected);});
   $('ti-risks-refresh').addEventListener('click',()=>void load({resetOffset:false}));
@@ -225,6 +345,12 @@ export function createRiskRegisterUI({api,getPermissions,onAuthFailure}){
     if(state.busy||!canWrite())return;
     const id=$('ti-risks-form').dataset.editId;
     let data;
+    if(!$('ti-risk-likelihood').value||!$('ti-risk-impact').value){
+      $('ti-risks-form-error').hidden=false;
+      $('ti-risks-form-error').textContent='Nilai kemungkinan dan dampak harus dipilih berdasarkan kondisi lembaga.';
+      (!$('ti-risk-likelihood').value?$('ti-risk-likelihood'):$('ti-risk-impact')).focus();
+      return;
+    }
     try{data=fields();}
     catch{
       $('ti-risks-form-error').hidden=false;

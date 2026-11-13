@@ -561,12 +561,23 @@ async function runBrowser(base,db,fixture){
       JSON.stringify(riskAsset)+")",'risk form loads real active assets');
     await evalJs("document.getElementById('ti-risks-create').click()");
     await until("document.getElementById('ti-risks-dialog').open",'new risk dialog');
+    assert.equal(await evalJs("document.getElementById('ti-risk-likelihood').value"),'');
+    assert.equal(await evalJs("document.getElementById('ti-risk-impact').value"),'');
+    assert.equal(await evalJs("document.getElementById('ti-risk-due-date').value"),'');
+    assert.equal(await evalJs("document.getElementById('ti-risk-inherent-preview').textContent.includes('Belum dihitung')"),true);
+    assert.equal(await evalJs("document.getElementById('ti-risks-form').checkValidity()"),false);
+    await evalJs("document.getElementById('ti-risk-example').value='CBS_GANGGUAN';"+
+      "document.getElementById('ti-risk-use-example').click()");
+    assert.equal(await evalJs("document.getElementById('ti-risk-title').value.includes('core banking')"),true);
+    assert.equal(await evalJs("document.getElementById('ti-risk-likelihood').value"),'');
+    assert.equal(await evalJs("document.getElementById('ti-risk-impact').value"),'');
     await evalJs("document.getElementById('ti-risk-code').value='RSK-E2E-01';"+
       "document.getElementById('ti-risk-title').value='Gangguan server saat transaksi';"+
       "document.getElementById('ti-risk-scenario').value='Kegagalan server dapat menghentikan transaksi harian pada BPR.';"+
       "document.getElementById('ti-risk-asset-id').value="+JSON.stringify(riskAsset)+";"+
       "document.getElementById('ti-risk-likelihood').value='4';"+
       "document.getElementById('ti-risk-impact').value='5';"+
+      "document.getElementById('ti-risk-due-date').value='2027-01-31';"+
       "document.getElementById('ti-risk-pic').value='Petugas Infrastruktur';"+
       "document.getElementById('ti-risks-form').requestSubmit()");
     await until("!document.getElementById('ti-risks-detail').hidden && "+
@@ -578,6 +589,9 @@ async function runBrowser(base,db,fixture){
     assert.equal(riskRow.rows[0].asset_id,riskAsset);
     assert.equal(riskRow.rows[0].score,20);
     assert.equal(riskRow.rows[0].residual_likelihood,null);
+    assert.equal(await evalJs("document.getElementById('ti-risks-detail-summary').textContent.includes('Gangguan server saat transaksi')"),true);
+    assert.equal(await evalJs("document.getElementById('ti-risks-detail-values').textContent.includes('Penanganan dan PIC')"),true);
+    assert.equal(await evalJs("document.querySelector('#ti-risks-list .risk-record-action').textContent.includes('Lihat penilaian')"),true);
     await evalJs("document.getElementById('ti-risks-edit').click()");
     await until("document.getElementById('ti-risks-dialog').open",'risk edit dialog');
     await evalJs("document.getElementById('ti-risk-mitigation').value='Pengujian backup dan prosedur restore rutin.';"+
