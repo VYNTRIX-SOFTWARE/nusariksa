@@ -995,3 +995,38 @@ h1,h2,p{margin-top:0}h1,h2{letter-spacing:-.027em}
 .report-export-actions{display:flex;flex-wrap:wrap;gap:9px}
 .report-export-actions .button{white-space:nowrap}
 @media(max-width:600px){.report-export-actions,.report-export-actions .button{width:100%}}
+
+/* Pengalaman pencatatan aset: daftar berbasis tugas, detail terbaca, dan formulir terkelompok. */
+.asset-list-summary{font-size:12px;color:#606B7F;margin:0 0 14px;line-height:1.7}
+.asset-record{display:grid;gap:11px;padding:17px 19px;transition:border-color .15s}
+.asset-record:hover{border-color:#AAA9C6}
+.asset-record-head{display:flex;align-items:flex-start;justify-content:space-between;gap:15px}
+.asset-record-title{display:grid;gap:4px;min-width:0}
+.asset-record-title strong{font-size:15px;line-height:1.5;color:#272B40;overflow-wrap:anywhere}
+.asset-record-code{font-size:11px;font-weight:750;letter-spacing:.045em;color:#646C88}
+.asset-record-meta{display:flex;flex-wrap:wrap;gap:6px 14px;color:#5B6679;font-size:12px}
+.asset-record-meta span{line-height:1.5}
+.asset-record-action{justify-self:start;font-size:12px}
+.asset-status-pill{font-size:11px;font-weight:750;border-radius:99px;padding:5px 10px;white-space:nowrap;background:#F0F2F5;color:#44526A}
+.asset-criticality-low{background:#EBF6F0;color:#24644B}
+.asset-criticality-medium{background:#FFF2DE;color:#865A15}
+.asset-criticality-high{background:#FAE7E7;color:#9C3434}
+.asset-empty-state{padding:30px 18px;text-align:center;border:1px dashed #CCD2E1;border-radius:12px;background:#F9FAFD}
+.asset-empty-state strong{font-size:15px;color:#283248}
+.asset-empty-state p{font-size:13px;line-height:1.65;color:#647083;margin:8px auto 0;max-width:55ch}
+.asset-detail-summary{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin:10px 0 22px}
+.asset-detail-heading{display:grid;gap:5px}
+.asset-detail-heading h3{font-size:19px;margin:0;line-height:1.4}
+.asset-detail-heading p{font-size:12px;color:#667286;margin:0}
+#ti-assets-dialog{width:min(760px,calc(100vw - 24px));}
+#ti-assets-form{background:#FFF;border:0;padding:0;margin:0;gap:18px}
+#ti-assets-form .asset-dialog-intro{font-size:13px;line-height:1.65;color:#637087;margin:0}
+.asset-form-section{display:grid;gap:11px;min-width:0;margin:0;padding:19px;border:1px solid #E3E7F0;border-radius:12px;background:#FBFCFE}
+.asset-form-section legend{font-weight:750;font-size:14px;color:#323C52;padding:0 8px}
+.asset-section-caption{font-size:12px;line-height:1.6;color:#68758B;margin:0}
+.asset-field-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.asset-inline-action{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+.asset-inline-action .button{font-size:12px}
+#ti-assets-form .workspace-help{margin:0}
+.asset-form-actions{position:sticky;bottom:0;background:#FFF;padding:15px 0 3px;border-top:1px solid #E3E7F0;z-index:2}
+@media(max-width:650px){.asset-field-grid{grid-template-columns:1fr}.asset-record-head,.asset-detail-summary{flex-direction:column}}
