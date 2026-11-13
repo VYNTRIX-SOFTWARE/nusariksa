@@ -109,6 +109,11 @@ function renderReport(report) {
       pair('Catatan pemeriksa', last.note));
     decision.append(dl);
   }
+  for (const [format,id] of [['pdf','report-download-pdf'],['csv','report-download-csv']]){
+    const link=$(id);
+    link.href='/assessments/'+encodeURIComponent(report.assessment.id)+'/report.'+format;
+    link.download='nusariksa-asesmen-ti-internal-'+report.assessment.id+'.'+format;
+  }
   $('report-filter').value = 'all';
   renderControls(report, 'all');
 }
@@ -148,6 +153,9 @@ export function createReporting({ api, getPermissions, getAssessments, onAuthFai
   const clear = () => {
     generation += 1;
     currentReport = null;
+    for(const id of ['report-download-pdf','report-download-csv']){
+      $(id).removeAttribute('href');
+    }
     showState('empty');
     $('report-message').hidden = true;
   };
