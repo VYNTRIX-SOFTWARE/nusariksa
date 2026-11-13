@@ -27,7 +27,7 @@ function wrap(value,width=89){
 function pdfEsc(s){
   return s.replace(/\\/g,'\\\\').replace(/\(/g,'\\(').replace(/\)/g,'\\)');
 }
-export function makeDraftWorkpaperPdf(lines){
+export function makeDraftWorkpaperPdf(lines,footerLabel='DRAFT - BUKAN HASIL PENILAIAN PADK / BUKAN LAPORAN FINAL'){
   if(!Array.isArray(lines)||lines.some(x=>typeof x!=='string'))
     throw new TypeError('Invalid workpaper lines');
   const perPage=53,sections=[];
@@ -46,7 +46,7 @@ export function makeDraftWorkpaperPdf(lines){
       ]),
       'ET',
       'BT /F1 8 Tf 40 30 Td',
-      '('+pdfEsc('DRAFT - BUKAN HASIL PENILAIAN PADK / BUKAN LAPORAN FINAL'+
+      '('+pdfEsc(clean(footerLabel)+
         ' | Halaman '+(page+1)+' dari '+sections.length)+') Tj',
       'ET',
     ].join('\n');

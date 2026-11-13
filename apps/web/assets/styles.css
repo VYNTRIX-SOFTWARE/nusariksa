@@ -985,3 +985,13 @@ h1,h2,p{margin-top:0}h1,h2{letter-spacing:-.027em}
 #page-workspace #workspace-note[aria-invalid="true"]{border-color:#C83737;
   box-shadow:0 0 0 2px #FCE7E7}
 #page-workspace #workspace-note:focus-visible{outline:2px solid #7460CE;outline-offset:2px}
+
+/* Export report internal: actions remain available in draft and approved states. */
+.report-export-row{display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:16px;background:#F8F7FD;border:1px solid #E0DCF2;
+  padding:16px 20px;border-radius:11px;margin:0 0 18px;color:#34374B}
+.report-export-row strong{font-size:13px}
+.report-export-row p{font-size:12px;line-height:1.6;margin:5px 0 0;color:#596174}
+.report-export-actions{display:flex;flex-wrap:wrap;gap:9px}
+.report-export-actions .button{white-space:nowrap}
+@media(max-width:600px){.report-export-actions,.report-export-actions .button{width:100%}}

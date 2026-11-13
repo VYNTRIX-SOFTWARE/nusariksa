@@ -18,6 +18,7 @@ test('aset laporan disajikan lewat allowlist dan CSP existing', async () => {
       'report-select-area', 'report-manual-form', 'report-manual-id',
       'report-content', 'report-controls-body', 'report-distribution',
       'report-decision', 'report-progress-bar', 'report-message',
+      'report-download-pdf', 'report-download-csv',
     ]) assert.ok(html.includes('id="' + id + '"'), id + ' missing');
     for (const path of ['/assets/assessment-report.js','/assets/assessment-report-model.js']) {
       const result = await fetch(base + path);
@@ -29,6 +30,9 @@ test('aset laporan disajikan lewat allowlist dan CSP existing', async () => {
     assert.match(source, /textContent/);
     assert.doesNotMatch(source, /\.innerHTML\s*=/);
     assert.match(source, /generation/);
+    assert.match(source, /report-download-pdf/);
+    assert.match(source, /report-download-csv/);
+    assert.match(source, /encodeURIComponent\(report\.assessment\.id\)/);
     assert.match(source, /canReadReport/);
     assert.match(source, /\$\('report-manual-form'\)\.hidden/);
     assert.doesNotMatch(source, /report-manual-area/);

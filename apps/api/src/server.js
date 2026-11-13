@@ -326,7 +326,8 @@ export function createServer({
       return;
     }
 
-    if (request.url?.startsWith('/assessments/') && request.url.endsWith('/report')) {
+    if (request.url?.startsWith('/assessments/') &&
+      /\/report(?:\.(?:pdf|csv))?$/.test(request.url)) {
       try {
         await handleReport(request, response);
       } catch {
