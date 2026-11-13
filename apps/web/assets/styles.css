@@ -1155,3 +1155,61 @@ h1,h2,p{margin-top:0}h1,h2{letter-spacing:-.027em}
   padding:14px 0 3px;z-index:2}
 @media(max-width:650px){.finding-record-head,.finding-detail-summary{flex-direction:column}
   .finding-inline-action{align-items:flex-start;flex-direction:column}}
+
+/* Rencana Pemulihan TI: daftar, prosedur, pengujian, dan form berdasarkan pekerjaan. */
+.recovery-section-intro h2{margin:0 0 7px;font-size:17px;color:#29374D}
+.recovery-section-intro p{margin:0 0 19px;font-size:13px;color:#627087;line-height:1.65;max-width:78ch}
+.recovery-filter-form{display:grid;grid-template-columns:minmax(190px,2fr) minmax(150px,1fr) auto auto;gap:10px;align-items:end;margin:0 0 16px}
+.recovery-filter-form label{display:grid;gap:6px;font-size:12px;color:#4C5970;font-weight:700}
+.recovery-filter-form input,.recovery-filter-form select{box-sizing:border-box;min-width:0;width:100%;border:1px solid #D0D7E5;border-radius:8px;padding:10px;font:inherit}
+.recovery-list-summary{font-size:12px;color:#69758A;line-height:1.65;margin:0 0 14px}
+.recovery-record{padding:17px 19px;border:1px solid #E1E5EE;border-radius:12px;background:#FFF;display:grid;gap:13px}
+.recovery-record-head,.recovery-detail-summary{display:flex;align-items:flex-start;justify-content:space-between;gap:15px}
+.recovery-record-title,.recovery-detail-heading{display:grid;gap:5px;min-width:0}
+.recovery-record-title strong{font-size:15px;color:#2D3950;line-height:1.45;overflow-wrap:anywhere}
+.recovery-record-code{font-size:11px;color:#66758C;font-weight:750;letter-spacing:.045em}
+.recovery-record-meta{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12px;color:#627087}
+.recovery-record-action{justify-self:start;font-size:12px}
+.recovery-status-pill{padding:6px 11px;border-radius:999px;background:#EEF0F6;color:#45536E;font-size:11px;white-space:nowrap;font-weight:750}
+.recovery-empty-state{border:1px dashed #CBD2E2;border-radius:12px;padding:28px 20px;background:#F9FAFD;text-align:center}
+.recovery-empty-state strong{color:#29344B;font-size:15px}
+.recovery-empty-state p{max-width:55ch;margin:8px auto 0;font-size:13px;color:#67748A;line-height:1.6}
+.recovery-detail-summary{margin:8px 0 15px}
+.recovery-detail-heading h3{font-size:19px;line-height:1.4;margin:0;color:#2F3950}
+.recovery-detail-heading p{font-size:12px;color:#637187;margin:0}
+.recovery-next-step{padding:13px 15px;border-left:3px solid #697FA0;border-radius:9px;background:#F2F5FA;color:#45536E;font-size:13px;line-height:1.7;margin:0 0 22px}
+.recovery-detail-groups{display:grid;gap:22px;margin:0 0 26px}
+.recovery-detail-section h3{margin:0 0 12px;color:#303B53;font-size:14px}
+.recovery-detail-section dl{margin:0}
+.recovery-detail-section dd{white-space:pre-wrap}
+.recovery-exercise-list{display:grid;gap:10px;margin-top:15px}
+.recovery-exercise-card{border:1px solid #E3E8F0;border-radius:12px;padding:15px;background:#FBFCFE;display:grid;gap:8px}
+.recovery-exercise-card strong{color:#2D3A52;font-size:14px}
+.recovery-exercise-card p{margin:0;color:#5B667B;font-size:12px;line-height:1.6;white-space:pre-wrap}
+.recovery-exercise-result{font-size:11px;font-weight:700;color:#4F607B}
+.recovery-empty-exercise{font-size:13px;color:#66748C;line-height:1.65}
+.recovery-history-panel{margin-top:24px;padding-top:16px;border-top:1px solid #E2E7F0}
+.recovery-history-panel h3{font-size:14px;color:#303B53}
+.recovery-history-panel>div{display:grid;gap:7px}
+.recovery-dialog{width:min(780px,calc(100vw - 24px));max-height:calc(100vh - 46px);overflow-y:auto;border:0;border-radius:14px;padding:24px;box-shadow:0 20px 65px #141B3636;color:#293248}
+.recovery-dialog::backdrop{background:#10172E74}
+.recovery-dialog form{display:grid;gap:17px;min-width:0}
+.recovery-dialog h2{font-size:20px;line-height:1.45;margin:0}
+.recovery-form-intro{font-size:13px;line-height:1.65;color:#647086;margin:0}
+.recovery-form-section{display:grid;gap:12px;border:1px solid #E0E5F0;background:#FBFCFF;border-radius:12px;padding:18px;min-width:0;margin:0}
+.recovery-form-section legend{font-size:14px;color:#2D3B51;font-weight:750;padding:0 8px}
+.recovery-form-section label{display:grid;gap:7px;font-size:12px;font-weight:650;color:#3C4A63;min-width:0}
+.recovery-form-section input,.recovery-form-section textarea,.recovery-form-section select{min-width:0;width:100%;box-sizing:border-box;border:1px solid #CFD7E6;border-radius:8px;padding:10px;font:inherit;background:#FFF;color:#24324C}
+.recovery-form-section textarea{line-height:1.6;resize:vertical}
+.recovery-two-col{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.recovery-template-panel{display:grid;gap:11px;padding:15px;background:#EDF2FA;border:1px solid #DCE4F0;border-radius:10px}
+.recovery-template-panel .button,.recovery-code-action .button{justify-self:start;font-size:12px}
+.recovery-field-help{font-size:12px;line-height:1.65;color:#65738A;margin:0}
+.recovery-code-action{display:flex;align-items:center;flex-wrap:wrap;gap:12px}
+.recovery-target-helpers{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.recovery-target-helpers p{font-size:12px;line-height:1.7;color:#58667E;padding:12px;border-radius:9px;background:#EFF3FA;margin:0}
+.recovery-form-actions{position:sticky;bottom:0;padding:13px 0 1px;background:#FFF;border-top:1px solid #E0E5EF;display:flex;gap:10px;flex-wrap:wrap;z-index:2}
+@media(max-width:800px){.recovery-filter-form{grid-template-columns:1fr 1fr}.recovery-filter-form .button{width:auto}}
+@media(max-width:620px){.recovery-filter-form,.recovery-two-col,.recovery-target-helpers{grid-template-columns:1fr}
+ .recovery-record-head,.recovery-detail-summary{flex-direction:column}
+ .recovery-dialog{padding:15px}}
