@@ -35,6 +35,16 @@ test('PDF asesmen menandai status pratinjau atau final internal tanpa mengklaim 
   const body=pdf.toString('latin1');
   assert.ok(body.startsWith('%PDF-1.4'));
   assert.match(body,/ASESMEN TI INTERNAL - BUKAN PENGESAHAN OJK/);
+  assert.match(body,/\/BaseFont \/Helvetica >>/);
+  assert.match(body,/\/BaseFont \/Helvetica-Bold >>/);
+  assert.doesNotMatch(body,/\/BaseFont \/Courier/);
+  for(const section of ['Ringkasan eksekutif','Rincian penilaian per kontrol',
+    'Daftar perhatian dan tindak lanjut','Pemeriksaan internal']){
+    assert.ok(body.toLowerCase().includes(section.toLowerCase()),
+      section+' missing from vector PDF');
+  }
+  assert.match(body,/Hasil: Belum memenuhi/);
+  assert.match(body,/LAPORAN ASESMEN TI INTERNAL/);
   assert.doesNotMatch(body,/DRAFT - BUKAN HASIL PENILAIAN PADK/);
   const approved=makeReport();
   approved.final=true;approved.assessment.status='approved';
@@ -57,4 +67,33 @@ test('CSV cocok untuk Excel, berisi jawaban tersimpan dan mencegah formula injec
   const approved=makeReport();approved.final=true;
   assert.match(makeInternalAssessmentCsv(approved).toString('utf8'),/FINAL INTERNAL/);
   assert.throws(()=>makeInternalAssessmentCsv(null),TypeError);
+});
+
+test('Report Engine V2 membuat pagination dan footer aktual untuk daftar kontrol panjang',()=>{
+  const report=makeReport();
+  report.controls=Array.from({length:80},(_,index)=>({
+    control_code:'SEC_'+String(index+1).padStart(3,'0'),
+    title:'Pengendalian TI simulasi nomor '+String(index+1),
+    source_document:'POJK 34 Tahun 2025',
+    source_section:'Pasal simulasi '+String(index+1),
+    rating:index%3===0?'non_compliant':'partially_compliant',
+    note:'Tindak lanjut perlu mempertimbangkan bukti aktual, dampak, serta '+
+      'risiko terkait pengendalian TI. '.repeat(9),
+    revision:1,
+  }));
+  report.summary={total:80,assessed:80,notAssessed:0,completionPercent:100,
+    ratings:{compliant:0,partially_compliant:53,non_compliant:27,not_applicable:0}};
+  const pdf=makeInternalAssessmentPdf(report);
+  const source=pdf.toString('latin1');
+  const pages=[...source.matchAll(/\/Type \/Page \/Parent /g)].length;
+  assert.ok(pages>=8,'PDF should paginate dense reports without truncation');
+  assert.match(source,/SEC_001/);
+  assert.match(source,/SEC_080/);
+  assert.match(source,/Halaman 1 \/ /);
+  assert.match(source,new RegExp('Halaman '+pages+' \\/ '+pages));
+  const match=/startxref\n(\d+)\n%%EOF/.exec(source);
+  assert.ok(match,'xref section must be present');
+  assert.equal(source.slice(Number(match[1]),Number(match[1])+4),'xref');
+  assert.ok(pdf.byteLength<3*1024*1024);
+  assert.doesNotMatch(source,/Skor maturitas resmi/);
 });

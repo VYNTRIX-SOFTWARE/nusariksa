@@ -1,4 +1,4 @@
-import {makeDraftWorkpaperPdf} from './padk-preparation-workpaper.js';
+import {makeProfessionalInternalAssessmentPdf} from './assessment-report-professional-pdf.js';
 
 const LABELS=Object.freeze({
   compliant:'Memenuhi',
@@ -85,8 +85,7 @@ export function linesOfInternalAssessmentReport(report){
   return result.flatMap(line=>line?wrap(line):['']);
 }
 export function makeInternalAssessmentPdf(report){
-  return makeDraftWorkpaperPdf(linesOfInternalAssessmentReport(report),
-    'ASESMEN TI INTERNAL - BUKAN PENGESAHAN OJK');
+  return makeProfessionalInternalAssessmentPdf(report);
 }
 function csvCell(input){
   let text=value(input).replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/g,' ');

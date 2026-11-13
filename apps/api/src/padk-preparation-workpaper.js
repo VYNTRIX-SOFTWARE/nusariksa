@@ -2,6 +2,7 @@ import {userHasPermission} from './authorization.js';
 import {getPadkPreparation,PadkPreparationError} from './padk-preparations.js';
 import {getPadkSavedScorePreview} from './padk-saved-score-preview.js';
 import {padkDraftReviewHistory} from './padk-draft-review.js';
+import {makeProfessionalPadkDraftPdf} from './padk-professional-workpaper-pdf.js';
 
 
 function clean(value){
@@ -189,11 +190,11 @@ async function collectWorkpaper(db,{actorId,id}){
     'FROM padk_indicator_evidence WHERE preparation_id=$1 '+
     'ORDER BY indicator_number,uploaded_at,id',[id],
   );
-  const pdf=makeDraftWorkpaperPdf(linesOfWorkpaper({
+  const pdf=makeProfessionalPadkDraftPdf({
     institution:institution.rows[0],preparation,items:rows.rows,
     preview,review,evidence:evidence.rows,
     generatedAt:new Date().toISOString(),
-  }));
+  });
   return {pdf,filename:'nusariksa-draft-hasil-padk-'+id+'.pdf'};
 }
 export async function getPadkPreparationWorkpaper(db,args){

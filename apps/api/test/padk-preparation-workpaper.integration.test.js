@@ -79,20 +79,24 @@ test('PADK report draft includes provisional domain/composite and review but nev
         assert.equal(response.headers.get('cache-control'),'no-store');
         const bytes=Buffer.from(await response.arrayBuffer());
         const source=bytes.toString('latin1');
+        // Vector PDF wraps visible paragraphs into multiple Tj text operators.
+        // Test the reconstructed visible text instead of fixed Courier lines.
+        const visible=[...source.matchAll(/\(((?:\\.|[^\\)])*)\) Tj/g)]
+          .map(match=>match[1].replace(/\\([()\\])/g,'$1')).join(' ');
         assert.ok(source.startsWith('%PDF-1.4'));
-        assert.match(source,/Bank PDF Uji/);
-        assert.match(source,/SOP backup dan pemulihan data sedang ditinjau/);
-        assert.match(source,/Dokumen SOP dan catatan uji restore/);
-        assert.match(source,/Peringkat sementara: 3/);
-        assert.match(source,/Jumlah dokumen bukti aktual: 1 file/);
-        assert.match(source,/sop-bukti.pdf/);
-        assert.match(source,/SHA-256/);
-        assert.match(source,/Progres: 1 \/ 60 indikator/);
-        assert.match(source,/Komposit SIMULASI: BELUM TERSEDIA/);
-        assert.match(source,/Status: in_progress/);
-        assert.match(source,/Proses pemulihan teridentifikasi/);
-        assert.match(source,/DRAFT - BUKAN HASIL PENILAIAN PADK/);
-        assert.doesNotMatch(source,/Composite Rank|Nilai Komposit|Disetujui OJK/i);
+        assert.match(visible,/Bank PDF Uji/);
+        assert.match(visible,/SOP backup dan pemulihan data sedang ditinjau/);
+        assert.match(visible,/Dokumen SOP dan catatan uji restore/);
+        assert.match(visible,/Peringkat sementara: 3/);
+        assert.match(visible,/Jumlah dokumen bukti aktual: 1 file/);
+        assert.match(visible,/sop-bukti.pdf/);
+        assert.match(visible,/SHA-256/);
+        assert.match(visible,/Progres: 1 \/ 60 indikator/);
+        assert.match(visible,/KOMPOSIT SIMULASI: BELUM TERSEDIA/);
+        assert.match(visible,/Status: in_progress/);
+        assert.match(visible,/Proses pemulihan teridentifikasi/);
+        assert.match(visible,/DRAFT - BUKAN HASIL PENILAIAN PADK/);
+        assert.doesNotMatch(visible,/Composite Rank|Nilai Komposit|Disetujui OJK/i);
         await db.query(
           "INSERT INTO padk_preparation_indicator_notes "+
           "(preparation_id,indicator_number,provisional_rank,justification) "+
@@ -108,7 +112,7 @@ test('PADK report draft includes provisional domain/composite and review but nev
         assert.equal(complete.status,200);
         const full=Buffer.from(await complete.arrayBuffer()).toString('latin1');
         assert.match(full,/Progres: 60 \/ 60 indikator/);
-        assert.match(full,/Komposit SIMULASI: 2\.01/);
+        assert.match(full,/KOMPOSIT SIMULASI: 2\.01/);
         assert.match(full,/Status: draft_accepted/);
         assert.match(full,/DRAFT_ACCEPTED/);
         assert.match(full,/BUKAN HASIL PENILAIAN PADK/);
