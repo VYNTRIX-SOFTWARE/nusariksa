@@ -19,6 +19,9 @@ test('shell disajikan tanpa melemahkan CSP atau mengaktifkan fitur palsu',async(
       'id="detail-dialog"','id="metric-changes"',
     ]) assert.ok(html.includes(marker));
     assert.match(html,/data-page="catalogs"/);
+    assert.match(html,/href="\/assets\/brand\/nusariksa-icon\.svg"/);
+    assert.match(html,/src="\/assets\/brand\/nusariksa-primary\.svg"/);
+    assert.match(html,/src="\/assets\/brand\/nusariksa-dark\.svg"/);
     assert.match(html,/id="catalog-menu"[^>]*hidden/);
     assert.match(html,/id="page-catalogs"[^>]*hidden/);
     assert.match(html,/data-page="reports"/);
@@ -28,7 +31,7 @@ test('shell disajikan tanpa melemahkan CSP atau mengaktifkan fitur palsu',async(
     assert.doesNotMatch(html,/DEMO\b|Patuh OJK|switcher bank/i);
     assert.doesNotMatch(html,/<script(?![^>]*\bsrc=)[^>]*>[\s\S]*?<\/script>/i);
     const css=await(await fetch(base+'/assets/styles.css')).text();
-    for(const token of ['#6D4AFF','#5936E8','#F5F2FF','#F7F8FA','#E5E7EB'])
+    for(const token of ['#0A3E7F','#073264','#2999E0','#0B1B32','#F7F8FA','#E5E7EB'])
       assert.ok(css.includes(token));
     assert.match(css,/width:256px/);
     assert.match(css,/flex-basis:68px/);

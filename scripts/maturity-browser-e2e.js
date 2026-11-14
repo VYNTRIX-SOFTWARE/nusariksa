@@ -289,6 +289,13 @@ async function runBrowser(base,db,fixture){
     // Password is masked by default and user can toggle visibility without submitting.
     await until("document.getElementById('login-screen') && !document.getElementById('login-screen').hidden",
       'login screen ready for visibility control');
+    await until("document.querySelector('.brand-light .brand-lockup').complete && "+
+      "document.querySelector('.brand-light .brand-lockup').naturalWidth>0",
+      'logo resmi layar masuk berhasil dimuat');
+    assert.equal(await evalJs("document.querySelector('.sidebar-brand .brand-lockup').getAttribute('src')"),
+      '/assets/brand/nusariksa-primary.svg');
+    assert.equal(await evalJs("document.querySelector('link[rel=icon]').getAttribute('href')"),
+      '/assets/brand/nusariksa-icon.svg');
     assert.equal(await evalJs("document.getElementById('login-password').type"),'password');
     await evalJs("document.querySelector('[data-password-toggle=login-password]').click()");
     assert.equal(await evalJs("document.getElementById('login-password').type"),'text');
@@ -317,11 +324,15 @@ async function runBrowser(base,db,fixture){
     assert.equal(await evalJs("document.getElementById('login-help').hidden"),true);
     assert.equal(await evalJs("document.getElementById('activation-password-step').hidden"),true);
     await evalJs("document.getElementById('activation-token').value='bad';"+
+      "document.getElementById('activation-token').dispatchEvent(new Event('input',{bubbles:true}));"+
       "document.getElementById('activation-next').click()");
+    assert.equal(await evalJs("document.getElementById('activation-token-status').textContent.includes('3 dari 43')"),true);
     assert.equal(await evalJs("document.getElementById('activation-message').textContent.includes('43 karakter')"),true);
     assert.equal(await evalJs("document.getElementById('activation-token-step').hidden"),false);
     await evalJs("document.getElementById('activation-token').value="+JSON.stringify(inviteToken)+";"+
+      "document.getElementById('activation-token').dispatchEvent(new Event('input',{bubbles:true}));"+
       "document.getElementById('activation-next').click()");
+    assert.equal(await evalJs("document.getElementById('activation-token-status').dataset.validity"),'valid');
     assert.equal(await evalJs("document.getElementById('activation-token-step').hidden"),true);
     assert.equal(await evalJs("document.getElementById('activation-password-step').hidden"),false);
     assert.equal(await evalJs("document.getElementById('activation-submit').disabled"),true);
@@ -330,6 +341,7 @@ async function runBrowser(base,db,fixture){
       "document.getElementById('activation-confirm').value='NotTheSamePassword';"+
       "document.getElementById('activation-confirm').dispatchEvent(new Event('input',{bubbles:true}))");
     assert.equal(await evalJs("document.getElementById('activation-submit').disabled"),true);
+    assert.equal(await evalJs("document.getElementById('activation-confirm').getAttribute('aria-invalid')"),'true');
     await evalJs("document.getElementById('activation-confirm').value="+JSON.stringify(fixture.password)+";"+
       "document.getElementById('activation-confirm').dispatchEvent(new Event('input',{bubbles:true}));"+
       "document.querySelector('[data-password-toggle=activation-password]').click()");

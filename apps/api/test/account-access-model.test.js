@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {test} from 'node:test';
-import {invitationCodeLooksValid,passwordReadiness}
+import {invitationCodeLooksValid,invitationCodeProgress,passwordReadiness}
   from '../../web/assets/account-access-model.js';
 
 test('kode undangan dikenali secara lokal tanpa memeriksa server',()=>{
@@ -25,4 +25,22 @@ test('panduan kata sandi mengharuskan panjang dan kecocokan sebelum submit',()=>
     {longEnough:true,match:false,ready:false});
   assert.equal(passwordReadiness('a'.repeat(1025),'a'.repeat(1025)).ready,false);
   assert.throws(()=>passwordReadiness(null,''),TypeError);
+});
+
+test('petunjuk kode undangan tidak membocorkan token atau menganggap kode sah',()=>{
+ const valid='A'.repeat(40)+'-_1';
+ const expected=invitationCodeProgress(valid);
+ assert.equal(expected.length,43);
+ assert.equal(expected.formatValid,true);
+ assert.match(expected.message,/server|aktivasi/);
+ assert.ok(!expected.message.includes(valid));
+ const copied=invitationCodeProgress('  '+valid+'  ');
+ assert.equal(copied.formatValid,true);
+ const partial=invitationCodeProgress('Abc');
+ assert.equal(partial.formatValid,false);
+ assert.match(partial.message,/3 dari 43/);
+ assert.equal(invitationCodeProgress('').length,0);
+ assert.match(invitationCodeProgress(valid+'x').message,/terlalu panjang/);
+ assert.match(invitationCodeProgress(valid.slice(0,-1)+'!').message,/karakter/);
+ assert.equal(invitationCodeProgress(null).formatValid,false);
 });
