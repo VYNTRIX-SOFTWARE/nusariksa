@@ -21,7 +21,7 @@ import {createFindingManagementUI} from './ti-findings-ui.js';
 import {createVendorManagementUI} from './ti-vendors-ui.js';
 import {createRecoveryUI} from './ti-recovery-ui.js';
 import {createCrosswalkReviewUI} from './padk-crosswalk-review-ui.js';
-import {invitationCodeLooksValid,passwordReadiness} from './account-access-model.js';
+import {invitationCodeLooksValid,invitationCodeProgress,passwordReadiness} from './account-access-model.js';
 
 const $ = (id) => document.getElementById(id);
 const screens = {
@@ -786,6 +786,14 @@ $('review-queue-table').addEventListener('click',(event)=>{
 $('review-queue-reload').addEventListener('click',()=>void loadWorkspace());
 
 let activationBusy=false;
+function updateActivationCodeStatus(){
+  const field=$('activation-token'),status=$('activation-token-status');
+  const result=invitationCodeProgress(field.value);
+  status.textContent=result.message;
+  status.dataset.validity=result.length===0?'empty':result.formatValid?'valid':'invalid';
+  field.setAttribute('aria-invalid',String(result.length===43&&!result.formatValid));
+  return result;
+}
 function activationStep(step){
   $('activation-token-step').hidden=step!==1;
   $('activation-password-step').hidden=step!==2;
@@ -793,15 +801,22 @@ function activationStep(step){
     ?'Langkah 1 dari 2 · Kode undangan':'Langkah 2 dari 2 · Kata sandi';
   $('activation-step-progress').style.width=step===1?'50%':'100%';
   $('activation-token').readOnly=step===2;
+  updateActivationCodeStatus();
   updateActivationReadiness();
 }
 function updateActivationReadiness(){
   const value=passwordReadiness($('activation-password').value,$('activation-confirm').value);
+  const length=$('activation-password').value.length;
   $('activation-password-hint').textContent=value.longEnough
-    ?'Panjang kata sandi memenuhi syarat.':'Gunakan minimal 12 karakter.';
-  $('activation-confirm-hint').textContent=$('activation-confirm').value
-    ?value.match?'Kata sandi cocok.':'Kata sandi belum sama.'
+    ?'Panjang kata sandi memenuhi syarat. Gunakan sandi unik yang sulit ditebak.'
+    :length>1024?'Kata sandi terlalu panjang (maksimal 1024 karakter).'
+      :length===0?'Gunakan minimal 12 karakter dan jangan pakai sandi dari akun lain.'
+      :'Tambah '+(12-length)+' karakter lagi agar mencapai minimal 12 karakter.';
+  const confirmation=$('activation-confirm').value;
+  $('activation-confirm-hint').textContent=confirmation
+    ?value.match?'Kata sandi sudah cocok.':'Kata sandi tidak cocok. Periksa kembali kedua kolom.'
     :'Ketik ulang kata sandi yang sama.';
+  $('activation-confirm').setAttribute('aria-invalid',String(Boolean(confirmation)&&!value.match));
   $('activation-submit').disabled=activationBusy||!value.ready
     ||!invitationCodeLooksValid($('activation-token').value);
 }
@@ -818,6 +833,8 @@ function resetActivation(){
   $('login-help').hidden=false;
   $('activation-form').reset();
   for(const id of ['activation-password','activation-confirm'])resetPasswordVisibility(id);
+  $('activation-token').removeAttribute('aria-invalid');
+  $('activation-confirm').removeAttribute('aria-invalid');
   activationMessage('');
   activationStep(1);
 }
@@ -830,11 +847,22 @@ $('activation-open').addEventListener('click',()=>{
   activationStep(1);
   $('activation-token').focus();
 });
-$('activation-token').addEventListener('input',()=>activationMessage(''));
+$('activation-token').addEventListener('input',()=>{
+  const field=$('activation-token');
+  // Trim spasi tak sengaja dari penyalinan; token tetap hanya tersimpan pada input.
+  field.value=field.value.trim();
+  updateActivationCodeStatus();activationMessage('');
+});
+$('activation-token').addEventListener('keydown',event=>{
+  if(event.key==='Enter'&&$('activation-password-step').hidden){
+    event.preventDefault();$('activation-next').click();
+  }
+});
 $('activation-next').addEventListener('click',()=>{
   const token=$('activation-token').value.trim();
   if(!invitationCodeLooksValid(token)){
-    activationMessage('Kode undangan harus berisi 43 karakter yang valid. Salin ulang kode dari administrator.');
+    updateActivationCodeStatus();
+    activationMessage('Kode belum sesuai format. Periksa 43 karakter undangan dan salin ulang bila perlu.');
     $('activation-token').focus();return;
   }
   $('activation-token').value=token;activationMessage('');
@@ -868,8 +896,15 @@ $('activation-form').addEventListener('submit',async event=>{
     resetActivation();loginError('');
     $('activation-success').hidden=false;
     $('login-email').focus();
-  }catch{
-    activationMessage('Aktivasi belum berhasil. Periksa apakah kode undangan masih berlaku dan belum digunakan.');
+  }catch(error){
+    if(error instanceof ApiError&&error.status===429){
+      activationMessage('Terlalu banyak percobaan aktivasi. Coba lagi setelah beberapa saat.');
+    }else if(error instanceof ApiError&&(error.status===400||error.status===401||
+      error.status===403||error.status===409)){
+      activationMessage('Aktivasi tidak dapat diproses. Periksa kode undangan, masa berlaku, dan kata sandi; hubungi administrator jika masih gagal.');
+    }else{
+      activationMessage('Aktivasi belum berhasil. Periksa koneksi lalu coba kembali.');
+    }
   }finally{activationBusy=false;updateActivationReadiness();}
 });
 $('activation-open').addEventListener('click',()=>$('activation-success').hidden=true);

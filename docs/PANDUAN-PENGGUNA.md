@@ -13,7 +13,11 @@ NusaRiksa membantu lembaga mencatat hasil pemeriksaan TI, menyimpan bukti, dan m
 3. Jika autentikasi dua faktor sudah diaktifkan, masukkan kode verifikasi sesuai petunjuk.
 4. Setelah berhasil masuk, pilih pekerjaan yang ingin dilakukan melalui menu aplikasi.
 
-**Jika belum memiliki akun:** hubungi administrator. Administrator akan mengundang akun melalui menu **Akses Pengguna** dan memberikan kode undangan melalui saluran yang aman. Pada halaman masuk, pilih **Aktifkan akun**, kemudian ikuti langkah pembuatan kata sandi. Administrator selanjutnya menetapkan hak akses sesuai tugas Anda.
+**Jika belum memiliki akun:** hubungi administrator. Administrator mengundang akun melalui menu **Akses Pengguna**, lalu menyampaikan kode undangan melalui saluran aman. Dari layar login pilih **Sudah punya kode undangan? Aktifkan akun**. Tempel kode undangan 43 karakter, pilih **Lanjut buat kata sandi**, kemudian buat kata sandi unik minimal 12 karakter dan ketik ulang untuk memastikan keduanya cocok. Tombol aktivasi aktif setelah panjang kata sandi dan konfirmasi sesuai. **Kode undangan baru diverifikasi oleh server ketika aktivasi dikirim**; petunjuk format di layar tidak berarti kode pasti sah, belum kedaluwarsa, atau belum dipakai.
+
+Kode undangan hanya dapat digunakan sekali. Jika sudah kedaluwarsa, salah, atau telah digunakan, minta administrator memeriksa undangan melalui jalur yang aman. Jangan mengirim kode melalui tangkapan layar publik, URL, atau tiket terbuka. Jika terlalu banyak percobaan, ikuti pesan pembatasan percobaan. Setelah berhasil aktif, masuk menggunakan **email yang diundang** dan kata sandi baru. Jika menu belum muncul, administrator perlu menetapkan peran Anda terlebih dahulu.
+
+Logo pada layar login, navigasi aplikasi, dan ikon tab browser mengikuti identitas resmi Nusariksa dari brand kit. Tampilan gelap menggunakan versi logo terang, sedangkan sidebar putih memakai logo utama.
 
 Tidak semua pengguna memiliki menu dan tombol yang sama. Hak akses ditentukan berdasarkan peran yang diberikan administrator.
 
