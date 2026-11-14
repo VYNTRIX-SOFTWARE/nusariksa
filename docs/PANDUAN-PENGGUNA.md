@@ -56,6 +56,8 @@ Untuk memakai daftar pemeriksaan yang disusun lembaga sendiri, nonaktifkan opsi 
 
 Gunakan **Persiapan Penilaian PADK** untuk mencatat penilaian indikator keamanan siber.
 
+Sebelum memulai, buka **Ketentuan penilaian dan penyampaian hasil** pada halaman tersebut. Ada **dua kategori (80/60 indikator)**; penilaian tahunan berposisi akhir Desember, pertama kali Desember 2026. Hasilnya perlu didokumentasikan, bukan otomatis dikirim sebagai laporan bulanan atau melalui APOLO. Rujukan dan batasan rinci tersedia dalam [matriks ketentuan keamanan siber](MATRIKS-KETENTUAN-PENILAIAN-KEAMANAN-SIBER.md).
+
 1. Buat penilaian berdasarkan periode dan kategori yang sesuai dengan layanan lembaga.
 2. Pilih indikator yang hendak diperiksa.
 3. Baca kriteria penilaian dan periksa kesesuaiannya dengan dokumen peraturan serta kondisi lembaga.
