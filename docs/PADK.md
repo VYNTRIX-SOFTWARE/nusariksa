@@ -4,9 +4,13 @@ NusaRiksa menyediakan kertas kerja berdasarkan **Lampiran IV PADK 43/PADK.03/202
 
 Sumber utama: [PADK 43/PADK.03/2025 di situs OJK](https://ojk.go.id/id/regulasi/Pages/PADK-43-PADK03-2025-Penyelenggaraan-Teknologi-Informasi-oleh-BPR-BPRS.aspx).
 
+Lihat [matriks ketentuan penilaian keamanan siber](MATRIKS-KETENTUAN-PENILAIAN-KEAMANAN-SIBER.md) untuk pemisahan ketentuan yang telah dikonfirmasi, status data instrumen, serta kewajiban dokumentasi dan penyampaian hasil.
+
 ## Kategori dan cara menghitung
 
 Pilih kategori sesuai karakteristik layanan BPR/BPRS. Kategori 1 berkaitan dengan layanan digital dan/atau koneksi ke sistem aplikasi atau infrastruktur TI mitra kerja; Kategori 2 mencakup layanan perbankan dasar sesuai PADK. Jangan memilih kategori berdasarkan hasil yang ingin dicapai.
+
+Terdapat **dua kategori**, bukan tiga. Penilaian tahunan menggunakan posisi **akhir Desember** dengan penilaian pertama untuk **Desember 2026** sesuai FAQ PADK. BPR/BPRS mendokumentasikan hasilnya; OJK dapat meminta sewaktu-waktu. Tidak ada kewajiban umum untuk mengunggah hasil maturitas sebagai laporan bulanan atau secara rutin melalui APOLO.
 
 | Komponen | Acuan |
 | --- | --- |
