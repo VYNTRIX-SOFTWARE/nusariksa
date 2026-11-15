@@ -19,6 +19,8 @@ Kondisi daftar saat ini:
 
 Daftar anomali redaksi berasal dari satu sumber pencatatan yang digunakan juga oleh panel pemeriksaan kriteria. Perubahan status atau putusan reviewer tidak dilakukan oleh generator ini. Seluruh teks tetap harus dibandingkan ke dokumen asli.
 
+Untuk pemeriksaan seluruh 540 baris secara berdampingan dengan PDF lokal, gunakan [Workbench Verifikasi Sumber PADK](../../../tools/padk-source-review/README.md). Berkas JSON hasil pemeriksaan tetap privat, dapat dilanjutkan, dan statusnya **tidak otomatis menjadi sumber yang telah terverifikasi**.
+
 **Status seluruh baris awal: PENDING.** Teks dalam kolom `teks_draft` berasal dari working copy/ekstraksi yang sudah ada di repository, bukan teks yang telah dinyatakan cocok dengan PDF resmi OJK. Kolom SHA-256 PDF resmi dan identitas reviewer sengaja dikosongkan.
 
 Gunakan hanya PDF yang diunduh dari [halaman PADK 43/2025 di situs OJK](https://ojk.go.id/id/regulasi/Pages/PADK-43-PADK03-2025-Penyelenggaraan-Teknologi-Informasi-oleh-BPR-BPRS.aspx). Simpan URL file PDF, waktu unduh, SHA-256, jumlah halaman, dan bukti asal dokumen secara terpisah. Nomor `halaman_tercetak_draft` **belum divalidasi** dan dapat berbeda dari halaman fisik PDF.
