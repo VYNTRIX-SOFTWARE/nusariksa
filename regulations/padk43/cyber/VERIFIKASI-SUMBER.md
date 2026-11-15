@@ -5,7 +5,19 @@ Perintah berikut menghasilkan workpaper sementara dari **80 indikator Kategori 1
 ```bash
 node scripts/padk-source-workpaper.js --format=csv > padk-verifikasi-sumber.csv
 node scripts/padk-source-workpaper.js --format=json > padk-verifikasi-sumber.json
+node scripts/padk-source-workpaper.js --format=ringkasan > padk-ringkasan-pemeriksaan.json
 ```
+
+**Ringkasan pemeriksaan** memisahkan baris kriteria yang perlu pengecekan redaksi, tabel yang terpotong antarhalaman, dan indikator Kategori 2 dengan pemetaan kandidat. Penanda ini membantu menentukan urutan pemeriksaan, **bukan bukti perbedaan regulasi yang sudah disahkan**.
+
+Kondisi daftar saat ini:
+
+- **31 sel kriteria** perlu pemeriksaan redaksi karena terkait tujuh baris parameter/kriteria yang sudah dicatat sebagai anomali untuk ditinjau. Pada Tabel 3 nomor 2, prioritas ini khusus peringkat 1; pada nomor 20, 21, 22, 27, 28, dan 29, seluruh lima peringkat perlu diperiksa.
+- **24 sel kriteria** lain berasal dari nomor tabel yang melewati batas halaman dan perlu dicek sambungan isi teksnya.
+- **7 indikator Kategori 2** (3, 18, 19, 20, 24, 29, 32) membutuhkan review pemetaan terhadap Tabel 3.
+- **62 dari 540 baris** memiliki penanda perhatian khusus, tetapi **540 dari 540 baris masih PENDING**. Angka 62 adalah jumlah slot review berisiko lebih tinggi, **bukan jumlah kesalahan regulasi yang dipastikan**.
+
+Daftar anomali redaksi berasal dari satu sumber pencatatan yang digunakan juga oleh panel pemeriksaan kriteria. Perubahan status atau putusan reviewer tidak dilakukan oleh generator ini. Seluruh teks tetap harus dibandingkan ke dokumen asli.
 
 **Status seluruh baris awal: PENDING.** Teks dalam kolom `teks_draft` berasal dari working copy/ekstraksi yang sudah ada di repository, bukan teks yang telah dinyatakan cocok dengan PDF resmi OJK. Kolom SHA-256 PDF resmi dan identitas reviewer sengaja dikosongkan.
 

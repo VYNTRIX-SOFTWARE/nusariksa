@@ -3,7 +3,7 @@ import {readFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {inspectPadkTranscriptionDraft} from '../apps/api/src/padk-transcription-workbench.js';
-import {readExtractedTable3} from '../apps/api/src/padk-draft-criteria.js';
+import {readExtractedTable3,listPadkDraftSourceConflicts} from '../apps/api/src/padk-draft-criteria.js';
 
 // Data ini hanya bahan review sumber, bukan instrumen final untuk official scoring.
 const FIELDS=[
@@ -13,9 +13,15 @@ const FIELDS=[
 ];
 const RISK_ROWS=new Set([2,26,36,74,79]);
 const RISK_C2=new Set([3,18,19,20,24,29,32]);
-const SOURCE_NOTES=new Map([
-  ['2:1','Kriteria peringkat 1 pada Tabel 3 nomor 2 memuat uraian strategi keamanan siber, sedangkan parameter nomor 2 membahas risk appetite. Periksa redaksi sumber dan klarifikasi sebelum digunakan sebagai dasar scoring.'],
-]);
+// Catatan perbandingan kriteria digunakan bersama oleh panel dan workpaper.
+const SOURCE_NOTES=new Map(listPadkDraftSourceConflicts().flatMap(row=>
+  row.reviewRanks.map(rank=>[
+    row.number+':'+rank,
+    'Periksa redaksi sumber: '+row.message+
+      ' Cocokkan parameter dan kriteria peringkat '+rank+'.',
+  ])
+));
+const MAPPING_NOTE='Pemetaan Kategori 2 ke Tabel 3 masih kandidat. Bandingkan teks Tabel 2 dan kriteria sumber; jangan menetapkan pemetaan otomatis.';
 const AUTHORITY='https://ojk.go.id/id/regulasi/Pages/PADK-43-PADK03-2025-Penyelenggaraan-Teknologi-Informasi-oleh-BPR-BPRS.aspx';
 function fail(message){throw new TypeError('Workpaper verifikasi sumber tidak valid: '+message);}
 const digits=n=>String(n).padStart(3,'0');
@@ -47,6 +53,7 @@ export function buildSourceReviewWorkpaper(drafts,table3){
         teks_draft:indicator.workingSummary,
         halaman_tercetak_draft:String(indicator.tablePage),
         ...blank,
+        catatan_sumber:category===2&&RISK_C2.has(indicator.number)?MAPPING_NOTE:'',
       });
     }
   }
@@ -90,6 +97,29 @@ export function buildSourceReviewWorkpaper(drafts,table3){
     records,
   };
 }
+export function summarizeSourceReview(workpaper){
+  if(!workpaper||workpaper.status!=='DRAFT_SOURCE_REVIEW_PENDING'
+    ||workpaper.productionEligible!==false
+    ||workpaper.sourceAuthenticityVerified!==false
+    ||!Array.isArray(workpaper.records)||workpaper.records.length!==540
+    ||workpaper.records.some(row=>row.verdict!=='PENDING'
+      ||row.reviewer!==''||row.sha256_pdf_resmi!==''))
+    fail('ringkasan hanya untuk workpaper awal yang belum diperiksa');
+  const count=key=>workpaper.records.filter(row=>row.prioritas===key).length;
+  const anomalyCriteria=count('PERIKSA_ANOMALI_REDAKSI');
+  const splitCriteria=count('PERIKSA_TABEL_TERPECAH');
+  const mappingIndicators=count('REVIEW_PEMETAAN');
+  return {
+    status:workpaper.status,
+    sourceAuthenticityVerified:false,independentReviewCompleted:false,productionEligible:false,
+    reviewed:0,pending:workpaper.records.length,
+    categories:{kategori1:80,kategori2:60},uniqueCriteria:400,
+    focus:{sourceWordingCells:anomalyCriteria,splitTableCells:splitCriteria,
+      category2MappingIndicators:mappingIndicators,
+      totalFlaggedRecords:anomalyCriteria+splitCriteria+mappingIndicators},
+    note:'Semua baris tetap PENDING. Penanda hanya prioritas pemeriksaan manual, bukan bukti sumber telah dinilai atau salah.',
+  };
+}
 function csvCell(v){
   let value=String(v??'');
   // Jangan izinkan teks sumber tampil sebagai formula spreadsheet.
@@ -106,16 +136,16 @@ export function toReviewCsv(workpaper){
 async function main(){
   const args=process.argv.slice(2);
   if(args.includes('--help')){
-    process.stdout.write('Pakai: node scripts/padk-source-workpaper.js [--format=csv|json] > workpaper.csv\n');
+    process.stdout.write('Pakai: node scripts/padk-source-workpaper.js [--format=csv|json|ringkasan]\n');
     return;
   }
-  if(args.some(x=>!['--format=csv','--format=json'].includes(x))||args.length>1)
+  if(args.some(x=>!['--format=csv','--format=json','--format=ringkasan'].includes(x))||args.length>1)
     fail('argumen tidak dikenal');
   const drafts=await Promise.all([1,2].map(async n=>JSON.parse(
     await readFile(new URL('../regulations/padk43/cyber/drafts/kategori-'+n+'.json',import.meta.url),'utf8'))));
   const workpaper=buildSourceReviewWorkpaper(drafts,await readExtractedTable3());
-  const format=args[0]==='--format=json'?'json':'csv';
-  process.stdout.write(format==='json'?JSON.stringify(workpaper,null,2)+'\n':toReviewCsv(workpaper));
+  const format=args[0]==='--format=json'?'json':args[0]==='--format=ringkasan'?'ringkasan':'csv';
+  process.stdout.write(format==='ringkasan'?JSON.stringify(summarizeSourceReview(workpaper),null,2)+'\n':format==='json'?JSON.stringify(workpaper,null,2)+'\n':toReviewCsv(workpaper));
   process.stderr.write('Workpaper: '+workpaper.counts.total+' record tersedia untuk review; belum ada hasil yang disahkan.\n');
 }
 if(process.argv[1]&&pathToFileURL(resolve(process.argv[1])).href===import.meta.url)

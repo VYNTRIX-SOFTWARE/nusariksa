@@ -21,6 +21,16 @@ const SOURCE_CONFLICTS=new Map([
   [28,'Kriteria peringkat membahas kaji ulang kebijakan keamanan siber, sedangkan parameter nomor 28 membahas vulnerability assessment dan penetration testing (halaman fisik PDF 170–171).'],
   [29,'Kriteria peringkat membahas identifikasi risiko dan risk register, sedangkan parameter nomor 29 membahas kaji ulang kebijakan keamanan siber (halaman fisik PDF 171).'],
 ]);
+/**
+ * Daftar baris sumber yang memerlukan pencocokan manual parameter dan kriteria.
+ * Penanda ini bukan putusan kesalahan PADK atau persetujuan koreksi teks.
+ */
+export function listPadkDraftSourceConflicts(){
+  return [...SOURCE_CONFLICTS.entries()].map(([number,message])=>({
+    number,message,
+    reviewRanks:number===2?[1]:[1,2,3,4,5],
+  }));
+}
 const fail=(message)=>{throw new PadkPreparationError(503,message);};
 
 export async function readExtractedTable3(){
