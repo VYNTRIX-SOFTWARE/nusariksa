@@ -7,7 +7,9 @@ const SHA256 = /^[a-f0-9]{64}$/;
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 const REVIEW_ROLES = new Set(['substance', 'technical']);
 const INVALID = /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/;
-const PLACEHOLDER = /\b(?:TODO|TBD|DUMMY|SYNTHETIC|SINTETIS|PLACEHOLDER|CONTOH SAJA)\b/i;
+// Istilah 'data dummy' muncul secara sah dalam kriteria kontrol lingkungan pengembangan.
+// Jangan salah klasifikasikan istilah normatif tersebut sebagai placeholder.
+const PLACEHOLDER = /\b(?:TODO|TBD|SYNTHETIC|SINTETIS|PLACEHOLDER|CONTOH SAJA)\b/i;
 
 function reject(message) { throw new PadkCyberError(message); }
 function exactObject(value, keys) {

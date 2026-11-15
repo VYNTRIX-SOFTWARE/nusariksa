@@ -16,7 +16,8 @@ export const PADK_CYBER_DOMAINS = Object.freeze([
 
 const CATEGORY_SIZES = Object.freeze({ 1: 80, 2: 60 });
 const DOMAIN_BY_CODE = new Map(PADK_CYBER_DOMAINS.map(domain => [domain.code, domain]));
-const CODE = /^[A-Z][A-Z0-9._-]{1,31}$/;
+// Kode subdomain bersumber dari tabel PADK: sejumlah label baku melebihi 32 karakter.
+const CODE = /^[A-Z][A-Z0-9._-]{1,63}$/;
 const BAD_TEXT = /[\u0000-\u001f\u007f]/;
 
 export const PADK_COMPOSITE_BANDS = Object.freeze([

@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "status": "ASSEMBLED_PENDING_SUBSTANCE_AND_TECHNICAL_REVIEW",
+  "sourcePdfSha256": "63868e2fe99a48485b17646618934c1fffb27b125811929e12bd70d170081e1b",
+  "sourceAuthorityUrl": "https://ojk.go.id/id/regulasi/Pages/PADK-43-PADK03-2025-Penyelenggaraan-Teknologi-Informasi-oleh-BPR-BPRS.aspx",
+  "sourceRowCount": 540,
+  "category1": {
+    "indicators": 80,
+    "criterionPlacements": 400
+  },
+  "category2": {
+    "indicators": 60,
+    "criterionPlacements": 300
+  },
+  "uniqueTable3Criteria": 400,
+  "totalCriterionPlacements": 700,
+  "sourceExtractionReviewed": false,
+  "crosswalkApproved": false,
+  "independentReviewCompleted": false,
+  "productionEligible": false,
+  "category2NeedsMappingReview": [
+    3,
+    18,
+    19,
+    20,
+    24,
+    29,
+    32
+  ],
+  "sourceCriteriaIssues": [
+    2,
+    20,
+    21,
+    22,
+    27,
+    28,
+    29
+  ],
+  "multiAspectC2Indicator29": {
+    "category2PdfPage": 151,
+    "aspectTable3Numbers": [
+      32,
+      35
+    ],
+    "candidateSelectedForDraftPack": 35,
+    "provisionalOnly": true,
+    "singleIndicator": true,
+    "officialCombinedRankRuleAvailable": false,
+    "note": "Tabel 2 nomor 29 memuat pelatihan dan simulasi phishing. Kriteria Tabel 3 nomor 32 dan 35 membahas aspek berbeda. Pemilihan kandidat 35 di pack draft bukan putusan skoring resmi."
+  },
+  "note": "Kelengkapan transkripsi dan pengisian 700 slot kriteria bukan hasil review substansi, persetujuan independen, atau izin menerbitkan hasil resmi."
+}

@@ -1,6 +1,6 @@
 # Data instrumen PADK
 
-Folder ini menampung data penilaian keamanan siber berdasarkan **Lampiran IV PADK 43/PADK.03/2025**. Data di `drafts/` masih bahan kerja dan belum boleh dipakai sebagai instrumen resmi.
+Folder ini menampung data penilaian keamanan siber berdasarkan **Lampiran IV PADK 43/PADK.03/2025**. **Dua candidate regulatory pack telah dirakit secara lengkap** berdasarkan transkripsi sumber, tetapi belum dapat dipakai sebagai instrumen resmi. Tahap `ASSEMBLED_PENDING_SUBSTANCE_AND_TECHNICAL_REVIEW` berbeda dari `DRAFT_UNVERIFIED` milik data kerja lama dan berbeda dari kelayakan rilis.
 
 Baca [panduan penilaian PADK](../../../docs/PADK.md) untuk kategori, bobot domain, kalkulasi, dan batasan penggunaan.
 
@@ -11,25 +11,30 @@ Baca [panduan penilaian PADK](../../../docs/PADK.md) untuk kategori, bobot domai
 | `drafts/kategori-1.json` | 80 indikator kerja Kategori 1 |
 | `drafts/kategori-2.json` | 60 indikator kerja Kategori 2 |
 | `drafts/table3-criteria-source.br` | 400 teks kriteria yang diekstrak dari Tabel 3 |
+| `sources/lampiran-iv-extraction.json` | Transkripsi 540 baris dari PDF, termasuk 140 parameter dan 400 kriteria unik; review independen belum selesai |
+| `candidates/kategori-1.json` | Candidate regulatory pack Kategori 1: 80 indikator dan 400 kriteria |
+| `candidates/kategori-2.json` | Candidate regulatory pack Kategori 2: 60 indikator dan 300 penempatan kriteria kandidat |
+| `candidates/review-manifest.json` | Penanda konflik parameter/kriteria dan pemetaan Kategori 2 yang belum dapat dianggap final |
 | `review/category2-candidates.json` | Kandidat pemetaan 60 indikator Kategori 2 ke Tabel 3 |
-| `packs/` | Regulatory pack yang telah diperiksa; saat ini belum tersedia |
+| `packs/` | Regulatory pack **sesudah** review substansi dan teknis; belum tersedia, tidak diisi otomatis |
 
 ## Menyusun regulatory pack
 
 1. Ambil PDF langsung dari [situs OJK](https://ojk.go.id/id/regulasi/Pages/PADK-43-PADK03-2025-Penyelenggaraan-Teknologi-Informasi-oleh-BPR-BPRS.aspx). Catat URL, tanggal akses, dan SHA-256 file. Hash saja tidak membuktikan keaslian penerbit.
 2. Bandingkan teks parameter, domain, halaman tabel, kriteria peringkat 1–5, dan halaman kriteria dengan PDF. Jangan menyalin parafrasa `workingSummary` sebagai kutipan regulasi.
 3. Verifikasi pemetaan Kategori 2 berdasarkan substansi, bukan sekadar kemiripan istilah.
-4. Susun `packs/kategori-1.json` dan `packs/kategori-2.json` sesuai skema yang diperiksa validator.
+4. Periksa `candidates/kategori-1.json` dan `candidates/kategori-2.json` yang sudah lengkap secara struktur. Cocokkan 540 baris sumber serta seluruh hubungan indikator-kriteria secara independen. **Jangan menyalin kandidat ke `packs/` tanpa menyelesaikan pengecualian substansi.**
 5. Lakukan pemeriksaan substansi dan teknis oleh dua orang berbeda yang bukan penyusun. Simpan rujukan halaman dan attestasi yang terikat pada fingerprint pack. Attestasi JSON bukan tanda tangan digital atau persetujuan OJK.
 6. Jalankan pemeriksaan dan review perubahan kode sebelum data dipakai aplikasi.
 
 ```bash
 npm run regulatory:draft-status
+npm run regulatory:candidates
 npm run regulatory:check
 npm run regulatory:release-gate
 ```
 
-`regulatory:check` memeriksa struktur, **bukan** memastikan seluruh redaksi benar. `regulatory:release-gate` harus menolak pack yang belum memenuhi syarat. Rincian opsi dapat dilihat pada `scripts/check-padk-regulatory-packs.js`.
+`regulatory:candidates` memastikan **140 indikator dan 700 penempatan kriteria** lengkap, menelusuri redaksi ke berkas transkripsi sumber, serta menolak perubahan pemetaan tanpa perubahan sumber. Hasilnya tetap **bukan** attestasi bahwa transkripsi identik dengan PDF resmi atau bahwa hubungan antarparameter telah disahkan. `regulatory:check` memeriksa struktur, sedangkan `regulatory:release-gate` **harus menolak** penggunaan produksi sampai seluruh bukti dan review tersedia. Rincian opsi dapat dilihat pada `scripts/check-padk-regulatory-packs.js`.
 
 Setiap pack wajib memuat identitas sumber (`source.url` dan `source.pdfSha256`), kategori, daftar indikator lengkap, kriteria rank, nomor halaman, penyusun, dan attestasi reviewer yang berbeda.
 
@@ -39,3 +44,12 @@ Setiap pack wajib memuat identitas sumber (`source.url` dan `source.pdfSha256`),
 ### Penanda Kategori 2 pada master Tabel 3
 
 `review/category-scope.json` menyimpan 60 nomor master yang digunakan sebagai penanda pembanding Kategori 2 dengan status `DRAFT_UNVERIFIED`. Penanda tersebut merupakan **referensi kerja untuk membandingkan crosswalk**, bukan ketentuan resmi ataupun otorisasi untuk menggunakan kriteria tertentu. Untuk perbedaan indikator Kategori 2 nomor 29, panel menampilkan dua kandidat (Tabel 3 nomor 35 dan 32) tanpa memilih salah satunya. Redaksi indikator dari Tabel 2 tetap berdiri sendiri. Jangan menghapus release gate regulatori.
+
+## Cakupan yang sudah selesai dan pengecualian yang terbuka
+
+- **Selesai dirakit:** Kategori 1 (80 parameter, 400 kriteria); Kategori 2 (60 parameter, 300 kriteria kandidat); 540 baris referensi dengan teks sumber dan halaman fisik PDF; metadata SHA-256 sumber yang sama.
+- **Belum disahkan:** kecocokan redaksi terhadap PDF per halaman, keputusan pemetaan tujuh indikator Kategori 2, tujuh anomali substansi Tabel 3, metode pembulatan komposit, dan review independen.
+- **Kasus utama:** indikator Kategori 2 nomor 29 menggabungkan pelatihan siber dan simulasi phishing, sedangkan Tabel 3 nomor 32 dan 35 memisahkannya. Candidate pack memuat lima kriteria dari nomor 35 **untuk kebutuhan pembandingan saja**. Nomor 32 tetap tercatat di manifest; ini **bukan** keputusan final tentang satu peringkat dan tidak boleh dipakai sebagai skor resmi.
+- **Rilis:** `packs/` tetap kosong, status `productionEligible=false`, dan `regulatory:release-gate` tetap gagal sampai ketentuan rilis terpenuhi.
+
+Kelengkapan data dan kejujuran status adalah dua syarat yang berbeda. Jangan menaikkan status hanya dengan mengganti literal `DRAFT_UNVERIFIED` atau membuat attestasi palsu.

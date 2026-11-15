@@ -11,6 +11,21 @@ const SOURCE_PDF_SHA='63868e2fe99a48485b17646618934c1fffb27b125811929e12bd70d170
 const EXTRACT_SHA='91edaaadcad31247ff3f703fe1e2dddbb470e99860e3bb07a00280c1c5fd4c60';
 const NAMES=['Sangat Memadai','Memadai','Cukup Memadai','Kurang Memadai','Tidak Memadai'];
 const ISSUE_NUMBERS=new Set([3,18,19,20,24,29,32]);
+// Lampiran IV Tabel 2 hlm. fisik 151: satu indikator berisi dua aspek.
+// Tabel 3 memuat kriteria terpisah pada nomor 32 dan 35 (hlm. 172, 174).
+// Ini catatan sumber untuk review; tidak menetapkan rumus penggabungan peringkat.
+const CATEGORY2_COMBINED_REVIEW=Object.freeze({
+  status:'REVIEW_MULTI_ASPEK_BELUM_DIPUTUSKAN',
+  category2Number:29,
+  category2PdfPage:151,
+  aspects:Object.freeze([
+    Object.freeze({table3Number:32,pdfPage:172,topic:'PELATIHAN_KEAMANAN_SIBER'}),
+    Object.freeze({table3Number:35,pdfPage:174,topic:'SIMULASI_PHISHING'}),
+  ]),
+  oneIndicator:true,
+  combinedRankRuleVerified:false,
+  officialScoreAvailable:false,
+});
 // Catatan langsung dari tabel PDF Lampiran IV. Belum ada keputusan koreksi sumber.
 const SOURCE_CONFLICTS=new Map([
   [2,'Kriteria peringkat 1 membahas strategi keamanan siber, sedangkan parameter nomor 2 membahas risk appetite (halaman fisik PDF 157).'],
@@ -94,6 +109,19 @@ export async function getPadkDraftCriteria(db,{actorId,id,number}){
   const referenceComparison=resolvePadkDraftReferences(scope,{
     category:preparation.category,indicator,primaryNumber:criteriaNumber,
   });
+  const combinedReview=preparation.category===2&&indicator===29
+    ?{
+      status:CATEGORY2_COMBINED_REVIEW.status,
+      category2Number:29,category2PdfPage:151,
+      aspects:CATEGORY2_COMBINED_REVIEW.aspects.map(aspect=>({...aspect})),
+      oneIndicator:true,combinedRankRuleVerified:false,officialScoreAvailable:false,
+    }:null;
+  if(combinedReview
+    &&(referenceComparison.candidateTable3Numbers.length!==2
+      ||referenceComparison.candidateTable3Numbers[0]!==35
+      ||referenceComparison.candidateTable3Numbers[1]!==32))
+    fail('Rujukan gabungan indikator 29 belum konsisten');
+  // Kedua rujukan adalah aspek satu indikator, bukan dua skor regulatori.
   // A second candidate is a source comparison, not a second regulatory score.
   const supplementaryCriteria=referenceComparison.candidateTable3Numbers.slice(1).map(n=>{
     const alternative=entries[n-1];
@@ -108,7 +136,7 @@ export async function getPadkDraftCriteria(db,{actorId,id,number}){
     preparationId:id,category:preparation.category,indicatorNumber:indicator,
     table3CandidateNumber:criteriaNumber,table3PdfPages:entry.pdfPages,
     criteria:entry.ranks,category2MappingRisk:mapping?.risk??null,
-    referenceComparison,supplementaryCriteria,
+    referenceComparison,supplementaryCriteria,combinedReview,
     sourceConflict:SOURCE_CONFLICTS.has(criteriaNumber)
       ?{code:'PARAMETER_KRITERIA_TIDAK_SELARAS',message:SOURCE_CONFLICTS.get(criteriaNumber)}
       :null,
@@ -117,7 +145,9 @@ export async function getPadkDraftCriteria(db,{actorId,id,number}){
     officialScoreAvailable:false,finalReportAvailable:false,
     status:'EXTRACTED_SOURCE_UNVERIFIED',
     note:preparation.category===2
-      ?'Category 2 candidate mapping has not been approved. The internal 80/60 marker is a comparison only, not an official mapping. Compare Tables 2 and 3 before choosing a provisional rank.'
+      ?(combinedReview
+        ?'Indikator Kategori 2 nomor 29 mencakup pelatihan keamanan siber dan simulasi phishing. Tabel 3 memisahkan kriteria nomor 32 dan 35; tidak ada aturan gabungan yang telah diverifikasi. Pilih peringkat manual sementara, jangan turunkan skor otomatis.'
+        :'Pemetaan kandidat Kategori 2 belum disahkan. Pembanding internal 80/60 bukan rujukan resmi; cocokkan Tabel 2 dan 3 sebelum menggunakan peringkat sementara.')
       :'Text is machine-extracted from Table 3. Verify every criterion visually against the source PDF.',
   };
 }

@@ -20,6 +20,7 @@ const BASE={
     candidateDisagreement:false,officialMappingAvailable:false,
   },
   supplementaryCriteria:[],
+  combinedReview:null,
 };
 test('uploaded Table 3 extraction contains exactly 80 rows and 400 nonempty rank texts',async()=>{
   const rows=await readExtractedTable3();
@@ -111,8 +112,33 @@ test('panel menampilkan dua set kriteria untuk mapping Kategori 2 yang berbeda',
     criteria,referenceComparison:comparison,supplementaryCriteria:[{
       table3Number:32,pdfPages:rows[31].pdfPages,criteria:supplementary,
       category2ComparisonMarker:true,sourceConflict:null,
-    }]};
+    }],
+    combinedReview:{
+      status:'REVIEW_MULTI_ASPEK_BELUM_DIPUTUSKAN',
+      category2Number:29,category2PdfPage:151,
+      aspects:[
+        {table3Number:32,pdfPage:172,topic:'PELATIHAN_KEAMANAN_SIBER'},
+        {table3Number:35,pdfPage:174,topic:'SIMULASI_PHISHING'},
+      ],
+      oneIndicator:true,combinedRankRuleVerified:false,officialScoreAvailable:false,
+    }};
   assert.equal(validateDraftCriteriaResponse(input,{id:ID,category:2,number:29}),input);
+  assert.equal(input.combinedReview.aspects.length,2);
+  assert.deepEqual(input.combinedReview.aspects.map(x=>x.table3Number),[32,35]);
+  assert.throws(()=>validateDraftCriteriaResponse({...input,combinedReview:null},
+    {id:ID,category:2,number:29}));
+  assert.throws(()=>validateDraftCriteriaResponse({...input,combinedReview:{
+    ...input.combinedReview,combinedRankRuleVerified:true,
+  }},{id:ID,category:2,number:29}));
+  assert.throws(()=>validateDraftCriteriaResponse({...input,combinedReview:{
+    ...input.combinedReview,aspects:[input.combinedReview.aspects[1],
+      input.combinedReview.aspects[0]],
+  }},{id:ID,category:2,number:29}));
+  assert.throws(()=>validateDraftCriteriaResponse({...input,combinedReview:{
+    ...input.combinedReview,officialScoreAvailable:true,
+  }},{id:ID,category:2,number:29}));
+  assert.throws(()=>validateDraftCriteriaResponse({...BASE,criteria:rows[0].ranks,
+    combinedReview:input.combinedReview},{id:ID,category:1,number:1}));
   assert.throws(()=>validateDraftCriteriaResponse({...input,supplementaryCriteria:[]},
     {id:ID,category:2,number:29}));
   assert.throws(()=>validateDraftCriteriaResponse({...input,

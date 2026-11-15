@@ -1,0 +1,2735 @@
+{
+  "schemaVersion": 1,
+  "reference": "43/PADK.03/2025:LAMPIRAN_IV",
+  "category": 1,
+  "source": {
+    "authority": "OJK",
+    "regulation": "43/PADK.03/2025",
+    "annex": "IV",
+    "table": "TABEL_1",
+    "url": "https://ojk.go.id/id/regulasi/Pages/PADK-43-PADK03-2025-Penyelenggaraan-Teknologi-Informasi-oleh-BPR-BPRS.aspx",
+    "pdfSha256": "63868e2fe99a48485b17646618934c1fffb27b125811929e12bd70d170081e1b"
+  },
+  "indicators": [
+    {
+      "number": 1,
+      "domain": "TK",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "title": "BPR dan BPR Syariah menetapkan wewenang dan tanggung jawab Direksi dan Dewan Komisaris secara tertulis dalam penerapan manajemen risiko terkait keamanan siber.",
+      "tablePage": 16,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "Wewenang dan tanggung jawab Direksi dan Dewan Komisaris terkait keamanan siber telah ditetapkan tertulis, disahkan, dan dievaluasi secara berkala serta konsisten.",
+          "criteriaPage": 38
+        },
+        {
+          "rank": 2,
+          "criterion": "Wewenang dan tanggung jawab Direksi dan Dewan Komisaris terkait keamanan siber telah ditetapkan tertulis, disahkan, dan dievaluasi namun belum secara konsisten atau belum mencakup seluruh aspek.",
+          "criteriaPage": 38
+        },
+        {
+          "rank": 3,
+          "criterion": "Wewenang dan tanggung jawab Direksi dan Dewan Komisaris terkait keamanan siber telah ditetapkan tertulis, namun belum pernah dievaluasi atau belum terdapat mekanisme evaluasi yang jelas.",
+          "criteriaPage": 38
+        },
+        {
+          "rank": 4,
+          "criterion": "Wewenang dan tanggung jawab Direksi dan Dewan Komisaris terkait keamanan siber masih berupa praktik lisan/adhoc tanpa dokumen formal.",
+          "criteriaPage": 38
+        },
+        {
+          "rank": 5,
+          "criterion": "Wewenang dan tanggung jawab Direksi Dewan Komisaris terkait keamanan siber belum pernah ditetapkan.",
+          "criteriaPage": 38
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "domain": "TK",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "title": "Direksi menetapkan tingkat risiko (risk appetite) terkait keamanan siber.",
+      "tablePage": 16,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "Strategi ketahanan dan keamanan siber disusun dengan sepenuhnya mengacu pada visi dan mendukung misi BPR dan BPR Syariah dan kaji ulang strategi dilakukan secara berkala namun belum secara konsisten atau belum mencakup seluruh aspek.",
+          "criteriaPage": 38
+        },
+        {
+          "rank": 2,
+          "criterion": "Tingkat risiko (risk appetite) terkait keamanan siber telah ditetapkan tertulis, disahkan, dan dievaluasi berkala namun belum secara konsisten atau belum mencakup seluruh aspek.",
+          "criteriaPage": 38
+        },
+        {
+          "rank": 3,
+          "criterion": "Tingkat risiko (risk appetite) terkait keamanan siber telah ditetapkan tertulis, namun belum dievaluasi secara berkala atau belum terdapat mekanisme evaluasi yang jelas.",
+          "criteriaPage": 38
+        },
+        {
+          "rank": 4,
+          "criterion": "Tingkat risiko (risk appetite) terkait keamanan siber masih berupa praktik lisan/adhoc tanpa dokumen tertulis.",
+          "criteriaPage": 38
+        },
+        {
+          "rank": 5,
+          "criterion": "Tingkat risiko (risk appetite) terkait keamanan siber belum pernah ditetapkan.",
+          "criteriaPage": 38
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "domain": "TK",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "title": "Strategi ketahanan dan keamanan siber BPR dan BPR Syariah telah dirumuskan untuk mendukung serta selaras dengan visi dan misi BPR dan BPR Syariah (misalnya target pertumbuhan layanan digital, standar keamanan nasabah, dan risk appetite yang telah ditetapkan), termasuk melakukan kaji ulang strategi keamanan siber secara berkala untuk menentukan perlu atau tidaknya dilakukan perubahan.",
+      "tablePage": 16,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "Strategi ketahanan dan keamanan siber disusun dengan sepenuhnya mengacu pada visi dan mendukung misi BPR dan BPR Syariah dan kaji ulang strategi dilakukan secara berkala serta konsisten.",
+          "criteriaPage": 39
+        },
+        {
+          "rank": 2,
+          "criterion": "Strategi ketahanan dan keamanan siber disusun dengan sepenuhnya mengacu pada visi dan mendukung misi BPR dan BPR Syariah dan kaji ulang strategi dilakukan secara berkala namun belum secara konsisten atau belum mencakup seluruh aspek.",
+          "criteriaPage": 39
+        },
+        {
+          "rank": 3,
+          "criterion": "Strategi ketahanan dan keamanan siber disusun, namun belum sepenuhnya selaras dan mendukung visi-misi BPR dan BPR Syariah dan kaji ulang dilakukan secara adhoc atau tidak terjadwal.",
+          "criteriaPage": 39
+        },
+        {
+          "rank": 4,
+          "criterion": "Strategi ketahanan dan keamanan sbier disusun, namun sepenuhnya tidak selaras dan mendukung visi- misi BPR dan BPR Syariah.",
+          "criteriaPage": 39
+        },
+        {
+          "rank": 5,
+          "criterion": "BPR dan BPR Syariah tidak memiliki strategi ketahanan dan keamanan siber.",
+          "criteriaPage": 39
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "domain": "TK",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "title": "Direksi mengomunikasikan strategi, kebijakan, prosedur, dan limit dalam penerapan manajemen risiko terkait keamanan siber secara efektif kepada seluruh satuan kerja dan pegawai agar dipahami secara jelas.",
+      "tablePage": 16,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "Direksi telah mengomunikasika n strategi, kebijakan, prosedur dan limit manajemen risiko terkait keamanan siber secara efektif kepada seluruh jenjang organisasi dan seluruh jenjang organisasi mampu memahami manajemen risiko siber.",
+          "criteriaPage": 39
+        },
+        {
+          "rank": 2,
+          "criterion": "Direksi telah mengomunikasikan strategi, kebijakan, prosedur dan limit manajemen risiko terkait keamanan siber secara efektif kepada seluruh jenjang organisasi namun tidak seluruh jenjang mampu memahami manajemen risiko siber",
+          "criteriaPage": 39
+        },
+        {
+          "rank": 3,
+          "criterion": "Direksi telah mengomunikasikan strategi, kebijakan, prosedur dan limit manajemen risiko terkait keamanan siber secara efektif hanya kepada sebagian besar jenjang organisasi tertentu dan tidak seluruh jenjang mampu memahami manajemen risiko siber.",
+          "criteriaPage": 39
+        },
+        {
+          "rank": 4,
+          "criterion": "Direksi telah mengomunikasika n strategi, kebijakan, prosedur dan limit manajemen risiko terkait keamanan siber kepada sebagian besar jenjang organisasi dan sebagian besar jenjang organisasi tidak memahami perannya terkait manajemen risiko siber.",
+          "criteriaPage": 39
+        },
+        {
+          "rank": 5,
+          "criterion": "Direksi tidak mengomunikasik an strategi, kebijakan, prosedur dan limit manajemen risiko terkait keamanan siber.",
+          "criteriaPage": 39
+        }
+      ]
+    },
+    {
+      "number": 5,
+      "domain": "TK",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "title": "BPR dan BPR Syariah memiliki fungsi yang bertanggung jawab menangani ketahanan dan keamanan siber.",
+      "tablePage": 16,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "Memiliki fungsi yang bertanggung jawab menangani ketahanan dan keamanan siber dan fungsi dapat menjalankan perannya dengan sangat memadai.",
+          "criteriaPage": 40
+        },
+        {
+          "rank": 2,
+          "criterion": "Memiliki fungsi yang bertanggung jawab menangani ketahanan dan keamanan siber dan fungsi dapat menjalankan perannya dengan memadai.",
+          "criteriaPage": 40
+        },
+        {
+          "rank": 3,
+          "criterion": "Memiliki fungsi yang bertanggung jawab menangani ketahanan dan keamanan siber dan fungsi dapat menjalankan perannya dengan cukup memadai.",
+          "criteriaPage": 40
+        },
+        {
+          "rank": 4,
+          "criterion": "Memiliki fungsi yang bertanggung jawab menangani ketahanan dan keamanan siber dan fungsi dapat menjalankan perannya dengan kurang memadai.",
+          "criteriaPage": 40
+        },
+        {
+          "rank": 5,
+          "criterion": "Tidak memiliki fungsi yang bertanggung jawab menangani ketahanan dan keamanan siber.",
+          "criteriaPage": 40
+        }
+      ]
+    },
+    {
+      "number": 6,
+      "domain": "TK",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "title": "Direksi memastikan bahwa struktur organisasi serta strategi manajemen risiko keamanan siber BPR dan BPR Syariah telah mencantumkan peran dan tanggung jawab yang jelas terkait keamanan siber.",
+      "tablePage": 16,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "Direksi telah memastikan bahwa BPR dan BPR Syariah memiliki struktur organisasi serta strategi manajemen risiko keamanan siber yang dilengkapi dengan peran dan tanggung jawab yang jelas dalam dokumen tertulis.",
+          "criteriaPage": 40
+        },
+        {
+          "rank": 2,
+          "criterion": "Direksi telah memastikan bahwa BPR dan BPR Syariah memiliki struktur organisasi serta strategi manajemen risiko keamanan siber namun belum sepenuhnya dilengkapi dengan peran dan tanggung jawab yang jelas dalam dokumen tertulis.",
+          "criteriaPage": 40
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah memiliki struktur organisasi serta strategi manajemen risiko keamanan siber namun belum sepenuhnya dilengkapi dengan peran dan tanggung jawab yang jelas dan belum dituangkan dalam dokumen tertulis.",
+          "criteriaPage": 40
+        },
+        {
+          "rank": 4,
+          "criterion": "BPR dan BPR Syariah memiliki struktur organisasi serta strategi manajemen risiko keamanan siber namun tidak dilengkapi dengan peran dan tanggung jawab yang jelas dalam dokumen tertulis.",
+          "criteriaPage": 40
+        },
+        {
+          "rank": 5,
+          "criterion": "BPR dan BPR Syariah tidak memiliki struktur organisasi serta manajemen risiko keamanan siber yang dilengkapi dengan peran dan fungis tanggung jawab yang jelas dalam dokumen tertulis.",
+          "criteriaPage": 40
+        }
+      ]
+    },
+    {
+      "number": 7,
+      "domain": "TK",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "title": "Direksi memastikan seluruh SDM memahami risiko keamanan siber beserta strategi manajemen risikonya (risk-appetite, zero risk-tolerance, kerangka kerja) dan mampu mengomunikasikan serta menerapkannya secara konsisten.",
+      "tablePage": 16,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah melakukan gap analysis secara rutin, terdapat program pelatihan secara rutin, dan seluruh SDM sudah mampu memahami, mengomunikasi- kan, serta menerapkan strategi dan implikasi risiko keamanan siber.",
+          "criteriaPage": 41
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah melakukan gap analysis secara rutin, terdapat program pelatihan secara rutin, namun belum sepenuhnya SDM mampu memahami, mengomunikasi- kan, serta menerapkan strategi dan implikasi risiko keamanan siber.",
+          "criteriaPage": 41
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah melakukan gap analysis secara rutin, pelatihan tidak dilakukan secara rutin, dan belum sepenuhnya SDM mampu memahami, mengomunikasi- kan, serta menerapkan strategi dan implikasi risiko keamanan siber.",
+          "criteriaPage": 41
+        },
+        {
+          "rank": 4,
+          "criterion": "BPR dan BPR Syariah melakukan gap analysis dan pelatihan tidak secara rutin, sehingga pemahaman, kemampuan berkomunikasi, dan penerapan strategi keamanan siber baru tercapai pada sebagian SDM.",
+          "criteriaPage": 41
+        },
+        {
+          "rank": 5,
+          "criterion": "BPR dan BPR Syariah belum pernah melakukan gap analysis ataupun pelatihan terarah, sehingga sebagian besar SDM belum memahami, mengomunikasi- kan, maupun menerapkan strategi dan implikasi risiko keamanan siber.",
+          "criteriaPage": 41
+        }
+      ]
+    },
+    {
+      "number": 8,
+      "domain": "TK",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "title": "BPR dan BPR Syariah memiliki kebijakan ketahanan dan keamanan siber secara tertulis yang telah ditetapkan oleh Direksi. Kebijakan ketahanan dan keamanan siber dievaluasi secara berkala paling sedikit 1 (satu) kali dalam 1 (satu) tahun atau lebih dalam hal terdapat perubahan yang signifikan terhadap kegiatan usaha BPR dan BPR Syariah.",
+      "tablePage": 17,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah memiliki kebijakan ketahanan dan keamanan siber yang telah ditetapkan oleh Direksi dan dievaluasi secara berkala paling sedikit dalam 1 (satu) tahun.",
+          "criteriaPage": 41
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah memiliki kebijakan ketahanan dan keamanan siber yang telah ditetapkan oleh Direksi dan dievaluasi secara berkala namun belum mencakup seluruh aspek.",
+          "criteriaPage": 41
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah memiliki kebijakan ketahanan dan keamanan siber yang telah ditetapkan oleh Direksi, namun belum dievaluasi secara berkala.",
+          "criteriaPage": 41
+        },
+        {
+          "rank": 4,
+          "criterion": "BPR dan BPR Syariah dalam proses penyusunanan kebijakan ketahanan dan keamanan siber.",
+          "criteriaPage": 41
+        },
+        {
+          "rank": 5,
+          "criterion": "BPR dan BPR Syariah tidak memiliki kebijakan ketahanan dan keamanan siber.",
+          "criteriaPage": 41
+        }
+      ]
+    },
+    {
+      "number": 9,
+      "domain": "TK",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "title": "BPR dan BPR Syariah menerapkan baseline kontrol proteksi pada seluruh aset TI (antara lain meliputi hardening, patch, anti-malware/EDR, firewall dan segmentasi jaringan, pengendalian akses, serta enkripsi), sesuai kebijakan dan prosedur, serta memantau dan mengevaluasi efektivitasnya secara berkala.",
+      "tablePage": 17,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah telah menerapkan baseline kontrol pada seluruh aset, serta memantau dan mengevaluasi efektivitasnya secara berkala.",
+          "criteriaPage": 42
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah telah menerapkan baseline kontrol pada seluruh aset, namun belum memantau dan mengevaluasi efektivitasnya secara berkala.",
+          "criteriaPage": 42
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah telah menerapkan baseline kontrol pada sebagian aset, serta memantau dan mengevaluasi efektivitasnya secara berkala.",
+          "criteriaPage": 42
+        },
+        {
+          "rank": 4,
+          "criterion": "BPR dan BPR Syariah telah menerapkan baseline kontrol pada sebagian aset, namun belum memantau dan mengevaluasi efektivitasnya secara berkala.",
+          "criteriaPage": 42
+        },
+        {
+          "rank": 5,
+          "criterion": "BPR dan BPR Syariah belum menerapkan baseline kontrol dan belum memantau dan mengevaluasi efektivitasnya.",
+          "criteriaPage": 42
+        }
+      ]
+    },
+    {
+      "number": 10,
+      "domain": "TK",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "title": "BPR dan BPR Syariah memiliki kebijakan tertulis yang mengatur koordinasi dan komunikasi antarunit kerja yang memiliki tanggung jawab terkait ketahanan dan keamanan siber.",
+      "tablePage": 17,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah memiliki kebijakan tertulis yang jelas dan komprehensif mengenai koordinasi dan komunikasi antar unit kerja dan dilaksanakan secara konsisten.",
+          "criteriaPage": 43
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah memiliki kebijakan tertulis yang jelas dan komprehensif mengenai koordinasi dan komunikasi antar unit kerja namun belum selalu konsisten dilaksanakan di seluruh unit kerja.",
+          "criteriaPage": 43
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah memiliki kebijakan tertulis, tetapi masih bersifat umum dan belum mengatur detail mekanisme koordinasi maupun komunikasi.",
+          "criteriaPage": 43
+        },
+        {
+          "rank": 4,
+          "criterion": "BPR dan BPR Syariah belum memiliki kebijakan tertulis mengenai koordinasi dan komunikasi antar unit kerja sehingga praktik koordinasi dan komunikatif bersifat ad hoc.",
+          "criteriaPage": 43
+        },
+        {
+          "rank": 5,
+          "criterion": "BPR dan BPR Syariah tidak memiliki kebijakan tertulis mengenai koordinasi dan komunikasi antarunit kerja.",
+          "criteriaPage": 43
+        }
+      ]
+    },
+    {
+      "number": 11,
+      "domain": "TK",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "title": "BPR dan BPR Syariah memiliki kebijakan dan prosedur manajemen risiko terkait keamanan siber untuk pihak ketiga dan subkontraktor dari pihak ketiga yang rutin dievaluasi dan diperbarui.",
+      "tablePage": 17,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah memiliki Kebijakan dan prosedur manajemen risiko terkait keamanan siber untuk pihak ketiga dan subkontraktor dari pihak ketiga dan rutin dievaluasi serta diperbarui.",
+          "criteriaPage": 43
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah memiliki Kebijakan dan prosedur manajemen risiko terkait keamanan siber untuk pihak ketiga dan subkontraktor dari pihak ketiga namun tidak semua aspek dievaluasi serta diperbarui.",
+          "criteriaPage": 43
+        },
+        {
+          "rank": 3,
+          "criterion": "Kebijakan dan prosedur manajemen risiko terkait keamanan siber untuk pihak ketiga dan subkontraktor dari pihak ketiga dimiliki oleh BPR dan BPR Syariah, namun tidak rutin dievaluasi serta diperbarui.",
+          "criteriaPage": 43
+        },
+        {
+          "rank": 4,
+          "criterion": "BPR dan BPR Syariah dalam proses penyusunan kebijakan dan prosedur manajemen risiko terkait keamanan siber untuk pihak ketiga dan subkontraktor dari pihak ketiga.",
+          "criteriaPage": 43
+        },
+        {
+          "rank": 5,
+          "criterion": "BPR dan BPR Syariah tidak memiliki Kebijakan dan prosedur manajemen risiko terkait keamanan siber untuk pihak ketiga dan subkontraktor dari pihak ketiga.",
+          "criteriaPage": 43
+        }
+      ]
+    },
+    {
+      "number": 12,
+      "domain": "TK",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "title": "BPR dan BPR Syariah mempunyai daftar pihak ketiga yang memiliki akses terhadap sistem internal dan/atau informasi sensitif, serta antara BPR dan BPR Syariah dan pihak ketiga terdapat perjanjian kerja sama yang mencakup aspek ketahanan dan keamanan siber.",
+      "tablePage": 17,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah memiliki daftar pihak ketiga yang memiliki akses terhadap sistem internal dan/atau informasi sensitif yang terdokumentasi dan dikinikan secara rutin, serta dilengkapi dengan perjanjian kerja sama yang mencakup seluruh aspek ketahanan dan keamanan siber.",
+          "criteriaPage": 43
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah memiliki daftar pihak ketiga yang memiliki akses terhadap sistem internal dan/atau informasi sensitif yang terdokumentasi dan dikinikan secara rutin, serta dilengkapi dengan perjanjian kerja sama yang mencakup sebagian aspek ketahanan dan keamanan siber.",
+          "criteriaPage": 43
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah memiliki daftar pihak ketiga yang memiliki akses terhadap sistem internal dan/atau informasi sensitif yang terdokumentasi dan dikinikan secara rutin, namun tidak dilengkapi dengan perjanjian kerja sama terkait aspek ketahanan dan keamanan siber.",
+          "criteriaPage": 43
+        },
+        {
+          "rank": 4,
+          "criterion": "BPR dan BPR Syariah memiliki daftar pihak ketiga yang memiliki akses terhadap sistem internal dan/atau informasi sensitif yang terdokumentasi, namun tidak dikinikan secara rutin dan tidak dilengkapi dengan perjanjian kerja sama terkait aspek ketahanan dan keamanan siber.",
+          "criteriaPage": 43
+        },
+        {
+          "rank": 5,
+          "criterion": "BPR dan BPR Syariah tidak memiliki daftar pihak ketiga yang memiliki akses terhadap sistem internal dan/atau informasi yang sensitif dan tidak memiliki perjanjian kerja sama terkait ketahanan dan keamanan siber.",
+          "criteriaPage": 43
+        }
+      ]
+    },
+    {
+      "number": 13,
+      "domain": "TK",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "title": "Kebijakan, prosedur, dan limit dalam penerapan manajemen risiko terkait keamanan siber harus didokumentasikan secara memadai.",
+      "tablePage": 18,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "Kebijakan, prosedur, dan limit dalam penerapan manajemen risiko ketahanan dan keamanan siber telah didokumentasikan secara konsisten dan dikomunikasikan kepada seluruh pegawai.",
+          "criteriaPage": 44
+        },
+        {
+          "rank": 2,
+          "criterion": "Kebijakan, prosedur, dan limit dalam penerapan manajemen risiko ketahanan dan keamanan siber telah didokumentasikan secara konsisten namun dikomunikasikan kepada sebagian pegawai.",
+          "criteriaPage": 44
+        },
+        {
+          "rank": 3,
+          "criterion": "Kebijakan, prosedur, dan limit dalam penerapan manajemen risiko ketahanan dan keamanan siber telah didokumentasikan sebagian dan telah dikomunikasikan kepada seluruh pegawai.",
+          "criteriaPage": 44
+        },
+        {
+          "rank": 4,
+          "criterion": "Kebijakan, prosedur, dan limit dalam penerapan manajemen risiko ketahanan dan keamanan siber telah didokumentasi-kan sebagian namun dikomunikasikan kepada sebagian pegawai.",
+          "criteriaPage": 44
+        },
+        {
+          "rank": 5,
+          "criterion": "Kebijakan, prosedur, dan limit dalam penerapan manajemen risiko ketahanan dan keamanan siber tidak didokumentasi- kan dan tidak dikomunikasikan kepada seluruh pegawai.",
+          "criteriaPage": 44
+        }
+      ]
+    },
+    {
+      "number": 14,
+      "domain": "TK",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "title": "BPR dan BPR Syariah melakukan evaluasi dan penyempurnaan atas sistem pengukuran risiko terkait keamanan siber secara berkala.",
+      "tablePage": 18,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah melakukan evaluasi atas sistem pengukuran risiko terkait keamanan siber secara berkala dan penyempurnaan dilakukan secara segera sesuai dengan hasil evaluasi.",
+          "criteriaPage": 45
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah melakukan evaluasi atas sistem pengukuran risiko terkait keamanan siber secara berkala namun tidak mencakup seluruh aspek dan penyempurnaan dilakukan secara segera sesuai dengan hasil evaluasi.",
+          "criteriaPage": 45
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah melakukan evaluasi dan penyempurnaan atas sistem pengukuran risiko terkait keamanan siber tidak terjadwal atau secara adhoc.",
+          "criteriaPage": 45
+        },
+        {
+          "rank": 4,
+          "criterion": "BPR dan BPR Syariah hampir tidak pernah melakukan evaluasi dan penyempurnaan atas sistem pengukuran risiko terkait keamanan siber.",
+          "criteriaPage": 45
+        },
+        {
+          "rank": 5,
+          "criterion": "BPR dan BPR Syariah tidak memiliki kebijakan untuk melakukan evaluasi dan penyempurnaan atas sistem pengukuran risiko terkait keamanan siber secara berkala.",
+          "criteriaPage": 45
+        }
+      ]
+    },
+    {
+      "number": 15,
+      "domain": "TK",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "title": "BPR dan BPR Syariah memiliki sistem informasi manajemen risiko terkait keamanan siber dan mengembangkannya sesuai kebutuhan BPR dan BPR Syariah.",
+      "tablePage": 18,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "Sistem informasi manajemen risiko sangat mendukung dalam pembuatan laporan kepada Direksi dan BPR dan BPR Syariah secara berkala dan aktif melakukan evaluasi serta penyempurnaan terhadap sistem informasi manajemen risiko keamanan siber.",
+          "criteriaPage": 45
+        },
+        {
+          "rank": 2,
+          "criterion": "Sistem informasi manajemen risiko cukup mendukung dalam pembuatan laporan kepada Direksi dan BPR dan BPR Syariah secara berkala dan aktif melakukan evaluasi serta penyempurnaan terhadap sistem informasi manajemen risiko keamanan siber.",
+          "criteriaPage": 45
+        },
+        {
+          "rank": 3,
+          "criterion": "Sistem informasi manajemen risiko kurang mendukung dalam pembuatan laporan kepada Direksi namun belum melakukan evaluasi secara berkala termasuk penyempurnaan terhadap sistem informasi manajemen risiko keamanan siber.",
+          "criteriaPage": 45
+        },
+        {
+          "rank": 4,
+          "criterion": "Sistem informasi manajemen risiko tidak sepenuhnya mendukung dalam pembuatan laporan kepada Direksi dan belum pernah melakukan evaluasi termasuk penyempurnaan terhadap sistem informasi manajemen risiko keamanan siber.",
+          "criteriaPage": 45
+        },
+        {
+          "rank": 5,
+          "criterion": "BPR dan BPR Syariah tidak mempunya sistem informasi manajemen risiko terkait keamanan siber.",
+          "criteriaPage": 45
+        }
+      ]
+    },
+    {
+      "number": 16,
+      "domain": "TK",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "title": "BPR dan BPR Syariah memastikan sistem informasi manajemen risiko terkait keamanan siber dan informasi yang dihasilkan telah sesuai dengan karakteristik dan kompleksitas kegiatan usaha BPR dan BPR Syariah serta adaptif terhadap perubahan.",
+      "tablePage": 18,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "Sistem informasi manajemen risiko keamanan siber dan informasi yang dihasilkan telah sesuai dengan karakteristik dan kompleksitas kegiatan usaha BPR dan BPR Syariah serta adaptif terhadap perubahan.",
+          "criteriaPage": 46
+        },
+        {
+          "rank": 2,
+          "criterion": "Sistem informasi manajemen risiko keamanan siber dan informasi yang dihasilkan telah sesuai dengan karakteristik dan kompleksitas kegiatan usaha BPR dan BPR Syariah namun kurang adaptif terhadap perubahan.",
+          "criteriaPage": 46
+        },
+        {
+          "rank": 3,
+          "criterion": "Sistem informasi manajemen risiko keamanan siber dan informasi yang dihasilkan telah sesuai dengan karakteristik dan kompleksitas kegiatan usaha BPR dan BPR Syariah namun tidak adaptif terhadap perubahan.",
+          "criteriaPage": 46
+        },
+        {
+          "rank": 4,
+          "criterion": "Sistem informasi manajemen risiko keamanan siber dan informasi yang dihasilkan tidak sepenuhnya sesuai dengan karakteristik dan kompleksitas kegiatan usaha BPR dan BPR Syariah dan kurang adaptif terhadap perubahan.",
+          "criteriaPage": 46
+        },
+        {
+          "rank": 5,
+          "criterion": "Sistem masih bersifat umum, belum disesuaikan dengan karakteristik dan kompleksitas usaha BPR dan BPR Syariah, serta tidak adaptif terhadap perubahan.",
+          "criteriaPage": 46
+        }
+      ]
+    },
+    {
+      "number": 17,
+      "domain": "TK",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "title": "BPR dan BPR Syariah melakukan kaji ulang secara berkala atas kecukupan cakupan informasi yang dihasilkan dari sistem informasi manajemen risiko terkait keamanan siber.",
+      "tablePage": 18,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah melakukan kaji ulang atas kecukupan cakupan informasi yang dihasilkan dari sistem informasi manajemen risiko terkait keamanan siber secara berkala.",
+          "criteriaPage": 46
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah melakukan kaji ulang atas kecukupan cakupan informasi yang dihasilkan dari sistem informasi manajemen risiko terkait keamanan siber secara berkala namun tidak mencakup seluruh aspek.",
+          "criteriaPage": 46
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah melakukan kaji ulang atas kecukupan cakupan informasi yang dihasilkan dari sistem informasi manajemen risiko terkait keamanan siber secara tidak terjadwal atau secara adhoc.",
+          "criteriaPage": 46
+        },
+        {
+          "rank": 4,
+          "criterion": "BPR dan BPR Syariah melakukan kaji ulang secara berkala atas kecukupan cakupan informasi yang dihasilkan dari sistem informasi manajemen risiko terkait keamanan siber.",
+          "criteriaPage": 46
+        },
+        {
+          "rank": 5,
+          "criterion": "BPR dan BPR Syariah hampir tidak memiliki proses untuk melakukan kaji ulang atas kecukupan cakupan informasi yang dihasilkan dari sistem informasi manajemen risiko terkait keamanan siber.",
+          "criteriaPage": 46
+        }
+      ]
+    },
+    {
+      "number": 18,
+      "domain": "TK",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "title": "Sebagai bagian dari sistem informasi manajemen risiko, laporan tingkat maturitas keamanan siber disusun secara berkala oleh fungsi yang bertanggung jawab menangani ketahanan dan keamanan siber.",
+      "tablePage": 18,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "Laporan tingkat maturitas keamanan siber disusun secara berkala, terdokumentasi dan disertai dengan dokumen pendukung yang memadai, dan digunakan sebagai dasar peningkatan kontrol serta pemenuhan ketentuan.",
+          "criteriaPage": 47
+        },
+        {
+          "rank": 2,
+          "criterion": "Laporan tingkat maturitas keamanan siber disusun secara berkala, terdokumentasi dan disertai dengan dokumen pendukung yang cukup memadai, dan digunakan sebagai dasar peningkatan kontrol serta pemenuhan ketentuan.",
+          "criteriaPage": 47
+        },
+        {
+          "rank": 3,
+          "criterion": "Laporan tingkat maturitas keamanan siber disusun secara berkala, terdokumentasi dan disertai dengan dokumen pendukung yang kurang memadai, dan digunakan sebagai dasar peningkatan kontrol serta pemenuhan ketentuan.",
+          "criteriaPage": 47
+        },
+        {
+          "rank": 4,
+          "criterion": "Laporan tingkat maturitas disusun namun belum dilakukan secara berkala dan belum dimanfaatkan sebagai dasar peningkatan kontrol serta pemenuhan ketentuan.",
+          "criteriaPage": 47
+        },
+        {
+          "rank": 5,
+          "criterion": "BPR dan BPR Syariah belum menyusun laporan tingkat maturitas keamanan siber.",
+          "criteriaPage": 47
+        }
+      ]
+    },
+    {
+      "number": 19,
+      "domain": "TK",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "title": "Fungsi yang bertanggung jawab menangani ketahanan dan keamanan siber menyampaikan laporan berkala kepada Direksi.",
+      "tablePage": 18,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "Laporan berkala kepada Direksi disampaikan secara rutin dan disertai dengan dokumen pendukung yang memadai.",
+          "criteriaPage": 47
+        },
+        {
+          "rank": 2,
+          "criterion": "Laporan berkala kepada Direksi disampaikan secara rutin dan disertai dengan dokumen pendukung yang cukup memadai.",
+          "criteriaPage": 47
+        },
+        {
+          "rank": 3,
+          "criterion": "Laporan berkala kepada Direksi disampaikan secara rutin dan disertai dengan dokumen pendukung yang kurang memadai.",
+          "criteriaPage": 47
+        },
+        {
+          "rank": 4,
+          "criterion": "Laporan berkala kepada Direksi disampaikan namun tidak secara rutin dan tidak disertai dokumen pendukung.",
+          "criteriaPage": 47
+        },
+        {
+          "rank": 5,
+          "criterion": "Laporan berkala tidak pernah disampaikan kepada Direksi.",
+          "criteriaPage": 47
+        }
+      ]
+    },
+    {
+      "number": 20,
+      "domain": "TK",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "title": "BPR dan BPR Syariah melaksanakan audit intern atas penyelenggaraan TI secara berkala, termasuk terhadap pengelolaan ketahanan dan keamanan siber.",
+      "tablePage": 18,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah melakukan kaji ulang dan evaluasi terhadap penerapan manajemen risiko terkait keamanan siber secara berkala.",
+          "criteriaPage": 48
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah melakukan kaji ulang dan evaluasi terhadap penerapan manajemen risiko terkait keamanan siber secara berkala namun tidak mencakup seluruh aspek.",
+          "criteriaPage": 48
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah melakukan kaji ulang dan evaluasi terhadap penerapan manajemen risiko terkait keamanan siber secara tidak terjadwal atau secara adhoc.",
+          "criteriaPage": 48
+        },
+        {
+          "rank": 4,
+          "criterion": "BPR dan BPR Syariah melakukan kaji ulang dan evaluasi terhadap penerapan manajemen risiko terkait keamanan siber secara tidak terjadwal atau secara adhoc dan hanya mencakup sebagian aspek.",
+          "criteriaPage": 48
+        },
+        {
+          "rank": 5,
+          "criterion": "BPR dan BPR Syariah tidak melakukan kaji ulang dan evaluasi terhadap penerapan manajemen risiko terkait keamanan siber.",
+          "criteriaPage": 48
+        }
+      ]
+    },
+    {
+      "number": 21,
+      "domain": "TK",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "title": "BPR dan BPR Syariah melakukan kaji ulang dan evaluasi terhadap penerapan manajemen risiko terkait keamanan siber secara berkala.",
+      "tablePage": 19,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "Program budaya siber telah direncanakan, dipantau dan dievaluasi rutin, dan diperuntukkan bagi seluruh pegawai.",
+          "criteriaPage": 48
+        },
+        {
+          "rank": 2,
+          "criterion": "Program budaya siber telah direncanakan, dipantau dan dievaluasi rutin, dan hanya diimplementasikan pada pegawai tertentu.",
+          "criteriaPage": 48
+        },
+        {
+          "rank": 3,
+          "criterion": "Program budaya siber telah direncanakan, dipantau dan dievaluasi tidak secara rutin, dan diperuntukkan bagi seluruh pegawai.",
+          "criteriaPage": 48
+        },
+        {
+          "rank": 4,
+          "criterion": "Program budaya siber telah direncanakan, dipantau dan dievaluasi tidak secara rutin, dan hanya diimplementasi- kan pada pegawai tertentu.",
+          "criteriaPage": 48
+        },
+        {
+          "rank": 5,
+          "criterion": "Tidak terdapat program budaya siber.",
+          "criteriaPage": 48
+        }
+      ]
+    },
+    {
+      "number": 22,
+      "domain": "TK",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "title": "Direksi mengembangkan budaya dan membangun serta memelihara kesadaran dan komitmen yang kuat mengenai tanggung jawab terkait keamanan siber bagi pegawai di semua level.",
+      "tablePage": 19,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah melakukan pengukuran tingkat kerentanan terhadap risiko terkait keamanan siber secara berkala.",
+          "criteriaPage": 48
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah melakukan pengukuran tingkat kerentanan terhadap risiko terkait keamanan siber secara berkala namun belum mencakup seluruh aspek.",
+          "criteriaPage": 48
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah melakukan pengukuran tingkat kerentanan terhadap risiko terkait keamanan siber secara tidak terjadwal atau secara adhoc.",
+          "criteriaPage": 48
+        },
+        {
+          "rank": 4,
+          "criterion": "BPR dan BPR Syariah melakukan pengukuran tingkat kerentanan terhadap risiko terkait keamanan siber secara tidak terjadwal atau secara adhoc dan hanya mencakup sebagian aspek.",
+          "criteriaPage": 48
+        },
+        {
+          "rank": 5,
+          "criterion": "BPR dan BPR Syariah tidak melakukan pengukuran tingkat kerentanan terhadap risiko terkait keamanan siber.",
+          "criteriaPage": 48
+        }
+      ]
+    },
+    {
+      "number": 23,
+      "domain": "ID",
+      "subdomain": "PENGUKURAN_RISIKO_SIBER",
+      "title": "BPR dan BPR Syariah melakukan pengukuran tingkat kerentanan terhadap risiko terkait keamanan siber secara berkala.",
+      "tablePage": 19,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah melakukan pengukuran tingkat kerentanan terhadap risiko terkait keamanan siber secara berkala.",
+          "criteriaPage": 49
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah melakukan pengukuran tingkat kerentanan terhadap risiko terkait keamanan siber secara berkala namun belum mencakup seluruh aspek.",
+          "criteriaPage": 49
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah melakukan pengukuran tingkat kerentanan terhadap risiko terkait keamanan siber secara tidak terjadwal atau secara adhoc.",
+          "criteriaPage": 49
+        },
+        {
+          "rank": 4,
+          "criterion": "BPR dan BPR Syariah melakukan pengukuran tingkat kerentanan terhadap risiko terkait keamanan siber secara tidak terjadwal atau secara adhoc dan hanya mencakup sebagian aspek.",
+          "criteriaPage": 49
+        },
+        {
+          "rank": 5,
+          "criterion": "BPR dan BPR Syariah tidak melakukan pengukuran tingkat kerentanan terhadap risiko terkait keamanan siber.",
+          "criteriaPage": 49
+        }
+      ]
+    },
+    {
+      "number": 24,
+      "domain": "ID",
+      "subdomain": "PENGUKURAN_RISIKO_SIBER",
+      "title": "BPR dan BPR Syariah melakukan penyimpanan log yang memiliki periode retensi untuk keperluan audit dan investigasi insiden siber sesuai dengan kebijakan/prosedur.",
+      "tablePage": 19,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah menyimpan seluruh log dalam periode retensi sesuai kebijakan, dikelola dengan baik sehingga mudah ditelusuri, dan pemenuhan retensi dipantau secara berkala.",
+          "criteriaPage": 49
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah menyimpan seluruh log dalam periode retensi sesuai kebijakan, dikelola dengan baik sehingga mudah ditelusuri, namun pemenuhan retensi belum dipantau secara berkala.",
+          "criteriaPage": 49
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah menyimpan sebagian log dalam periode retensi sesuai kebijakan, dikelola dengan baik sehingga mudah ditelusuri, dan pemenuhan retensi belum dipantau secara berkala.",
+          "criteriaPage": 49
+        },
+        {
+          "rank": 4,
+          "criterion": "BPR dan BPR Syariah menyimpan sebagian log dalam periode retensi sesuai kebijakan, dikelola dengan baik sehingga mudah ditelusuri, namun pemenuhan retensi belum dipantau secara berkala.",
+          "criteriaPage": 49
+        },
+        {
+          "rank": 5,
+          "criterion": "BPR dan BPR Syariah tidak menyimpan log dalam periode retensi sesuai kebijakan, dan tidak memantau pemenuhan retensi secara berkala.",
+          "criteriaPage": 49
+        }
+      ]
+    },
+    {
+      "number": 25,
+      "domain": "ID",
+      "subdomain": "PENGUKURAN_RISIKO_SIBER",
+      "title": "BPR dan BPR Syariah melakukan klasifikasi data dan/atau informasi berdasarkan tingkat kritikalitas dan sensitivitas sesuai dengan kebijakan/prosedur.",
+      "tablePage": 19,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah telah menerapkan klasifikasi atas seluruh data/informasi berdasarkan tingkat kritikalitas dan sensitivitas sesuai dengan kebijakan/ prosedur, serta melakukan kaji ulang atas klasifikasi tersebut secara berkala.",
+          "criteriaPage": 50
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah telah menerapkan klasifikasi atas seluruh data/informasi berdasarkan tingkat kritikalitas dan sensitivitas sesuai dengan kebijakan/ prosedur, namun belum melakukan kaji ulang atas klasifikasi tersebut secara berkala.",
+          "criteriaPage": 50
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah telah menerapkan klasifikasi atas sebagian data/informasi berdasarkan tingkat kritikalitas dan sensitivitas sesuai dengan kebijakan/ prosedur, serta melakukan kaji ulang atas klasifikasi tersebut secara berkala.",
+          "criteriaPage": 50
+        },
+        {
+          "rank": 4,
+          "criterion": "BPR dan BPR Syariah telah menerapkan klasifikasi atas sebagian data/informasi berdasarkan tingkat kritikalitas dan sensitivitas sesuai dengan kebijakan/ prosedur, namun belum melakukan kaji ulang atas klasifikasi tersebut secara berkala.",
+          "criteriaPage": 50
+        },
+        {
+          "rank": 5,
+          "criterion": "BPR dan BPR Syariah belum menerapkan klasifikasi atas data/informasi berdasarkan tingkat kritikalitas dan sensitivitas.",
+          "criteriaPage": 50
+        }
+      ]
+    },
+    {
+      "number": 26,
+      "domain": "ID",
+      "subdomain": "PENGUKURAN_RISIKO_SIBER",
+      "title": "BPR dan BPR Syariah menerapkan pengamanan data dan/atau informasi berdasarkan klasifikasi data dan/atau informasi sesuai dengan kebijakan/prosedur.",
+      "tablePage": 19,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah memiliki kebijakan tertulis yang mengatur pengamanan data dan/atau informasi berdasarkan klasifikasi data dan/atau informasi, serta dievaluasi secara rutin, dan telah diimplementasika n secara menyeluruh.",
+          "criteriaPage": 50
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah memiliki kebijakan tertulis yang mengatur pengamanan data dan/atau informasi berdasarkan klasifikasi data dan/atau informasi, namun tidak dievaluasi secara rutin, dan telah diimplementasikan secara menyeluruh.",
+          "criteriaPage": 50
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah memiliki kebijakan tertulis yang mengatur pengamanan data dan/atau informasi berdasarkan klasifikasi data dan/atau informasi, serta dievaluasi secara rutin, namun belum diimplementasikan secara menyeluruh.",
+          "criteriaPage": 50
+        },
+        {
+          "rank": 4,
+          "criterion": "BPR dan BPR Syariah memiliki kebijakan tertulis yang mengatur pengamanan data dan/atau informasi berdasarkan klasifikasi data dan/atau informasi, namun tidak dievaluasi secara rutin dan belum diimplementasi- kan secara menyeluruh.",
+          "criteriaPage": 50
+        },
+        {
+          "rank": 5,
+          "criterion": "BPR dan BPR Syariah tidak memiliki kebijakan tertulis yang mengatur pengamanan data dan/atau informasi berdasarkan klasifikasi data dan/atau informasi.",
+          "criteriaPage": 50
+        }
+      ]
+    },
+    {
+      "number": 27,
+      "domain": "ID",
+      "subdomain": "PENGUKURAN_RISIKO_SIBER",
+      "title": "BPR dan BPR Syariah melaksanakan analisis dampak bisnis (Business Impact Analysis) untuk mengidentifikasi kemungkinan kondisi ekstern dan intern dari serangan siber.",
+      "tablePage": 19,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "Pengujian dilakukan secara berkala dan mencakup seluruh komponen.",
+          "criteriaPage": 51
+        },
+        {
+          "rank": 2,
+          "criterion": "Pengujian dilakukan secara berkala namun hanya mencakup seluruh komponen.",
+          "criteriaPage": 51
+        },
+        {
+          "rank": 3,
+          "criterion": "Pengujian dilakukan secara tidak terjadwal atau secara ad hoc namun mencakup seluruh komponen.",
+          "criteriaPage": 51
+        },
+        {
+          "rank": 4,
+          "criterion": "Pengujian dilakukan secara tidak terjadwal atau secara adhoc namun hanya mencakup sebagian komponen.",
+          "criteriaPage": 51
+        },
+        {
+          "rank": 5,
+          "criterion": "Tidak terdapat pengujian keamanan secara berkala.",
+          "criteriaPage": 51
+        }
+      ]
+    },
+    {
+      "number": 28,
+      "domain": "ID",
+      "subdomain": "PENGUKURAN_RISIKO_SIBER",
+      "title": "BPR dan BPR Syariah melaksanakan pengujian keamanan secara berkala, antara lain vulnerability assessment dan penetration testing, terhadap perangkat lunak dan perangkat keras yang digunakan dalam operasional BPR dan BPR Syariah maupun layanan kepada nasabah dan/atau pihak ketiga.",
+      "tablePage": 19,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah telah melakukan kaji ulang secara berkala terhadap kebijakan ketahanan dan keamanan siber dan disesuaikan dengan perkembangan teknologi, insiden yang terjadi, dan/atau perubahan kondisi terkini lainnya.",
+          "criteriaPage": 51
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah telah melakukan kaji ulang secara berkala terhadap kebijakan ketahanan dan keamanan siber namun tidak sepenuhnya disesuaikan dengan perkembangan teknologi, insiden yang terjadi, dan/atau perubahan kondisi terkini lainnya.",
+          "criteriaPage": 51
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah melakukan kaji ulang secara tidak terjadwal/adhoc terhadap kebijakan ketahanan dan keamanan siber.",
+          "criteriaPage": 51
+        },
+        {
+          "rank": 4,
+          "criterion": "BPR dan BPR Syariah melakukan kaji ulang secara tidak terjadwal/adhoc terhadap sebagian kecil kebijakan ketahanan dan keamanan siber.",
+          "criteriaPage": 51
+        },
+        {
+          "rank": 5,
+          "criterion": "Tidak terdapat proses kaji ulang atas kebijakan keamanan siber.",
+          "criteriaPage": 51
+        }
+      ]
+    },
+    {
+      "number": 29,
+      "domain": "ID",
+      "subdomain": "PENGUKURAN_RISIKO_SIBER",
+      "title": "BPR dan BPR Syariah melakukan kaji ulang secara berkala terhadap kebijakan ketahanan dan keamanan siber untuk menyesuaikan dengan perkembangan teknologi, insiden yang terjadi, dan/atau perubahan kondisi terkini lainnya.",
+      "tablePage": 20,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah telah mengidentifikasi risiko ketahanan dan keamanan siber, serta dituangkan dalam dokumen inventaris risiko (risk register) yang diperbarui secara berkala.",
+          "criteriaPage": 52
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah telah mengidentifikasi risiko ketahanan dan keamanan siber, namun tidak seluruhnya dituangkan dalam dokumen inventaris risiko (risk register) yang diperbarui secara berkala.",
+          "criteriaPage": 52
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah telah mengidentifikasi risiko ketahanan dan keamanan siber, yang dituangkan dalam dokumen inventaris risiko (risk register) namun tidak diperbarui secara berkala.",
+          "criteriaPage": 52
+        },
+        {
+          "rank": 4,
+          "criterion": "BPR dan BPR Syariah telah mengidentifikasi risiko ketahanan dan keamanan siber, namun tidak seluruhnya dituangkan dalam dokumen inventaris risiko (risk register) dan tidak diperbarui secara berkala.",
+          "criteriaPage": 52
+        },
+        {
+          "rank": 5,
+          "criterion": "BPR dan BPR Syariah tidak mengidentifikasi risiko ketahanan dan keamanan siber.",
+          "criteriaPage": 52
+        }
+      ]
+    },
+    {
+      "number": 30,
+      "domain": "ID",
+      "subdomain": "PENGUKURAN_RISIKO_SIBER",
+      "title": "BPR dan BPR Syariah mengidentifikasi risiko dan menentukan prioritas risiko terkait ketahanan dan keamanan siber berdasarkan fungsi kritis, aset TI, interkoneksi sistem (interconnectivity), serta dituangkan dalam dokumen inventaris risiko (risk register). Dokumen risk register diperbarui secara berkala.",
+      "tablePage": 20,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah telah mengidentifikasi risiko ketahanan dan keamanan siber, serta dituangkan dalam dokumen inventaris risiko (risk register) yang diperbarui secara berkala.",
+          "criteriaPage": 52
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah telah mengidentifikasi risiko ketahanan dan keamanan siber, namun tidak seluruhnya dituangkan dalam dokumen inventaris risiko (risk register) yang diperbarui secara berkala.",
+          "criteriaPage": 52
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah telah mengidentifikasi risiko ketahanan dan keamanan siber, yang dituangkan dalam dokumen inventaris risiko (risk register) namun tidak diperbarui secara berkala.",
+          "criteriaPage": 52
+        },
+        {
+          "rank": 4,
+          "criterion": "BPR dan BPR Syariah telah mengidentifikasi risiko ketahanan dan keamanan siber, namun tidak seluruhnya dituangkan dalam dokumen inventaris risiko (risk register) dan tidak diperbarui secara berkala.",
+          "criteriaPage": 52
+        },
+        {
+          "rank": 5,
+          "criterion": "BPR dan BPR Syariah tidak mengidentifikasi risiko ketahanan dan keamanan siber.",
+          "criteriaPage": 52
+        }
+      ]
+    },
+    {
+      "number": 31,
+      "domain": "ID",
+      "subdomain": "PENGUKURAN_RISIKO_SIBER",
+      "title": "BPR dan BPR Syariah melakukan identifikasi aset TI (antara lain perangkat keras, perangkat lunak, jaringan, dan infrastruktur) serta melakukan pencatatan dalam daftar inventaris TI, yang diperbarui secara berkala.",
+      "tablePage": 20,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah telah melakukan identifikasi seluruh aset TI serta melakukan pencatatan dalam daftar inventaris TI, yang diperbarui secara berkala.",
+          "criteriaPage": 53
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah telah melakukan identifikasi seluruh aset TI serta melakukan pencatatan dalam daftar inventaris TI, namun tidak diperbarui secara berkala.",
+          "criteriaPage": 53
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah telah melakukan identifikasi sebagian aset TI serta melakukan pencatatan dalam daftar inventaris TI, yang diperbarui secara berkala.",
+          "criteriaPage": 53
+        },
+        {
+          "rank": 4,
+          "criterion": "BPR dan BPR Syariah telah melakukan identifikasi sebagian aset TI serta melakukan pencatatan dalam daftar inventaris TI, namun tidak diperbarui secara berkala.",
+          "criteriaPage": 53
+        },
+        {
+          "rank": 5,
+          "criterion": "BPR dan BPR Syariah tidak pernah melakukan identifikasi seluruh aset TI serta tidak melakukan pencatatan dalam daftar inventaris TI.",
+          "criteriaPage": 53
+        }
+      ]
+    },
+    {
+      "number": 32,
+      "domain": "PL",
+      "subdomain": "KESADARAN_PELATIHAN",
+      "title": "BPR dan BPR Syariah memberikan pelatihan ketahanan dan keamanan siber secara berkala kepada seluruh pegawai.",
+      "tablePage": 20,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah telah memberikan pelatihan dan keamanan siber secara berkala kepada seluruh pegawai dan sepenuhnya dapat diimplementasika n.",
+          "criteriaPage": 53
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah telah memberikan pelatihan dan keamanan siber secara berkala kepada seluruh pegawai dan tidak sepenuhnya dapat diimplementasikan.",
+          "criteriaPage": 53
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah telah memberikan pelatihan dan keamanan siber secara tidak berkala kepada seluruh pegawai dan dapat diimplementasikan sepenuhnya.",
+          "criteriaPage": 53
+        },
+        {
+          "rank": 4,
+          "criterion": "BPR dan BPR Syariah telah memberikan pelatihan dan keamanan siber secara tidak berkala kepada sebagian pegawai dan tidak sepenuhnya dapat.",
+          "criteriaPage": 53
+        },
+        {
+          "rank": 5,
+          "criterion": "BPR dan BPR Syariah tidak pernah memberikan pelatihan dan keamanan siber secara berkala kepada seluruh pegawai.",
+          "criteriaPage": 53
+        }
+      ]
+    },
+    {
+      "number": 33,
+      "domain": "PL",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "title": "BPR dan BPR Syariah melakukan hardening atas perangkat kerja sesuai dengan kebijakan dan prosedur tertulis, antara lain: a. Seluruh perangkat komputer BPR dan BPR Syariah dilengkapi dengan anti-malware yang dikinikan secara otomatis dan berkala; b. Port USB terkait penyimpanan data pada perangkat komputer BPR dan BPR Syariah dibatasi penggunaannya; c. Perangkat komputer terkunci secara otomatis pada saat perangkat tidak aktif untuk beberapa saat; dan d. Seluruh perangkat komputer BPR dan BPR Syariah dipasang dengan firewall lokal (host based firewall).",
+      "tablePage": 20,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah telah menerapkan kontrol hardening pada seluruh perangkat kerja sesuai kebijakan secara otomatis.",
+          "criteriaPage": 54
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah telah menerapkan kontrol hardening pada seluruh perangkat kerja sesuai kebijakan secara manual.",
+          "criteriaPage": 54
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah telah menerapkan kontrol hardening pada sebagian perangkat kerja sesuai kebijakan secara otomatis.",
+          "criteriaPage": 54
+        },
+        {
+          "rank": 4,
+          "criterion": "BPR dan BPR Syariah telah menerapkan kontrol hardening pada sebagian perangkat kerja sesuai kebijakan secara manual.",
+          "criteriaPage": 54
+        },
+        {
+          "rank": 5,
+          "criterion": "BPR dan BPR Syariah tidak menerapkan kontrol hardening pada seluruh perangkat kerja.",
+          "criteriaPage": 54
+        }
+      ]
+    },
+    {
+      "number": 34,
+      "domain": "PL",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "title": "Surat elektronik (email) korporasi dilindungi sistem pengecekan otomatis spam, phishing, dan malware.",
+      "tablePage": 21,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "Sistem pengecekan otomatis spam, phishing, dan malware terpasang pada email korporasi.",
+          "criteriaPage": 55
+        },
+        {
+          "rank": 2,
+          "criterion": "Sistem pengecekan spam, phishing, dan malware terpasang pada email korporasi, namun diperbarui secara manual.",
+          "criteriaPage": 55
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah hanya memiliki paling banyak 2 (dua) sistem pengecekan otomatis (spam/phishing/m alware) terpasang pada email korporasi.",
+          "criteriaPage": 55
+        },
+        {
+          "rank": 4,
+          "criterion": "BPR dan BPR Syariah hanya memiliki paling banyak 2 (dua) sistem pengecekan (spam/phishing/m alware) terpasang pada email korporasi, namun diperbarui secara manual.",
+          "criteriaPage": 55
+        },
+        {
+          "rank": 5,
+          "criterion": "Tidak terpasang sistem pengecekan otomatis spam, phishing, dan malware pada email korporasi.",
+          "criteriaPage": 55
+        }
+      ]
+    },
+    {
+      "number": 35,
+      "domain": "PL",
+      "subdomain": "KESADARAN_PELATIHAN",
+      "title": "BPR dan BPR Syariah melakukan simulasi phishing dengan cara mengirimkan emailblast kepada seluruh pegawai untuk mengukur respons terhadap phishing dan serangan surat elektronik (email) serupa setidaknya sekali setiap tahun.",
+      "tablePage": 21,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "Seluruh pegawai telah mengikuti simulasi phishing paling sedikit 1 (satu) kali setiap tahun.",
+          "criteriaPage": 55
+        },
+        {
+          "rank": 2,
+          "criterion": "Seluruh pegawai telah mengikuti simulasi phishing namun tidak dilakukan 1 (satu) kali setiap tahun.",
+          "criteriaPage": 55
+        },
+        {
+          "rank": 3,
+          "criterion": "Sebagian pegawai telah mengikuti simulasi phishing dan dilakukan paling sedikit 1 (satu) kali setiap tahun.",
+          "criteriaPage": 55
+        },
+        {
+          "rank": 4,
+          "criterion": "Sebagian pegawai telah mengikuti simulasi phishing namun tidak dilakukan 1 (satu) kali setiap tahun.",
+          "criteriaPage": 55
+        },
+        {
+          "rank": 5,
+          "criterion": "Belum ada simulasi phishing yang dilakukan BPR dan BPR Syariah.",
+          "criteriaPage": 55
+        }
+      ]
+    },
+    {
+      "number": 36,
+      "domain": "PL",
+      "subdomain": "MANAJEMEN_IDENTITAS_AUTENTIKASI_KONTROL_AKSES",
+      "title": "BPR dan BPR Syariah menerapkan pengendalian akses berbasis peran (Role Based Access Control–RBAC) terhadap seluruh sistem.",
+      "tablePage": 21,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah telah menerapkan RBAC pada seluruh sistem BPR dan BPR Syariah dan dilakukan evaluasi secara berkala.",
+          "criteriaPage": 55
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah telah menerapkan RBAC pada seluruh sistem BPR dan BPR Syariah namun tidak dilakukan evaluasi secara berkala.",
+          "criteriaPage": 55
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah telah menerapkan RBAC pada sebagian sistem BPR dan BPR Syariah dan dilakukan evaluasi secara berkala.",
+          "criteriaPage": 55
+        },
+        {
+          "rank": 4,
+          "criterion": "BPR dan BPR Syariah telah menerapkan RBAC pada sebagian sistem BPR dan BPR Syariah namun tidak dilakukan evaluasi secara berkala.",
+          "criteriaPage": 55
+        },
+        {
+          "rank": 5,
+          "criterion": "Seluruh sistem BPR dan BPR Syariah tidak menerapkan RBAC.",
+          "criteriaPage": 55
+        }
+      ]
+    },
+    {
+      "number": 37,
+      "domain": "PL",
+      "subdomain": "MANAJEMEN_IDENTITAS_AUTENTIKASI_KONTROL_AKSES",
+      "title": "Setiap pegawai menggunakan single ID yang unik dan kata sandi pribadi untuk mengakses perangkat komputer.",
+      "tablePage": 21,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "Setiap pegawai memiliki dan menggunakan single ID yang unik untuk mengakses perangkat komputer.",
+          "criteriaPage": 56
+        },
+        {
+          "rank": 2,
+          "criterion": "Sebagian pegawai memiliki dan menggunakan single ID yang unik untuk mengakses perangkat komputer.",
+          "criteriaPage": 56
+        },
+        {
+          "rank": 3,
+          "criterion": "Setiap pegawai memiliki dan menggunakan single ID yang unik untuk mengakses perangkat komputer namun masih terdapat praktik berbagi user ID antar pegawai.",
+          "criteriaPage": 56
+        },
+        {
+          "rank": 4,
+          "criterion": "Sebagian pegawai memiliki dan menggunakan single ID yang unik untuk mengakses perangkat komputer namun masih terdapat praktik berbagi user ID antar pegawai.",
+          "criteriaPage": 56
+        },
+        {
+          "rank": 5,
+          "criterion": "Tidak terdapat kebijakan single ID yang unik setiap pegawai.",
+          "criteriaPage": 56
+        }
+      ]
+    },
+    {
+      "number": 38,
+      "domain": "PL",
+      "subdomain": "MANAJEMEN_IDENTITAS_AUTENTIKASI_KONTROL_AKSES",
+      "title": "BPR dan BPR Syariah menerapkan kontrol operasional manajemen akses pengguna pada seluruh sistem, termasuk penegakan otomatis kompleksitas kata sandi, masa kedaluwarsa, riwayat, dan penguncian akun (lockout) sesuai dengan kebijakan/prosedur yang telah ditetapkan.",
+      "tablePage": 21,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah menerapkan kontrol sandi secara terpusat atas seluruh sistem yang meliputi kompleksitas, kedaluwarsa, riwayat, dan lockout sesuai dengan kebijakan, serta memantau kepatuhannya secara berkala.",
+          "criteriaPage": 56
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah menerapkan kontrol sandi secara terpusat atas seluruh sistem yang meliputi kompleksitas, kedaluwarsa, riwayat, dan lockout sesuai dengan kebijakan, namun belum memantau kepatuhannya secara berkala.",
+          "criteriaPage": 56
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah menerapkan kontrol sandi secara terpusat atas sebagian sistem yang meliputi kompleksitas, kedaluwarsa, riwayat, dan lockout sesuai dengan kebijakan, dan memantau kepatuhannya secara berkala.",
+          "criteriaPage": 56
+        },
+        {
+          "rank": 4,
+          "criterion": "BPR dan BPR Syariah menerapkan kontrol sandi secara terpusat atas sebagian sistem yang meliputi kompleksitas, kedaluwarsa, riwayat, dan lockout sesuai dengan kebijakan, namun belum memantau kepatuhannya secara berkala.",
+          "criteriaPage": 56
+        },
+        {
+          "rank": 5,
+          "criterion": "BPR dan BPR Syariah belum menerapkan kontrol sandi secara terpusat atas sistem yang dimiliki.",
+          "criteriaPage": 56
+        }
+      ]
+    },
+    {
+      "number": 39,
+      "domain": "PL",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "title": "BPR dan BPR Syariah melakukan pemisahan jaringan dengan menggunakan Service Set Identifier (SSID) terpisah untuk pegawai dan tamu/pengunjung, serta menerapkan pengamanan teknis (misalnya Virtual Local Area Network - VLAN) untuk membatasi akses.",
+      "tablePage": 21,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariahtelah menerapkan Service Set Identifier (SSID) terpisah untuk pegawai dan tamu/pengunjung , serta melengkapinya dengan pengamanan teknis untuk membatasi akses terhadap seluruh jaringan.",
+          "criteriaPage": 57
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariahtelah menerapkan Service Set Identifier (SSID) terpisah untuk pegawai dan tamu/pengunjung, serta melengkapinya dengan pengamanan teknis untuk membatasi akses terhadap sebagian jaringan.",
+          "criteriaPage": 57
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariahtelah menerapkan Service Set Identifier (SSID) terpisah untuk pegawai dan tamu/pengunjung, namun belum dilengkapi dengan penerapan pengamanan teknis untuk membatasi akses jaringan.",
+          "criteriaPage": 57
+        },
+        {
+          "rank": 4,
+          "criterion": "BPR dan BPR Syariah belum memisahkan Service Set Identifier (SSID) dan hanya membatasi akses dengan sandi atau aturan manual.",
+          "criteriaPage": 57
+        },
+        {
+          "rank": 5,
+          "criterion": "BPR dan BPR Syariah belum menerapkan pemisahan jaringan.",
+          "criteriaPage": 57
+        }
+      ]
+    },
+    {
+      "number": 40,
+      "domain": "PL",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "title": "BPR dan BPR Syariah menerapkan kontrol operasional siklus hidup aset TI yang meliputi inventarisasi dan identifikasi End-of-Life (EOL) dan End-of-Support (EOS), menjalankan patching/upgrade secara terjadwal, serta menarik atau mengisolasi dari produksi setiap perangkat yang mencapai EOL/EOS sesuai dengan kebijakan/prosedur yang telah ditetapkan.",
+      "tablePage": 21,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariahmenerapka n kontrol operasional siklus hidup atas seluruh aset TI.",
+          "criteriaPage": 57
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah menerapkan kontrol operasional siklus hidup atas sebagian aset TI.",
+          "criteriaPage": 57
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah menginventarisasi dan identifikasi End-of-Life (EOL) dan End-of-Support (EOS), menjalankan patching/upgrade secara terjadwal, namun tidak menarik atau mengisolasi dari produksi setiap perangkat yang mencapai EOL/EOS.",
+          "criteriaPage": 57
+        },
+        {
+          "rank": 4,
+          "criterion": "BPR dan BPR Syariah menginventarisasi dan identifikasi End-of-Life (EOL) dan End-of-Support (EOS), namun tidak menjalankan patching/upgrade secara terjadwal dan tidak menarik atau mengisolasi dari produksi setiap perangkat yang mencapai EOL/EOS.",
+          "criteriaPage": 57
+        },
+        {
+          "rank": 5,
+          "criterion": "BPR dan BPR Syariah tidak kontrol operasional siklus hidup atas seluruh aset TI.",
+          "criteriaPage": 57
+        }
+      ]
+    },
+    {
+      "number": 41,
+      "domain": "PL",
+      "subdomain": "MANAJEMEN_IDENTITAS_AUTENTIKASI_KONTROL_AKSES",
+      "title": "BPR dan BPR Syariah menerapkan kontrol akses operasional saat pegawai pindah/berhenti, yaitu hak akses disesuaikan atau dinonaktifkan tepat waktu, dan seluruh perubahan tercatat di log sesuai dengan kebijakan/prosedur yang ditetapkan.",
+      "tablePage": 22,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah mengintegrasikan sistem kepegawaian (HR) dengan Identity and Access Management (IAM). Sehingga apabila ada pegawai yang mutasi/berhenti, maka hak akses akan disesuaikan atau dinonaktifkan secara otomatis, dan seluruh perubahan terekam log lengkap dan ditinjau berkala.",
+          "criteriaPage": 58
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah mengintegrasikan sistem kepegawaian (HR) dengan Identity and Access Management (IAM). Apabila ada pegawai yang mutasi/berhenti, hak akses akan disesuaikan atau dinonaktifkan secara manual di hari yang sama, dan seluruh perubahan terekam log lengkap dan ditinjau berkala.",
+          "criteriaPage": 58
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah mengintegrasikan sistem kepegawaian (HR) dengan Identity and Access Management (IAM). Apabila ada pegawai yang mutasi/berhenti, hak akses akan disesuaikan atau dinonaktifkan secara manual dalam 3 hari kerja, dan seluruh perubahan terekam log lengkap dan ditinjau berkala.",
+          "criteriaPage": 58
+        },
+        {
+          "rank": 4,
+          "criterion": "Proses tidak konsisten dan sering terlambat. Pencatatan log tidak lengkap atau jarang ditinjau.",
+          "criteriaPage": 58
+        },
+        {
+          "rank": 5,
+          "criterion": "Tidak terdapat prosedur terkait kontrol akses. Akses sering tetap aktif setelah pegawai pindah/berhenti dan tidak ada pencatatan log.",
+          "criteriaPage": 58
+        }
+      ]
+    },
+    {
+      "number": 42,
+      "domain": "PL",
+      "subdomain": "KEAMANAN_DATA",
+      "title": "BPR dan BPR Syariah menghapus (wipe) seluruh data pada perangkat kerja sebelum perangkat dimusnahkan/dialihkan. Selanjutnya hasilnya akan diverifikasi dan buktinya dicatat, sesuai dengan kebijakan/prosedur yang ditetapkan.",
+      "tablePage": 22,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah melakukan wipe dengan metode/tools yang sesuai standar, memverifikasi hasilnya, dan mengadministrasi kan secara tertib bukti pendukungnya (a.l. log, sertifikat penghapusan) atas seluruh perangkat kerja yang akan dimusnahkan/dial ihkan.",
+          "criteriaPage": 59
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah melakukan wipe dengan metode/tools yang sesuai standar, memverifikasi hasilnya, namun belum mengadministrasik an secara tertib bukti pendukungnya (a.l. log, sertifikat penghapusan) atas seluruh perangkat kerja yang akan dimusnahkan/diali hkan.",
+          "criteriaPage": 59
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah melakukan wipe dengan metode/tools yang sesuai standar, memverifikasi hasilnya, dan mengadministrasik an secara tertib bukti pendukungnya (a.l. log, sertifikat penghapusan) atas sebagian perangkat kerja yang akan dimusnahkan/diali hkan.",
+          "criteriaPage": 59
+        },
+        {
+          "rank": 4,
+          "criterion": "BPR dan BPR Syariah melakukan wipe dengan metode/tools yang sesuai standar, memverifikasi hasilnya, namun belum mengadministrasik an secara tertib bukti pendukungnya (a.l. log, sertifikat penghapusan) atas sebagian perangkat kerja yang akan dimusnahkan/diali hkan.",
+          "criteriaPage": 59
+        },
+        {
+          "rank": 5,
+          "criterion": "BPR dan BPR Syariah tidak melakukan wipe perangkat kerja yang akan dimusnahkan/di alihkan.",
+          "criteriaPage": 59
+        }
+      ]
+    },
+    {
+      "number": 43,
+      "domain": "PL",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "title": "BPR dan BPR Syariah melindungi ruang server/pusat data (data center) dengan kontrol akses fisik, antara lain kunci, kartu akses, dan/atau biometrik, serta memiliki dokumentasi terhadap akses.",
+      "tablePage": 22,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah memiliki ruang server/pusat data yang hanya dapat diakses melalui kunci,kartu, dan/atau biometrik, terdapat pengamanan berlapis, dan terdapat dokumentasi terhadap akses.",
+          "criteriaPage": 59
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah memiliki ruang server/pusat data yang hanya dapat diakses melalui kunci,kartu, dan/atau biometrik, terdapat pengamanan minimal, dan terdapat dokumentasi terhadap akses.",
+          "criteriaPage": 59
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah memiliki ruang server/pusat data yang hanya dapat diakses melalui kunci manual dan tidak terdapat dokumentasi terhadap akses.",
+          "criteriaPage": 59
+        },
+        {
+          "rank": 4,
+          "criterion": "BPR dan BPR Syariah memiliki ruang server/pusat data, namun tidak terdapat kontrol akses.",
+          "criteriaPage": 59
+        },
+        {
+          "rank": 5,
+          "criterion": "Server tidak ditempatkan di lokasi khusus.",
+          "criteriaPage": 59
+        }
+      ]
+    },
+    {
+      "number": 44,
+      "domain": "PL",
+      "subdomain": "MANAJEMEN_IDENTITAS_AUTENTIKASI_KONTROL_AKSES",
+      "title": "BPR dan BPR Syariah memiliki prosedur persetujuan resmi terkait permintaan akses ke sistem kritikal yang disertai dengan dokumentasi.",
+      "tablePage": 22,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah memiliki prosedur persetujuan resmi terkait permintaan akses ke sistem kritikal, diimplementasika n secara menyeluruh dan konsisten, serta terdapat dokumentasi yang memadai.",
+          "criteriaPage": 60
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah memiliki prosedur persetujuan resmi terkait permintaan akses ke sistem kritikal, diimplementasikan secara menyeluruh dan konsisten, serta terdapat dokumentasi yang cukup memadai.",
+          "criteriaPage": 60
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah memiliki prosedur persetujuan resmi terkait permintaan akses ke sistem kritikal, namun diimplementasikan tidak sepenuhnya diimpelementasika n secara menyeluruh, serta terdapat dokumentasi yang cukup memadai.",
+          "criteriaPage": 60
+        },
+        {
+          "rank": 4,
+          "criterion": "BPR dan BPR Syariah memiliki prosedur persetujuan resmi terkait permintaan akses ke sistem kritikal, namun diimplementasikan tidak sepenuhnya diimpelementasika n secara menyeluruh, serta terdapat dokumentasi yang kurang memadai.",
+          "criteriaPage": 60
+        },
+        {
+          "rank": 5,
+          "criterion": "BPR dan BPR Syariah tidak memiliki prosedur persetujuan resmi terkait permintaan akses ke sistem kritikal.",
+          "criteriaPage": 60
+        }
+      ]
+    },
+    {
+      "number": 45,
+      "domain": "PL",
+      "subdomain": "MANAJEMEN_IDENTITAS_AUTENTIKASI_KONTROL_AKSES",
+      "title": "Pengguna dengan role administrator di BPR dan BPR Syariah (staf TI/vendor) memakai akun admin terpisah dari akun harian. Akun admin hanya untuk tugas privileged.",
+      "tablePage": 22,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "Seluruh pengguna dengan role administrator telah menggunakan akun admin yang terpisah dari akun harian, dan aktivitasnya tercatat.",
+          "criteriaPage": 61
+        },
+        {
+          "rank": 2,
+          "criterion": "Seluruh pengguna dengan role administrator telah menggunakan akun admin yang terpisah dari akun harian, namun aktivitasnya belum sepenuhnya tercatat.",
+          "criteriaPage": 61
+        },
+        {
+          "rank": 3,
+          "criterion": "Sebagian pengguna dengan role administrator telah menggunakan akun admin yang terpisah dari akun harian, dan aktivitasnya tercatat.",
+          "criteriaPage": 61
+        },
+        {
+          "rank": 4,
+          "criterion": "Sebagian pengguna dengan role administrator telah menggunakan akun admin yang terpisah dari akun harian, namun aktivitasnya belum sepenuhnya tercatat.",
+          "criteriaPage": 61
+        },
+        {
+          "rank": 5,
+          "criterion": "Tidak ada pemisahan akun admin dan akun harian untuk pengguna dengan role administrator.",
+          "criteriaPage": 61
+        }
+      ]
+    },
+    {
+      "number": 46,
+      "domain": "PL",
+      "subdomain": "MANAJEMEN_IDENTITAS_AUTENTIKASI_KONTROL_AKSES",
+      "title": "Seluruh sistem kritikal dilindungi dengan otentikasi multifaktor (Multi Factor Authentication - MFA).",
+      "tablePage": 23,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "Seluruh sistem kritikal menerapkan MFA dan dipantau secara berkala.",
+          "criteriaPage": 61
+        },
+        {
+          "rank": 2,
+          "criterion": "Sebagian besar sistem kritikal menerapkan MFA namun tidak dipantau secara berkala.",
+          "criteriaPage": 61
+        },
+        {
+          "rank": 3,
+          "criterion": "Sebagian kecil sistem kritikal menerapkan MFA dan dipantau secara berkala.",
+          "criteriaPage": 61
+        },
+        {
+          "rank": 4,
+          "criterion": "Sebagian kecil sistem kritikal menerapkan MFA namun tidak dipantau secara berkala.",
+          "criteriaPage": 61
+        },
+        {
+          "rank": 5,
+          "criterion": "Sistem kritikal BPR dan BPR Syariah tidak menerapkan MFA.",
+          "criteriaPage": 61
+        }
+      ]
+    },
+    {
+      "number": 47,
+      "domain": "PL",
+      "subdomain": "MANAJEMEN_IDENTITAS_AUTENTIKASI_KONTROL_AKSES",
+      "title": "BPR dan BPR Syariah melakukan audit berkala terhadap hak akses pegawai berdasarkan klasifikasi data dan informasi.",
+      "tablePage": 23,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah melakukan audit terhadap hak akses pegawai berdasarkan klasifikasi data dan informasi secara berkala.",
+          "criteriaPage": 61
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah melakukan audit terhadap hak akses pegawai berdasarkan klasifikasi data dan informasi secara berkala namun tidak mencakup seluruh aspek.",
+          "criteriaPage": 61
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah melakukan audit terhadap hak akses pegawai berdasarkan klasifikasi data dan informasi secara tidak terjadwal atau tidak secara berkala.",
+          "criteriaPage": 61
+        },
+        {
+          "rank": 4,
+          "criterion": "BPR dan BPR Syariah melakukan audit terhadap hak akses pegawai berdasarkan klasifikasi data dan informasi secara tidak terjadwal atau tidak secara berkala dan belum mencakup seluruh aspek.",
+          "criteriaPage": 61
+        },
+        {
+          "rank": 5,
+          "criterion": "Tidak dilakukan audit terhadap hak akses pegawai berdasarkan klasifikasi data dan informasi.",
+          "criteriaPage": 61
+        }
+      ]
+    },
+    {
+      "number": 48,
+      "domain": "PL",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "title": "BPR dan BPR Syariah memiliki fitur yang secara otomatis memblokir koneksi dari atau ke alamat internet berbahaya (firewall), berdasarkan informasi dari penyedia threat intelligence.",
+      "tablePage": 23,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah telah memiliki fitur yang secara otomatis memblokir seluruh koneksi dari atau ke alamat internet berbahaya (firewall) berdasarkan informasi dari penyedia threat intelligence.",
+          "criteriaPage": 62
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah telah memiliki fitur yang secara otomatis memblokir sebagian koneksi dari atau ke alamat internet berbahaya (firewall) berdasarkan informasi dari penyedia threat intelligence namun masih terdapat pemantauan berkala.",
+          "criteriaPage": 62
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah telah memiliki fitur yang secara otomatis memblokir sebagian koneksi dari atau ke alamat internet berbahaya (firewall) berdasarkan informasi dari penyedia threat intelligence namun tidak terdapat pemantauan berkala.",
+          "criteriaPage": 62
+        },
+        {
+          "rank": 4,
+          "criterion": "BPR dan BPR Syariah memblokir secara manual berdasarkan daftar alamat internet.",
+          "criteriaPage": 62
+        },
+        {
+          "rank": 5,
+          "criterion": "BPR dan BPR Syariah tidak memblokir koneksi dari atau ke alamat internet berbahaya.",
+          "criteriaPage": 62
+        }
+      ]
+    },
+    {
+      "number": 49,
+      "domain": "PL",
+      "subdomain": "MANAJEMEN_IDENTITAS_AUTENTIKASI_KONTROL_AKSES",
+      "title": "Instalasi perangkat lunak BPR dan BPR Syariah hanya dapat dilakukan oleh Satuan Kerja atau pegawai yang bertanggung jawab terhadap penyelenggaraan TI atau pihak lain dengan otorisasi dari pihak penyelenggara TI.",
+      "tablePage": 23,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah menerapkan pembatasan instalasi perangkat lunak secara menyeluruh dan terdapat dokumentasi log instalansi.",
+          "criteriaPage": 62
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah menerapkan pembatasan instalasi perangkat lunak secara menyeluruh namun tidak terdapat dokumentasi log instalansi.",
+          "criteriaPage": 62
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah menerapkan pembatasan instalasi perangkat lunak pada sebagian perangkat dan terdapat dokumentasi log instalasi.",
+          "criteriaPage": 62
+        },
+        {
+          "rank": 4,
+          "criterion": "BPR dan BPR Syariah menerapkan pembatasan instalasi perangkat lunak pada sebagian perangkat dan tidak terdapat dokumentasi log instalasi.",
+          "criteriaPage": 62
+        },
+        {
+          "rank": 5,
+          "criterion": "Tidak terdapat pembatasan instalasi perangkat lunak BPR dan BPR Syariah.",
+          "criteriaPage": 62
+        }
+      ]
+    },
+    {
+      "number": 50,
+      "domain": "PL",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "title": "BPR dan BPR Syariah melakukan klasifikasi antara jaringan untuk sistem kritikal dengan jaringan umum (contoh: surat elektronik).",
+      "tablePage": 23,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "Jaringan kritikal dan jaringan umum dipisahkan secara ketat (segregasi fisik maupun logis) dan dilakukan pengujian. keamanan dan monitoring berkala untuk memastikan efektivitas pemisahan.",
+          "criteriaPage": 63
+        },
+        {
+          "rank": 2,
+          "criterion": "Jaringan kritikal dan jaringan umum dipisahkan secara ketat (segregasi fisik maupun logis) dan dilakukan pengujian keamanan dan monitoring namun tidak berkala untuk memastikan efektivitas pemisahan.",
+          "criteriaPage": 63
+        },
+        {
+          "rank": 3,
+          "criterion": "Pemisahan jaringan dilakukan secara minimal (lebih bersifat administratif daripada teknis) dan monitoring dilakukan namun bersifat adhoc dan tidak konsisten.",
+          "criteriaPage": 63
+        },
+        {
+          "rank": 4,
+          "criterion": "Pemisahan jaringan dilakukan secara minimal (lebih bersifat administratif daripada teknis) dan tidak pernah dilakukan monitoring.",
+          "criteriaPage": 63
+        },
+        {
+          "rank": 5,
+          "criterion": "Seluruh sistem (kritikal dan umum) berada dalam satu jaringan tanpa perlindungan khusus.",
+          "criteriaPage": 63
+        }
+      ]
+    },
+    {
+      "number": 51,
+      "domain": "PL",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "title": "BPR dan BPR Syariah menerapkan klasifikasi jaringan yang terpisah untuk layanan ATM/CDM/EDC disertai dengan enkripsi end-to-end atau VPN.",
+      "tablePage": 23,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah menerapkan klasifikasi jaringan yang terpisah untuk layanan ATM/CDM/EDC dan seluruh komunikasi data menggunakan enkripsi end-to- end standar industri (misalnya AES-256) atau VPN dengan protokol aman.",
+          "criteriaPage": 63
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah menerapkan klasifikasi jaringan yang terpisah untuk layanan ATM/CDM/EDC serta enkripsi atau VPN sudah diterapkan untuk sebagian besar transaksi, dengan standar keamanan yang memadai.",
+          "criteriaPage": 63
+        },
+        {
+          "rank": 3,
+          "criterion": "Pemisahan jaringan dilakukan secara terbatas, sebagian layanan ATM/CDM/EDC masih berbagi infrastruktur dengan jaringan umum dan enkripsi atau VPN diterapkan namun hanya pada titik tertentu, tidak mencakup seluruh komunikasi.",
+          "criteriaPage": 63
+        },
+        {
+          "rank": 4,
+          "criterion": "Pemisahan jaringan dilakukan secara terbatas, sebagian layanan ATM/CDM/EDC masih berbagi infrastruktur dengan jaringan umum dan enkripsi tidak selalu digunakan.",
+          "criteriaPage": 63
+        },
+        {
+          "rank": 5,
+          "criterion": "Tidak terdapat klasifikasi jaringan ATM/CDM/EDC dan tidak terenkripsi.",
+          "criteriaPage": 63
+        }
+      ]
+    },
+    {
+      "number": 52,
+      "domain": "PL",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "title": "BPRdan BPR Syariah melakukan pembaruan (update) sistem dan aplikasi secara berkala, termasuk patch keamanan.",
+      "tablePage": 23,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariahmelakuka n pembaruan seluruh sistem dan aplikasi secara berkala termasuk patch keamanan.",
+          "criteriaPage": 64
+        },
+        {
+          "rank": 2,
+          "criterion": "Sebagian besar sistem dan aplikasi kritikal diperbarui secara berkala.",
+          "criteriaPage": 64
+        },
+        {
+          "rank": 3,
+          "criterion": "Sebagian kecil sistem dan aplikasi kritikal diperbarui secara berkala.",
+          "criteriaPage": 64
+        },
+        {
+          "rank": 4,
+          "criterion": "Pembaruan sistem dan aplikasi kritikal hanya dilakukan dalam hal terdapat kendala atau temuan.",
+          "criteriaPage": 64
+        },
+        {
+          "rank": 5,
+          "criterion": "Tidak terdapat pembaruan sistem dan aplikasi kritikal.",
+          "criteriaPage": 64
+        }
+      ]
+    },
+    {
+      "number": 53,
+      "domain": "PL",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "title": "BPR dan BPR Syariah melindungi mesin ATM/CDM/EDC dengan proteksi fisik (antara lain seal dan CCTV) dan proteksi sistem (antara lain anti-Malware dan Operating System - OS Lock).",
+      "tablePage": 23,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah melindungi mesin ATM/CDM/EDC dengan proteksi fisik secara ketat (antara lain seal dan CCTV) dan proteksi sistem secara ketat.",
+          "criteriaPage": 64
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah melindungi mesin ATM/CDM/EDC dengan proteksi fisik secara ketat dan proteksi sistem secara minimal.",
+          "criteriaPage": 64
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah melindungi mesin ATM/CDM/EDC dengan proteksi fisik secara minimal dan proteksi sistem secara minimal.",
+          "criteriaPage": 64
+        },
+        {
+          "rank": 4,
+          "criterion": "BPR dan BPR Syariah melindungi mesin ATM/CDM/EDC dengan proteksi fisik dan namun tidak terdapat proteksi sistem.",
+          "criteriaPage": 64
+        },
+        {
+          "rank": 5,
+          "criterion": "Tidak terdapat proteksi fisik dan sistem pada mesin ATM/CDM/EDC.",
+          "criteriaPage": 64
+        }
+      ]
+    },
+    {
+      "number": 54,
+      "domain": "PL",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "title": "BPR dan BPR Syariah memiliki prosedur tertulis terkait change management untuk meninjau seluruh perubahan konfigurasi.",
+      "tablePage": 24,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah memiliki prosedur tertulis terkait change management untuk meninjau seluruh perubahan konfigurasi dan diterapkan secara konsisten.",
+          "criteriaPage": 64
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah memiliki prosedur tertulis terkait change management untuk meninjau seluruh perubahan konfigurasi namun belum diterapkan secara konsisten.",
+          "criteriaPage": 64
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah memiliki prosedur tertulis terkait change management untuk meninjau sebagian perubahan konfigurasi namun diterapkan secara konsisten.",
+          "criteriaPage": 64
+        },
+        {
+          "rank": 4,
+          "criterion": "BPR dan BPR Syariah memiliki prosedur tertulis terkait change management untuk meninjau sebagian perubahan konfigurasi dan diterapkan secara tidak konsisten.",
+          "criteriaPage": 64
+        },
+        {
+          "rank": 5,
+          "criterion": "BPR dan BPR Syariah tidak memiliki prosedur tertulis terkait change management untuk meninjau seluruh perubahan konfigurasi.",
+          "criteriaPage": 64
+        }
+      ]
+    },
+    {
+      "number": 55,
+      "domain": "PL",
+      "subdomain": "KONTEKS_ORGANISASI",
+      "title": "BPR dan BPR Syariah memisahkan lingkungan antara sistem produksi dengan pengembangan tanpa berbagi data atau infrastruktur.",
+      "tablePage": 24,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah memisahkan penuh lingkungan antara sistem produksi dengan pengembangan, tidak ada data nyata (real data) yang digunakan di lingkungan pengembangan, hanya data dummy atau anonymized serta terdapat kebijakan, prosedur, dan monitoring ketat untuk mencegah kebocoran maupun perubahan tidak sah.",
+          "criteriaPage": 65
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah memisahkan lingkungan antara sistem produksi dengan pengembangan tetapi masih terdapat sebagian infrastruktur jaringan yang berbagi, tidak ada data nyata (real data) yang digunakan di lingkungan pengembangan, hanya data dummy atau anonymized serta terdapat kebijakan, prosedur, dan monitoring ketat untuk mencegah kebocoran maupun perubahan tidak sah.",
+          "criteriaPage": 65
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah memisahkan sebagian lingkungan antara sistem produksi dengan pengembangan, masih terdapat praktik berbagi infrastruktur/data dengan pengawasan yang ketat.",
+          "criteriaPage": 65
+        },
+        {
+          "rank": 4,
+          "criterion": "BPR dan BPR Syariah memisahkan sebagian lingkungan antara sistem produksi dengan pengembangan, masih terdapat praktik berbagi infrastruktur/data tanpa pengawasan yang ketat.",
+          "criteriaPage": 65
+        },
+        {
+          "rank": 5,
+          "criterion": "BPR dan BPR Syariah tidak memisahkan lingkungan antara sistem produksi dengan pengembangan, data produksi digunakan bebas di lingkungan pengembangan, tidak ada kebijakan, prosedur, maupun monitoring.",
+          "criteriaPage": 65
+        }
+      ]
+    },
+    {
+      "number": 56,
+      "domain": "PL",
+      "subdomain": "KEAMANAN_DATA",
+      "title": "BPR dan BPR Syariah melakukan enkripsi data penting (antara lain data transaksi, data nasabah, dan laporan internal) dengan menggunakan standar industri.",
+      "tablePage": 24,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah telah melakukan enkripsi pada seluruh data penting (antara lain data transaksi, data nasabah, dan laporan internal) dengan menggunakan standar industri.",
+          "criteriaPage": 66
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah telah melakukan enkripsi pada seluruh data penting (antara lain data transaksi, data nasabah, dan laporan internal) dengan menggunakan standar lemah.",
+          "criteriaPage": 66
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah telah melakukan enkripsi pada sebagian data penting (antara lain data transaksi, data nasabah, dan laporan internal) dengan menggunakan standar industri.",
+          "criteriaPage": 66
+        },
+        {
+          "rank": 4,
+          "criterion": "BPR dan BPR Syariah telah melakukan enkripsi pada sebagian data penting (antara lain data transaksi, data nasabah, dan laporan internal) dengan menggunakan standar yang lemah.",
+          "criteriaPage": 66
+        },
+        {
+          "rank": 5,
+          "criterion": "BPR dan BPR Syariah tidak melakukan enkripsi pada seluruh data penting.",
+          "criteriaPage": 66
+        }
+      ]
+    },
+    {
+      "number": 57,
+      "domain": "PL",
+      "subdomain": "KEAMANAN_DATA",
+      "title": "BPR dan BPR Syariah memiliki prosedur tertulis terkait metode manajemen data termasuk namun tidak terbatas pada pelindungan data, transfer data, dan penghapusan data.",
+      "tablePage": 24,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah memiliki prosedur tertulis terkait metode manajemen data dan seluruhnya diterapkan secara memadai.",
+          "criteriaPage": 66
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah memiliki prosedur tertulis terkait metode manajemen data dan seluruhnya diterapkan secara cukup memadai.",
+          "criteriaPage": 66
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah memiliki prosedur tertulis terkait metode manajemen data namun hanya sebagian besar diterapkan secara memadai.",
+          "criteriaPage": 66
+        },
+        {
+          "rank": 4,
+          "criterion": "BPR dan BPR Syariah memiliki prosedur tertulis terkait metode manajemen data namun sebagian kecil diterapkan secara memadai.",
+          "criteriaPage": 66
+        },
+        {
+          "rank": 5,
+          "criterion": "BPR dan BPR Syariah tidak memiliki prosedur tertulis terkait metode manajemen data.",
+          "criteriaPage": 66
+        }
+      ]
+    },
+    {
+      "number": 58,
+      "domain": "PL",
+      "subdomain": "KESADARAN_PELATIHAN",
+      "title": "BPR dan BPR Syariah secara berkala melakukan edukasi kepada Nasabah mengenai potensi risiko siber dalam penggunaan produk yang berbasis teknologi informasi melalui berbagai kanal komunikasi.",
+      "tablePage": 24,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah secara berkala melakukan edukasi kepada Nasabah mengenai potensi risiko siber dalam penggunaan produk yang berbasis teknologi informasi melalui berbagai kanal komunikasi dan materi edukasi komprehensif mencakup tren ancaman terbaru, tips keamanan, serta panduan praktis.",
+          "criteriaPage": 66
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah secara berkala melakukan edukasi kepada Nasabah mengenai potensi risiko siber dalam penggunaan produk yang berbasis teknologi informasi melalui kanal komunikasi terbatas dan materi edukasi yang terbatas.",
+          "criteriaPage": 66
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah tidak secara berkala melakukan edukasi kepada Nasabah mengenai potensi risiko siber dalam penggunaan produk yang berbasis teknologi informasi melalui berbagai kanal komunikasi dan materi edukasi masih bersifat umum.",
+          "criteriaPage": 66
+        },
+        {
+          "rank": 4,
+          "criterion": "BPR dan BPR Syariah tidak secara berkala melakukan edukasi kepada Nasabah mengenai potensi risiko siber dalam penggunaan produk yang berbasis teknologi informasi melalui kanal komunikasi yang terbatas dan materi edukasi yang minim.",
+          "criteriaPage": 66
+        },
+        {
+          "rank": 5,
+          "criterion": "BPR dan BPR Syariah tidak melakukan edukasi kepada Nasabah mengenai potensi risiko siber dalam penggunaan produk yang berbasis teknologi informasi.",
+          "criteriaPage": 66
+        }
+      ]
+    },
+    {
+      "number": 59,
+      "domain": "PL",
+      "subdomain": "MANAJEMEN_IDENTITAS_AUTENTIKASI_KONTROL_AKSES",
+      "title": "BPR dan BPR Syariah menerapkan metode autentikasi berbasis sertifikat digital untuk sistem kritikal.",
+      "tablePage": 24,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah menerapkan metode autentikasi berbasis sertifikat digital untuk seluruh sistem kritikal dan dilakukan penginian secara berkala.",
+          "criteriaPage": 67
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah menerapkan metode autentikasi berbasis sertifikat digital untuk seluruh sistem kritikal dan dilakukan penginian secara terbatas.",
+          "criteriaPage": 67
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah menerapkan metode autentikasi berbasis sertifikat digital untuk sebagian sistem kritikal dan dilakukan penginian secara terbatas.",
+          "criteriaPage": 67
+        },
+        {
+          "rank": 4,
+          "criterion": "BPR dan BPR Syariah menerapkan metode autentikasi berbasis sertifikat digital untuk sebagian besar sistem kritikal dan tidak dilakukan penginian.",
+          "criteriaPage": 67
+        },
+        {
+          "rank": 5,
+          "criterion": "Sistem kritikal BPR dan BPR Syariah tidak dilakukan autentikasi berbasis sertifikat digital.",
+          "criteriaPage": 67
+        }
+      ]
+    },
+    {
+      "number": 60,
+      "domain": "PL",
+      "subdomain": "MANAJEMEN_IDENTITAS_AUTENTIKASI_KONTROL_AKSES",
+      "title": "BPR dan BPR Syariah memiliki prosedur dan menerapkan kontrol akses berbasis atribut (Attribute Based Access Control - ABAC) untuk sistem kritikal (misalnya Core Banking System). Penerapan ABAC dilakukan dengan mempertimbangkan faktor antara lain lokasi, waktu, perangkat, dan tingkat risiko.",
+      "tablePage": 24,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah memiliki prosedur dan menerapkan kontrol akses berbasis atribut ABAC pada seluruh sistem kritikal serta dilakukan penginian secara berkala.",
+          "criteriaPage": 68
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah memiliki prosedur dan menerapkan kontrol akses berbasis atribut ABAC pada seluruh sistem kritikal serta dilakukan penginian secara terbatas.",
+          "criteriaPage": 68
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah memiliki prosedur dan menerapkan kontrol akses berbasis atribut ABAC pada sebagian sistem kritikal serta dilakukan penginian secara terbatas.",
+          "criteriaPage": 68
+        },
+        {
+          "rank": 4,
+          "criterion": "BPR dan BPR Syariah memiliki prosedur dan menerapkan kontrol akses berbasis atribut ABAC pada sebagian sistem kritikal serta tidak dilakukan penginian.",
+          "criteriaPage": 68
+        },
+        {
+          "rank": 5,
+          "criterion": "Sistem kritikal BPR dan BPR Syariah tidak menerapkan ABAC.",
+          "criteriaPage": 68
+        }
+      ]
+    },
+    {
+      "number": 61,
+      "domain": "PL",
+      "subdomain": "KEAMANAN_DATA",
+      "title": "BPR dan BPR Syariah yang memberikan layanan digital menerapkan Data Loss Prevention (DLP) pada endpoint dan gateway.",
+      "tablePage": 25,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah yang memberikan layanan digital menerapkan Data Loss Prevention (DLP) pada seluruh endpoint dan gateway dan dimonitoring secara berkala.",
+          "criteriaPage": 68
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah yang memberikan layanan digital menerapkan Data Loss Prevention (DLP) pada seluruh endpoint dan gateway namun dimonitoring secara tidak berkala.",
+          "criteriaPage": 68
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah yang memberikan layanan digital menerapkan Data Loss Prevention (DLP) pada sebagian endpoint dan gateway dan dimonitoring secara berkala.",
+          "criteriaPage": 68
+        },
+        {
+          "rank": 4,
+          "criterion": "BPR dan BPR Syariah yang memberikan layanan digital menerapkan Data Loss Prevention (DLP) pada sebagian endpoint dan gateway namun dimonitoring secara tidak berkala.",
+          "criteriaPage": 68
+        },
+        {
+          "rank": 5,
+          "criterion": "Endpoint dan gateaway tidak menerapkan DLP.",
+          "criteriaPage": 68
+        }
+      ]
+    },
+    {
+      "number": 62,
+      "domain": "PL",
+      "subdomain": "MANAJEMEN_IDENTITAS_AUTENTIKASI_KONTROL_AKSES",
+      "title": "BPR dan BPR Syariah menerapkan pembatasan nominal transaksi dan jenis transaksi.",
+      "tablePage": 25,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah menerapkan pembatasan nominal transaksi dan jenis transaksi dan terdapat mekanisme reviu menyeluruh dan penyesuaian berkala terhadap batasan transaksi sesuai tren risiko.",
+          "criteriaPage": 69
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah menerapkan pembatasan nominal transaksi dan jenis transaksi dan terdapat mekanisme reviuterbatas dan penyesuaian berkala terhadap batasan transaksi sesuai tren risiko.",
+          "criteriaPage": 69
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah hanya menerapkan pembatasan nominal transaksi dan terdapat mekanisme reviudan penyesuaian berkala terhadap batasan transaksi sesuai tren risiko.",
+          "criteriaPage": 69
+        },
+        {
+          "rank": 4,
+          "criterion": "BPR dan BPR Syariah hanya menerapkan pembatasan nominal transaksi namun tidak terdapat mekanisme reviu.",
+          "criteriaPage": 69
+        },
+        {
+          "rank": 5,
+          "criterion": "BPR dan BPR Syariah tidak menerapkan pembatasan nominal dan jenis transaksi.",
+          "criteriaPage": 69
+        }
+      ]
+    },
+    {
+      "number": 63,
+      "domain": "DT",
+      "subdomain": "KETAHANAN_INFRASTRUKTUR_TI",
+      "title": "Apabila terjadi percobaan login gagal, sistem kritikal BPR dan BPR Syariah akan memantau, mengirimkan alert otomatis ke Tim Keamanan, serta mengunci akun setelah ambang batas (threshold) percobaan terlampaui, guna mendeteksi lebih dini terhadap upaya serangan siber.",
+      "tablePage": 25,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "Seluruh sistem kritikal melakukan pemantauan real- time, terintegrasi dengan SIEM/SOAR, alert diteruskan ke SOC 24×7, ambang batas disesuaikan profil risiko, dan efektivitasnya diuji berkala.",
+          "criteriaPage": 69
+        },
+        {
+          "rank": 2,
+          "criterion": "Seluruh sistem kritikal melakukan pemantauan real- time, namun belum terintegrasi dengan SIEM/SOAR, alert diteruskan ke SOC 24×7, ambang batas disesuaikan profil risiko, dan efektivitasnya diuji berkala.",
+          "criteriaPage": 69
+        },
+        {
+          "rank": 3,
+          "criterion": "Sebagian besar sistem kritikal telah memantau real-time dan mengirim alert otomatis, namun belum seluruhnya terhubung ke SIEM/SOAR atau belum diuji secara berkala.",
+          "criteriaPage": 69
+        },
+        {
+          "rank": 4,
+          "criterion": "Pencatatan login gagal tersedia, tetapi pemantauan real-time dan alert masih bersifat manual/adhoc, dan akun tetap dikunci otomatis.",
+          "criteriaPage": 69
+        },
+        {
+          "rank": 5,
+          "criterion": "Tidak ada mekanisme pemantauan real- time atau alert otomatis atas percobaan-login gagal.",
+          "criteriaPage": 69
+        }
+      ]
+    },
+    {
+      "number": 64,
+      "domain": "DT",
+      "subdomain": "KETAHANAN_INFRASTRUKTUR_TI",
+      "title": "Perangkat Kerja BPR dan BPR Syariah telah dilindungi dengan sistem keamanan berbasis perilaku yang mampu mendeteksi perilaku mencurigakan dan serangan yang belum dikenal. Sistem keamanan berbasis perilaku misalnya Endpoint Detection and Response (EDR).",
+      "tablePage": 25,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "Seluruh perangkat kerja BPR dan BPR Syariah dilindungi oleh sistem keamanan berbasis perilaku dan terdapat dokumentasi log yang memadai.",
+          "criteriaPage": 70
+        },
+        {
+          "rank": 2,
+          "criterion": "Seluruh perangkat kerja BPR dan BPR Syariah dilindungi oleh sistem keamanan berbasis perilaku namun dokumentasi log kurang memadai.",
+          "criteriaPage": 70
+        },
+        {
+          "rank": 3,
+          "criterion": "Sebagian perangkat kerja BPR dan BPR Syariah dilindungi oleh sistem keamanan berbasis perilaku dan terdapat dokumentasi log.",
+          "criteriaPage": 70
+        },
+        {
+          "rank": 4,
+          "criterion": "Perangkat kerja BPR dan BPR Syariah tidak dilindungi oleh sistem keamanan berbasis perilaku, namun dilindungi menggunakan anti virus tradisional dan terdapat dokumentasi log yang minimal.",
+          "criteriaPage": 70
+        },
+        {
+          "rank": 5,
+          "criterion": "Seluruh perangkat kerja BPR dan BPR Syariah tidak dilindungi oleh sistem keamanan berbasis perilaku.",
+          "criteriaPage": 70
+        }
+      ]
+    },
+    {
+      "number": 65,
+      "domain": "DT",
+      "subdomain": "ANALISIS_KEJADIAN_MENCURIGAKAN",
+      "title": "Layanan Mobile Banking BPR dan BPR Syariah dilengkapi dengan mekanisme deteksi berbasis perilaku dan pemberitahuan real-time atas transaksi tidak biasa (unusual transaction).",
+      "tablePage": 25,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah memiliki mekanisme deteksi berbasis perilaku dan pemberitahuan real-time atas transaksi tidak biasa (unusual transaction), monitoring dan pelaporan real- time dilakukan untuk mendeteksi anomali, terdapat tindak lanjut otomatis.",
+          "criteriaPage": 70
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah memiliki mekanisme deteksi berbasis perilaku dan pemberitahuan real-time atas transaksi tidak biasa (unusual transaction) dan monitoring dan pelaporan periodik dilakukan untuk mendeteksi anomali, terdapat tindak lanjut semimanual.",
+          "criteriaPage": 70
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah hanya memiliki pemberitahuan real-time atas transaksi tidak biasa (unusual transaction) berdasarkan aturan sederhana.",
+          "criteriaPage": 70
+        },
+        {
+          "rank": 4,
+          "criterion": "Pemberitahuan jarang diberikan atau hanya terbatas pada beberapa jenis transaksi.",
+          "criteriaPage": 70
+        },
+        {
+          "rank": 5,
+          "criterion": "BPR dan BPR Syariah tidak memiliki mekanisme deteksi berbasis perilaku dan pemberitahuan real-time atas transaksi tidak biasa (unusual transaction).",
+          "criteriaPage": 70
+        }
+      ]
+    },
+    {
+      "number": 66,
+      "domain": "PP",
+      "subdomain": "ANALISIS_INSIDEN",
+      "title": "BPR dan BPR Syariah memiliki prosedur respons insiden siber tertulis yang mencakup deteksi, pelaporan, eskalasi, penanganan, dan pemulihan yang diuji secara berkala.",
+      "tablePage": 25,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah memiliki prosedur respons insiden siber tertulis yang mencakup deteksi, pelaporan, eskalasi, penanganan, dan pemulihan yang diuji secara berkala.",
+          "criteriaPage": 71
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah memiliki prosedur respons insiden siber tertulis yang mencakup deteksi, pelaporan, eskalasi, penanganan, dan pemulihan yang diuji secara berkala namun belum mencakup seluruh aspek.",
+          "criteriaPage": 71
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah memiliki prosedur respons insiden siber tertulis yang mencakup deteksi, pelaporan, eskalasi, penanganan, dan pemulihan yang diuji secara tidak terjadwal.",
+          "criteriaPage": 71
+        },
+        {
+          "rank": 4,
+          "criterion": "BPR dan BPR Syariah dalam proses penyusunan prosedur respons insiden siber tertulis yang mencakup deteksi, pelaporan, eskalasi, penanganan, dan pemulihan.",
+          "criteriaPage": 71
+        },
+        {
+          "rank": 5,
+          "criterion": "Tidak terdapat prosedur respons insiden.",
+          "criteriaPage": 71
+        }
+      ]
+    },
+    {
+      "number": 67,
+      "domain": "PP",
+      "subdomain": "ANALISIS_INSIDEN",
+      "title": "BPR dan BPR Syariah memiliki matriks eskalasi insiden siber yang mengategorisasikan kejadian berdasarkan tingkat keparahan/prioritas/dampak dan jalur komunikasi pelaporan.",
+      "tablePage": 26,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah memiliki matriks eskalasi insiden siber dan jalur komunikasi serta tanggung jawab setiap level ditetapkan secara detail dan tertulis, serta evaluasi efektivitas dilakukan rutin dan matriks diperbarui mengikuti perkembangan ancaman.",
+          "criteriaPage": 71
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah memiliki matriks eskalasi insiden siber dan jalur komunikasi pelaporan secara tertulis, namun belum diterapkan secara konsisten serta perubahan atau pembaruan matriks dilakukan hanya saat ada kebutuhan atau insiden besar.",
+          "criteriaPage": 71
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah memiliki matriks eskalasi insiden siber dan jalur komunikasi pelaporan secara tertulis, namun belum ada pengujian atau simulasi formal untuk memastikan efektivitas eskalasi.",
+          "criteriaPage": 71
+        },
+        {
+          "rank": 4,
+          "criterion": "BPR dan BPR Syariah memiliki matriks eskalasi insiden siber yang tidak jelas dan jalur komunikasi pelaporan secara lisan, dan belum ada pengujian atau simulasi formal untuk memastikan efektivitas eskalasi.",
+          "criteriaPage": 71
+        },
+        {
+          "rank": 5,
+          "criterion": "BPR dan BPR Syariah tidak memiliki matriks eskalasi insiden siber dan tidak terdapat jalur komunikasi pelaporan.",
+          "criteriaPage": 71
+        }
+      ]
+    },
+    {
+      "number": 68,
+      "domain": "PP",
+      "subdomain": "ANALISIS_INSIDEN",
+      "title": "BPR dan BPR Syariah memiliki prosedur tertulis ketahanan dan keamanan siber terkait pelaporan kejadian mencurigakan dan disosialisasikan kepada seluruh pegawai.",
+      "tablePage": 26,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah memiliki dan menerapkan prosedur tertulis mengenai pelaporan kejadian mencurigakan serta disosialisasikan kepada seluruh pegawai dan terdapat pengukuran efektivitas atas pemahaman pegawai.",
+          "criteriaPage": 72
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah memiliki dan menerapkan prosedur tertulis mengenai pelaporan kejadian mencurigakan serta disosialisasikan kepada seluruh pegawai namun belum terdapat terdapat pengukuran efektivitas atas pemahaman pegawai.",
+          "criteriaPage": 72
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah memiliki dan menerapkan prosedur tertulis mengenai pelaporan kejadian mencurigakan serta disosialisasikan kepada satuan kerja/pegawai tertentu dan belum terdapat terdapat pengukuran efektivitas atas pemahaman pegawai.",
+          "criteriaPage": 72
+        },
+        {
+          "rank": 4,
+          "criterion": "BPR dan BPR Syariah tidak memiliki prosedur tertulis mengenai pelaporan kejadian mencurigakan, namun telah menerapkan pelaporan kejadian mencurigakan secara minimal.",
+          "criteriaPage": 72
+        },
+        {
+          "rank": 5,
+          "criterion": "BPR dan BPR Syariah tidak memiliki prosedur tertulis mengenai pelaporan kejadian mencurigakan.",
+          "criteriaPage": 72
+        }
+      ]
+    },
+    {
+      "number": 69,
+      "domain": "PP",
+      "subdomain": "ANALISIS_INSIDEN",
+      "title": "BPR dan BPR Syariah melaksanakan simulasi tanggap insiden siber secara berkala dan terdokumentasi.",
+      "tablePage": 26,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah melaksanakan simulasi secara rutin yang disertai dengan dokumentasi yang memadai.",
+          "criteriaPage": 72
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah melaksanakan simulasi secara rutin namun dengan dokumentasi yang cukup memadai.",
+          "criteriaPage": 72
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah melaksanakan simulasi, namun tidak secara berkala dan masih terdapat dokumentasi yang kurang memadai.",
+          "criteriaPage": 72
+        },
+        {
+          "rank": 4,
+          "criterion": "BPR dan BPR Syariah melaksanakan simulasi, namun tidak secara berkala dan tidak terdapat dokumentasi yang memadai.",
+          "criteriaPage": 72
+        },
+        {
+          "rank": 5,
+          "criterion": "BPR dan BPR Syariah tidak melaksanakan simulasi tanggap darurat insiden siber.",
+          "criteriaPage": 72
+        }
+      ]
+    },
+    {
+      "number": 70,
+      "domain": "PP",
+      "subdomain": "ANALISIS_INSIDEN",
+      "title": "BPR dan BPR Syariah menetapkan mekanisme untuk melakukan evaluasi kesesuaian prosedur dan root cause analysis serta dilakukan tindak lanjut pascainsiden siber.",
+      "tablePage": 26,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah telah menetapkan mekanisme untuk melakukan evaluasi kesesuaian prosedur dan root cause analysis secara menyeluruh dan dilakukan tindak lanjut pascainsiden siber.",
+          "criteriaPage": 73
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah telah menetapkan mekanisme untuk melakukan evaluasi kesesuaian prosedur dan root cause analysis secara terbatas dan dilakukan tindak lanjut pascainsiden siber.",
+          "criteriaPage": 73
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah menetapkan mekanisme evaluasi setiap terjadi insiden siber, namun tidak disertai mekanisme tindak lanjut.",
+          "criteriaPage": 73
+        },
+        {
+          "rank": 4,
+          "criterion": "BPR dan BPR Syariah hanya menetapkan mekanisme evaluasi apabila terjadi insiden siber yang signifikan atau berulang.",
+          "criteriaPage": 73
+        },
+        {
+          "rank": 5,
+          "criterion": "BPR dan BPR Syariah tidak menetapkan evaluasi dan tindak lanjut untuk setiap insiden siber.",
+          "criteriaPage": 73
+        }
+      ]
+    },
+    {
+      "number": 71,
+      "domain": "PP",
+      "subdomain": "ANALISIS_INSIDEN",
+      "title": "BPR dan BPR Syariah memiliki prosedur komunikasi dalam penanggulangan dan pemulihan insiden siber yang telah ditetapkan oleh Direksi. Prosedur didokumentasikan secara memadai dan dikomunikasikan kepada seluruh pegawai.",
+      "tablePage": 26,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah telah memiliki prosedur komunikasi dalam penanggulangan dan pemulihan insiden siber yang telah ditetapkan oleh Direksi, didokumentasikan secara memadai, serta dikomunikasikan kepada seluruh pegawai.",
+          "criteriaPage": 73
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah telah memiliki prosedur komunikasi dalam penanggulangan dan pemulihan insiden siber yang telah ditetapkan oleh Direksi, didokumentasikan secara cukup memadai, serta dikomunikasikan kepada seluruh pegawai.",
+          "criteriaPage": 73
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah telah memiliki prosedur komunikasi dalam penanggulangan dan pemulihan insiden siber yang telah ditetapkan oleh Direksi, didokumentasikan secara kurang memadai, serta dikomunikasikan kepada pegawai tertentu.",
+          "criteriaPage": 73
+        },
+        {
+          "rank": 4,
+          "criterion": "BPR dan BPR Syariah sedang dalam proses penyusunan prosedur komunikasi dalam penanggulangan dan pemulihan insiden siber dan praktik yang dilakukan berdasarkan adhoc atau lisan.",
+          "criteriaPage": 73
+        },
+        {
+          "rank": 5,
+          "criterion": "BPR dan BPR Syariah tidak memiliki prosedur komunikasi dalam penanggulangan dan pemulihan insiden siber.",
+          "criteriaPage": 73
+        }
+      ]
+    },
+    {
+      "number": 72,
+      "domain": "PP",
+      "subdomain": "ANALISIS_INSIDEN",
+      "title": "BPR dan BPR Syariah memiliki dan menerapkan prosedur teknis containment dan isolasi sistem yang terindikasi terinfeksi malware/terkena serangan siber.",
+      "tablePage": 26,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah telah memiliki dan menerapkan prosedur teknis containment dan isolasi sistem yang terindikasi terinfeksi malware/terkena serangan siber dan dievaluasi secara berkala.",
+          "criteriaPage": 74
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah telah memiliki dan menerapkan prosedur teknis containment dan isolasi sistem yang terindikasi terinfeksi malware/terkena serangan siber dan dievaluasi secara berkala namun belum mencakup seluruh aspek.",
+          "criteriaPage": 74
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah telah memiliki dan menerapkan prosedur teknis containment dan isolasi sistem yang terindikasi terinfeksi malware/terkena serangan siber namun dievaluasi secara tidak terjadwal.",
+          "criteriaPage": 74
+        },
+        {
+          "rank": 4,
+          "criterion": "BPR dan BPR Syariah telah memiliki dan tidak sepenuhnya menerapkan prosedur teknis containment dan isolasi sistem yang terindikasi terinfeksi malware/terkena serangan siber dan evaluasi hanya dilakukan ketika terdapat serangan siber.",
+          "criteriaPage": 74
+        },
+        {
+          "rank": 5,
+          "criterion": "BPR dan BPR Syariah tidak memiliki prosedur teknis containment dan isolasi sistem yang terindikasi terinfeksi malware/terkena serangan siber.",
+          "criteriaPage": 74
+        }
+      ]
+    },
+    {
+      "number": 73,
+      "domain": "PP",
+      "subdomain": "ANALISIS_INSIDEN",
+      "title": "Dalam hal terjadi insiden, BPR dan BPR Syariah segera membatasi dan mengisolasi (eradikasi) sistem yang diduga terinfeksi malware atau diserang, sesuai prosedur teknis yang diterapkan sebelum layanan dipulihkan.",
+      "tablePage": 26,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah segera membatasi dan mengisolasi (eradikasi) sistem utama dan seluruh sistem terkait yang diduga terinfeksi malware atau diserang sebelum layanan dipulihkan.",
+          "criteriaPage": 74
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariahsegera membatasi dan mengisolasi (eradikasi) sistem utama dan sebagian sistem terkait yang diduga terinfeksi malware atau diserang sebelum layanan dipulihkan.",
+          "criteriaPage": 74
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah segera membatasi, namun tidak mengisolasi (eradikasi) sistem utama dan seluruh sistem terkait yang diduga terinfeksi malware atau diserang sebelum layanan dipulihkan.",
+          "criteriaPage": 74
+        },
+        {
+          "rank": 4,
+          "criterion": "BPR dan BPR Syariah segera membatasi, namun tidak langsung mengisolasi (eradikasi) sistem utama dan sebagian sistem terkait yang diduga terinfeksi malware atau diserang sebelum layanan dipulihkan.",
+          "criteriaPage": 74
+        },
+        {
+          "rank": 5,
+          "criterion": "BPR dan BPR Syariahtidak membatasi dan mengisolasi (eradikasi) baik sistem utamamaupun sistem terkait yang diduga terinfeksi malware atau diserang sebelum layanan dipulihkan.",
+          "criteriaPage": 74
+        }
+      ]
+    },
+    {
+      "number": 74,
+      "domain": "PP",
+      "subdomain": "PELAKSANAAN_RENCANA_PEMULIHAN_INSIDEN_SIBER",
+      "title": "BPR dan BPR Syariah memiliki Rencana Pemulihan Bencana (Disaster Recovery Plan) dan mengimplementasikannya guna memulihkan layanan apabila terjadi insiden.",
+      "tablePage": 26,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah memiliki DRP yang terdokumentasi atas seluruh sistem secara komprehensif (a.l. mencakup skenario positif dan negatif, RTO dan RPO telah ditetapkan), dan mengimplementasi -kan DRP secara konsisten saat terjadi insiden siber.",
+          "criteriaPage": 75
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah memiliki DRP yang terdokumentasi atas sebagian sistem secara komprehensif (a.l. mencakup skenario positif dan negatif, RTO dan RPO telah ditetapkan), dan mengimplementasi kan DRP secara konsisten saat terjadi insiden siber.",
+          "criteriaPage": 75
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah memiliki DRP yang terdokumentasi atas seluruh sistem secara komprehensif (a.l. mencakup skenario positif dan negatif, RTO dan RPO telah ditetapkan), namun belum sepenuhnya mengimplementasi kan DRP secara konsisten saat terjadi insiden siber.",
+          "criteriaPage": 75
+        },
+        {
+          "rank": 4,
+          "criterion": "BPR dan BPR Syariah memiliki DRP yang terdokumentasi atas sebagian sistem secara komprehensif (a.l. mencakup skenario positif dan negatif, RTO dan RPO telah ditetapkan), namun belum sepenuhnya mengimplementa- sikan DRP secara konsisten saat terjadi insiden siber.",
+          "criteriaPage": 75
+        },
+        {
+          "rank": 5,
+          "criterion": "BPR dan BPR Syariah tidak memiliki DRP.",
+          "criteriaPage": 75
+        }
+      ]
+    },
+    {
+      "number": 75,
+      "domain": "PP",
+      "subdomain": "PELAKSANAAN_RENCANA_PEMULIHAN_INSIDEN_SIBER",
+      "title": "BPR dan BPR Syariah wajib melakukan rekam cadang (back up) setiap akhir hari untuk seluruh data aktivitas BPR dan BPR Syariah.",
+      "tablePage": 27,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah melakukan rekam cadang (back up) setiap akhir hari untuk seluruh data aktivitas BPRdan BPR Syariah dan ditempatkan pada media yang terpisah (minimal 2 media yg berbeda).",
+          "criteriaPage": 75
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah melakukan rekam cadang (back up) setiap akhir hari untuk seluruh data aktivitas BPRdan BPR Syariah dan ditempatkan pada media yang terpisah.",
+          "criteriaPage": 75
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah melakukan rekam cadang (backup) dilakukan setiap akhir hari, namun masih menggunakan proses manual.",
+          "criteriaPage": 75
+        },
+        {
+          "rank": 4,
+          "criterion": "BPR dan BPR Syariah melakukan rekam cadang (backup) tidak setiap hari (misalnyadilakuka n setiap minggu).",
+          "criteriaPage": 75
+        },
+        {
+          "rank": 5,
+          "criterion": "Tidak terdapat mekanisme backup yang dilakukan secara berkala.",
+          "criteriaPage": 75
+        }
+      ]
+    },
+    {
+      "number": 76,
+      "domain": "PP",
+      "subdomain": "PELAKSANAAN_RENCANA_PEMULIHAN_INSIDEN_SIBER",
+      "title": "BPR dan BPR Syariah melakukan pengujian restorebackup data secara berkala paling sedikit 1 (satu) kali dalam 1(satu) tahun.",
+      "tablePage": 27,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah melakukan pengujian restore backup data secara berkala paling sedikit 1 (satu) kali dalam 1 (satu) tahun dan disertai dengan dokumen pendukung yang memadai.",
+          "criteriaPage": 76
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah melakukan pengujian restore backup data secara berkala paling sedikit 1 (satu) kali dalam 1 (satu) tahun dan disertai dengan dokumen pendukung yang cukup memadai.",
+          "criteriaPage": 76
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah melakukan pengujian restore backupdata secara tidak terjadwal dan disertai dengan dokumen pendukung yang cukup memadai.",
+          "criteriaPage": 76
+        },
+        {
+          "rank": 4,
+          "criterion": "BPR dan BPR Syariah melakukan pengujian restore backup data secara tidak terjadwal dan tidak disertai dengan dokumen pendukung.",
+          "criteriaPage": 76
+        },
+        {
+          "rank": 5,
+          "criterion": "Tidak dilakukan pengujian restore backupdata.",
+          "criteriaPage": 76
+        }
+      ]
+    },
+    {
+      "number": 77,
+      "domain": "PP",
+      "subdomain": "PELAKSANAAN_RENCANA_PEMULIHAN_INSIDEN_SIBER",
+      "title": "BPR dan BPR Syariah melakukan analisis kritikalitas sistem penting dengan menetapkan sasaran waktu pemulihan (Recovery Time Objective - RTO) dan sasaran titik pemulihan (Recovery Point Objective - RPO).",
+      "tablePage": 27,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah melakukan analisis kritikalitas sistem penting dengan menetapkan sasaran waktu pemulihan (Recovery Time Objective - RTO) dan sasaran titik pemulihan (Recovery Point Objective - RPO) serta diimplementasika n.pada seluruh sistem penting.",
+          "criteriaPage": 76
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah melakukan analisis kritikalitas sistem penting dengan menetapkan sasaran waktu pemulihan (Recovery Time Objective - RTO) dan sasaran titik pemulihan (Recovery Point Objective - RPO) serta diimplementasikan pada sebagian besar sistem penting.",
+          "criteriaPage": 76
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah melakukan analisis kritikalitas sistem penting dengan menetapkan sasaran waktu pemulihan (Recovery Time Objective - RTO) dan sasaran titik pemulihan (Recovery Point Objective - RPO) serta diimplementasikan pada sebagian kecil sistem penting.",
+          "criteriaPage": 76
+        },
+        {
+          "rank": 4,
+          "criterion": "RTO dan RPO belum ditetapkan secara formal dan masih berupa asumsi teknis.",
+          "criteriaPage": 76
+        },
+        {
+          "rank": 5,
+          "criterion": "Tidak ditetapkan RTO dan RPO untuk sistem penting.",
+          "criteriaPage": 76
+        }
+      ]
+    },
+    {
+      "number": 78,
+      "domain": "PP",
+      "subdomain": "PELAKSANAAN_RENCANA_PEMULIHAN_INSIDEN_SIBER",
+      "title": "BPR dan BPR Syariah melakukan kaji ulang terhadap rencana pemulihan bencana (Disaster Recovery Plan/DRP) insiden siber secara berkala, termasuk melakukan pengujian failover.",
+      "tablePage": 27,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah melakukan kaji ulang terhadap rencana pemulihan bencana (Disaster Recovery Plan/DRP) insiden siber secara berkala, termasuk melakukan pengujian failover, dan perbaikan dilakukan secara segera.",
+          "criteriaPage": 77
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah melakukan kaji ulang terhadap rencana pemulihan bencana (Disaster Recovery Plan/DRP) insiden siber secara berkala, termasuk melakukan pengujian failover, dan namun perbaikan tidak dilakukan secara segera.",
+          "criteriaPage": 77
+        },
+        {
+          "rank": 3,
+          "criterion": "Melakukan kaji ulang terhadap rencana pemulihan bencana (Disaster Recovery Plan/DRP) insiden siber namun tidak secara berkala, dan masih terdapat pengujian failover.",
+          "criteriaPage": 77
+        },
+        {
+          "rank": 4,
+          "criterion": "Melakukan kaji ulang terhadap rencana pemulihan bencana (Disaster Recovery Plan/DRP) insiden siber namun tidak secara berkala dan tidak terdapat pengujian failover.",
+          "criteriaPage": 77
+        },
+        {
+          "rank": 5,
+          "criterion": "Tidak melakukan kaji ulang terhadap rencana pemulihan bencana (Disaster Recovery Plan/DRP).",
+          "criteriaPage": 77
+        }
+      ]
+    },
+    {
+      "number": 79,
+      "domain": "PP",
+      "subdomain": "PELAKSANAAN_RENCANA_PEMULIHAN_INSIDEN_SIBER",
+      "title": "BPR dan BPR Syariah memiliki prosedur notifikasi kepada regulator ataupun lembaga eksternal (misal OJK, BI, dan lain-lain) yang menetapkan batas waktu, media, dan tanggung jawab pelaporan setelah terjadinya insiden siber.",
+      "tablePage": 27,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah memiliki prosedur notifikasi yang dijalankan dengan konsisten, dimana seluruh notifikasi tercatat lengkap dan batas waktu pelaporan selalu terpenuhi.",
+          "criteriaPage": 78
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah memiliki prosedur notifikasi yang dijalankan dengan konsisten, namun belum semua notifikasi tercatat lengkap dan batas waktu pelaporan selalu terpenuhi.",
+          "criteriaPage": 78
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah memiliki prosedur notifikasi yang dijalankan kurang konsisten, dan belum semua notifikasi tercatat lengkap dan batas waktu pelaporan selalu terpenuhi.",
+          "criteriaPage": 78
+        },
+        {
+          "rank": 4,
+          "criterion": "BPR dan BPR Syariah memiliki prosedur notifikasi yang dijalankan kurang konsisten, dan belum semua notifikasi tercatat lengkap dan batas waktu pelaporan terkadang belum terpenuhi.",
+          "criteriaPage": 78
+        },
+        {
+          "rank": 5,
+          "criterion": "BPR dan BPR Syariah belum memiliki prosedur notifikasi insiden kepada regulator atau lembaga eksternal.",
+          "criteriaPage": 78
+        }
+      ]
+    },
+    {
+      "number": 80,
+      "domain": "PP",
+      "subdomain": "PELAKSANAAN_RENCANA_PEMULIHAN_INSIDEN_SIBER",
+      "title": "BPR dan BPR Syariah menetapkan mekanisme komunikasi kepada nasabah dan publik ketika insiden siber terjadi. Mekanisme komunikasi meliputi: penetapan saluran resmi, proses persetujuan pesan, dan panduan pertanyaan-jawaban, serta melakukan pelatihan atas mekanisme tersebut.",
+      "tablePage": 27,
+      "rankCriteria": [
+        {
+          "rank": 1,
+          "criterion": "BPR dan BPR Syariah memiliki mekanisme komunikasi kepada nasabah dan publik dan terdokumentasi dengan memadai, melakukan simulasi (table-top exercise) minimal 1 (satu) tahun sekali.",
+          "criteriaPage": 78
+        },
+        {
+          "rank": 2,
+          "criterion": "BPR dan BPR Syariah memiliki mekanisme komunikasi kepada nasabah dan publik dan terdokumentasi dengan memadai, melakukan simulasi (table-top exercise) tidak secara berkala.",
+          "criteriaPage": 78
+        },
+        {
+          "rank": 3,
+          "criterion": "BPR dan BPR Syariah memiliki mekanisme komunikasi kepada nasabah dan publik dan terdokumentasi kurang memadai, melakukan simulasi (table-top exercise) tidak secara berkala.",
+          "criteriaPage": 78
+        },
+        {
+          "rank": 4,
+          "criterion": "BPR dan BPR Syariah memiliki mekanisme komunikasi kepada nasabah dan publik dan terdokumentasi dengan memadai, tidak pernah melakukan simulasi (table-top exercise).",
+          "criteriaPage": 78
+        },
+        {
+          "rank": 5,
+          "criterion": "BPR dan BPR Syariah belum memiliki mekanisme komunikasi kepada nasabah ataupun publik apabila insiden siber terjadi.",
+          "criteriaPage": 78
+        }
+      ]
+    }
+  ]
+}
