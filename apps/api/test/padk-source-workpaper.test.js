@@ -2,8 +2,8 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {spawnSync} from 'node:child_process';
 import {test} from 'node:test';
-import {readExtractedTable3} from '../src/padk-draft-criteria.js';
-import {buildSourceReviewWorkpaper,toReviewCsv} from '../../../scripts/padk-source-workpaper.js';
+import {readExtractedTable3,listPadkDraftSourceConflicts} from '../src/padk-draft-criteria.js';
+import {buildSourceReviewWorkpaper,toReviewCsv,summarizeSourceReview} from '../../../scripts/padk-source-workpaper.js';
 
 const draft=async n=>JSON.parse(await readFile(
   new URL('../../../regulations/padk43/cyber/drafts/kategori-'+n+'.json',import.meta.url),'utf8'));
@@ -25,7 +25,31 @@ test('workpaper verifikasi sumber berisi 140 indikator dan 400 kriteria unik tan
   const highC2=workpaper.records.filter(x=>x.prioritas==='REVIEW_PEMETAAN');
   assert.deepEqual(highC2.map(x=>x.indikator),[3,18,19,20,24,29,32]);
   assert.equal(workpaper.records.filter(x=>x.prioritas==='PERIKSA_TABEL_TERPECAH').length,24);
-  assert.equal(workpaper.records.filter(x=>['PERIKSA_TABEL_TERPECAH','PERIKSA_ANOMALI_REDAKSI'].includes(x.prioritas)).length,25);
+  assert.equal(workpaper.records.filter(x=>x.prioritas==='PERIKSA_ANOMALI_REDAKSI').length,31);
+  assert.equal(workpaper.records.filter(x=>['PERIKSA_TABEL_TERPECAH','PERIKSA_ANOMALI_REDAKSI'].includes(x.prioritas)).length,55);
+  assert.equal(workpaper.records.filter(x=>x.prioritas!=='NORMAL').length,62);
+  for(const issue of listPadkDraftSourceConflicts()){
+    for(const rank of issue.reviewRanks){
+      const row=workpaper.records.find(x=>x.id==='T3-I'+String(issue.number).padStart(3,'0')+'-R'+rank);
+      assert.ok(row,issue.number+':'+rank);
+      assert.equal(row.prioritas,'PERIKSA_ANOMALI_REDAKSI');
+      assert.match(row.catatan_sumber,/Periksa redaksi sumber/);
+      assert.equal(row.verdict,'PENDING');
+    }
+  }
+  for(const row of highC2){
+    assert.match(row.catatan_sumber,/belum|masih kandidat/);
+    assert.equal(row.verdict,'PENDING');
+  }
+  const summary=summarizeSourceReview(workpaper);
+  assert.equal(summary.pending,540);
+  assert.equal(summary.reviewed,0);
+  assert.equal(summary.sourceAuthenticityVerified,false);
+  assert.equal(summary.productionEligible,false);
+  assert.deepEqual(summary.focus,{sourceWordingCells:31,splitTableCells:24,
+    category2MappingIndicators:7,totalFlaggedRecords:62});
+  assert.throws(()=>summarizeSourceReview({...workpaper,records:[...workpaper.records.slice(1)]}),/ringkasan/);
+  assert.throws(()=>summarizeSourceReview({...workpaper,records:workpaper.records.map((x,i)=>i===0?{...x,verdict:'MATCH'}:x)}),/ringkasan/);
   const anomaly=workpaper.records.find(x=>x.id==='T3-I002-R1');
   assert.equal(anomaly.prioritas,'PERIKSA_ANOMALI_REDAKSI');
   assert.match(anomaly.catatan_sumber,/risk appetite/);
@@ -47,4 +71,8 @@ test('workpaper CLI tidak mengubah regulatory pack dan hanya melaporkan status p
   assert.equal(report.counts.verified,0);
   assert.equal(report.productionEligible,false);
   assert.match(run.stderr,/belum ada hasil yang disahkan/);
+  const summary=spawnSync(process.execPath,[cli.pathname,'--format=ringkasan'],{encoding:'utf8',timeout:15000});
+  assert.equal(summary.status,0,summary.stderr);
+  assert.equal(JSON.parse(summary.stdout).focus.totalFlaggedRecords,62);
+  assert.equal(JSON.parse(summary.stdout).pending,540);
 });
