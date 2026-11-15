@@ -23,6 +23,26 @@ export function validateDraftCriteriaResponse(data,{id,category,number}){
     throw new TypeError('Kriteria hasil ekstraksi tidak dapat dipercaya.');
   const comparison=data.referenceComparison;
   const extras=data.supplementaryCriteria;
+  const combined=data.combinedReview;
+  const needsCombinedReview=category===2&&number===29;
+  if(needsCombinedReview){
+    const expected=[
+      {table3Number:32,pdfPage:172,topic:'PELATIHAN_KEAMANAN_SIBER'},
+      {table3Number:35,pdfPage:174,topic:'SIMULASI_PHISHING'},
+    ];
+    if(!combined||combined.status!=='REVIEW_MULTI_ASPEK_BELUM_DIPUTUSKAN'
+      ||combined.category2Number!==29||combined.category2PdfPage!==151
+      ||combined.oneIndicator!==true||combined.combinedRankRuleVerified!==false
+      ||combined.officialScoreAvailable!==false||!Array.isArray(combined.aspects)
+      ||combined.aspects.length!==2
+      ||combined.aspects.some((item,i)=>item?.table3Number!==expected[i].table3Number
+        ||item.pdfPage!==expected[i].pdfPage||item.topic!==expected[i].topic)
+      ||data.table3CandidateNumber!==35
+      ||comparison?.comparisonTable3Number!==32
+      ||comparison?.candidateDisagreement!==true)
+      throw new TypeError('Rujukan dua aspek indikator 29 belum konsisten.');
+  }else if(combined!==null)
+    throw new TypeError('Rujukan gabungan tidak sesuai indikator.');
   if(!comparison||comparison.status!=='DRAFT_UNVERIFIED'
     ||comparison.masterParameterCount!==80||comparison.category2MarkerCount!==60
     ||comparison.officialMappingAvailable!==false
@@ -89,13 +109,20 @@ export function createPadkCriteriaPanel({api,onAuthFailure,canSelect}){
     $('pdk-criteria-list').replaceChildren();
   }
   function show(data){
-    sourceConflict=Boolean(data.sourceConflict)||data.referenceComparison.candidateDisagreement;
-    $('pdk-criteria-status').textContent=data.referenceComparison.candidateDisagreement
-      ?'Perlu review pemetaan: ada dua referensi kriteria untuk indikator ini. Bandingkan keduanya; gunakan pilihan peringkat manual sementara.'
+    const multiAspect=Boolean(data.combinedReview);
+    sourceConflict=Boolean(data.sourceConflict)
+      ||data.referenceComparison.candidateDisagreement||multiAspect;
+    $('pdk-criteria-status').textContent=multiAspect
+      ?'Satu indikator Kategori 2 memuat dua aspek: pelatihan keamanan siber dan simulasi phishing. Kriteria nomor 32 dan 35 harus ditinjau bersama; aturan penggabungan peringkat belum terverifikasi. Pemilihan otomatis dinonaktifkan.'
+      :data.referenceComparison.candidateDisagreement
+        ?'Perlu review pemetaan: ada dua referensi kriteria untuk indikator ini. Bandingkan keduanya; gunakan pilihan peringkat manual sementara.'
       :data.sourceConflict
         ?'Perlu review sumber: redaksi kriteria terindikasi tidak selaras. Bandingkan dengan PADK sebelum mengisi peringkat manual.'
         :'Kriteria belum diverifikasi. Buka uraian setiap peringkat dan cocokkan dengan sumber sebelum memilih.';
     $('pdk-criteria-source').textContent=
+      (multiAspect
+        ?'Tabel 2 indikator 29 (PDF hlm. 151) memuat satu indikator dengan dua kewajiban; Tabel 3 memuat pelatihan siber (#32, hlm. 172) dan simulasi phishing (#35, hlm. 174). Ini bukan dua skor dan tidak ada rumus gabungan yang sudah disahkan. '
+        :'')+
       'Master Tabel 3: 80 parameter, lima kriteria peringkat. Referensi internal untuk 60 indikator Kategori 2 belum disahkan. '+
       'PDF sumber halaman '+data.table3PdfPages.join(', ')+
       '; kandidat Tabel 3 #'+data.table3CandidateNumber+

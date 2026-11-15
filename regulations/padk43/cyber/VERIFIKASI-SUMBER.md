@@ -15,6 +15,20 @@ Kondisi daftar saat ini:
 - **31 sel kriteria** perlu pemeriksaan redaksi karena terkait tujuh baris parameter/kriteria yang sudah dicatat sebagai anomali untuk ditinjau. Pada Tabel 3 nomor 2, prioritas ini khusus peringkat 1; pada nomor 20, 21, 22, 27, 28, dan 29, seluruh lima peringkat perlu diperiksa.
 - **24 sel kriteria** lain berasal dari nomor tabel yang melewati batas halaman dan perlu dicek sambungan isi teksnya.
 - **7 indikator Kategori 2** (3, 18, 19, 20, 24, 29, 32) membutuhkan review pemetaan terhadap Tabel 3.
+
+### Temuan sumber: Kategori 2 nomor 29 terdiri dari dua aspek
+
+Pada salinan PDF Lampiran IV dengan SHA-256 `63868e2fe99a48485b17646618934c1fffb27b125811929e12bd70d170081e1b`:
+
+- **Tabel 2, indikator 29, halaman fisik PDF 151** (halaman Lampiran IV 32): satu indikator membahas **pelatihan ketahanan dan keamanan siber secara berkala** sekaligus **simulasi phishing setidaknya sekali setiap tahun**.
+- **Tabel 3, parameter 32, halaman fisik 172** (halaman Lampiran IV 53): kriteria pelatihan keamanan siber bagi pegawai.
+- **Tabel 3, parameter 35, halaman fisik 174** (halaman Lampiran IV 55): kriteria simulasi phishing bagi pegawai.
+
+Dua referensi internal sebelumnya mengarah ke nomor 32 dan 35 secara berbeda. Pembacaan sumber menunjukkan bahwa **kedua nomor menjelaskan dua aspek dari satu indikator Kategori 2**, bukan semata-mata dua alternatif yang saling meniadakan. Ini **belum menetapkan cara menggabungkan dua rangkaian peringkat menjadi satu nilai parameter**.
+
+NusaRiksa menampilkan kedua set kriteria untuk **review substansi**, mempertahankan hanya **satu indikator nomor 29**, dan tidak melakukan agregasi atau memilih salah satu nilai secara otomatis. Keputusan pemetaan serta metode penentuan satu peringkat tetap harus dicatat dengan dasar sumber dan pemeriksaan terpisah. Status instrumen tetap `DRAFT_UNVERIFIED`. Jangan mengubahnya menjadi dua indikator atau menggandakan kontribusi skor.
+
+
 - **62 dari 540 baris** memiliki penanda perhatian khusus, tetapi **540 dari 540 baris masih PENDING**. Angka 62 adalah jumlah slot review berisiko lebih tinggi, **bukan jumlah kesalahan regulasi yang dipastikan**.
 
 Daftar anomali redaksi berasal dari satu sumber pencatatan yang digunakan juga oleh panel pemeriksaan kriteria. Perubahan status atau putusan reviewer tidak dilakukan oleh generator ini. Seluruh teks tetap harus dibandingkan ke dokumen asli.

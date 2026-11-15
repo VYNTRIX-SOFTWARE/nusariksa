@@ -79,6 +79,7 @@ test('PADK Table 3 criteria are displayed from local extracted source with PDF p
         assert.equal(c.criteria.length,5);
         assert.deepEqual(c.referenceComparison.candidateTable3Numbers,[36]);
         assert.equal(c.referenceComparison.candidateDisagreement,false);
+        assert.equal(c.combinedReview,null);
         const ambiguous=await (await fetchSource(route(b.id,29),
           cookies['criteria-maker@example.test'])).json();
         assert.deepEqual(ambiguous.referenceComparison.candidateTable3Numbers,[35,32]);
@@ -88,6 +89,17 @@ test('PADK Table 3 criteria are displayed from local extracted source with PDF p
         assert.equal(ambiguous.supplementaryCriteria[0].table3Number,32);
         assert.equal(ambiguous.supplementaryCriteria[0].criteria.length,5);
         assert.equal(ambiguous.officialScoreAvailable,false);
+        assert.equal(ambiguous.combinedReview.status,'REVIEW_MULTI_ASPEK_BELUM_DIPUTUSKAN');
+        assert.equal(ambiguous.combinedReview.oneIndicator,true);
+        assert.equal(ambiguous.combinedReview.combinedRankRuleVerified,false);
+        assert.equal(ambiguous.combinedReview.officialScoreAvailable,false);
+        assert.equal(ambiguous.combinedReview.category2PdfPage,151);
+        assert.deepEqual(ambiguous.combinedReview.aspects,[
+          {table3Number:32,pdfPage:172,topic:'PELATIHAN_KEAMANAN_SIBER'},
+          {table3Number:35,pdfPage:174,topic:'SIMULASI_PHISHING'},
+        ]);
+        assert.match(ambiguous.criteria[0].textDraft,/phishing/i);
+        assert.match(ambiguous.supplementaryCriteria[0].criteria[0].textDraft,/pelatihan/i);
         assert.equal(c.sourceConflict,null);
         const conflict19=await (await fetchSource(route(b.id,19),
           cookies['criteria-maker@example.test'])).json();
