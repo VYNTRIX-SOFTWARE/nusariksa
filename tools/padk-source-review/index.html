@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'unsafe-inline'; img-src 'self'; frame-src blob:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Verifikasi Sumber PADK — Nusariksa</title>
+  <style>
+    :root{color-scheme:light;font:14px/1.5 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#20324b;background:#f3f6f9}
+    *{box-sizing:border-box}body{margin:0}header{display:flex;align-items:center;gap:18px;padding:16px max(20px,calc((100% - 1700px)/2));background:#fff;border-bottom:1px solid #dce5ef}
+    header img{width:164px;height:auto;max-height:50px;object-fit:contain}
+    h1{font-size:17px;margin:0}h2{font-size:15px;margin:0}p{margin:7px 0}small,.muted{color:#607088}
+    main{max-width:1700px;margin:auto;padding:18px 20px 55px}
+    .notice{padding:12px 15px;background:#eaf3fb;border-left:4px solid #2999e0;border-radius:7px;margin-bottom:14px}
+    .toolbar{display:grid;grid-template-columns:1.15fr 1fr 1fr;gap:12px}
+    .card{background:#fff;border:1px solid #dce5ef;border-radius:10px;min-width:0}
+    .padded{padding:15px}
+    .workspace{display:grid;grid-template-columns:minmax(310px,1fr) minmax(360px,1.15fr);gap:14px;margin-top:14px}
+    .cardhead{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 15px;border-bottom:1px solid #e9eef4}
+    .label{display:block;font-size:12px;font-weight:650;margin:10px 0 5px}
+    input,select,textarea{font:inherit;border:1px solid #c8d4e2;border-radius:7px;padding:9px 11px;background:#fff;color:#243850;max-width:100%}
+    input[type=file],input[type=text],input[type=date],input[type=number],input[type=url],select,textarea{width:100%}
+    input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid #2999e0;outline-offset:1px}
+    textarea{min-height:83px;resize:vertical}
+    button{cursor:pointer;font:inherit;border:1px solid #b9c7d6;border-radius:7px;padding:9px 12px;background:#fff;color:#0a3e7f;font-weight:700}
+    button.primary{background:#0a3e7f;color:#fff;border-color:#0a3e7f}
+    button:disabled{opacity:.5;cursor:not-allowed}
+    .actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:14px}
+    .count{font-size:18px;color:#0a3e7f;font-weight:750}
+    .rowfilters{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .pdf{height:min(72vh,810px);min-height:440px;width:100%;border:0;background:#f3f6f9}
+    .placeholder{min-height:440px;display:grid;place-items:center;padding:25px;text-align:center;color:#687b8f}
+    .sourcebar{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end}
+    #row-status{font-size:12px;color:#607088}
+    #row-summary{white-space:pre-wrap;padding:12px;background:#f6f9fb;border:1px solid #e3e9f0;border-radius:8px}
+    .reviewgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px}
+    .reviewgrid .wide{grid-column:1 / -1}
+    #review-form{max-height:80vh;overflow:auto;padding:0 15px 15px}
+    #message{white-space:pre-wrap;min-height:20px;margin-top:10px}
+    #message[data-kind=error]{color:#9e2c2c}
+    #message[data-kind=success]{color:#126142}
+    .meta{font-size:12px;color:#66798c;line-height:1.6}
+    #reference-match[data-kind=match]{color:#126142;font-weight:600}
+    #reference-match[data-kind=different]{color:#a34224;font-weight:600}
+    @media(max-width:1020px){.toolbar,.workspace{grid-template-columns:1fr}#review-form{max-height:none}.pdf{height:50vh;min-height:320px}.placeholder{min-height:250px}}
+  </style>
+</head>
+<body>
+  <header>
+    <img src="../../apps/web/assets/brand/nusariksa-primary.svg" alt="Nusariksa" width="164" height="37">
+    <div><h1>Pemeriksaan sumber PADK · Lampiran IV</h1><small>Workbench lokal untuk 540 baris pemeriksaan</small></div>
+  </header>
+  <main>
+    <div class="notice"><strong>Pemeriksaan manual, bukan validasi resmi.</strong>
+      Semua berkas tetap berada pada browser lokal. Hasil `MATCH` merekam pemeriksaan awal oleh petugas,
+      bukan autentikasi sumber, review independen, persetujuan regulator, atau aktivasi skor resmi.
+      Unduh progres berkala; tidak ada penyimpanan otomatis.
+    </div>
+    <section class="toolbar" aria-label="Berkas sumber">
+      <div class="card padded">
+        <label class="label" for="workpaper-file">1. Impor workpaper JSON</label>
+        <input id="workpaper-file" type="file" accept=".json,application/json">
+        <p class="meta">Dibuat dengan <code>node scripts/padk-source-workpaper.js --format=json</code>. File hasil review juga dapat diimpor kembali.</p>
+      </div>
+      <div class="card padded">
+        <label class="label" for="pdf-file">2. Pilih PDF sumber lokal</label>
+        <input id="pdf-file" type="file" accept=".pdf,application/pdf">
+        <p class="meta">Hash SHA-256 hanya mengikat isi file lokal, tidak membuktikan file diterbitkan OJK. Simpan bukti URL/unduhan resmi secara terpisah.</p>
+        <p id="pdf-digest" class="meta">SHA-256: belum dihitung</p>
+        <p id="reference-match" class="meta" role="status">Identitas salinan belum diperiksa.</p>
+      </div>
+      <div class="card padded">
+        <label class="label">3. Progres pemeriksaan</label>
+        <div class="count" id="progress">0 / 540</div>
+        <p id="progress-details" class="meta">Impor workpaper untuk mulai.</p>
+        <button id="download-progress" class="primary" type="button" disabled>Unduh progres JSON</button>
+      </div>
+    </section>
+    <section class="workspace">
+      <section class="card" aria-label="Dokumen PDF">
+        <div class="cardhead"><h2>Dokumen sumber lokal</h2><span class="meta">Tidak diunggah</span></div>
+        <div class="padded">
+          <div class="sourcebar">
+            <label><span class="label">Halaman fisik PDF</span><input id="page-input" type="number" min="1" step="1" value="1"></label>
+            <button id="open-page" type="button" disabled>Buka halaman</button>
+          </div>
+          <p class="meta">Gunakan halaman fisik pada penampil, bukan hanya nomor yang tercetak dalam Lampiran IV.</p>
+        </div>
+        <div class="placeholder" id="pdf-placeholder">Pilih PDF sumber terlebih dahulu.</div>
+        <iframe class="pdf" id="pdf-frame" title="Pratinjau PDF sumber lokal" hidden></iframe>
+      </section>
+      <section class="card" aria-label="Baris pemeriksaan">
+        <div class="cardhead"><h2>Catatan pemeriksaan</h2><span id="row-status">Belum dipilih</span></div>
+        <div class="padded">
+          <div class="rowfilters">
+            <label><span class="label">Urutan baris</span><select id="focus-filter"><option value="priority">Perhatian khusus dahulu</option><option value="all">Seluruh 540 baris</option></select></label>
+            <label><span class="label">Status</span><select id="status-filter"><option value="all">Semua</option><option value="PENDING">Belum diperiksa</option><option value="MATCH">Cocok menurut petugas</option><option value="MISMATCH">Ada perbedaan</option><option value="UNREADABLE">Tidak terbaca</option></select></label>
+          </div>
+          <label class="label" for="row-select">Pilih baris</label>
+          <select id="row-select" disabled><option value="">Impor workpaper lebih dahulu</option></select>
+          <p class="meta" id="row-context"></p>
+          <p id="row-summary" class="meta">Ringkasan draft tampil setelah baris dipilih.</p>
+        </div>
+        <form id="review-form" autocomplete="off" hidden>
+          <div class="reviewgrid">
+            <label><span class="label">Keputusan pemeriksaan</span>
+              <select id="verdict"><option value="PENDING">Belum diperiksa</option><option value="MATCH">Cocok dengan sumber</option><option value="MISMATCH">Terdapat perbedaan</option><option value="UNREADABLE">Sumber tidak terbaca</option></select>
+            </label>
+            <label><span class="label">Halaman fisik PDF</span><input id="physical-page" type="number" min="1" step="1" placeholder="Nomor halaman sumber"></label>
+            <label class="wide"><span class="label">Teks sumber yang diperiksa</span><textarea id="source-text" maxlength="10000" placeholder="Salin atau catat teks sumber yang benar-benar diperiksa. Jangan mengisi otomatis dari draft."></textarea></label>
+            <label class="wide"><span class="label">Catatan pemeriksaan / perbedaan</span><textarea id="review-note" maxlength="4000" placeholder="Catat perbedaan jika ditemukan; jelaskan bila baris tidak dapat dibaca."></textarea></label>
+            <label><span class="label">Petugas pemeriksa</span><input id="reviewer" type="text" maxlength="160" placeholder="Identitas pemeriksa"></label>
+            <label><span class="label">Tanggal pemeriksaan</span><input id="review-date" type="date"></label>
+            <label class="wide"><span class="label">SHA-256 PDF sumber yang diperiksa</span><input id="source-sha" type="text" maxlength="64" spellcheck="false" placeholder="64 karakter heksadesimal"></label>
+            <label class="wide"><span class="label">Alamat berkas sumber resmi OJK</span><input id="source-url" type="url" maxlength="2048" placeholder="https://ojk.go.id/..."></label>
+          </div>
+          <p class="meta">Pemeriksa harus memastikan sendiri asal dokumen. Hash cocok tidak membuktikan keaslian penerbit. Status sumber dan produksi tetap terkunci.</p>
+          <div class="actions">
+            <button id="save-row" class="primary" type="submit">Simpan catatan pada workpaper</button>
+            <button id="next-row" type="button">Lanjut baris berikutnya</button>
+          </div>
+        </form>
+      </section>
+    </section>
+    <p id="message" role="status" aria-live="polite"></p>
+  </main>
+  <script src="./review.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
