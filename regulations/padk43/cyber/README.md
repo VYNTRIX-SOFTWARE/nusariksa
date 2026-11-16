@@ -83,3 +83,26 @@ Syarat verifikasi GitHub:
 **Batas pembuktian:** API GitHub membuktikan status approval dan keterkaitan commit, **bukan** bahwa setiap baris PADK telah diperiksa benar oleh manusia. Review PDF sumber, keputusan pengecualian, metode skoring, UAT, dan keseluruhan bukti tetap wajib dipertanggungjawabkan. Persetujuan PR juga bukan persetujuan regulator.
 
 Pada kondisi saat ini `packs/` masih kosong dan seluruh kandidat belum disahkan. Gerbang rilis harus **tetap gagal** sampai semua syarat regulatori dan review independen benar-benar diselesaikan.
+
+## Menyiapkan berkas pemeriksaan instrumen
+
+Gunakan PDF sumber lokal yang SHA-256-nya sesuai dengan transkripsi untuk menghasilkan berkas pemeriksaan. Simpan hasil pemeriksaan di luar repository dan pastikan direktori tujuan belum tersedia.
+
+```bash
+npm run regulatory:workpack -- \
+  --source-pdf=/lokasi-privat/PADK.pdf \
+  --output-dir=/lokasi-privat/review-instrumen
+```
+
+Berkas keluaran meliputi daftar pemeriksaan sel sumber, pemetaan indikator, pengecualian, perbandingan metode pembulatan, dan template evidence. Setiap keputusan pemeriksaan diawali dengan status `PENDING`; alat ini tidak memberikan persetujuan regulatori secara otomatis.
+
+Untuk memeriksa ulang kesesuaian urutan teks pada sel PDF, jalankan:
+
+```bash
+python -m pip install pdfplumber
+python tools/padk-source-review/verify-pdf-cells.py \
+  --source-pdf=/lokasi-privat/PADK.pdf \
+  --source-json=regulations/padk43/cyber/sources/lampiran-iv-extraction.json
+```
+
+Pemeriksaan mesin bukan pengganti penelaahan dokumen oleh reviewer yang berwenang. Bukti pemeriksaan, identitas reviewer, dan dokumen internal bank tidak boleh disimpan di repository publik.
