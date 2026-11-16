@@ -53,3 +53,33 @@ Setiap pack wajib memuat identitas sumber (`source.url` dan `source.pdfSha256`),
 - **Rilis:** `packs/` tetap kosong, status `productionEligible=false`, dan `regulatory:release-gate` tetap gagal sampai ketentuan rilis terpenuhi.
 
 Kelengkapan data dan kejujuran status adalah dua syarat yang berbeda. Jangan menaikkan status hanya dengan mengganti literal `DRAFT_UNVERIFIED` atau membuat attestasi palsu.
+
+
+## Pemeriksaan approval GitHub sebelum rilis
+
+Pemeriksaan struktur (`regulatory:check`) tidak memerlukan jaringan dan tetap bisa dijalankan ketika pack final belum tersedia. Namun, **gerbang rilis** harus memperoleh bukti review yang dapat dikonfirmasi langsung ke GitHub; data JSON reviewer tidak cukup.
+
+Jalankan dari *checkout Git yang bersih* dan berada tepat pada **commit hasil squash merge** dari PR yang memuat **kedua** berkas final `packs/kategori-1.json` dan `packs/kategori-2.json`:
+
+```bash
+export GITHUB_TOKEN='<token baca repo, pull request, dan commit>'
+npm run regulatory:release-gate -- \
+  --source-pdf=/lokasi/privat/PADK-resmi.pdf \
+  --evidence-file=/lokasi/privat/hasil-review.json \
+  --review-pr=123
+```
+
+Simpan PDF dan evidence **di luar repository**. Token dibaca melalui environment, tidak melalui parameter URL dan tidak boleh dimasukkan ke log. Gunakan akses *read-only* ke repository dan pull request.
+
+Syarat verifikasi GitHub:
+
+1. PR sudah merged ke `main` (squash manual), berasal dari repository yang sama, dan penulis PR sesuai `compiledBy`.
+2. SHA merge sama dengan `git rev-parse HEAD`; tree commit yang di-review sama persis dengan tree hasil squash, tanpa modifikasi lokal ataupun file untracked.
+3. Kedua regulatory pack merupakan berkas yang berubah di PR tersebut.
+4. Dua reviewer GitHub yang berbeda dari penyusun memberi review `APPROVED` pada **HEAD terbaru** PR; approval yang `DISMISSED`, tertimpa `CHANGES_REQUESTED`, atau terikat SHA lama ditolak.
+5. `reviewerId` merupakan login GitHub asli dan `reviewedAt` adalah tanggal **UTC** sesuai `submitted_at` API GitHub. Identitas, tanggal, peran, dan fingerprint pada tiap pack harus konsisten dengan evidence.
+6. GitHub API harus dapat dihubungi secara langsung. Error HTTP, token kosong, dan daftar review yang terpotong akan menutup gerbang, bukan dianggap sukses.
+
+**Batas pembuktian:** API GitHub membuktikan status approval dan keterkaitan commit, **bukan** bahwa setiap baris PADK telah diperiksa benar oleh manusia. Review PDF sumber, keputusan pengecualian, metode skoring, UAT, dan keseluruhan bukti tetap wajib dipertanggungjawabkan. Persetujuan PR juga bukan persetujuan regulator.
+
+Pada kondisi saat ini `packs/` masih kosong dan seluruh kandidat belum disahkan. Gerbang rilis harus **tetap gagal** sampai semua syarat regulatori dan review independen benar-benar diselesaikan.

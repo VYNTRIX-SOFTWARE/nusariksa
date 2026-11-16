@@ -1,10 +1,12 @@
 #!/usr/bin/env node
 import { readFile, readdir } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
+import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, resolve } from 'node:path';
 import { reviewPadkRegulatoryPack } from '../apps/api/src/padk-regulatory-pack-review.js';
 import { validatePadkReleaseEvidence } from '../apps/api/src/padk-regulatory-release-evidence.js';
+import { verifyIndependentPadkGithubReview } from '../apps/api/src/padk-regulatory-github-review.js';
 
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 const directory=join(root,'regulations','padk43','cyber','packs');
@@ -13,6 +15,8 @@ const sourceArg=process.argv.find(arg=>arg.startsWith('--source-pdf='));
 const pdfPath=sourceArg?.slice('--source-pdf='.length);
 const evidenceArg=process.argv.find(arg=>arg.startsWith('--evidence-file='));
 const evidencePath=evidenceArg?.slice('--evidence-file='.length);
+const prArg=process.argv.find(arg=>arg.startsWith('--review-pr='));
+const reviewPr=prArg?Number(prArg.slice('--review-pr='.length)):null;
 let sourceHash=null;
 if(release && !pdfPath){
   console.error('RELEASE BLOCKED: --source-pdf=<file PDF resmi yang telah diperiksa> wajib');
@@ -20,6 +24,10 @@ if(release && !pdfPath){
 }
 if(release && !evidencePath){
   console.error('RELEASE BLOCKED: --evidence-file=<berkas bukti review privat> wajib');
+  process.exitCode=1;
+}
+if(release && (!Number.isSafeInteger(reviewPr)||reviewPr<1)){
+  console.error('RELEASE BLOCKED: --review-pr=<nomor PR pack final> wajib');
   process.exitCode=1;
 }
 if(pdfPath){
@@ -41,6 +49,7 @@ const expected=new Map([
 ]);
 
 const verifiedPacks=[];
+const reviewedPacks=[];
 let available=[];
 try{available=await readdir(directory);}
 catch(error){
@@ -63,6 +72,7 @@ for(const [fileName,category] of expected){
     const checked=reviewPadkRegulatoryPack(input);
     if(checked.pack.category!==category)throw new TypeError('Kategori tidak cocok nama berkas');
     verifiedPacks.push(checked.pack);
+    reviewedPacks.push(checked);
     if(release && (!sourceHash || checked.pack.source.pdfSha256!==sourceHash))
       throw new TypeError('SHA256 PDF sumber tidak cocok dengan regulatory pack');
     console.log('VALIDASI STRUKTUR '+fileName+': '+checked.pack.indicators.length+
@@ -75,7 +85,8 @@ for(const [fileName,category] of expected){
   }
 }
 if(release&&available.length!==expected.size)errors++;
-if(release&&verifiedPacks.length===2&&sourceHash&&evidencePath){
+if(release&&verifiedPacks.length===2&&sourceHash&&evidencePath
+  &&Number.isSafeInteger(reviewPr)&&reviewPr>0){
   try{
     const [source,mapping,evidence]=await Promise.all([
       readFile(join(root,'regulations','padk43','cyber','sources',
@@ -89,8 +100,23 @@ if(release&&verifiedPacks.length===2&&sourceHash&&evidencePath){
     });
     if(evidence.sourcePdfSha256!==sourceHash)
       throw new TypeError('SHA-256 PDF tidak sesuai bukti review');
-    if(report.independentGitHubReviewVerified!==true)
-      throw new TypeError('review PR independen belum dapat dibuktikan; penilaian resmi tetap terkunci');
+    // The checked-out working tree must be byte-for-byte at the squash commit
+    // that actually received the independent PR reviews.
+    const commit=execFileSync('git',['rev-parse','HEAD'],{
+      cwd:root,encoding:'utf8',timeout:5000,
+    }).trim();
+    const dirty=execFileSync('git',['status','--porcelain','--untracked-files=all'],{
+      cwd:root,encoding:'utf8',timeout:5000,
+    }).trim();
+    if(dirty)throw new TypeError('checkout release memiliki perubahan atau berkas untracked');
+    const approved=await verifyIndependentPadkGithubReview({
+      evidence,reviewedPacks,prNumber:reviewPr,currentCommitSha:commit,
+      token:process.env.GITHUB_TOKEN,
+    });
+    if(approved.independentGitHubReviewVerified!==true)
+      throw new TypeError('approval independen belum terverifikasi');
+    console.log('GITHUB REVIEW VERIFIED: PR #'+approved.prNumber+
+      ', tree squash identik, kedua pack ditinjau pada commit '+approved.reviewedHeadSha);
     console.log('VALIDASI BUKTI LENGKAP: '+report.sourceCells+
       ' sel, '+report.crosswalkDecisions+' pemetaan, '+
       report.exceptionDecisions+' keputusan pengecualian.');
