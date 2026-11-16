@@ -104,4 +104,5 @@ test('CLI rilis menolak tanpa PDF dan berkas bukti review privat',()=>{
   assert.notEqual(result.status,0);
   assert.match(result.stderr,/--source-pdf/);
   assert.match(result.stderr,/--evidence-file/);
+  assert.match(result.stderr,/--review-pr/);
 });
