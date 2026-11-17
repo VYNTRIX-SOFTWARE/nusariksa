@@ -3,7 +3,8 @@ import {once} from 'node:events';
 import {test} from 'node:test';
 import {createServer} from '../src/server.js';
 import {validatePreparationInput,validatePreparationResponse,validatePadkReviewQueue,
-  suggestPadkAnnualPreparation,suggestPadkTitleFromEnd}
+  suggestPadkAnnualPreparation,suggestPadkTitleFromEnd,
+  getPadkDraftSubmissionReadiness}
   from '../../web/assets/padk-preparation-ui.js';
 
 test('PADK preparation page and module are served with CSP',async()=>{
@@ -33,6 +34,7 @@ test('PADK preparation page and module are served with CSP',async()=>{
       'pdk-evidence-panel','pdk-evidence-upload','pdk-evidence-file',
       'pdk-evidence-list','pdk-evidence-message',
       'pdk-draft-review-panel','pdk-review-submit','pdk-review-state',
+      'pdk-review-readiness','pdk-review-jump-pending',
       'pdk-review-form','pdk-review-decision','pdk-review-note',
       'pdk-score-preview','pdk-score-status','pdk-score-domains',
       'pdk-score-composite','pdk-score-refresh',
@@ -111,4 +113,43 @@ test('saran PADK menggunakan tahun posisi Desember tanpa memilih kategori otomat
   assert.throws(()=>suggestPadkAnnualPreparation(new Date(NaN)),TypeError);
   assert.deepEqual(validatePreparationInput({...recommendation,category:2}),
     {...recommendation,category:2});
+});
+
+test('pengajuan draft hanya siap dari kelengkapan jawaban tersimpan di server',()=>{
+  const pending={loaded:true,total:80,complete:1,pending:79,nextIncompleteNumber:2};
+  const common={editable:true,dirty:false,busy:false};
+  const incomplete=getPadkDraftSubmissionReadiness({...common,progress:pending});
+  assert.equal(incomplete.canSubmit,false);
+  assert.equal(incomplete.canJump,true);
+  assert.match(incomplete.message,/79 indikator/);
+  const incompleteWhileEditing=getPadkDraftSubmissionReadiness({
+    ...common,dirty:true,progress:pending,
+  });
+  assert.equal(incompleteWhileEditing.canJump,false);
+  const complete={loaded:true,total:80,complete:80,pending:0,
+    nextIncompleteNumber:null};
+  const ready=getPadkDraftSubmissionReadiness({...common,progress:complete});
+  assert.equal(ready.canSubmit,true);
+  assert.match(ready.message,/siap diajukan/);
+  assert.equal(getPadkDraftSubmissionReadiness({...common,dirty:true,
+    progress:complete}).canSubmit,false);
+  assert.equal(getPadkDraftSubmissionReadiness({...common,busy:true,
+    progress:complete}).canSubmit,false);
+  assert.equal(getPadkDraftSubmissionReadiness({...common,editable:false,
+    progress:complete}).canSubmit,false);
+  assert.equal(getPadkDraftSubmissionReadiness({...common,progress:{
+    loaded:false,total:0,complete:0,pending:0,nextIncompleteNumber:null,
+  }}).canSubmit,false);
+  for(const progress of [
+    {...complete,complete:79},
+    {...complete,complete:79,pending:1,nextIncompleteNumber:null},
+    {...complete,nextIncompleteNumber:1},
+    {...complete,total:59,complete:59,pending:0},
+  ]){
+    if(progress.total===59){
+      assert.equal(getPadkDraftSubmissionReadiness({...common,progress}).canSubmit,false);
+    }else{
+      assert.throws(()=>getPadkDraftSubmissionReadiness({...common,progress}),TypeError);
+    }
+  }
 });

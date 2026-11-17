@@ -114,3 +114,12 @@ Ketika membuka **Buat persiapan**, NusaRiksa mengisi usulan nama penilaian dan r
 ## Workspace PADK terfokus pada indikator aktif
 
 Alur utama dibuat lebih ringkas agar petugas dapat memulai dari indikator pertama: nama indikator dan progres, lima kriteria dalam panel yang dapat dibuka satu per satu, pilihan peringkat sementara, justifikasi, serta penyimpanan. Pencarian, detail sumber, evidence, histori, review kelengkapan, simulasi, dan unduhan draft dipindahkan ke bagian sekunder yang dapat dibuka sesuai kebutuhan. Pengguna tidak kehilangan akses ke referensi sumber; status `DRAFT_UNVERIFIED` tetap terlihat, sementara rincian teknis hanya muncul bila diminta. Peringkat, evidence, dan laporan tetap merupakan **bahan kerja internal yang belum tervalidasi regulator**.
+
+
+## Pemeriksaan kelengkapan sebelum pengajuan draft
+
+Sebelum maker mengajukan pemeriksaan internal, halaman menampilkan jumlah indikator yang **sudah lengkap dan tersimpan di server**, bukan hanya yang sedang diketik. Pengajuan hanya aktif setelah seluruh 80 atau 60 indikator (sesuai kategori) memiliki peringkat sementara dan justifikasi minimal 20 karakter yang tersimpan. Jika ada yang tertunda, gunakan **Lengkapi indikator yang tertunda** untuk langsung membuka indikator pertama yang belum lengkap. Tombol ini tidak mengubah nilai atau bukti.
+
+Pada indikator yang sudah lengkap dan tersimpan, **Simpan & lanjut** dapat dipakai untuk langsung berpindah ke indikator berikutnya yang belum lengkap tanpa menyimpan ulang jawaban yang tidak berubah. Saat ada perubahan yang belum tersimpan, alur tetap menyimpan melalui server sebelum berpindah. Jika terjadi perubahan data dari sesi lain, muat ulang draft untuk menyinkronkan kelengkapan; server tetap memeriksa semua syarat saat pengajuan.
+
+Semua pesan kelengkapan ini hanya untuk **pemeriksaan draft internal**; tidak menjadikan penilaian sebagai hasil resmi PADK/OJK.
