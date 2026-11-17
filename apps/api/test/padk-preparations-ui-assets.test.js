@@ -47,7 +47,8 @@ test('PADK preparation page and module are served with CSP',async()=>{
       'pdk-indicator-search','pdk-indicator-status-filter','pdk-indicator-filter-reset',
       'pdk-indicator-match-count','pdk-guide-rank','pdk-guide-reason',
       'pdk-guide-save','pdk-guide-next','pdk-indicator-reason-counter',
-      'pdk-indicator-next-pending','pdk-indicator-position',
+      'pdk-indicator-next-pending','pdk-indicator-inline-error','pdk-journey-hint',
+      'pdk-indicator-position',
       'pdk-indicator-state','pdk-indicator-title','pdk-indicator-save-state',
       'pdk-indicator-save-next','pdk-indicator-ready-hint','pdk-indicator-optional',
       'pdk-jump-review','pdk-review-queue','pdk-review-queue-refresh','pdk-review-queue-list',
@@ -62,6 +63,8 @@ test('PADK preparation page and module are served with CSP',async()=>{
     assert.match(html,/aria-label="Lima kriteria peringkat draft yang dapat dibuka satu per satu"/);
     assert.match(html,/Mode kertas kerja internal/);
     assert.match(html,/Kerjakan satu indikator pada satu waktu/);
+    assert.match(html,/data-pdk-flow-step="5"/);
+    assert.match(html,/maksimal 10 MiB per file/);
     assert.ok(html.indexOf('id="pdk-indicator-form"')<
       html.indexOf('id="pdk-review-disclosure"'),
       'indicators precede the optional review flow');
@@ -71,6 +74,9 @@ test('PADK preparation page and module are served with CSP',async()=>{
     const coverageModule=await fetch(base+'/assets/padk-evidence-coverage-ui.js');
     assert.equal(coverageModule.status,200);
     assert.match(coverageModule.headers.get('content-type'),/javascript/);
+    const actionModule=await fetch(base+'/assets/action-dialog.js');
+    assert.equal(actionModule.status,200);
+    assert.match(actionModule.headers.get('content-security-policy'),/script-src 'self'/);
     const adminModule=await fetch(base+'/assets/admin-onboarding-ui.js');
     assert.equal(adminModule.status,200);
     assert.match(adminModule.headers.get('content-type'),/javascript/);

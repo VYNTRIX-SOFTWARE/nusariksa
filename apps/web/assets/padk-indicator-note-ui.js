@@ -38,10 +38,18 @@ export function validateDraftIndicatorList(data,category){
 }
 // Progress follows the actual server submission requirement: rank + >=20-character justification.
 // Notes, evidence plans, and file uploads do not substitute for a provisional rank.
+export function suggestedPadkJustification(rank){
+  if(!Number.isInteger(rank)||rank<1||rank>5)
+    throw new TypeError('Peringkat sementara tidak valid.');
+  return 'Peringkat sementara '+rank+' dipilih. Kondisi yang ditemukan: '+
+    '[isi kondisi faktual]. Dokumen/hasil pemeriksaan: [isi bukti yang diperiksa].';
+}
+const hasEmptyEvidenceMarker=value=>/\[(?:isi kondisi faktual|isi bukti yang diperiksa)\]/i.test(value);
 export function isDraftIndicatorComplete(item){
   return Number.isInteger(item?.provisionalRank)
     &&item.provisionalRank>=1&&item.provisionalRank<=5
-    &&typeof item.justification==='string'&&item.justification.trim().length>=20;
+    &&typeof item.justification==='string'&&item.justification.trim().length>=20
+    &&!hasEmptyEvidenceMarker(item.justification);
 }
 export function summarizeDraftIndicatorProgress(items){
   if(!Array.isArray(items))throw new TypeError('Invalid indicator progress data');
@@ -80,7 +88,8 @@ export function getPadkIndicatorGuidance({rank,justification,dirty,revision,edit
   const reasonCount=justification.trim().length;
   const rankDone=rank!==null;
   const reasonDone=rankDone&&reasonCount>=20
-    &&justification===justification.trim()&&!CONTROL.test(justification);
+    &&justification===justification.trim()&&!CONTROL.test(justification)
+    &&!hasEmptyEvidenceMarker(justification);
   const saved=revision>0&&!dirty;
   let nextAction;
   if(!editable)nextAction='Mode baca saja. Periksa alasan penilaian dan dokumen bukti yang tersedia.';
@@ -238,6 +247,8 @@ export function createPadkIndicatorNoteUI({api,onAuthFailure,getUserId,getPermis
     const item=state.items.find(x=>x.number===Number(number));
     state.active=item??null;state.dirty=false;
     $('pdk-indicator-form').reset();message('');
+    $('pdk-indicator-inline-error').textContent='';
+    $('pdk-indicator-inline-error').hidden=true;
     $('pdk-evidence-disclosure').open=false;
     $('pdk-indicator-history-disclosure').open=false;
     if(!item){
@@ -347,13 +358,29 @@ export function createPadkIndicatorNoteUI({api,onAuthFailure,getUserId,getPermis
       ||$('pdk-indicator-evidence').value!==state.active.evidencePlan
       ||(rank===''?null:Number(rank))!==state.active.provisionalRank
       ||$('pdk-indicator-justification').value!==state.active.justification;
+    const current=$('pdk-indicator-justification').value;
+    if(current.trim().length>=20&&!hasEmptyEvidenceMarker(current))
+      $('pdk-indicator-inline-error').hidden=true;
     render();
   };
   for(const id of ['pdk-indicator-notes','pdk-indicator-evidence',
     'pdk-indicator-justification']){
     $(id).addEventListener('input',onInput);
   }
-  $('pdk-indicator-rank').addEventListener('change',onInput);
+  $('pdk-indicator-rank').addEventListener('change',()=>{
+    const input=$('pdk-indicator-justification');
+    const selected=$('pdk-indicator-rank').value;
+    // Never replace a user's evidence-based explanation.
+    if(owner()&&state.active&&selected!==''&&input.value.trim()===''){
+      input.value=suggestedPadkJustification(Number(selected));
+      $('pdk-indicator-inline-error').textContent=
+        'Draf bantuan terisi. Ganti kedua bagian dalam tanda [ ] dengan kondisi dan bukti nyata sebelum menyimpan.';
+      $('pdk-indicator-inline-error').hidden=false;
+    }else if(selected===''){
+      $('pdk-indicator-inline-error').textContent='';
+    }
+    onInput();
+  });
   $('pdk-indicator-form').addEventListener('submit',async event=>{
     event.preventDefault();
     if(!state.active||!owner()||state.busy)return;
@@ -380,8 +407,16 @@ export function createPadkIndicatorNoteUI({api,onAuthFailure,getUserId,getPermis
       ||!(rank===null||(Number.isInteger(rank)&&rank>=1&&rank<=5))
       ||(rank===null&&body.justification!=='')
       ||(rank!==null&&(body.justification.trim().length<20
-        ||body.justification!==body.justification.trim()))){
-      message('Isian tidak valid. Peringkat sementara wajib memiliki justifikasi minimal 20 karakter.','error');
+        ||body.justification!==body.justification.trim()
+        ||hasEmptyEvidenceMarker(body.justification)))){
+      const input=rank===null?$('pdk-indicator-rank'):$('pdk-indicator-justification');
+      $('pdk-indicator-inline-error').textContent=
+        hasEmptyEvidenceMarker(body.justification)
+          ?'Ganti teks dalam tanda [ ] dengan hasil pengamatan dan bukti yang benar-benar diperiksa.'
+          :'Periksa peringkat dan justifikasi minimal 20 karakter sebelum menyimpan.';
+      $('pdk-indicator-inline-error').hidden=false;
+      input.focus({preventScroll:true});
+      input.scrollIntoView({block:'center',behavior:'smooth'});
       return;
     }
     state.busy=true;render();

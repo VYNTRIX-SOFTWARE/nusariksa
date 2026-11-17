@@ -31,6 +31,7 @@ const ASSETS = new Map([
   ['/assets/maturity-assessment-model.js', { file: 'assets/maturity-assessment-model.js', type: 'text/javascript; charset=utf-8' }],
   ['/assets/maturity-assessment-ui.js', { file: 'assets/maturity-assessment-ui.js', type: 'text/javascript; charset=utf-8' }],
   ['/assets/padk-preparation-ui.js', { file: 'assets/padk-preparation-ui.js', type: 'text/javascript; charset=utf-8' }],
+  ['/assets/action-dialog.js', { file: 'assets/action-dialog.js', type: 'text/javascript; charset=utf-8' }],
   ['/assets/padk-score-preview-ui.js', { file: 'assets/padk-score-preview-ui.js', type: 'text/javascript; charset=utf-8' }],
   ['/assets/padk-indicator-note-ui.js', { file: 'assets/padk-indicator-note-ui.js', type: 'text/javascript; charset=utf-8' }],
   ['/assets/padk-criteria-panel.js', { file: 'assets/padk-criteria-panel.js', type: 'text/javascript; charset=utf-8' }],

@@ -1,4 +1,5 @@
 import { STATUS_LABELS } from './assessment-model.js';
+import {confirmAssessmentAction} from './action-dialog.js';
 import { createEvidenceUI } from './assessment-evidence.js';
 import {
   RATING_LABELS, canWriteAssessment, canAttachCatalog, canStartAssessment,
@@ -599,10 +600,12 @@ export function createWorkspace({
     void runAction('/start');
   });
 
-  $('workspace-submit-review').addEventListener('click',()=>{
+  $('workspace-submit-review').addEventListener('click',async()=>{
     if(state.pending || !canSubmitReview(state.assessment,getUserId(),getPermissions(),state.catalog,state.controls))return;
     if(state.dirty){showMessage('Simpan atau batalkan perubahan penilaian sebelum mengajukan review.','warning');return;}
-    if(!window.confirm('Ajukan asesmen ini untuk pemeriksaan? Seluruh penilaian akan terkunci sampai review selesai.'))return;
+    if(!await confirmAssessmentAction({title:'Ajukan hasil asesmen?',
+      description:'Penilaian akan terkunci sementara sampai pemeriksa mengembalikan atau menyetujui hasil.',
+      confirmLabel:'Ajukan pemeriksaan'}))return;
     void runAction('/submit');
   });
   $('workspace-review-decision').addEventListener('change',(event)=>{
@@ -618,7 +621,10 @@ export function createWorkspace({
     const reason=validateReviewDecision({decision,note});
     if(reason){showMessage(reason,'error');return;}
     const label=decision==='approve'?'menyetujui':'mengembalikan untuk perbaikan';
-    if(!window.confirm('Anda akan '+label+' asesmen ini. Keputusan akan tercatat dalam audit log. Lanjutkan?'))return;
+    if(!await confirmAssessmentAction({title:decision==='approve'?'Setujui hasil asesmen?':'Kembalikan asesmen?',
+      description:'Anda akan '+label+' asesmen ini. Keputusan dicatat permanen pada log pemeriksaan.',
+      confirmLabel:decision==='approve'?'Setujui asesmen':'Kembalikan untuk perbaikan',
+      tone:decision==='approve'?'primary':'danger'}))return;
     const gen=state.generation;
     renderBusy(true);
     try{

@@ -2,7 +2,7 @@ import { ApiError } from './session.js';
 
 const $ = id => document.getElementById(id);
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-const MAX_BYTES = 1024 * 1024;
+const MAX_BYTES = 10 * 1024 * 1024;
 const ALLOWED_TYPES = new Set(['application/pdf','image/png','image/jpeg']);
 
 function element(tag, className, text) {
@@ -32,7 +32,7 @@ export function validEvidenceListing(payload, assessmentId, controlId) {
 export async function fileToBase64(file) {
   if (!file || !ALLOWED_TYPES.has(file.type) || !Number.isSafeInteger(file.size)
     || file.size < 1 || file.size > MAX_BYTES) {
-    throw new TypeError('Pilih PDF, PNG, atau JPEG dengan ukuran maksimal 1 MiB.');
+    throw new TypeError('Pilih PDF, PNG, atau JPEG dengan ukuran maksimal 10 MiB.');
   }
   const bytes = new Uint8Array(await file.arrayBuffer());
   if (bytes.length !== file.size) throw new TypeError('Ukuran file berubah saat dibaca.');

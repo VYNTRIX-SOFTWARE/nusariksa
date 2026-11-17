@@ -81,3 +81,18 @@ test('browser membatasi file sebelum encoding',async()=>{
   await assert.rejects(fileToBase64({...mock,type:'text/html'}),TypeError);
   await assert.rejects(fileToBase64({...mock,size:EVIDENCE_MAX_BYTES+1}),TypeError);
 });
+
+test('PDF hingga 10 MiB diterima dan satu byte di atasnya ditolak',()=>{
+  assert.equal(EVIDENCE_MAX_BYTES,10*1024*1024);
+  const full=Buffer.alloc(EVIDENCE_MAX_BYTES);
+  full.write('%PDF-',0,'ascii');
+  const ok=validateEvidence({
+    fileName:'lampiran-besar.pdf',mediaType:'application/pdf',
+    contentBase64:full.toString('base64'),
+  });
+  assert.equal(ok.bytes.length,EVIDENCE_MAX_BYTES);
+  assert.throws(()=>validateEvidence({
+    fileName:'melewati-batas.pdf',mediaType:'application/pdf',
+    contentBase64:Buffer.concat([full,Buffer.from([1])]).toString('base64'),
+  }),EvidenceError);
+});

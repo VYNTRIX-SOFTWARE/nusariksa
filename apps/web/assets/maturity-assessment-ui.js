@@ -1,3 +1,4 @@
+import {confirmAssessmentAction} from './action-dialog.js';
 import {
   canReadMaturityAssessments,canCreateMaturityAssessments,
   canRateMaturityAssessment,validMaturityAssessments,validMaturityDetail,
@@ -192,6 +193,13 @@ export function createMaturityAssessmentUI({
     $('ma-method').textContent=summary.methodLabel+' · '+
       (summary.complete?'Semua domain telah dinilai.':'Agregat belum tersedia sebelum semua domain dinilai.');
     $('ma-domains-count').textContent=data.domains.length+' domain';
+    const nextDomain=data.domains.find(domain=>domain.level===null);
+    $('ma-next-unassessed').disabled=state.busy||!nextDomain;
+    $('ma-guided-help').textContent=nextDomain
+      ?'Sudah dinilai '+summary.assessedDomains+' dari '+summary.totalDomains+
+        ' domain. Buka domain yang belum dinilai, baca semua kriteria 0–5, dan jelaskan dasar level yang dipilih.'
+      :'Semua domain sudah dinilai. Periksa justifikasi tiap domain dan status review sebelum pengajuan.';
+
     const list=$('ma-domain-list');list.replaceChildren();
     for(const domain of data.domains){
       const button=node('button','maturity-domain-item');
@@ -381,26 +389,33 @@ export function createMaturityAssessmentUI({
     if(button&&$('ma-review-queue').contains(button))
       void open(button.dataset.maReviewId);
   });
-  $('ma-submit').addEventListener('click',()=>{
+  $('ma-submit').addEventListener('click',async()=>{
     if(!canSubmit()||state.busy||!confirmLeave())return;
     const id=state.detail.id;
-    if(!window.confirm('Ajukan seluruh hasil penilaian untuk diperiksa? Hasil terkunci sampai dikembalikan.'))return;
+    if(!await confirmAssessmentAction({title:'Ajukan penilaian maturitas?',
+      description:'Hasil penilaian internal akan terkunci sampai pemeriksa membuat keputusan.',
+      confirmLabel:'Ajukan penilaian'}))return;
     void perform(()=>api('/maturity-assessments/'+encodeURIComponent(id)+'/submit',
       {method:'POST'}),async()=>{
       await open(id);
       if(queueAllowed())await loadQueue();
     },'Penilaian berhasil diajukan ke pemeriksa.');
   });
-  $('ma-review-form').addEventListener('submit',event=>{
+  $('ma-review-form').addEventListener('submit',async event=>{
     event.preventDefault();
     if(!canReview()||state.busy)return;
     let body;
     try{
       body=reviewDecisionPayload($('ma-review-decision').value,$('ma-review-note').value);
     }catch(error){message(error.message,'error');return;}
-    if(!window.confirm(body.decision==='approve'
-      ?'Setujui penilaian maturitas internal ini? Keputusan akan mengunci hasil.'
-      :'Kembalikan penilaian kepada pembuat untuk perbaikan?'))return;
+    if(!await confirmAssessmentAction({
+      title:body.decision==='approve'?'Terima hasil maturitas?':'Kembalikan hasil maturitas?',
+      description:body.decision==='approve'
+        ?'Keputusan pemeriksaan internal akan mengunci hasil dan tercatat dalam riwayat.'
+        :'Pembuat dapat memperbaiki penilaian setelah pengembalian dicatat.',
+      confirmLabel:body.decision==='approve'?'Terima hasil':'Kembalikan hasil',
+      tone:body.decision==='approve'?'primary':'danger',
+    }))return;
     const id=state.detail.id,gen=state.generation;
     state.busy=true;renderActions();
     void (async()=>{
@@ -455,6 +470,15 @@ export function createMaturityAssessmentUI({
       state.createOpen=false;$('ma-create-form').reset();
       await loadList(result.id);
     },'Asesmen maturitas berhasil dibuat.');
+  });
+  $('ma-next-unassessed').addEventListener('click',()=>{
+    if(!state.detail||state.busy||!confirmLeave())return;
+    const next=state.detail.domains.find(domain=>domain.level===null);
+    if(!next)return;
+    state.selectedDomainId=next.id;
+    renderDetail();
+    $('ma-editor-heading').focus({preventScroll:true});
+    $('ma-editor-heading').scrollIntoView({block:'start',behavior:'smooth'});
   });
   $('ma-domain-list').addEventListener('click',event=>{
     const target=event.target.closest?.('[data-domain-id]');

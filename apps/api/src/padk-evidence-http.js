@@ -14,7 +14,7 @@ const BASE='/regulatory/padk43/cyber/preparations/';
 const LIST=new RegExp('^'+BASE+UUID+'/indicators/([1-9][0-9]?)/evidence$','i');
 const FILE=new RegExp('^'+BASE+UUID+'/evidence/'+UUID+'/download$','i');
 const COVERAGE=new RegExp('^'+BASE+UUID+'/evidence-coverage$','i');
-const MAX_BODY=1410000;
+const MAX_BODY=14100000;
 const respond=(res,status,body)=>{res.writeHead(status);res.end(JSON.stringify(body));};
 async function parseUpload(req){
   if(req.headers['content-type']?.split(';')[0].trim().toLowerCase()!=='application/json')

@@ -9,7 +9,7 @@ import {configureEvidenceKeys} from './evidence-keyring.js';
 const ID = '([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})';
 const LIST = new RegExp('^/assessments/' + ID + '/controls/' + ID + '/evidence$', 'i');
 const DOWNLOAD = new RegExp('^/assessments/' + ID + '/evidence/' + ID + '/download$', 'i');
-const MAX_BODY = 1410000;
+const MAX_BODY = 14100000;
 
 function respond(response, status, payload) {
   response.writeHead(status);

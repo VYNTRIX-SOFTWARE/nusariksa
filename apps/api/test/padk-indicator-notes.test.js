@@ -8,7 +8,7 @@ import {
 } from '../src/padk-preparation-indicators.js';
 import {validateDraftIndicatorList,isDraftIndicatorComplete,
   summarizeDraftIndicatorProgress,nextPendingDraftIndicator,filterDraftIndicators,
-  getPadkIndicatorGuidance}
+  getPadkIndicatorGuidance,suggestedPadkJustification}
   from '../../web/assets/padk-indicator-note-ui.js';
 
 test('indicator number must follow PADK category sizes',()=>{
@@ -136,4 +136,27 @@ test('panduan pengisian PADK membedakan kelengkapan dan pengakuan simpan server'
     {rank:null,justification:'',dirty:false,revision:-1}]){
     assert.throws(()=>getPadkIndicatorGuidance(invalid),TypeError);
   }
+});
+
+test('auto-justifikasi hanya membuat draf; placeholder ditolak server dan progres',()=>{
+  for(const rank of [1,2,3,4,5]){
+    const suggestion=suggestedPadkJustification(rank);
+    assert.match(suggestion,/kondisi faktual/i);
+    assert.match(suggestion,/bukti yang diperiksa/i);
+    assert.equal(isDraftIndicatorComplete({provisionalRank:rank,justification:suggestion}),false);
+    assert.equal(getPadkIndicatorGuidance({
+      rank,justification:suggestion,dirty:true,revision:0,
+    }).reasonDone,false);
+    assert.throws(()=>validateIndicatorWorkingNotes({
+      preparationNotes:'',evidencePlan:'',provisionalRank:rank,
+      justification:suggestion,expectedRevision:0,
+    }),PadkPreparationError);
+  }
+  assert.throws(()=>suggestedPadkJustification(6),TypeError);
+  const actual='Peringkat 2. Ditemukan kebijakan akses yang disahkan; diuji terhadap SOP dan catatan akses.';
+  assert.equal(isDraftIndicatorComplete({provisionalRank:2,justification:actual}),true);
+  assert.equal(validateIndicatorWorkingNotes({
+    preparationNotes:'',evidencePlan:'',provisionalRank:2,
+    justification:actual,expectedRevision:0,
+  }).justification,actual);
 });

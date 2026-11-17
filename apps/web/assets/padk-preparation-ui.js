@@ -1,4 +1,5 @@
 import {createPadkIndicatorNoteUI} from './padk-indicator-note-ui.js';
+import {confirmAssessmentAction} from './action-dialog.js';
 import {createPadkScorePreviewUI} from './padk-score-preview-ui.js';
 import {createPadkEvidenceCoverageUI} from './padk-evidence-coverage-ui.js';
 
@@ -178,6 +179,24 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
       busy:state.busy,progress:indicatorUI.getReadiness(),
     });
     $('pdk-review-readiness').textContent=readiness.message;
+    const workflowStep=!state.detail?1
+      :!indicatorUI.getReadiness().loaded||indicatorUI.getReadiness().pending>0?2
+        :phase==='draft_accepted'?5:phase==='submitted'?4:3;
+    const guidance=[
+      '',
+      'Mulai: pilih kategori, periode, dan buat penilaian.',
+      'Isi indikator satu per satu, pilih peringkat, ganti placeholder dengan kondisi faktual, lalu simpan.',
+      'Jawaban lengkap. Lampirkan bukti yang tersedia, atau lanjutkan ke pemeriksaan draft.',
+      'Draft dikirim. Pemeriksa meninjau kelengkapan dan catatan bukti.',
+      'Draft internal diterima. Unduh kertas kerja, bukan laporan resmi regulator.',
+    ];
+    $('pdk-journey-hint').textContent=guidance[workflowStep];
+    for(const item of document.querySelectorAll('[data-pdk-flow-step]')){
+      const index=Number(item.dataset.pdkFlowStep);
+      item.dataset.state=index<workflowStep?'done':index===workflowStep?'current':'pending';
+      if(index===workflowStep)item.setAttribute('aria-current','step');
+      else item.removeAttribute('aria-current');
+    }
     $('pdk-review-submit').hidden=!owner();
     $('pdk-review-submit').disabled=!readiness.canSubmit;
     $('pdk-review-jump-pending').hidden=!owner()||!readiness.canJump;
@@ -382,6 +401,9 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
       if(owner())reviewMessage(readiness.message,'warning');
       return;
     }
+    if(!await confirmAssessmentAction({title:'Ajukan kertas kerja PADK?',
+      description:'Ini pemeriksaan kelengkapan draft internal, bukan pengesahan nilai resmi OJK. Jawaban akan terkunci selama pemeriksaan.',
+      confirmLabel:'Ajukan draft'}))return;
     state.busy=true;render();reviewMessage('');
     try{
       await api(reviewPath()+'/submit',{method:'POST'});
@@ -411,6 +433,12 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
       ||control.test(note)||(decision==='request_changes'&&note.trim().length<10)){
       reviewMessage('Alasan pengembalian wajib minimal 10 karakter.','error');return;
     }
+    if(!await confirmAssessmentAction({
+      title:decision==='accept_draft'?'Terima kelengkapan draft?':'Kembalikan draft untuk perbaikan?',
+      description:'Keputusan ini hanya untuk kertas kerja internal. Persetujuan resmi instrumen PADK belum tersedia.',
+      confirmLabel:decision==='accept_draft'?'Terima draft':'Kembalikan draft',
+      tone:decision==='accept_draft'?'primary':'danger',
+    }))return;
     state.busy=true;render();reviewMessage('');
     try{
       await api(reviewPath()+'/decision',{method:'POST',body:{decision,note}});
