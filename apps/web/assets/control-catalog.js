@@ -171,8 +171,8 @@ export function createControlCatalogManagement({ api, getPermissions, onAuthFail
     try {
       const catalogs = parseCatalogs(await api('/catalogs'));
       if (gen !== state.generation || !mayRead()) return;
-      state.catalogs = catalogs;
-      const id = catalogs.some(c => c.id === preferredId) ? preferredId : catalogs[0]?.id;
+      state.catalogs = catalogs.filter(c=>!(c.origin==='builtin'&&c.code==='NUSARIKSA_BPR_INTERNAL'));
+      const id = state.catalogs.some(c => c.id === preferredId) ? preferredId : state.catalogs[0]?.id;
       if (id) await selectCatalog(id, preferredVersionId);
       else {
         state.catalogId = null; state.versionId = null; state.versions = [];

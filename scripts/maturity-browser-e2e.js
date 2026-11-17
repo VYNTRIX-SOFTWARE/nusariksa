@@ -821,14 +821,21 @@ async function runBrowser(base,db,fixture){
     await until("document.getElementById('assessment-create-dialog').open",
       'one-click create form ready');
     assert.equal(await evalJs("document.getElementById('assessment-quick-start').checked"),true);
+    await until("document.querySelectorAll('#assessment-create-control-list input[type=checkbox]').length===26 && "+
+      "!document.getElementById('assessment-create-submit').disabled",
+      '26 referenced controls available for explicit assessment selection');
+    assert.equal(await evalJs("document.getElementById('assessment-create-control-count').textContent.includes('26 dari 26')"),true);
+    await evalJs("[...document.querySelectorAll('#assessment-create-control-list input[type=checkbox]')]"+
+      ".slice(2).forEach(cb=>{cb.checked=false;cb.dispatchEvent(new Event('change',{bubbles:true}));})");
+    assert.equal(await evalJs("document.getElementById('assessment-create-control-count').textContent.includes('2 dari 26')"),true);
     assert.match(await evalJs("document.getElementById('assessment-create-name').value"),
       /^Asesmen TI BPR\/BPRS [0-9]{4}$/);
     await evalJs("document.getElementById('assessment-create-name').value='Asesmen Satu Klik Browser';"+
       "document.getElementById('assessment-create-form').requestSubmit()");
     await until("!document.getElementById('page-workspace').hidden && "+
       "!document.getElementById('workspace-editor-content').hidden",
-      'one-click creates and starts a working 26-control assessment');
-    assert.equal(await evalJs("document.getElementById('workspace-control-count').textContent"),'26 kontrol');
+      'quick-start retains only two explicitly selected controls');
+    assert.equal(await evalJs("document.getElementById('workspace-control-count').textContent"),'2 kontrol');
     assert.equal(await evalJs("document.getElementById('workspace-setup').hidden"),true);
     assert.equal(await evalJs("document.getElementById('workspace-rating').value"),'');
     const quickDb=await db.query(
@@ -838,6 +845,9 @@ async function runBrowser(base,db,fixture){
     assert.equal(quickDb.rowCount,1);
     assert.equal(quickDb.rows[0].status,'in_progress');
     assert.equal(quickDb.rows[0].assignments,1);
+    assert.equal((await db.query(
+      'SELECT count(*)::int AS total FROM assessment_control_scope_items WHERE assessment_id=$1',
+      [quickDb.rows[0].id])).rows[0].total,2);
     // Existing custom-catalog assessment workflow remains accessible.
     await evalJs("document.getElementById('assessment-menu').click()");
     await until("!![...document.querySelectorAll('#assessments-table [data-workspace-id]')].find(x=>x.dataset.workspaceId==="+

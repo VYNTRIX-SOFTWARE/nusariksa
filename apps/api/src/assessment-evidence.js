@@ -124,8 +124,11 @@ async function findTarget(db, actorId, assessmentId, controlId, lock = false) {
   const a = assessment.rows[0];
   if (!a.catalog_version_id) throw new EvidenceError(404, 'Control not in assessment');
   const control = await db.query(
-    'SELECT 1 FROM control_definitions WHERE id = $1 AND version_id = $2',
-    [controlId, a.catalog_version_id],
+    'SELECT 1 FROM control_definitions WHERE id = $1 AND version_id = $2 '+
+    'AND (NOT EXISTS(SELECT 1 FROM assessment_control_scopes WHERE assessment_id=$3) '+
+    'OR EXISTS(SELECT 1 FROM assessment_control_scope_items '+
+    'WHERE assessment_id=$3 AND control_id=$1))',
+    [controlId, a.catalog_version_id,assessmentId],
   );
   if (control.rowCount !== 1) throw new EvidenceError(404, 'Control not in assessment');
   return a;

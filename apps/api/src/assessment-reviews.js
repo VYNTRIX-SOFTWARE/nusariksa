@@ -62,7 +62,10 @@ export async function submitAssessmentInTransaction(db, { actorId, assessmentId 
     throw new ReviewError(409, 'An assessment needs a published catalog');
   }
   const coverage = await db.query(
-    'SELECT (SELECT count(*)::int FROM control_definitions WHERE version_id = $2) AS total, ' +
+    'SELECT (SELECT count(*)::int FROM control_definitions c WHERE version_id = $2 '+
+    'AND (NOT EXISTS(SELECT 1 FROM assessment_control_scopes s WHERE s.assessment_id=$1) '+
+    'OR EXISTS(SELECT 1 FROM assessment_control_scope_items x '+
+    'WHERE x.assessment_id=$1 AND x.control_id=c.id))) AS total, ' +
     '(SELECT count(*)::int FROM assessment_control_results ' +
     'WHERE assessment_id = $1 AND catalog_version_id = $2) AS assessed',
     [assessmentId, assessment.catalog_version_id],

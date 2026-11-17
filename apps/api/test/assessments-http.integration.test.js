@@ -5,6 +5,9 @@ import { createPool } from '../src/database.js';
 import { runMigrations } from '../src/migrations.js';
 import { createSession } from '../src/sessions.js';
 import { createServer } from '../src/server.js';
+import {getChecklist,assignCatalogInTransaction} from '../src/control-catalogs.js';
+import {listAssessmentResults,writeAssessmentResultInTransaction} from '../src/assessment-results.js';
+import {submitAssessmentInTransaction} from '../src/assessment-reviews.js';
 import {
   createAssessmentInTransaction, createReadyAssessmentInTransaction,
   startAssessmentInTransaction,
@@ -109,6 +112,77 @@ test('API asesmen menegakkan sesi, izin, validasi dan status', {
           'SELECT count(*)::int AS n FROM control_definitions WHERE version_id='+
           '(SELECT catalog_version_id FROM assessment_catalog_assignments WHERE assessment_id=$1)',
           [ready.id])).rows[0].n,26);
+
+        assert.equal((await send('/assessments/default-controls')).status,401);
+        assert.equal((await send('/assessments/default-controls','GET',cookies.none)).status,403);
+        const baselineRequest=await send('/assessments/default-controls','GET',cookies.owner);
+        assert.equal(baselineRequest.status,200);
+        const catalog=await baselineRequest.json();
+        assert.equal(catalog.catalogCode,'NUSARIKSA_TI_REFERENSI');
+        assert.equal(catalog.officialInstrument,false);
+        assert.equal(catalog.controls.length,26);
+        assert.ok(catalog.controls.every(c=>c.sourceDocument==='POJK Nomor 34 Tahun 2025'
+          &&typeof c.sourceSection==='string'&&c.sourceSection.length>0));
+        const chosen=catalog.controls.slice(0,2).map(x=>x.id);
+        assert.equal((await send('/assessments/start-default','POST',cookies.owner,{
+          ...payload,title:'Asesmen Pilihan Kosong',controlIds:[],
+        })).status,400);
+        assert.equal((await send('/assessments/start-default','POST',cookies.owner,{
+          ...payload,title:'Asesmen Pilihan Duplikat',controlIds:[chosen[0],chosen[0]],
+        })).status,400);
+        const custom=await send('/assessments/start-default','POST',cookies.owner,{
+          ...payload,title:'Asesmen Pilih Kontrol',controlIds:chosen,
+        });
+        assert.equal(custom.status,201);
+        const selectedAssessment=await custom.json();
+        assert.equal(selectedAssessment.selectedControlCount,2);
+        assert.equal(selectedAssessment.status,'in_progress');
+        const scope=await db.query(
+          'SELECT s.catalog_version_id,count(x.control_id)::int AS total '+
+          'FROM assessment_control_scopes s '+
+          'JOIN assessment_control_scope_items x ON x.assessment_id=s.assessment_id '+
+          'WHERE s.assessment_id=$1 GROUP BY s.catalog_version_id',[selectedAssessment.id]);
+        assert.equal(scope.rows[0].total,2);
+        const scopedChecklist=await getChecklist(db,viewer,selectedAssessment.id);
+        assert.deepEqual(scopedChecklist.controls.map(c=>c.id),chosen);
+        const scopedResults=await listAssessmentResults(db,viewer,selectedAssessment.id);
+        assert.equal(scopedResults.summary.total,2);
+        assert.equal(scopedResults.summary.notAssessed,2);
+        await assert.rejects(writeAssessmentResultInTransaction(db,{
+          actorId:owner,assessmentId:selectedAssessment.id,controlId:catalog.controls[2].id,
+          rating:'compliant',note:'',expectedRevision:0,
+        }),error=>error.status===404);
+        await assert.rejects(submitAssessmentInTransaction(db,{
+          actorId:owner,assessmentId:selectedAssessment.id,
+        }),error=>error.status===409);
+        for(const id of chosen)await writeAssessmentResultInTransaction(db,{
+          actorId:owner,assessmentId:selectedAssessment.id,controlId:id,
+          rating:'compliant',note:'',expectedRevision:0,
+        });
+        const submitted=await submitAssessmentInTransaction(db,{
+          actorId:owner,assessmentId:selectedAssessment.id,
+        });
+        assert.equal(submitted.status,'submitted');
+        assert.equal((await getChecklist(db,viewer,ready.id)).controls.length,26);
+        assert.equal((await db.query(
+          'SELECT count(*)::int AS n FROM assessment_control_scopes WHERE assessment_id=$1',
+          [ready.id])).rows[0].n,0);
+
+        const manualResponse=await send('/assessments','POST',cookies.owner,{
+          ...payload,title:'Asesmen Draft Dengan Checklist',
+        });
+        assert.equal(manualResponse.status,201);
+        const manual=await manualResponse.json();
+        await assignCatalogInTransaction(db,{
+          actorId:owner,assessmentId:manual.id,versionId:catalog.catalogVersionId,
+        });
+        const manualStart=await send('/assessments/'+manual.id+'/start','POST',
+          cookies.owner,{controlIds:[chosen[1]]});
+        assert.equal(manualStart.status,200);
+        assert.equal((await getChecklist(db,viewer,manual.id)).controls.length,1);
+        assert.equal((await getChecklist(db,viewer,manual.id)).controls[0].id,chosen[1]);
+        assert.equal((await send('/assessments/'+manual.id+'/start','POST',
+          cookies.owner,{controlIds:[chosen[0]]})).status,409);
         const created = await send('/assessments', 'POST', cookies.owner, payload);
         assert.equal(created.status, 201);
         const assessment = await created.json();

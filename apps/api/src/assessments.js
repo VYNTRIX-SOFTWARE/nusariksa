@@ -1,5 +1,6 @@
 import { userHasPermission } from './authorization.js';
 import {assignCatalogInTransaction} from './control-catalogs.js';
+import {configureAssessmentScopeInTransaction,validateSelectedControlIds} from './assessment-control-scopes.js';
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const DATE_PATTERN = /^(\d{4})-(\d{2})-(\d{2})$/;
@@ -88,11 +89,12 @@ export async function getAssessment(db, actorId, id) {
   return result.rows[0];
 }
 
-export async function startAssessmentInTransaction(db, { actorId, id }) {
+export async function startAssessmentInTransaction(db, { actorId, id, controlIds }) {
   if (!validId(id)) throw new AssessmentError(400, 'Invalid assessment ID');
   await requirePermission(db, actorId, 'assessments:write');
   const found = await db.query(
-    'SELECT a.owner_user_id, a.status FROM assessments a ' +
+    'SELECT a.owner_user_id, a.status, aa.catalog_version_id FROM assessments a ' +
+    'LEFT JOIN assessment_catalog_assignments aa ON aa.assessment_id=a.id '+
     'JOIN users actor ON actor.institution_id = a.institution_id AND actor.id = $1 ' +
     'WHERE a.id = $2 FOR UPDATE OF a',
     [actorId, id],
@@ -103,6 +105,13 @@ export async function startAssessmentInTransaction(db, { actorId, id }) {
   }
   if (found.rows[0].status !== 'draft') {
     throw new AssessmentError(409, 'Assessment has already started');
+  }
+  if(controlIds!==undefined){
+    if(!found.rows[0].catalog_version_id)
+      throw new AssessmentError(409,'Pasang katalog terbit sebelum memilih kontrol.');
+    await configureAssessmentScopeInTransaction(db,{
+      actorId,assessmentId:id,versionId:found.rows[0].catalog_version_id,controlIds,
+    });
   }
   await db.query(
     "UPDATE assessments SET status = 'in_progress', started_at = now() WHERE id = $1",
@@ -116,20 +125,22 @@ export async function startAssessmentInTransaction(db, { actorId, id }) {
 }
 
 /** Atomic first-use MVP flow: create + attach the immutable built-in v1 + start. */
-export async function createReadyAssessmentInTransaction(db,{actorId,...input}){
+export async function createReadyAssessmentInTransaction(db,{actorId,controlIds,...input}){
   // Authenticate/authorize before reading tenant-specific template metadata.
   await requirePermission(db,actorId,'assessments:write');
   const data=validateAssessment(input);
+  if(controlIds!==undefined)validateSelectedControlIds(controlIds);
   const baseline=await db.query(
     "SELECT v.id FROM control_catalog_versions v "+
     "JOIN control_catalogs c ON c.id=v.catalog_id "+
     "JOIN users actor ON actor.institution_id=c.institution_id AND actor.id=$1 "+
     "WHERE c.origin='builtin' AND c.code='NUSARIKSA_TI_REFERENSI' "+
-    "AND v.version=1 AND v.status='published' "+
-    "AND (SELECT count(*) FROM control_definitions d WHERE d.version_id=v.id)=26 "+
+    "AND v.status='published' "+
+    "AND (SELECT count(*) FROM control_definitions d WHERE d.version_id=v.id) BETWEEN 1 AND 200 "+
     "AND (SELECT count(*) FROM control_definitions d WHERE d.version_id=v.id "+
-    "AND d.source_document='POJK Nomor 34 Tahun 2025' AND d.source_section IS NOT NULL)=26 "+
-    "ORDER BY v.id LIMIT 1",
+    "AND d.source_document IS NOT NULL AND d.source_section IS NOT NULL)="+
+    "(SELECT count(*) FROM control_definitions d WHERE d.version_id=v.id) "+
+    "ORDER BY v.version DESC LIMIT 1",
     [actorId],
   );
   if(baseline.rowCount!==1){
@@ -139,8 +150,8 @@ export async function createReadyAssessmentInTransaction(db,{actorId,...input}){
   await assignCatalogInTransaction(db,{
     actorId,assessmentId:assessment.id,versionId:baseline.rows[0].id,
   });
-  const started=await startAssessmentInTransaction(db,{actorId,id:assessment.id});
-  return {...started,builtinCatalogAttached:true};
+  const started=await startAssessmentInTransaction(db,{actorId,id:assessment.id,controlIds});
+  return {...started,builtinCatalogAttached:true,...(controlIds===undefined?{}:{selectedControlCount:controlIds.length})};
 }
 
 async function transaction(pool, callback) {

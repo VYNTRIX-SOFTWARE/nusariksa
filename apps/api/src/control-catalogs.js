@@ -292,9 +292,13 @@ export async function getChecklist(db, actorId, assessmentId) {
   );
   if (assignment.rowCount !== 1) return { catalogVersion: null, controls: [] };
   const result = await db.query(
-    'SELECT id, control_code, title, description, source_document, source_section, position ' +
-    'FROM control_definitions WHERE version_id = $1 ORDER BY position',
-    [assignment.rows[0].id],
+    'SELECT c.id, c.control_code, c.title, c.description, c.source_document, ' +
+    'c.source_section, c.position FROM control_definitions c ' +
+    'WHERE c.version_id = $2 AND ( ' +
+    'NOT EXISTS(SELECT 1 FROM assessment_control_scopes s WHERE s.assessment_id=$1) ' +
+    'OR EXISTS(SELECT 1 FROM assessment_control_scope_items x ' +
+    'WHERE x.assessment_id=$1 AND x.control_id=c.id)) ORDER BY c.position',
+    [assessmentId,assignment.rows[0].id],
   );
   return { catalogVersion: assignment.rows[0], controls: result.rows };
 }

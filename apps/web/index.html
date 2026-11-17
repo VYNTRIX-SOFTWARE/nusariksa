@@ -1822,6 +1822,18 @@
                 <button id="workspace-attach" type="button" class="button button-outline">Pasang katalog</button>
                 <p id="workspace-default-catalog-hint" class="workspace-help" aria-live="polite">Katalog internal bawaan akan dipilih jika tersedia.</p>
               </div>
+              <fieldset id="workspace-control-picker" class="assessment-control-picker" hidden>
+                <legend>Atur cakupan asesmen</legend>
+                <p class="workspace-help">Centang kontrol yang akan dinilai. Setelah asesmen dimulai, cakupan pilihan dikunci untuk menjaga jejak audit.</p>
+                <label for="workspace-control-search">Cari kontrol</label>
+                <input id="workspace-control-search" type="search" placeholder="Nama, kode atau rujukan kontrol">
+                <div class="assessment-control-picker-tools">
+                  <span id="workspace-control-selected-count" role="status" aria-live="polite">Belum ada kontrol dipilih</span>
+                  <button id="workspace-control-select-all" type="button" class="button button-outline">Centang yang terlihat</button>
+                  <button id="workspace-control-clear-all" type="button" class="button button-outline">Kosongkan yang terlihat</button>
+                </div>
+                <div id="workspace-control-picker-list" class="assessment-control-picker-list" role="group" aria-label="Daftar kontrol yang tersedia"></div>
+              </fieldset>
               <button id="workspace-start" type="button" class="button button-primary workspace-primary" hidden>Mulai asesmen</button>
             </div>
 
@@ -1996,8 +2008,21 @@
       <label class="assessment-quick-start-choice" for="assessment-quick-start">
         <input id="assessment-quick-start" type="checkbox" checked>
         <span><strong>Gunakan katalog TI bawaan dan langsung mulai</strong>
-          <small>26 kontrol TI internal dengan panduan POJK 34/2025. Tidak perlu pasang katalog manual. Penilaian dan bukti tetap diisi petugas.</small></span>
+          <small>Pilih dari kontrol TI yang saat ini tersedia dengan rujukan POJK 34/2025. Daftar yang dicentang akan menjadi cakupan asesmen.</small></span>
       </label>
+      <fieldset id="assessment-create-picker" class="assessment-control-picker">
+        <legend>Pilih kontrol yang akan dinilai</legend>
+        <p class="workspace-help">Centang kontrol yang diperlukan. Kontrol yang tidak dipilih tidak masuk perhitungan kelengkapan atau laporan asesmen ini. Daftar dikunci saat asesmen dimulai.</p>
+        <label for="assessment-create-control-search">Cari kontrol, nama, atau pasal acuan</label>
+        <input id="assessment-create-control-search" type="search" placeholder="Contoh: akses, risiko, pencadangan">
+        <div class="assessment-control-picker-tools">
+          <span id="assessment-create-control-count" role="status" aria-live="polite">Memuat katalog…</span>
+          <button id="assessment-create-select-all" class="button button-outline" type="button">Centang yang terlihat</button>
+          <button id="assessment-create-clear-all" class="button button-outline" type="button">Kosongkan yang terlihat</button>
+        </div>
+        <div id="assessment-create-control-list" class="assessment-control-picker-list" role="group" aria-label="Pilih kontrol asesmen"></div>
+        <p id="assessment-create-control-status" class="workspace-help" role="status" aria-live="polite"></p>
+      </fieldset>
       <p id="assessment-quick-start-hint" class="workspace-help">Asesmen langsung berstatus Dikerjakan. Katalog bawaan v1 terkunci demi jejak audit; klik Simpan &amp; mulai untuk mengonfirmasi.</p>
       <p id="assessment-create-error" class="form-error" role="alert" hidden></p>
       <div class="create-actions"><button id="assessment-create-cancel" type="button" class="button button-outline">Batal</button>
