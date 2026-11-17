@@ -1280,3 +1280,23 @@ h1,h2,p{margin-top:0}h1,h2{letter-spacing:-.027em}
 #ma-next-unassessed{margin:10px 0 13px}
 @media(max-width:980px){.pdk-user-journey{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:560px){.pdk-user-journey{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* Assessment-specific control scope picker. Hidden search hits do not clear selections. */
+.assessment-control-picker{border:1px solid #DFE6F2;border-radius:12px;padding:14px;margin:12px 0;background:#F9FBFF;min-width:0}
+.assessment-control-picker legend{font-weight:700;color:#273653;padding:0 6px}
+.assessment-control-picker>label{display:block;font-size:13px;margin:8px 0 5px}
+.assessment-control-picker>input{width:100%;box-sizing:border-box}
+.assessment-control-picker-tools{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:10px 0}
+.assessment-control-picker-tools>span{margin-right:auto;font-size:13px;color:#43536B}
+.assessment-control-picker-list{max-height:270px;overflow:auto;overscroll-behavior:contain;
+  border:1px solid #E3E8F1;border-radius:10px;background:#FFF;padding:4px}
+.assessment-control-choice{display:flex;align-items:flex-start;gap:10px;padding:10px;
+  border-bottom:1px solid #F0F2F7;cursor:pointer}
+.assessment-control-choice:last-child{border-bottom:0}
+.assessment-control-choice:hover{background:#F6F8FE}
+.assessment-control-choice[hidden]{display:none}
+.assessment-control-choice input{flex:0 0 auto;margin-top:4px}
+.assessment-control-choice span{min-width:0;display:grid;gap:4px}
+.assessment-control-choice strong{font-size:13px;line-height:1.4;overflow-wrap:anywhere}
+.assessment-control-choice small{color:#64748B;font-size:11px;line-height:1.4;overflow-wrap:anywhere}
+@media(max-width:570px){.assessment-control-picker-tools .button{flex:1 1 100%}}

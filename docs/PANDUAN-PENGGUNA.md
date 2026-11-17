@@ -294,3 +294,11 @@ Saat pengajuan hasil dan pengambilan keputusan pemeriksa, aplikasi menampilkan d
 Pada **Persiapan Penilaian Keamanan Siber**, ikuti tahapan yang ditampilkan. Ketika memilih peringkat sementara, aplikasi hanya mengisi **draf kalimat dengan bagian kosong**. Ganti bagian dalam tanda kurung siku dengan kondisi nyata serta dokumen/hasil pemeriksaan yang relevan. Draf yang belum dilengkapi tidak dapat disimpan sebagai justifikasi yang sah. Keputusan dan hasil PADK tetap merupakan kertas kerja internal, bukan skor regulatori resmi.
 
 Pada **Penilaian Maturitas**, tombol **Buka domain berikutnya yang belum dinilai** membantu menyelesaikan pekerjaan domain demi domain. Level dipilih berdasarkan kondisi aktual dan kriteria rubrik yang diterbitkan.
+
+## Memilih sendiri kontrol asesmen
+
+Saat membuat asesmen TI melalui **Gunakan katalog TI bawaan dan langsung mulai**, aplikasi memuat pustaka kontrol berreferensi. Semua kontrol awalnya dicentang, tetapi petugas dapat mencari, memilih, atau menghapus centang untuk menentukan **kontrol yang relevan**. Minimal satu kontrol harus dipilih. Tombol **Centang yang terlihat** dan **Kosongkan yang terlihat** hanya memengaruhi hasil pencarian yang tampak; pilihan lain tidak diubah.
+
+Untuk asesmen **Draft** yang dibuat secara manual, pasang katalog terpublikasi terlebih dahulu, lalu centang kontrol pada bagian **Atur cakupan asesmen** sebelum menekan **Mulai asesmen**. Pilihan kontrol disimpan sebagai snapshot dan dikunci saat asesmen dimulai. Hanya kontrol terpilih yang muncul dalam daftar pengisian, syarat pengajuan pemeriksaan, dan laporan. Asesmen yang dibuat sebelum fitur ini tetap menggunakan seluruh versi katalog awalnya sehingga data lama tidak berubah.
+
+Katalog bawaan berreferensi saat ini berisi **26 kontrol operasional** dengan rujukan POJK 34/2025; angka **200** adalah **kapasitas maksimum per versi**, bukan klaim bahwa telah tersedia 200 kontrol atau bahwa semua kontrol merupakan salinan ketentuan resmi OJK. Katalog lama tidak dihapus; hanya tidak ditawarkan sebagai pilihan bawaan pada asesmen baru. Pembatasan cakupan merupakan keputusan internal lembaga dan **tidak menghapus kewajiban kepatuhan yang berlaku**.

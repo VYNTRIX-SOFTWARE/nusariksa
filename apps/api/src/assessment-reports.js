@@ -72,7 +72,10 @@ export async function buildAssessmentReportInTransaction(db, { actorId, assessme
       'FROM control_definitions c ' +
       'LEFT JOIN assessment_control_results r ON r.assessment_id = $1 ' +
       'AND r.control_id = c.id AND r.catalog_version_id = c.version_id ' +
-      'WHERE c.version_id = $2 ORDER BY c.position',
+      'WHERE c.version_id = $2 AND ('+
+      'NOT EXISTS(SELECT 1 FROM assessment_control_scopes s WHERE s.assessment_id=$1) '+
+      'OR EXISTS(SELECT 1 FROM assessment_control_scope_items x '+
+      'WHERE x.assessment_id=$1 AND x.control_id=c.id)) ORDER BY c.position',
       [assessmentId, a.catalog_version_id],
     );
     controls = rows.rows;

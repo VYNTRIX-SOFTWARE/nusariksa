@@ -61,7 +61,10 @@ export async function listAssessmentResults(db, actorId, assessmentId) {
     'FROM control_definitions c ' +
     'LEFT JOIN assessment_control_results r ON r.control_id = c.id ' +
     'AND r.assessment_id = $1 AND r.catalog_version_id = c.version_id ' +
-    'WHERE c.version_id = $2 ORDER BY c.position',
+    'WHERE c.version_id = $2 AND ('+
+    'NOT EXISTS(SELECT 1 FROM assessment_control_scopes s WHERE s.assessment_id=$1) '+
+    'OR EXISTS(SELECT 1 FROM assessment_control_scope_items x '+
+    'WHERE x.assessment_id=$1 AND x.control_id=c.id)) ORDER BY c.position',
     [assessmentId, assessment.catalog_version_id],
   );
   const controls = results.rows;
@@ -94,8 +97,11 @@ export async function writeAssessmentResultInTransaction(db, {
   }
 
   const control = await db.query(
-    'SELECT 1 FROM control_definitions WHERE id = $1 AND version_id = $2',
-    [controlId, assessment.catalog_version_id],
+    'SELECT 1 FROM control_definitions WHERE id = $1 AND version_id = $2 '+
+    'AND (NOT EXISTS(SELECT 1 FROM assessment_control_scopes WHERE assessment_id=$3) '+
+    'OR EXISTS(SELECT 1 FROM assessment_control_scope_items '+
+    'WHERE assessment_id=$3 AND control_id=$1))',
+    [controlId, assessment.catalog_version_id,assessmentId],
   );
   if (control.rowCount !== 1) throw new AssessmentResultError(404, 'Control not in assessment');
 
@@ -137,8 +143,11 @@ export async function resultHistory(db, actorId, assessmentId, controlId) {
     throw new AssessmentResultError(404, 'Control not in assessment');
   }
   const control = await db.query(
-    'SELECT 1 FROM control_definitions WHERE id = $1 AND version_id = $2',
-    [controlId, assessment.catalog_version_id],
+    'SELECT 1 FROM control_definitions WHERE id = $1 AND version_id = $2 '+
+    'AND (NOT EXISTS(SELECT 1 FROM assessment_control_scopes WHERE assessment_id=$3) '+
+    'OR EXISTS(SELECT 1 FROM assessment_control_scope_items '+
+    'WHERE assessment_id=$3 AND control_id=$1))',
+    [controlId, assessment.catalog_version_id,assessmentId],
   );
   if (control.rowCount !== 1) {
     throw new AssessmentResultError(404, 'Control not in assessment');

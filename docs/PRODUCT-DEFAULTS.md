@@ -53,3 +53,9 @@ Dua alur yang sudah memiliki ekspor PDF internal menggunakan komponen layout ber
 - Metode agregasi `minimum` hanya menghitung ketika semua domain dinilai. Kriteria memandu penilaian manusia, bukan kesimpulan audit otomatis.
 - Form penilaian memilih model serta versi published secara otomatis, sementara pilihan metodologi lain tetap tersedia. Judul dan periode disarankan dan dapat dikoreksi.
 - UAT manual pada browser Windows dan pemeriksaan alur maker-checker tetap diperlukan sebelum public release.
+
+## Cakupan kontrol berdasarkan pilihan asesmen
+
+Penilaian baru dapat menggunakan snapshot kontrol yang dipilih maker dari versi katalog terpublikasi, sebelum asesmen dimulai. Snapshot bersifat immutable. Pemilihan 1–200 kontrol harus berasal dari katalog terpasang; kontrol di luar pilihan ditolak pada penyimpanan hasil maupun bukti. Daftar, laporan, dan syarat lengkap untuk submit mengikuti snapshot yang sama. Absennya snapshot pada asesmen lama berarti seluruh kontrol katalog versi terpasang seperti semula.
+
+Pustaka berreferensi NusaRiksa saat ini mencakup 26 kontrol interpretasi operasional dengan sumber POJK 34/2025, tidak diklaim sebagai seluruh kewajiban regulator. Nilai 200 adalah batas kapasitas teknis. Template lama tetap ada untuk menjaga audit historis, tetapi tidak ditawarkan sebagai opsi bawaan kepada pengguna baru. Daftar kontrol yang dipilih tidak menggantikan pemenuhan peraturan yang relevan.

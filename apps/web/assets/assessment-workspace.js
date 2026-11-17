@@ -1,5 +1,6 @@
 import { STATUS_LABELS } from './assessment-model.js';
 import {confirmAssessmentAction} from './action-dialog.js';
+import {createControlPicker,validateControlLibrary} from './assessment-control-picker.js';
 import { createEvidenceUI } from './assessment-evidence.js';
 import {
   RATING_LABELS, canWriteAssessment, canAttachCatalog, canStartAssessment,
@@ -50,8 +51,19 @@ export function createWorkspace({
   const state={
     id:null, assessment:null, catalog:null, controls:[], selectedId:null,
     dirty:false, conflict:false, pending:false, generation:0,
+    availableControls:[],createRequest:0,
   };
   const evidence=createEvidenceUI({api,getPermissions,onAuthFailure});
+  const createPicker=createControlPicker({
+    root:$('assessment-create-control-list'),count:$('assessment-create-control-count'),
+    search:$('assessment-create-control-search'),
+    selectAll:$('assessment-create-select-all'),clearAll:$('assessment-create-clear-all'),
+  });
+  const workspacePicker=createControlPicker({
+    root:$('workspace-control-picker-list'),count:$('workspace-control-selected-count'),
+    search:$('workspace-control-search'),
+    selectAll:$('workspace-control-select-all'),clearAll:$('workspace-control-clear-all'),
+  });
   const allowed=()=>canWriteAssessment(state.assessment,getUserId(),getPermissions());
   const editable=()=>canEditResult(state.assessment,getUserId(),getPermissions(),state.catalog);
   const selected=()=>state.controls.find(x=>x.id===state.selectedId)??null;
@@ -70,7 +82,7 @@ export function createWorkspace({
     state.id=null;state.dirty=false;state.conflict=false;state.selectedId=null;
     ['workspace-observed-condition','workspace-observed-evidence','workspace-observed-followup']
       .forEach(id=>{$(id).value='';});
-    evidence.clear();
+    evidence.clear();workspacePicker.reset();createPicker.reset();state.availableControls=[];
   }
   function renderBusy(isBusy){
     state.pending=isBusy;
@@ -307,7 +319,8 @@ export function createWorkspace({
     select.add(placeholder);select.disabled=true;
     try{
       const listing=await api('/catalogs');
-      const catalogs=Array.isArray(listing.catalogs)?listing.catalogs:[];
+      const catalogs=Array.isArray(listing.catalogs)?listing.catalogs.filter(c=>
+        !(c.origin==='builtin'&&c.code==='NUSARIKSA_BPR_INTERNAL')):[];
       const versions=await Promise.all(catalogs.map(async catalog=>{
         const response=await api('/catalogs/'+encodeURIComponent(catalog.id)+'/versions');
         return (Array.isArray(response.versions)?response.versions:[])
@@ -346,6 +359,8 @@ export function createWorkspace({
     $('workspace-setup').hidden=a.status!=='draft';
     $('workspace-catalog-controls').hidden=!attach;
     $('workspace-start').hidden=!start;
+    $('workspace-control-picker').hidden=!start;
+    if(start)workspacePicker.load(state.availableControls);else workspacePicker.reset();
     if(a.status==='draft'){
       message('workspace-setup-note',!allowed()
         ?'Hanya pemilik asesmen yang memiliki izin tulis yang dapat menyiapkan asesmen.'
@@ -372,6 +387,7 @@ export function createWorkspace({
       state.assessment=assessment;
       state.catalog=checklist.catalogVersion??null;
       state.controls=combineControls(checklist,results);
+      state.availableControls=Array.isArray(checklist.controls)?checklist.controls:[];
       state.selectedId=state.controls.some(x=>x.id===oldSelected)
         ?oldSelected:state.controls[0]?.id??null;
       message('workspace-title',assessment.title);
@@ -392,6 +408,7 @@ export function createWorkspace({
   }
   async function open(id){
     state.id=id;state.assessment=null;state.catalog=null;state.controls=[];
+    state.availableControls=[];workspacePicker.reset();
     state.selectedId=null;state.dirty=false;state.conflict=false;
     evidence.clear();
     $('workspace-loading').textContent='Memuat asesmen dan checklist dari server…';
@@ -500,8 +517,9 @@ export function createWorkspace({
     renderBusy(true);
     try{
       const quick=$('assessment-quick-start').checked;
+      const chosen=quick?createPicker.selectedIds():null;
       const created=await api(quick?'/assessments/start-default':'/assessments',
-        {method:'POST',body:input});
+        {method:'POST',body:quick?{...input,controlIds:chosen}:input});
       if(quick&&(created.status!=='in_progress'||created.builtinCatalogAttached!==true))
         throw new TypeError('Template bawaan belum terpasang dengan benar. Muat ulang daftar asesmen.');
       $('assessment-create-dialog').close();
@@ -509,14 +527,15 @@ export function createWorkspace({
       await onCreated(created.id);
     }catch(error){
       if(onAuthFailure(error))return;
-      err.hidden=false;err.textContent=responseMessage(error);
+      err.hidden=false;err.textContent=error instanceof TypeError?error.message:responseMessage(error);
     }finally{renderBusy(false);}
   }
   $('assessment-quick-start').addEventListener('change',()=>{
+    $('assessment-create-picker').hidden=!$('assessment-quick-start').checked;
     const quick=$('assessment-quick-start').checked;
     $('assessment-create-submit').textContent=quick?'Buat & mulai asesmen TI':'Simpan asesmen sebagai draft';
     $('assessment-quick-start-hint').textContent=quick
-      ?'26 kontrol bawaan langsung terpasang dan asesmen mulai dikerjakan. Pilihan template tidak bisa diganti setelah disimpan.'
+      ?'Centang kontrol yang diperlukan. Setelah asesmen dimulai, cakupan pilihan tidak dapat diganti.'
       :'Mode khusus: asesmen dibuat sebagai Draft. Pilih dan pasang katalog lain secara manual di ruang kerja.';
   });
   $('assessment-create').addEventListener('click',()=>{
@@ -528,6 +547,27 @@ export function createWorkspace({
     $('assessment-create-end').value=year+'-12-31';
     $('assessment-quick-start').checked=true;
     $('assessment-quick-start').dispatchEvent(new Event('change'));
+    createPicker.reset();
+    $('assessment-create-submit').disabled=true;
+    $('assessment-create-control-status').textContent='Memuat pustaka kontrol…';
+    const request=++state.createRequest;
+    void api('/assessments/default-controls').then(data=>{
+      if(request!==state.createRequest)return;
+      const controls=validateControlLibrary(data);
+      createPicker.load(controls);
+      $('assessment-create-control-status').textContent=
+        controls.length+' kontrol dengan referensi operasional tersedia. '+
+        'Daftar ini bukan inventaris seluruh pasal atau instrumen resmi regulator.';
+      $('assessment-create-submit').disabled=false;
+    }).catch(error=>{
+      if(request!==state.createRequest)return;
+      if(onAuthFailure(error))return;
+      $('assessment-create-control-status').textContent='Pustaka kontrol belum tersedia. '+
+        'Gunakan mode draft manual atau hubungi administrator.';
+      $('assessment-create-submit').disabled=false;
+      $('assessment-quick-start').checked=false;
+      $('assessment-quick-start').dispatchEvent(new Event('change'));
+    });
     $('assessment-create-dialog').showModal();
     $('assessment-create-name').focus();
   });
@@ -597,7 +637,10 @@ export function createWorkspace({
   $('workspace-start').addEventListener('click',()=>{
     if(!canStartAssessment(state.assessment,getUserId(),getPermissions(),state.catalog))return;
     if(!window.confirm('Mulai asesmen ini? Status berubah menjadi Dikerjakan.'))return;
-    void runAction('/start');
+    let controlIds;
+    try{controlIds=workspacePicker.selectedIds();}
+    catch(error){showMessage(error.message,'error');return;}
+    void runAction('/start',{controlIds});
   });
 
   $('workspace-submit-review').addEventListener('click',async()=>{
