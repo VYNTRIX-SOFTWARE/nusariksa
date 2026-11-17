@@ -932,6 +932,9 @@ async function runBrowser(base,db,fixture){
       'PADK draft status loaded');
     await until("document.getElementById('pdk-score-status').textContent.includes('Terisi 0 dari 80')",
       'PADK zero-rating preview loaded');
+    await until("document.getElementById('pdk-evidence-coverage-count').textContent.includes('0 dari 80')",
+      'PADK evidence coverage initially empty');
+    assert.equal(await evalJs("document.getElementById('pdk-evidence-coverage-disclosure').hidden"),false);
     assert.equal(await evalJs("document.getElementById('pdk-score-composite').textContent.includes('belum dihitung')"),true);
     await evalJs("document.getElementById('pdk-notes').value='Inventarisasi perangkat dan pengelolaan risiko internal.';"+
       "document.getElementById('pdk-evidence-plan').value='Siapkan dokumen kebijakan dan log pemantauan.';"+
@@ -986,6 +989,9 @@ async function runBrowser(base,db,fixture){
       "document.getElementById('pdk-evidence-upload').requestSubmit();return true;})()");
     await until("document.getElementById('pdk-evidence-list').textContent.includes('bukti-padk-browser.pdf')",
       'PADK evidence uploaded and listed through browser');
+    await until("document.getElementById('pdk-evidence-coverage-count').textContent.includes('1 dari 80')",
+      'PADK evidence coverage updated after upload');
+    assert.equal(await evalJs("document.getElementById('pdk-evidence-coverage-count').textContent.includes('1 dokumen')"),true);
     const savedEvidence=await db.query(
       "SELECT size_bytes,nonce,auth_tag,ciphertext FROM padk_indicator_evidence",
     );
@@ -1132,6 +1138,16 @@ async function runBrowser(base,db,fixture){
     await until("document.getElementById('pdk-review-state').textContent.includes('Menunggu pemeriksa')",
       'Reviewer opens submitted PADK draft directly from queue');
     assert.equal(await evalJs("document.getElementById('pdk-review-form').hidden"),false);
+    await until("document.getElementById('pdk-evidence-coverage-count').textContent.includes('1 dari 80')",
+      'PADK reviewer can inspect evidence coverage');
+    assert.equal(await evalJs("document.getElementById('pdk-evidence-coverage-disclosure').hidden"),false);
+    await evalJs("document.getElementById('pdk-evidence-coverage-disclosure').open=true;"+
+      "document.getElementById('pdk-evidence-coverage-select').value='2';"+
+      "document.getElementById('pdk-evidence-coverage-select').dispatchEvent(new Event('change',{bubbles:true}));"+
+      "document.getElementById('pdk-evidence-coverage-open').click()");
+    assert.equal(await evalJs("document.getElementById('pdk-indicator-list').value"),'2');
+    assert.equal(await evalJs("document.getElementById('pdk-indicator-rank').disabled"),true);
+    assert.equal(await evalJs("document.getElementById('pdk-review-disclosure').open"),false);
     await until("!document.getElementById('padk-crosswalk-menu').hidden",'regulatory QA menu');
     await evalJs("document.getElementById('padk-crosswalk-menu').click()");
     await until("!document.getElementById('page-padk-crosswalk').hidden",'regulatory QA page');

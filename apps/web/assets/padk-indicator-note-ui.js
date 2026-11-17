@@ -91,10 +91,12 @@ export function getPadkIndicatorGuidance({rank,justification,dirty,revision,edit
   else nextAction='Simpan jawaban agar progres tercatat di server.';
   return {rankDone,reasonDone,saved,reasonCount,nextAction};
 }
-export function createPadkIndicatorNoteUI({api,onAuthFailure,getUserId,getPermissions,canEditDraft=()=>true,onDraftSaved=()=>{}}){
+export function createPadkIndicatorNoteUI({api,onAuthFailure,getUserId,getPermissions,
+  canEditDraft=()=>true,onDraftSaved=()=>{},onEvidenceUploaded=()=>{}}){
   const state={preparation:null,items:[],active:null,dirty:false,busy:false,loaded:false,request:0,
     search:'',filter:'all'};
-  const evidenceUI=createPadkEvidenceUI({api,onAuthFailure,getUserId,getPermissions,canEditDraft});
+  const evidenceUI=createPadkEvidenceUI({api,onAuthFailure,getUserId,getPermissions,
+    canEditDraft,onEvidenceUploaded});
   const owner=()=>Boolean(state.preparation
     &&state.preparation.ownerUserId===getUserId()
     &&getPermissions().includes('assessments:write')&&canEditDraft());
@@ -423,5 +425,13 @@ export function createPadkIndicatorNoteUI({api,onAuthFailure,getUserId,getPermis
     navigate(next);
     return state.active?.number===next;
   }
-  return {load,clear,sync:render,isDirty:()=>state.dirty,getReadiness,goToFirstIncomplete};
+  function openNumber(number){
+    if(!state.preparation||!state.loaded||state.busy||state.dirty
+      ||!Number.isInteger(number)||number<1||number>state.items.length)
+      return false;
+    selectIndicator(number);
+    return state.active?.number===number;
+  }
+  return {load,clear,sync:render,isDirty:()=>state.dirty,getReadiness,
+    goToFirstIncomplete,openNumber};
 }

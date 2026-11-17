@@ -1,5 +1,6 @@
 import {createPadkIndicatorNoteUI} from './padk-indicator-note-ui.js';
 import {createPadkScorePreviewUI} from './padk-score-preview-ui.js';
+import {createPadkEvidenceCoverageUI} from './padk-evidence-coverage-ui.js';
 
 const $=id=>document.getElementById(id);
 const ENDPOINT='/regulatory/padk43/cyber/preparations';
@@ -112,6 +113,20 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
       if(state.detail)void previewUI.load(state.detail);
       reviewMessage('');render();
     },
+    onEvidenceUploaded:()=>{
+      if(state.detail)void evidenceCoverageUI.reload();
+    },
+  });
+  const evidenceCoverageUI=createPadkEvidenceCoverageUI({
+    api,onAuthFailure,getPermissions,
+    onOpenIndicator:number=>{
+      if(state.dirty||indicatorUI.isDirty()||!state.detail)return false;
+      if(!indicatorUI.openNumber(number))return false;
+      $('pdk-review-disclosure').open=false;
+      $('pdk-indicator-heading').focus({preventScroll:true});
+      $('pdk-indicator-heading').scrollIntoView({block:'start',behavior:'smooth'});
+      return true;
+    },
   });
   const permitted=()=>getPermissions().includes('assessments:read');
   const writable=()=>getPermissions().includes('assessments:write');
@@ -135,7 +150,7 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
     $('pdk-review-queue-list').replaceChildren();
     for(const id of ['pdk-review-queue-disclosure','pdk-report-disclosure',
       'pdk-review-disclosure','pdk-preparation-history-disclosure'])$(id).open=false;
-    indicatorUI.clear();previewUI.clear();
+    indicatorUI.clear();previewUI.clear();evidenceCoverageUI.clear();
     $('pdk-draft-review-panel').hidden=true;
     $('pdk-review-form').reset();
     $('pdk-review-events').replaceChildren();
@@ -147,7 +162,7 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
     render();
   }
   function render(){
-    indicatorUI.sync();
+    indicatorUI.sync();evidenceCoverageUI.sync();
     const review=$('pdk-draft-review-panel'),workflow=state.workflow;
     review.hidden=!state.detail;
     const phase=workflow?.status??'loading';
@@ -260,7 +275,7 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
       state.items=data.preparations.map(validatePreparationResponse);
       state.loaded=true;
       state.detail=null;state.workflow=null;state.dirty=false;
-      indicatorUI.clear();previewUI.clear();$('pdk-note-form').reset();
+      indicatorUI.clear();previewUI.clear();evidenceCoverageUI.clear();$('pdk-note-form').reset();
       render();
       message('');
       if(request!==state.request)return;
@@ -293,7 +308,7 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
   async function open(id,{focusWorkspace=false}={}){
     if(!UUID.test(id))return;
     const request=++state.request;state.busy=true;state.detail=null;state.workflow=null;state.dirty=false;
-    indicatorUI.clear();previewUI.clear();
+    indicatorUI.clear();previewUI.clear();evidenceCoverageUI.clear();
     for(const id of ['pdk-report-disclosure','pdk-review-disclosure',
       'pdk-preparation-history-disclosure'])$(id).open=false;
     $('pdk-note-form').reset();render();message('Memuat catatan…');
@@ -308,6 +323,7 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
       if(request!==state.request)return;
       await indicatorUI.load(data);
       if(request!==state.request)return;
+      evidenceCoverageUI.open(data);
       void previewUI.load(data);
       void history();
       if(focusWorkspace&&!$('pdk-indicator-section').hidden){
@@ -491,7 +507,8 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
   $('pdk-list').addEventListener('change',event=>{
     if(!confirmLeave()){event.target.value=state.detail?.id??'';return;}
     if(event.target.value)void open(event.target.value);
-    else{state.detail=null;state.workflow=null;state.dirty=false;indicatorUI.clear();previewUI.clear();render();}
+    else{state.detail=null;state.workflow=null;state.dirty=false;
+      indicatorUI.clear();previewUI.clear();evidenceCoverageUI.clear();render();}
   });
   for(const id of ['pdk-notes','pdk-evidence-plan']){
     $(id).addEventListener('input',()=>{

@@ -35,6 +35,7 @@ const ASSETS = new Map([
   ['/assets/padk-indicator-note-ui.js', { file: 'assets/padk-indicator-note-ui.js', type: 'text/javascript; charset=utf-8' }],
   ['/assets/padk-criteria-panel.js', { file: 'assets/padk-criteria-panel.js', type: 'text/javascript; charset=utf-8' }],
   ['/assets/padk-evidence-ui.js', { file: 'assets/padk-evidence-ui.js', type: 'text/javascript; charset=utf-8' }],
+  ['/assets/padk-evidence-coverage-ui.js', { file: 'assets/padk-evidence-coverage-ui.js', type: 'text/javascript; charset=utf-8' }],
   ['/assets/padk-crosswalk-review-ui.js', { file: 'assets/padk-crosswalk-review-ui.js', type: 'text/javascript; charset=utf-8' }],
   ['/assets/control-catalog-model.js', { file: 'assets/control-catalog-model.js', type: 'text/javascript; charset=utf-8' }],
   ['/assets/control-catalog.js', { file: 'assets/control-catalog.js', type: 'text/javascript; charset=utf-8' }],

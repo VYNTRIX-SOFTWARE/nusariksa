@@ -38,6 +38,42 @@ export async function listPadkEvidence(db,{actorId,id,number}){
   return {preparationId:id,indicatorNumber:indicator,evidence:result.rows.map(metadata),
     status:'DRAFT_EVIDENCE',regulatoryPackVerified:false};
 }
+
+/**
+ * A complete, institution-scoped picture of evidence coverage for human review.
+ * Files are optional supporting material; absence does not block draft submission.
+ * This endpoint never exposes file content, bank customer data, or an OJK score.
+ */
+export async function summarizePadkEvidence(db,{actorId,id}){
+  await authorize(db,actorId,'evidence:read');
+  const preparation=await getPadkPreparation(db,{actorId,id});
+  const totalIndicators=preparation.category===1?80:60;
+  const found=await db.query(
+    'SELECT indicator_number,count(*)::int AS file_count '+
+    'FROM padk_indicator_evidence WHERE preparation_id=$1 '+
+    'GROUP BY indicator_number ORDER BY indicator_number',[id],
+  );
+  const counts=new Map();
+  for(const row of found.rows){
+    const number=Number(row.indicator_number),count=Number(row.file_count);
+    if(!Number.isSafeInteger(number)||number<1||number>totalIndicators
+      ||!Number.isSafeInteger(count)||count<1||count>LIMIT
+      ||counts.has(number))reject(503,'Evidence coverage data is inconsistent');
+    counts.set(number,count);
+  }
+  const indicators=Array.from({length:totalIndicators},(_,index)=>({
+    number:index+1,fileCount:counts.get(index+1)??0,
+  }));
+  return {
+    preparationId:id,category:preparation.category,totalIndicators,
+    coveredIndicators:counts.size,uncoveredIndicators:totalIndicators-counts.size,
+    totalFiles:indicators.reduce((sum,x)=>sum+x.fileCount,0),
+    indicators,
+    status:'DRAFT_EVIDENCE_COVERAGE',regulatoryPackVerified:false,
+    evidenceRequiredForDraftSubmission:false,
+  };
+}
+
 export async function uploadPadkEvidenceInTransaction(db,{
   actorId,id,number,fileName,mediaType,contentBase64,key,
 }){
