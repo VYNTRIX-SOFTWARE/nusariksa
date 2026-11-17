@@ -6,12 +6,14 @@ import {configureEvidenceKeys} from './evidence-keyring.js';
 import {PadkPreparationError} from './padk-preparations.js';
 import {
   listPadkEvidence,uploadPadkEvidence,downloadPadkEvidence,
+  summarizePadkEvidence,
 } from './padk-evidence.js';
 
 const UUID='([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})';
 const BASE='/regulatory/padk43/cyber/preparations/';
 const LIST=new RegExp('^'+BASE+UUID+'/indicators/([1-9][0-9]?)/evidence$','i');
 const FILE=new RegExp('^'+BASE+UUID+'/evidence/'+UUID+'/download$','i');
+const COVERAGE=new RegExp('^'+BASE+UUID+'/evidence-coverage$','i');
 const MAX_BODY=1410000;
 const respond=(res,status,body)=>{res.writeHead(status);res.end(JSON.stringify(body));};
 async function parseUpload(req){
@@ -35,14 +37,16 @@ async function parseUpload(req){
 export function createPadkEvidenceHandler({
   db,appOrigin,evidenceKey,evidenceKeyring,evidenceActiveKeyId,
   list=listPadkEvidence,upload=uploadPadkEvidence,download=downloadPadkEvidence,
+  coverage=summarizePadkEvidence,
 }){
   const key=configureEvidenceKeys({legacyKey:evidenceKey,keysJson:evidenceKeyring,activeId:evidenceActiveKeyId});
   return async function handlePadkEvidence(req,res){
     const path=req.url??'',method=req.method;
-    const indicator=LIST.exec(path),file=FILE.exec(path);
+    const indicator=LIST.exec(path),file=FILE.exec(path),summary=COVERAGE.exec(path);
     const isList=method==='GET'&&!!indicator,isUpload=method==='POST'&&!!indicator,
-      isDownload=method==='GET'&&!!file;
-    if(!isList&&!isUpload&&!isDownload){
+      isDownload=method==='GET'&&!!file,
+      isCoverage=method==='GET'&&!!summary;
+    if(!isList&&!isUpload&&!isDownload&&!isCoverage){
       respond(res,404,{error:'Not found'});return;
     }
     if(!db||!appOrigin){respond(res,503,{error:'Unavailable'});return;}
@@ -60,6 +64,9 @@ export function createPadkEvidenceHandler({
       respond(res,503,{error:'Evidence encryption is not configured'});return;
     }
     try{
+      if(isCoverage){
+        respond(res,200,await coverage(db,{actorId:session.userId,id:summary[1]}));return;
+      }
       if(isList){
         respond(res,200,await list(db,{
           actorId:session.userId,id:indicator[1],number:indicator[2],

@@ -67,6 +67,7 @@ test('PADK actual evidence is encrypted, immutable, maker-only upload, viewer do
       const base='http://127.0.0.1:'+server.address().port;
       const prefix=URL+prep.id;
       const listPath=prefix+'/indicators/1/evidence';
+      const coveragePath=prefix+'/evidence-coverage';
       const payload={fileName:'sop-keamanan.pdf',mediaType:'application/pdf',
         contentBase64:PDF.toString('base64')};
       const send=(path,method='GET',cookie,body,origin=ORIGIN)=>fetch(base+path,{
@@ -81,6 +82,19 @@ test('PADK actual evidence is encrypted, immutable, maker-only upload, viewer do
         guest=cookies['padk-proof-guest@example.test'];
       try{
         assert.equal((await send(listPath)).status,401);
+        assert.equal((await send(coveragePath)).status,401);
+        assert.equal((await send(coveragePath,'GET',guest)).status,403);
+        assert.equal((await send(URL+'11111111-1111-4111-8111-111111111111/evidence-coverage',
+          'GET',viewer)).status,404);
+        const before=await(await send(coveragePath,'GET',viewer)).json();
+        assert.equal(before.status,'DRAFT_EVIDENCE_COVERAGE');
+        assert.equal(before.totalIndicators,60);
+        assert.equal(before.coveredIndicators,0);
+        assert.equal(before.uncoveredIndicators,60);
+        assert.equal(before.totalFiles,0);
+        assert.deepEqual(before.indicators.map(x=>x.fileCount),Array(60).fill(0));
+        assert.equal(before.evidenceRequiredForDraftSubmission,false);
+        assert.equal(before.regulatoryPackVerified,false);
         assert.equal((await send(listPath,'GET',guest)).status,403);
         assert.equal((await send(listPath,'POST',viewer,payload)).status,403);
         assert.equal((await send(listPath,'POST',other,payload)).status,403);
@@ -110,6 +124,15 @@ test('PADK actual evidence is encrypted, immutable, maker-only upload, viewer do
         assert.equal(listed.regulatoryPackVerified,false);
         assert.equal(listed.evidence[0].sha256,record.sha256);
         assert.ok(!JSON.stringify(listed).includes('ciphertext'));
+        const after=await(await send(coveragePath,'GET',viewer)).json();
+        assert.equal(after.coveredIndicators,1);
+        assert.equal(after.uncoveredIndicators,59);
+        assert.equal(after.totalFiles,1);
+        assert.deepEqual(after.indicators[0],{number:1,fileCount:1});
+        assert.deepEqual(after.indicators[1],{number:2,fileCount:0});
+        assert.equal(JSON.stringify(after).includes('sop-keamanan.pdf'),false);
+        assert.equal(JSON.stringify(after).includes('sha256'),false);
+        assert.equal(JSON.stringify(after).includes('ciphertext'),false);
         const download=prefix+'/evidence/'+record.id+'/download';
         assert.equal((await send(download,'GET',guest)).status,403);
         assert.equal((await send(URL+'11111111-1111-4111-8111-111111111111/evidence/'+

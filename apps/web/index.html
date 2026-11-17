@@ -1338,6 +1338,22 @@
               <p id="pdk-review-state" role="status" aria-live="polite"></p>
               <p id="pdk-review-readiness" class="workspace-help" role="status" aria-live="polite"></p>
               <p id="pdk-review-message" class="workspace-message" role="status" hidden></p>
+              <details id="pdk-evidence-coverage-disclosure" class="pdk-secondary-disclosure" hidden>
+                <summary>Ringkasan dokumen bukti pendukung</summary>
+                <p class="workspace-help">Lihat jumlah lampiran yang tercatat untuk setiap indikator. Lampiran tidak diwajibkan untuk mengajukan draft, dan keberadaannya bukan persetujuan hasil penilaian.</p>
+                <p id="pdk-evidence-coverage-count" class="workspace-help" aria-live="polite"></p>
+                <p id="pdk-evidence-coverage-status" class="workspace-help" role="status" aria-live="polite"></p>
+                <div class="pdk-coverage-actions">
+                  <button type="button" id="pdk-evidence-coverage-reload"
+                    class="button button-outline">Muat ulang ringkasan</button>
+                  <label for="pdk-evidence-coverage-select">Pilih indikator untuk melihat bukti</label>
+                  <select id="pdk-evidence-coverage-select">
+                    <option value="">Pilih indikator untuk diperiksa…</option>
+                  </select>
+                  <button type="button" id="pdk-evidence-coverage-open"
+                    class="button button-outline">Buka indikator terpilih</button>
+                </div>
+              </details>
               <button type="button" id="pdk-review-jump-pending"
                 class="button button-outline" hidden>Lengkapi indikator yang tertunda</button>
               <button type="button" id="pdk-review-submit" class="button button-primary" hidden>

@@ -1016,6 +1016,12 @@ h1,h2,p{margin-top:0}h1,h2{letter-spacing:-.027em}
 #pdk-evidence-disclosure>section{margin-top:13px}
 #pdk-review-disclosure{margin-top:20px}
 #pdk-review-disclosure>section{margin-top:15px}
+#pdk-evidence-coverage-disclosure{margin:12px 0;border-color:#E0E7F0}
+#pdk-evidence-coverage-count{font-weight:600;color:#253B57}
+.pdk-coverage-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:12px 0}
+.pdk-coverage-actions label{flex-basis:100%;font-size:12px;font-weight:600}
+#pdk-evidence-coverage-select{flex:1 1 220px;min-width:0}
+@media(max-width:650px){.pdk-coverage-actions .button,.pdk-coverage-actions select{width:100%;flex-basis:100%}}
 #pdk-review-queue-disclosure>section{margin-top:15px}
 #pdk-report-disclosure{margin:12px 0}
 #pdk-report-disclosure .workspace-help{margin-top:13px}

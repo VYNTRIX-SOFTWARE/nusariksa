@@ -123,3 +123,11 @@ Sebelum maker mengajukan pemeriksaan internal, halaman menampilkan jumlah indika
 Pada indikator yang sudah lengkap dan tersimpan, **Simpan & lanjut** dapat dipakai untuk langsung berpindah ke indikator berikutnya yang belum lengkap tanpa menyimpan ulang jawaban yang tidak berubah. Saat ada perubahan yang belum tersimpan, alur tetap menyimpan melalui server sebelum berpindah. Jika terjadi perubahan data dari sesi lain, muat ulang draft untuk menyinkronkan kelengkapan; server tetap memeriksa semua syarat saat pengajuan.
 
 Semua pesan kelengkapan ini hanya untuk **pemeriksaan draft internal**; tidak menjadikan penilaian sebagai hasil resmi PADK/OJK.
+
+## Ringkasan cakupan bukti saat pemeriksaan draft
+
+Pada bagian **Pemeriksaan kelengkapan draft**, petugas yang memiliki izin membaca bukti dapat membuka **Ringkasan dokumen bukti pendukung**. Aplikasi menampilkan jumlah indikator yang sudah memiliki lampiran, jumlah seluruh berkas dan rincian jumlah berkas per indikator (80 untuk Kategori 1, 60 untuk Kategori 2). Pilih satu indikator lalu gunakan **Buka indikator terpilih** untuk memeriksa bukti dan catatan yang terkait. Pemeriksa hanya dapat membaca jawaban milik maker; peringkat tetap tidak dapat diubah pada tahap review.
+
+Ringkasan dihitung di server berdasarkan lampiran yang benar-benar telah tersimpan. Berkas, nama file dan isi bukti tidak disalin ke respons ringkasan. Pengguna dapat memuat ulang setelah ada perubahan lampiran. Semua berkas aktual tetap dilindungi oleh mekanisme akses serta enkripsi yang sudah diterapkan.
+
+**Ketiadaan lampiran tidak otomatis menghalangi pengajuan draft internal.** Ringkasan hanya membantu pemeriksa mengidentifikasi bukti yang perlu ditelaah dan bukan klaim verifikasi PADK maupun jaminan kecukupan bukti.

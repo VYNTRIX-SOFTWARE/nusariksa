@@ -35,6 +35,9 @@ test('PADK preparation page and module are served with CSP',async()=>{
       'pdk-evidence-list','pdk-evidence-message',
       'pdk-draft-review-panel','pdk-review-submit','pdk-review-state',
       'pdk-review-readiness','pdk-review-jump-pending',
+      'pdk-evidence-coverage-disclosure','pdk-evidence-coverage-count',
+      'pdk-evidence-coverage-status','pdk-evidence-coverage-select',
+      'pdk-evidence-coverage-open','pdk-evidence-coverage-reload',
       'pdk-review-form','pdk-review-decision','pdk-review-note',
       'pdk-score-preview','pdk-score-status','pdk-score-domains',
       'pdk-score-composite','pdk-score-refresh',
@@ -65,6 +68,9 @@ test('PADK preparation page and module are served with CSP',async()=>{
     const module=await fetch(base+'/assets/padk-preparation-ui.js');
     assert.equal(module.status,200);
     assert.match(module.headers.get('content-security-policy'),/script-src 'self'/);
+    const coverageModule=await fetch(base+'/assets/padk-evidence-coverage-ui.js');
+    assert.equal(coverageModule.status,200);
+    assert.match(coverageModule.headers.get('content-type'),/javascript/);
     const adminModule=await fetch(base+'/assets/admin-onboarding-ui.js');
     assert.equal(adminModule.status,200);
     assert.match(adminModule.headers.get('content-type'),/javascript/);

@@ -15,7 +15,8 @@ export function validatePadkEvidenceListing(payload,id,number){
     throw new TypeError('Daftar bukti PADK tidak valid.');
   return payload.evidence;
 }
-export function createPadkEvidenceUI({api,onAuthFailure,getUserId,getPermissions,canEditDraft=()=>true}){
+export function createPadkEvidenceUI({api,onAuthFailure,getUserId,getPermissions,
+  canEditDraft=()=>true,onEvidenceUploaded=()=>{}}){
   let context=null,nonce=0,busy=false;
   const canRead=()=>Boolean(context&&getPermissions().includes('evidence:read'));
   const canWrite=()=>Boolean(canRead()&&context.noteRevision>0
@@ -96,6 +97,7 @@ export function createPadkEvidenceUI({api,onAuthFailure,getUserId,getPermissions
         fileName:file.name,mediaType:file.type,contentBase64,
       }});
       if(generation!==nonce)return;
+      onEvidenceUploaded();
       $('pdk-evidence-upload').reset();
       busy=false;sync();
       await reload();
