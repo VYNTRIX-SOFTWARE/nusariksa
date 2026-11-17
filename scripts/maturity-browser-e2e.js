@@ -302,6 +302,14 @@ async function runBrowser(base,db,fixture){
     await evalJs("document.querySelector('[data-password-toggle=login-password]').click()");
     assert.equal(await evalJs("document.getElementById('login-password').type"),'password');
     await login('admin');
+    // Test-only automation for accessible assessment dialogs (other native
+    // confirmation prompts are intentionally unaffected).
+    await evalJs("window.__nrActionDialogCount=0;"+
+      "window.__nrActionDialogObserver=new MutationObserver(()=>{"+
+      "const dlg=document.getElementById('nr-action-dialog');"+
+      "if(dlg?.open){window.__nrActionDialogCount++;"+
+      "document.getElementById('nr-action-accept')?.click();}});"+
+      "window.__nrActionDialogObserver.observe(document.body,{childList:true,subtree:true});");
     await until("!document.getElementById('admin-setup-menu').hidden",
       'administrator setup navigation');
     await evalJs("document.getElementById('first-run-action').click()");
@@ -1108,6 +1116,7 @@ async function runBrowser(base,db,fixture){
     assert.equal(draftPdf.composite,true);
     assert.equal(draftPdf.warning,true);
     await evalJs("document.getElementById('pdk-review-submit').click()");
+    await until("window.__nrActionDialogCount>0",'PADK draft confirmation rendered');
     await until("document.getElementById('pdk-review-state').textContent.includes('Menunggu pemeriksa')",
       'PADK provisional draft submitted in maker UI');
     assert.equal(await evalJs("document.getElementById('pdk-indicator-rank').disabled"),true);

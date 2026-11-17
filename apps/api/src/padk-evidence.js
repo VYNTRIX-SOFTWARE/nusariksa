@@ -1,6 +1,7 @@
 import {userHasPermission} from './authorization.js';
 import {
   EvidenceError,validateEvidence,encryptEvidence,decryptEvidence,
+  EVIDENCE_MAX_BYTES_PER_ASSESSMENT,
 } from './assessment-evidence.js';
 import {getPadkPreparation} from './padk-preparations.js';
 import {parseIndicatorNumber} from './padk-preparation-indicators.js';
@@ -103,6 +104,10 @@ export async function uploadPadkEvidenceInTransaction(db,{
   );
   if(count.rows[0].total>=LIMIT)reject(409,'Evidence limit reached');
   const value=validateEvidence({fileName,mediaType,contentBase64});
+  const usage=await db.query('SELECT coalesce(sum(size_bytes),0)::bigint AS used '+
+    'FROM padk_indicator_evidence WHERE preparation_id=$1',[id]);
+  if(Number(usage.rows[0].used)+value.bytes.length>EVIDENCE_MAX_BYTES_PER_ASSESSMENT)
+    reject(409,'Total bukti penilaian telah mencapai batas 250 MiB');
   const encrypted=encryptEvidence({
     ...value,assessmentId:id,controlId:contextFor(indicator),
   },key);

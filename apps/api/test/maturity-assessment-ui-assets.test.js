@@ -15,7 +15,8 @@ test('halaman penilaian maturitas memakai izin, CSP, dan render DOM aman',async(
     for(const id of [
       'maturity-assessments-menu','page-maturity-assessments','ma-assessment-select',
       'ma-create-form','ma-create-model','ma-create-version','ma-create-title',
-      'ma-detail','ma-domain-list','ma-criteria','ma-rating-form',
+      'ma-detail','ma-domain-list','ma-next-unassessed','ma-guided-help',
+      'ma-criteria','ma-rating-form',
       'ma-rating-level','ma-rating-justification','ma-rating-evidence',
       'ma-history','ma-overall','maturity-policy-form','maturity-policy-method',
     ])assert.ok(html.includes('id="'+id+'"'),id+' missing');

@@ -11,7 +11,7 @@ export function validatePadkEvidenceListing(payload,id,number){
     ||payload.evidence.some(e=>!e||typeof e.id!=='string'
       ||!/^[0-9a-f]{8}-[0-9a-f-]{27,}$/i.test(e.id)
       ||typeof e.fileName!=='string'||!Number.isSafeInteger(e.sizeBytes)
-      ||e.sizeBytes<1||e.sizeBytes>1048576))
+      ||e.sizeBytes<1||e.sizeBytes>10*1048576))
     throw new TypeError('Daftar bukti PADK tidak valid.');
   return payload.evidence;
 }

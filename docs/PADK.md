@@ -131,3 +131,11 @@ Pada bagian **Pemeriksaan kelengkapan draft**, petugas yang memiliki izin membac
 Ringkasan dihitung di server berdasarkan lampiran yang benar-benar telah tersimpan. Berkas, nama file dan isi bukti tidak disalin ke respons ringkasan. Pengguna dapat memuat ulang setelah ada perubahan lampiran. Semua berkas aktual tetap dilindungi oleh mekanisme akses serta enkripsi yang sudah diterapkan.
 
 **Ketiadaan lampiran tidak otomatis menghalangi pengajuan draft internal.** Ringkasan hanya membantu pemeriksa mengidentifikasi bukti yang perlu ditelaah dan bukan klaim verifikasi PADK maupun jaminan kecukupan bukti.
+
+## Bantuan pengisian dan validasi faktual
+
+Halaman persiapan menampilkan tahapan yang mudah diikuti: membuat penilaian, mengisi peringkat serta alasan, menambahkan bukti yang tersedia, pemeriksaan internal dan unduhan kertas kerja draft.
+
+Pemilihan peringkat otomatis menyiapkan **draf justifikasi yang dapat diedit**, dengan placeholder kondisi faktual dan bukti yang harus diganti oleh maker. Teks placeholder tidak diterima server sebagai justifikasi final. Jika belum lengkap, pengguna diarahkan ke input yang perlu diperbaiki; peringatan tidak hanya muncul di bagian atas halaman.
+
+Bukti PDF/PNG/JPEG dapat berukuran hingga **10 MiB per berkas** dengan batas total **250 MiB per persiapan**. File yang sudah masuk bersifat permanen dan terenkripsi; pengunggahan mengikuti izin maker dan status pemeriksaan internal. Batas ini merupakan kebijakan penyimpanan aplikasi, bukan angka kewajiban regulator.

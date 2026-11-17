@@ -1091,6 +1091,14 @@
             </div>
             <button id="pdk-refresh" type="button" class="button button-outline">Muat ulang</button>
           </div>
+          <nav class="pdk-user-journey" aria-label="Tahapan penilaian PADK">
+            <div data-pdk-flow-step="1"><strong>1. Siapkan</strong><span>Pilih kategori dan periode</span></div>
+            <div data-pdk-flow-step="2"><strong>2. Nilai indikator</strong><span>Pilih peringkat dan isi alasan faktual</span></div>
+            <div data-pdk-flow-step="3"><strong>3. Lampirkan</strong><span>Tambahkan bukti jika tersedia (opsional)</span></div>
+            <div data-pdk-flow-step="4"><strong>4. Periksa</strong><span>Ajukan untuk review internal</span></div>
+            <div data-pdk-flow-step="5"><strong>5. Dokumentasikan</strong><span>Unduh kertas kerja draft</span></div>
+          </nav>
+          <p id="pdk-journey-hint" class="workspace-help" role="status" aria-live="polite">Mulai dengan membuat penilaian.</p>
           <div class="pdk-mode-notice" role="note">
             <strong>Mode kertas kerja internal</strong>
             <span>Data kandidat instrumen telah disusun lengkap (80 + 60 indikator; 700 penempatan kriteria). Pemetaan dan kriteria masih menunggu verifikasi substansi; hasil belum boleh digunakan sebagai laporan resmi OJK.</span>
@@ -1268,9 +1276,11 @@
                 </select>
                 <label for="pdk-indicator-justification">Justifikasi peringkat sementara</label>
                 <textarea id="pdk-indicator-justification" rows="5" maxlength="4000"
-                  aria-describedby="pdk-indicator-reason-counter"
+                  aria-describedby="pdk-indicator-reason-counter pdk-indicator-inline-error"
                   placeholder="Dasar pemeriksaan terhadap kriteria dan kondisi BPR; minimal 20 karakter."></textarea>
                 <p id="pdk-indicator-reason-counter" class="workspace-help">Minimal 20 karakter. Hanya untuk draft internal.</p>
+                <p id="pdk-indicator-inline-error" class="workspace-message" role="alert" hidden></p>
+                <p class="workspace-help">Saat peringkat dipilih, aplikasi menyiapkan draf kalimat. Ganti bagian dalam tanda [ ] dengan kondisi dan bukti faktual; tidak akan disimpan otomatis.</p>
                 <details id="pdk-indicator-optional" class="pdk-optional-notes">
                   <summary>Catatan kerja dan rencana bukti (opsional)</summary>
                   <div class="pdk-optional-notes-fields">
@@ -1304,7 +1314,7 @@
                   </button>
                 </div>
                 <p class="workspace-help">
-                  Bukti PDF, PNG, atau JPEG maksimal 1 MiB per file dan 10 file per indikator.
+                  Bukti PDF, PNG, atau JPEG maksimal 10 MiB per file, 10 file per indikator, dan 250 MiB per penilaian.
                   File disimpan terenkripsi dan tidak dapat diubah atau dihapus.
                   Keberadaan bukti belum berarti hasil penilaian PADK disahkan.
                 </p>
@@ -1569,10 +1579,16 @@
               <section class="panel-card" aria-labelledby="ma-domains-heading">
                 <div class="panel-heading"><h2 id="ma-domains-heading">Domain penilaian</h2>
                   <span id="ma-domains-count" class="small-caption">—</span></div>
+                <p id="ma-guided-help" class="workspace-help" role="status" aria-live="polite">
+                  Pilih domain pertama, cocokkan kondisi aktual dengan kriteria level 0–5, lalu simpan alasan penilaian.
+                </p>
+                <button id="ma-next-unassessed" type="button" class="button button-outline" disabled>
+                  Buka domain berikutnya yang belum dinilai
+                </button>
                 <div id="ma-domain-list" class="maturity-domain-list"></div>
               </section>
               <section class="panel-card" aria-labelledby="ma-editor-heading">
-                <h2 id="ma-editor-heading">Penilaian domain</h2>
+                <h2 id="ma-editor-heading" tabindex="-1">Penilaian domain</h2>
                 <p id="ma-domain-name" class="panel-caption">Pilih domain.</p>
                 <div id="ma-criteria" class="ma-criteria"></div>
                 <form id="ma-rating-form" class="maturity-edit-form" hidden>
@@ -1877,8 +1893,8 @@
                       role="status" aria-live="polite">Catatan minimal 10 karakter untuk hasil selain Memenuhi.</p>
                     <p class="workspace-help">Bukti pendukung dikelola terpisah dari hasil penilaian.</p>
                     <details id="workspace-note-helper" class="workspace-note-helper" hidden>
-                      <summary>Permudah input: susun catatan dari temuan nyata</summary>
-                      <p class="workspace-help">Isi sesuai hasil pemeriksaan BPR. Template tidak mengisi jawaban, bukti, atau penilaian otomatis.</p>
+                      <summary>Panduan menulis catatan pemeriksaan</summary>
+                      <p class="workspace-help">Tuliskan kondisi yang ditemukan dan dokumen yang diperiksa. Aplikasi hanya membantu merapikan susunan catatan.</p>
                       <div class="workspace-note-fields">
                         <label for="workspace-observed-condition">Kondisi yang benar-benar ditemukan</label>
                         <textarea id="workspace-observed-condition" rows="2" maxlength="1000"
@@ -1915,7 +1931,7 @@
                     <div id="workspace-evidence-message" class="workspace-message" role="status" aria-live="polite" hidden></div>
                     <div id="workspace-evidence-list" class="workspace-evidence-list"></div>
                     <form id="workspace-evidence-upload" class="workspace-evidence-upload" hidden>
-                      <label for="workspace-evidence-file">Unggah bukti (PDF, PNG, atau JPEG; maksimum 1 MiB)</label>
+                      <label for="workspace-evidence-file">Unggah bukti (PDF, PNG, atau JPEG; maks. 10 MiB/berkas, total 250 MiB/asesmen)</label>
                       <input id="workspace-evidence-file" type="file" accept=".pdf,.png,.jpg,.jpeg,application/pdf,image/png,image/jpeg" required>
                       <button id="workspace-evidence-upload-button" type="submit" class="button button-outline">Simpan bukti</button>
                     </form>

@@ -284,3 +284,13 @@ Ekspor **Laporan Asesmen TI** kini disajikan sebagai dokumen A4 dengan sampul, i
 PDF **Kertas Kerja PADK** juga menggunakan tampilan profesional A4: halaman identitas, status belum terverifikasi, progres 60/80 indikator, ringkasan lima domain (simulasi internal apabila datanya cukup), justifikasi yang benar-benar tersimpan, inventaris bukti, serta riwayat pemeriksaan draft. Dokumen asli bukti tidak disisipkan otomatis. Status regulator, penyampaian resmi, skor dan pengesahan resmi **tidak** dihasilkan. Penilaian yang belum lengkap menampilkan keterangan bahwa komposit simulasi belum tersedia. Bagian yang belum dikerjakan tidak diisi otomatis.
 
 Nomor halaman dan footer dibentuk oleh PDF renderer A4, bukan membatasi setiap 53 baris teks. Untuk memeriksa kualitas, tinjau PDF hasil data pendek dan panjang; pastikan baris catatan tidak terpotong saat berganti halaman dan laporan tidak mengubah makna status draft/final.
+
+## Bukti penilaian dan konfirmasi pemeriksaan
+
+Untuk asesmen TI operasional, pilih kontrol pada asesmen yang sudah dimulai lalu buka **Bukti pendukung**. Maker berizin dapat mengunggah PDF/PNG/JPEG maksimum **10 MiB per berkas** dan **250 MiB total per asesmen**; batas dokumen per kontrol tetap berlaku. Bukti disimpan terenkripsi dan tidak bisa diubah/hapus dari aplikasi. Jika unggahan ditolak karena konfigurasi enkripsi atau batas penyimpanan, hubungi administrator. Jangan unggah data nasabah yang tidak diperlukan.
+
+Saat pengajuan hasil dan pengambilan keputusan pemeriksa, aplikasi menampilkan dialog konfirmasi yang menjelaskan dampak keputusan dan memerlukan tindakan eksplisit pengguna.
+
+Pada **Persiapan Penilaian Keamanan Siber**, ikuti tahapan yang ditampilkan. Ketika memilih peringkat sementara, aplikasi hanya mengisi **draf kalimat dengan bagian kosong**. Ganti bagian dalam tanda kurung siku dengan kondisi nyata serta dokumen/hasil pemeriksaan yang relevan. Draf yang belum dilengkapi tidak dapat disimpan sebagai justifikasi yang sah. Keputusan dan hasil PADK tetap merupakan kertas kerja internal, bukan skor regulatori resmi.
+
+Pada **Penilaian Maturitas**, tombol **Buka domain berikutnya yang belum dinilai** membantu menyelesaikan pekerjaan domain demi domain. Level dipilih berdasarkan kondisi aktual dan kriteria rubrik yang diterbitkan.

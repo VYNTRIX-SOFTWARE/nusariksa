@@ -7,6 +7,7 @@ const CATALOG=new Map([
   [2,new URL('../../../regulations/padk43/cyber/drafts/kategori-2.json',import.meta.url)],
 ]);
 const INVALID=/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/;
+const UNSUBSTANTIATED=/\[(?:isi kondisi faktual|isi bukti yang diperiksa)\]/i;
 const reject=(status,message)=>{throw new PadkPreparationError(status,message);};
 
 export function parseIndicatorNumber(raw,category){
@@ -32,7 +33,8 @@ export function validateIndicatorWorkingNotes(body={}){
     if(!(rank===null||(Number.isInteger(rank)&&rank>=1&&rank<=5))
       ||typeof reason!=='string'||reason.length>4000||INVALID.test(reason)
       ||(rank===null&&reason!=='')
-      ||(rank!==null&&(reason!==reason.trim()||reason.trim().length<20)))
+      ||(rank!==null&&(reason!==reason.trim()||reason.trim().length<20
+        ||UNSUBSTANTIATED.test(reason))))
       reject(400,'Invalid provisional rank or justification');
   }
   return hasRank

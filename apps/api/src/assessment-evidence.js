@@ -4,7 +4,8 @@ import {
 import { userHasPermission } from './authorization.js';
 import {encryptionKeyFor,decryptionKeyFor} from './evidence-keyring.js';
 
-export const EVIDENCE_MAX_BYTES = 1024 * 1024;
+export const EVIDENCE_MAX_BYTES = 10 * 1024 * 1024;
+export const EVIDENCE_MAX_BYTES_PER_ASSESSMENT = 250 * 1024 * 1024;
 export const EVIDENCE_MAX_FILES_PER_CONTROL = 10;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const ACCEPTED = Object.freeze({
@@ -175,6 +176,10 @@ export async function uploadEvidenceInTransaction(db, {
   if (existing.rows[0].total >= EVIDENCE_MAX_FILES_PER_CONTROL) {
     throw new EvidenceError(409, 'Maximum evidence files per control reached');
   }
+  const storage=await db.query('SELECT coalesce(sum(size_bytes),0)::bigint AS used '+
+    'FROM assessment_evidence WHERE assessment_id=$1',[assessmentId]);
+  if(Number(storage.rows[0].used)+input.bytes.length>EVIDENCE_MAX_BYTES_PER_ASSESSMENT)
+    throw new EvidenceError(409,'Total file bukti asesmen telah mencapai batas 250 MiB');
   const encrypted = encryptEvidence({ ...input, assessmentId, controlId }, key);
   const inserted = await db.query(
     'INSERT INTO assessment_evidence (id, assessment_id, catalog_version_id, control_id, ' +
