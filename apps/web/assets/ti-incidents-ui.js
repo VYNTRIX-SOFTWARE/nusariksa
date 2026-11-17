@@ -30,15 +30,40 @@ export function validateIncidentResponse(i){
     throw new TypeError('Invalid incident response');
   return i;
 }
+
+export function validateIncidentOperationsOverview(value){
+  const types=['reported','investigating','contained','resolved','closed'];
+  const severities=['low','medium','high','critical'];
+  const integer=x=>Number.isSafeInteger(x)&&x>=0;
+  if(!value||value.kind!=='INTERNAL_OPERATIONAL_OVERVIEW'
+    ||value.regulatoryAssessment!==false
+    ||!types.every(k=>integer(value.statuses?.[k]))
+    ||!severities.every(k=>integer(value.severities?.[k]))
+    ||!integer(value.totalActive)||!integer(value.archived)
+    ||!integer(value.unresolved)||!integer(value.highCriticalUnresolved)
+    ||types.reduce((n,k)=>n+value.statuses[k],0)!==value.totalActive
+    ||severities.reduce((n,k)=>n+value.severities[k],0)!==value.totalActive
+    ||value.unresolved!==types.slice(0,3).reduce((n,k)=>n+value.statuses[k],0)
+    ||value.highCriticalUnresolved>value.unresolved
+    ||!(value.oldestUnresolvedAt===null
+      ||(typeof value.oldestUnresolvedAt==='string'
+        &&Number.isFinite(Date.parse(value.oldestUnresolvedAt))))
+    ||((value.unresolved===0)!==(value.oldestUnresolvedAt===null)))
+    throw new TypeError('Ringkasan register insiden tidak valid.');
+  return value;
+}
+
 export function createIncidentManagementUI({api,getPermissions,onAuthFailure}){
   const state={rows:[],assets:[],risks:[],selected:null,loaded:false,offset:0,
-    more:false,busy:false,request:0,detailRequest:0};
+    more:false,busy:false,request:0,detailRequest:0,overviewRequest:0,overviewBusy:false};
   const canRead=()=>getPermissions().includes('incidents:read');
   const canWrite=()=>getPermissions().includes('incidents:write');
   function message(msg,kind='info'){
     const x=$('ti-incidents-message');x.textContent=msg??'';x.hidden=!msg;x.dataset.kind=kind;
   }
   function sync(){
+    $('ti-incidents-export').hidden=!canRead()||!getPermissions().includes('reports:read');
+    $('ti-incidents-overview-refresh').disabled=state.overviewBusy||!canRead();
     $('ti-incidents-create').hidden=!canWrite();
     $('ti-incidents-save').disabled=state.busy||!canWrite();
     $('ti-incidents-edit').hidden=!canWrite()||!state.selected
@@ -51,9 +76,12 @@ export function createIncidentManagementUI({api,getPermissions,onAuthFailure}){
     $('ti-incidents-timeline-save').disabled=state.busy||!canWrite();
   }
   function clear(){
-    ++state.request;++state.detailRequest;
+    ++state.request;++state.detailRequest;++state.overviewRequest;
     state.rows=[];state.assets=[];state.risks=[];state.selected=null;
     state.loaded=false;state.offset=0;state.more=false;state.busy=false;
+    state.overviewBusy=false;
+    $('ti-incidents-overview').replaceChildren();
+    $('ti-incidents-overview-status').textContent='';
     $('ti-incidents-dialog').close?.();
     $('ti-incidents-form').reset();$('ti-incidents-timeline-form').reset();
     $('ti-incidents-search').value='';
@@ -63,6 +91,42 @@ export function createIncidentManagementUI({api,getPermissions,onAuthFailure}){
     $('ti-incidents-category-filter').value='all';
     $('ti-incidents-list').replaceChildren();$('ti-incidents-history').replaceChildren();
     $('ti-incidents-detail').hidden=true;message('');sync();
+  }
+  async function loadOverview(){
+    if(!canRead())return;
+    const request=++state.overviewRequest;state.overviewBusy=true;sync();
+    $('ti-incidents-overview-status').textContent='Memuat data ringkasan…';
+    try{
+      const data=validateIncidentOperationsOverview(await api('/incidents/overview'));
+      if(request!==state.overviewRequest)return;
+      const cards=[
+        ['Belum selesai',data.unresolved],
+        ['Tinggi/kritis belum selesai',data.highCriticalUnresolved],
+        ['Dilaporkan',data.statuses.reported],
+        ['Investigasi',data.statuses.investigating],
+        ['Terkendali',data.statuses.contained],
+        ['Dipulihkan',data.statuses.resolved],
+        ['Ditutup (belum arsip)',data.statuses.closed],
+        ['Diarsipkan',data.archived],
+      ];
+      const root=$('ti-incidents-overview');root.replaceChildren();
+      for(const [label,count] of cards){
+        const card=el('div','','incident-overview-item');
+        card.append(el('strong',String(count)),el('span',label));root.append(card);
+      }
+      $('ti-incidents-overview-status').textContent=data.totalActive+
+        ' insiden belum diarsipkan. '+(data.oldestUnresolvedAt
+          ?'Insiden belum selesai terlama terdeteksi '+
+            new Date(data.oldestUnresolvedAt).toLocaleString('id-ID')+'.'
+          :'Tidak ada insiden berstatus belum selesai.')+
+        ' Ringkasan ini bukan penilaian kepatuhan atau kategori pelaporan regulator.';
+    }catch(error){
+      if(request!==state.overviewRequest)return;
+      $('ti-incidents-overview').replaceChildren();
+      if(!onAuthFailure(error))
+        $('ti-incidents-overview-status').textContent=
+          'Ringkasan gagal dimuat. Coba Perbarui ringkasan.';
+    }finally{if(request===state.overviewRequest){state.overviewBusy=false;sync();}}
   }
   function options(){
     const asset=$('ti-incident-asset-id'),risk=$('ti-incident-risk-id');
@@ -222,7 +286,10 @@ export function createIncidentManagementUI({api,getPermissions,onAuthFailure}){
     if(state.selected&&!state.selected.archived_at&&state.selected.status!=='closed')
       setForm(state.selected);
   });
-  $('ti-incidents-refresh').addEventListener('click',()=>void load({resetOffset:false}));
+  $('ti-incidents-refresh').addEventListener('click',()=>{
+    void load({resetOffset:false});void loadOverview();
+  });
+  $('ti-incidents-overview-refresh').addEventListener('click',()=>void loadOverview());
   $('ti-incidents-prev').addEventListener('click',()=>{
     state.offset=Math.max(0,state.offset-50);void load({resetOffset:false});
   });
@@ -254,7 +321,7 @@ export function createIncidentManagementUI({api,getPermissions,onAuthFailure}){
       }));
       $('ti-incidents-dialog').close();
       message(id?'Insiden diperbarui.':'Insiden dicatat.','success');
-      await load();await detail(result.id);
+      await load();void loadOverview();await detail(result.id);
     }catch(error){
       if(!onAuthFailure(error)){
         $('ti-incidents-form-error').hidden=false;
@@ -282,7 +349,7 @@ export function createIncidentManagementUI({api,getPermissions,onAuthFailure}){
       }));
       $('ti-incidents-timeline-form').reset();
       message('Kronologi disimpan permanen dengan waktu dan petugas pencatat.','success');
-      await load();await detail(result.id);
+      await load();void loadOverview();await detail(result.id);
     }catch(error){if(!onAuthFailure(error))message('Catatan gagal disimpan. Periksa isian/revisi dan muat ulang.','error');}
     finally{state.busy=false;sync();}
   });
@@ -296,9 +363,9 @@ export function createIncidentManagementUI({api,getPermissions,onAuthFailure}){
         method:'POST',body:{expectedRevision:incident.revision},
       }));
       message('Insiden diarsipkan tanpa menghapus kronologinya.','success');
-      await load();await detail(result.id);
+      await load();void loadOverview();await detail(result.id);
     }catch(error){if(!onAuthFailure(error))message('Arsip gagal. Periksa revisi terbaru.','error');}
     finally{state.busy=false;sync();}
   });
-  sync();return {load,clear,sync};
+  sync();return {load:async()=>{await Promise.all([load(),loadOverview()]);},clear,sync};
 }

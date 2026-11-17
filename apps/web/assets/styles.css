@@ -812,6 +812,12 @@ h1,h2,p{margin-top:0}h1,h2{letter-spacing:-.027em}
 .ti-incidents-filters label{display:grid;gap:5px;font-size:12px;font-weight:650;color:#505B70}
 .ti-incidents-filters input,.ti-incidents-filters select{width:100%;min-width:0;box-sizing:border-box;
   padding:9px 10px;border:1px solid #D9DDE7;border-radius:8px}
+.incident-overview-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.incident-overview-item{border:1px solid #E3E7EF;border-radius:10px;padding:12px 13px;display:grid;gap:4px;min-width:0}
+.incident-overview-item strong{font-size:22px;color:#273653;font-variant-numeric:tabular-nums}
+.incident-overview-item span{font-size:12px;line-height:1.4;color:#667085}
+@media(max-width:760px){.incident-overview-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:360px){.incident-overview-grid{grid-template-columns:1fr}}
 .ti-incident-row{border:1px solid #E3E6EF;background:#FFF;padding:13px 16px;border-radius:10px}
 .ti-incident-open{border:0;background:transparent;padding:0;text-align:left;color:#39345D;
   font-size:14px;font-weight:700;cursor:pointer}

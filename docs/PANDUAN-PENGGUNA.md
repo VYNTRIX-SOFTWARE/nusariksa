@@ -147,6 +147,12 @@ Kronologi yang sudah tersimpan tidak dihapus atau diedit. Jika perlu membetulkan
 
 **Perhatikan:** pencatatan insiden di NusaRiksa **tidak otomatis mengirim laporan kepada OJK**. Petugas perlu memeriksa kewajiban pelaporan dan eskalasi berdasarkan jenis kejadian dan ketentuan yang berlaku.
 
+### Ringkasan operasional dan ekspor register
+
+Bagian **Ringkasan insiden aktif** menampilkan jumlah kasus yang belum diarsipkan menurut status, insiden berkeparahan tinggi/kritis yang belum selesai, dan waktu deteksi insiden terbuka terlama. Angka berasal dari data insiden yang benar-benar dicatat di lembaga; **bukan penentuan tingkat signifikan atau batas waktu pelaporan OJK**.
+
+Gunakan **Ekspor register CSV** untuk mengunduh seluruh register insiden (termasuk yang telah diarsipkan) untuk rekonsiliasi dan pemeriksaan internal. CSV mencakup catatan insiden serta informasi penyelesaian, tidak menyertakan file bukti. Ekspor memerlukan izin baca insiden dan laporan, maksimum 5.000 baris; aplikasi akan menolak ekspor yang lebih besar daripada menerbitkan laporan terpotong. File CSV memakai UTF-8 dan perlindungan terhadap formula spreadsheet. Karena isi insiden dapat bersifat sensitif, simpan hasil unduhan di lokasi yang dikendalikan institusi. Ekspor tidak mengirim laporan kepada regulator.
+
 ## 7. Menindaklanjuti temuan pemeriksaan
 
 Gunakan menu **Tindak Lanjut Temuan** untuk mengelola masalah yang perlu diperbaiki berdasarkan hasil pemeriksaan, catatan risiko, atau insiden.

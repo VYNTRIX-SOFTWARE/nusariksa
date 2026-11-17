@@ -712,6 +712,15 @@
             <button id="ti-incidents-create" type="button" class="button button-primary workspace-primary" hidden>Tambah insiden</button>
           </div>
           <p id="ti-incidents-message" class="workspace-message" role="status" aria-live="polite" hidden></p>
+          <section class="panel-card" aria-label="Ringkasan operasional insiden TI">
+            <div class="panel-heading">
+              <div><h2>Ringkasan insiden aktif</h2>
+                <p class="panel-caption">Indikator operasional dari catatan lembaga, bukan penentuan insiden signifikan atau kepatuhan OJK.</p></div>
+              <button id="ti-incidents-overview-refresh" type="button" class="button button-outline">Perbarui ringkasan</button>
+            </div>
+            <p id="ti-incidents-overview-status" class="workspace-help" role="status" aria-live="polite">Memuat ringkasan…</p>
+            <div id="ti-incidents-overview" class="incident-overview-grid" aria-live="polite"></div>
+          </section>
           <section class="panel-card">
             <p class="ti-incident-advisory">Untuk insiden signifikan, periksa ketentuan eskalasi dan pelaporan OJK yang berlaku.
               NusaRiksa mencatat insiden internal, tidak otomatis mengirim laporan kepada regulator.</p>
@@ -742,6 +751,8 @@
               </label>
               <button type="submit" class="button button-outline">Cari</button>
               <button id="ti-incidents-refresh" type="button" class="button button-outline">Muat ulang</button>
+              <a id="ti-incidents-export" class="button button-outline" download
+                href="/incidents/export.csv?view=all" hidden>Ekspor register CSV</a>
             </form>
             <div id="ti-incidents-list" class="ti-assets-list" aria-live="polite"></div>
             <div class="ti-asset-pagination">

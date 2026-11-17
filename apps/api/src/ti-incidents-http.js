@@ -3,6 +3,8 @@ import {findSession} from './sessions.js';
 import {userHasPermission} from './authorization.js';
 import {IncidentError,createIncident,updateIncident,appendIncidentTimeline,archiveIncident,
   listIncidents,getIncident,incidentHistory,listIncidentOptions} from './ti-incidents.js';
+import {incidentOperationsOverview,exportIncidentRegister,IncidentReportError}
+  from './ti-incident-operations.js';
 
 const UUID='[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}';
 const DETAIL=new RegExp('^/incidents/('+UUID+')$','i');
@@ -31,6 +33,7 @@ export function createIncidentHandler({
   db,appOrigin,list=listIncidents,detail=getIncident,history=incidentHistory,
   options=listIncidentOptions,create=createIncident,update=updateIncident,
   timeline=appendIncidentTimeline,archive=archiveIncident,
+  overview=incidentOperationsOverview,exportCsv=exportIncidentRegister,
 }={}){
   return async function handle(req,res){
     let url;
@@ -38,6 +41,8 @@ export function createIncidentHandler({
     catch{reply(res,400,{error:'Invalid URL'});return;}
     const root=url.pathname==='/incidents';
     const optionsReq=url.pathname==='/incidents/options'&&req.method==='GET';
+    const overviewReq=url.pathname==='/incidents/overview'&&req.method==='GET';
+    const exportReq=url.pathname==='/incidents/export.csv'&&req.method==='GET';
     const match=DETAIL.exec(url.pathname),hist=HISTORY.exec(url.pathname),
       note=TIMELINE.exec(url.pathname),arch=ARCHIVE.exec(url.pathname);
     const listing=root&&req.method==='GET',creating=root&&req.method==='POST',
@@ -46,7 +51,7 @@ export function createIncidentHandler({
       historyReq=Boolean(hist)&&req.method==='GET',
       addingNote=Boolean(note)&&req.method==='POST',
       archiving=Boolean(arch)&&req.method==='POST';
-    if(!listing&&!creating&&!optionsReq&&!getting&&!editing
+    if(!listing&&!creating&&!optionsReq&&!overviewReq&&!exportReq&&!getting&&!editing
       &&!historyReq&&!addingNote&&!archiving){
       reply(res,404,{error:'Not found'});return;
     }
@@ -56,10 +61,28 @@ export function createIncidentHandler({
     const token=tokenFromCookies(req.headers.cookie);
     const session=token?await findSession(db,token):null;
     if(!session){reply(res,401,{error:'Unauthorized'});return;}
-    if(!await userHasPermission(db,session.userId,write?'incidents:write':'incidents:read')){
+    if(!await userHasPermission(db,session.userId,write?'incidents:write':'incidents:read')
+      ||(exportReq&&!await userHasPermission(db,session.userId,'reports:read'))){
       reply(res,403,{error:'Forbidden'});return;
     }
     try{
+      if(overviewReq){
+        if(url.search)throw new IncidentReportError(400,'Filter ringkasan tidak valid');
+        reply(res,200,await overview(db,{actorId:session.userId}));return;
+      }
+      if(exportReq){
+        const keys=[...url.searchParams.keys()];
+        if(keys.some(key=>key!=='view')||keys.length>1)
+          throw new IncidentReportError(400,'Filter ekspor tidak valid');
+        const output=await exportCsv(db,{actorId:session.userId,
+          view:url.searchParams.get('view')??'all'});
+        res.setHeader('Content-Type','text/csv; charset=utf-8');
+        res.setHeader('Content-Disposition','attachment; filename="nusariksa-register-insiden.csv"');
+        res.setHeader('Cache-Control','no-store');
+        res.setHeader('X-Content-Type-Options','nosniff');
+        res.setHeader('Content-Security-Policy','sandbox');
+        res.writeHead(200);res.end(output);return;
+      }
       if(listing){
         const keys=[...url.searchParams.keys()];
         if(keys.some(k=>!['q','view','status','severity','category','offset'].includes(k))
@@ -89,7 +112,7 @@ export function createIncidentHandler({
         reply(res,200,await update(db,{actorId:session.userId,id:match[1],...body.body}));
       }else reply(res,201,await create(db,{actorId:session.userId,...body.body}));
     }catch(error){
-      if(!(error instanceof IncidentError))throw error;
+      if(!(error instanceof IncidentError||error instanceof IncidentReportError))throw error;
       reply(res,error.status,{error:error.message});
     }
   };
