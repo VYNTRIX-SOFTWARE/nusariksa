@@ -741,6 +741,16 @@ async function runBrowser(base,db,fixture){
       "document.getElementById('ti-incident-risk-id').value="+JSON.stringify(riskRow.rows[0].id)+";"+
       "document.getElementById('ti-incident-risk-id').dispatchEvent(new Event('change'));" +
       "document.getElementById('ti-incidents-form').requestSubmit()");
+    await until("document.querySelector('#ti-incidents-overview .incident-overview-item strong')?.textContent==='1'",
+      'incident operations overview shows one unresolved incident');
+    const exportResult=await evalJs("(async()=>{const link=document.getElementById('ti-incidents-export');"+
+      "const resp=await fetch(link.href);return {visible:!link.hidden,status:resp.status,"+
+      "type:resp.headers.get('content-type'),text:(await resp.text()).slice(0,1000)}})()");
+    assert.equal(exportResult.visible,true);
+    assert.equal(exportResult.status,200);
+    assert.match(exportResult.type,/text\/csv/);
+    assert.ok(exportResult.text.includes('INC-E2E-01'));
+    assert.ok(exportResult.text.includes('Kegagalan layanan transaksi'));
     await until("!document.getElementById('ti-incidents-detail').hidden && "+
       "document.getElementById('ti-incidents-detail-values').textContent.includes('INC-E2E-01')",
       'incident created and detail opened');
@@ -778,6 +788,8 @@ async function runBrowser(base,db,fixture){
     await until("document.getElementById('ti-incidents-detail-values').textContent.includes('Ditutup')",
       'incident closed with audit');
     await evalJs("window.confirm=()=>true;document.getElementById('ti-incidents-archive').click()");
+    await until("document.getElementById('ti-incidents-overview').textContent.includes('Diarsipkan')",
+      'incident overview available after archival');
     await until("document.getElementById('ti-incidents-detail-values').textContent.includes('Diarsipkan')",
       'incident archived with persistent history');
     assert.equal((await db.query('SELECT count(*)::int AS n FROM ti_incident_events WHERE incident_id=$1',
