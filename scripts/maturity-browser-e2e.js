@@ -1044,12 +1044,22 @@ async function runBrowser(base,db,fixture){
       'return to saved indicator');
     assert.equal(await evalJs("document.getElementById('pdk-indicator-justification').value.includes('diperbaiki')"),true);
     assert.equal(await evalJs("document.getElementById('pdk-indicator-optional').open"),true);
+    // A fully saved answer can advance without a redundant PUT request.
+    assert.equal(await evalJs("document.getElementById('pdk-indicator-save-next').disabled"),false);
+    await evalJs("document.getElementById('pdk-indicator-save-next').click()");
+    assert.equal(await evalJs("document.getElementById('pdk-indicator-list').value"),'2');
+    await evalJs("document.getElementById('pdk-indicator-prev').click()");
+    assert.equal(await evalJs("document.getElementById('pdk-indicator-list').value"),'1');
     await c.command('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:1,mobile:true});
     assert.equal(await evalJs("getComputedStyle(document.querySelector('.pdk-answer-layout')).gridTemplateColumns.split(' ').length"),1);
     await c.command('Emulation.clearDeviceMetricsOverride');
-    await evalJs("document.getElementById('pdk-review-submit').click()");
-    await until("document.getElementById('pdk-review-message').textContent.includes('Lengkapi')",
-      'PADK incomplete draft submission blocked');
+    // Readiness is visible before submission; an incomplete draft cannot be submitted.
+    assert.equal(await evalJs("document.getElementById('pdk-review-submit').disabled"),true);
+    assert.equal(await evalJs("document.getElementById('pdk-review-readiness').textContent.includes('79 indikator')"),true);
+    assert.equal(await evalJs("document.getElementById('pdk-review-jump-pending').hidden"),false);
+    await evalJs("document.getElementById('pdk-review-jump-pending').click()");
+    assert.equal(await evalJs("document.getElementById('pdk-indicator-list').value"),'2');
+    assert.equal(await evalJs("document.activeElement?.id"),'pdk-indicator-heading');
     const padkId=(await db.query('SELECT id FROM padk_assessment_preparations LIMIT 1')).rows[0].id;
     await db.query(
       "INSERT INTO padk_preparation_indicator_notes "+
@@ -1057,6 +1067,18 @@ async function runBrowser(base,db,fixture){
       "SELECT $1,n,2,'Justifikasi sementara berdasarkan pemeriksaan dokumen internal.' "+
       "FROM generate_series(2,80) AS n",[padkId],
     );
+    // Direct database fixture changes are intentionally invisible until a server reload.
+    // The UI must not infer readiness from unrefreshed, client-side indicator data.
+    assert.equal(await evalJs("document.getElementById('pdk-review-submit').disabled"),true);
+    await evalJs("document.getElementById('pdk-refresh').click()");
+    await until("document.getElementById('pdk-detail').hidden && "+
+      "document.getElementById('pdk-list').options.length>=2",
+      'PADK server data reloaded');
+    await evalJs("document.getElementById('pdk-list').value="+JSON.stringify(padkId)+";"+
+      "document.getElementById('pdk-list').dispatchEvent(new Event('change',{bubbles:true}))");
+    await until("document.getElementById('pdk-review-readiness').textContent.includes('siap diajukan')",
+      'all saved draft indicators confirmed ready for submission');
+    assert.equal(await evalJs("document.getElementById('pdk-review-submit').disabled"),false);
     await evalJs("document.getElementById('pdk-score-refresh').click()");
     await until("document.getElementById('pdk-score-composite').textContent.includes('Komposit 2.00')",
       'PADK five-domain composite preview from saved ranks');

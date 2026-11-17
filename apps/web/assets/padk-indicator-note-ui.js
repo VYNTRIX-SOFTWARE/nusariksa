@@ -92,7 +92,7 @@ export function getPadkIndicatorGuidance({rank,justification,dirty,revision,edit
   return {rankDone,reasonDone,saved,reasonCount,nextAction};
 }
 export function createPadkIndicatorNoteUI({api,onAuthFailure,getUserId,getPermissions,canEditDraft=()=>true,onDraftSaved=()=>{}}){
-  const state={preparation:null,items:[],active:null,dirty:false,busy:false,request:0,
+  const state={preparation:null,items:[],active:null,dirty:false,busy:false,loaded:false,request:0,
     search:'',filter:'all'};
   const evidenceUI=createPadkEvidenceUI({api,onAuthFailure,getUserId,getPermissions,canEditDraft});
   const owner=()=>Boolean(state.preparation
@@ -137,6 +137,11 @@ export function createPadkIndicatorNoteUI({api,onAuthFailure,getUserId,getPermis
     $('pdk-indicator-reason-counter').textContent=
       guide.reasonCount+' karakter · minimal 20 karakter untuk justifikasi peringkat (spasi awal/akhir tidak dihitung).';
   }
+  const getReadiness=()=>({loaded:state.loaded,
+    ...summarizeDraftIndicatorProgress(state.items),
+    nextIncompleteNumber:state.loaded?nextPendingDraftIndicator(state.items):null});
+  const nextAfterSaved=()=>state.active&&isDraftIndicatorComplete(state.active)
+    ?nextPendingDraftIndicator(state.items,state.active.number):null;
   function render(){
     evidenceUI.sync();criteriaUI.sync();
     $('pdk-indicator-section').hidden=!state.preparation;
@@ -144,7 +149,8 @@ export function createPadkIndicatorNoteUI({api,onAuthFailure,getUserId,getPermis
     $('pdk-indicator-save').hidden=!owner();
     $('pdk-indicator-save-next').hidden=!owner();
     $('pdk-indicator-save').disabled=state.busy||!state.dirty;
-    $('pdk-indicator-save-next').disabled=state.busy||!state.dirty;
+    $('pdk-indicator-save-next').disabled=state.busy
+      ||(!state.dirty&&(nextAfterSaved()===null||!owner()));
     $('pdk-indicator-list').disabled=state.busy||!state.items.length;
     $('pdk-indicator-search').disabled=state.busy||!state.items.length;
     $('pdk-indicator-status-filter').disabled=state.busy||!state.items.length;
@@ -190,7 +196,7 @@ export function createPadkIndicatorNoteUI({api,onAuthFailure,getUserId,getPermis
   }
   function clear(){
     state.request++;state.preparation=null;state.items=[];state.active=null;
-    state.dirty=false;state.busy=false;state.search='';state.filter='all';
+    state.dirty=false;state.busy=false;state.loaded=false;state.search='';state.filter='all';
     $('pdk-indicator-search').value='';
     $('pdk-indicator-status-filter').value='all';
     $('pdk-indicator-match-count').textContent='';
@@ -286,7 +292,7 @@ export function createPadkIndicatorNoteUI({api,onAuthFailure,getUserId,getPermis
       if(data.preparationId!==preparation.id)
         throw new TypeError('Kategori atau persiapan tidak sesuai.');
       state.items=validateDraftIndicatorList(data,preparation.category);
-      state.busy=false;
+      state.loaded=true;state.busy=false;
       choices();
       // Resume the first unfinished indicator instead of resetting to number 1.
       selectIndicator(nextPendingDraftIndicator(state.items)??1);
@@ -348,9 +354,17 @@ export function createPadkIndicatorNoteUI({api,onAuthFailure,getUserId,getPermis
   $('pdk-indicator-rank').addEventListener('change',onInput);
   $('pdk-indicator-form').addEventListener('submit',async event=>{
     event.preventDefault();
-    if(!state.active||!owner()||state.busy||!state.dirty)return;
-    const active=state.active,id=state.preparation.id,request=state.request;
+    if(!state.active||!owner()||state.busy)return;
     const saveAndNext=event.submitter?.id==='pdk-indicator-save-next';
+    if(!state.dirty){
+      const next=saveAndNext?nextAfterSaved():null;
+      if(next!==null){
+        navigate(next);
+        message('Jawaban sebelumnya sudah tersimpan. Melanjutkan ke indikator '+next+'.','success');
+      }
+      return;
+    }
+    const active=state.active,id=state.preparation.id,request=state.request;
     const rawRank=$('pdk-indicator-rank').value;
     const rank=rawRank===''?null:Number(rawRank);
     const body={preparationNotes:$('pdk-indicator-notes').value,
@@ -402,5 +416,12 @@ export function createPadkIndicatorNoteUI({api,onAuthFailure,getUserId,getPermis
   });
   $('pdk-indicator-history-refresh').addEventListener('click',()=>void history());
   clear();
-  return {load,clear,sync:render,isDirty:()=>state.dirty};
+  function goToFirstIncomplete(){
+    if(!state.loaded||state.busy)return false;
+    const next=nextPendingDraftIndicator(state.items);
+    if(next===null)return false;
+    navigate(next);
+    return state.active?.number===next;
+  }
+  return {load,clear,sync:render,isDirty:()=>state.dirty,getReadiness,goToFirstIncomplete};
 }

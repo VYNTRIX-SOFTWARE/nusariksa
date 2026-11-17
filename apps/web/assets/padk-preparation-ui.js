@@ -60,6 +60,46 @@ export function validatePadkReviewQueue(data){
   }
   return data;
 }
+
+/**
+ * Submission readiness is derived from server-acknowledged indicator data,
+ * never from unsaved form values. The server remains the source of truth.
+ */
+export function getPadkDraftSubmissionReadiness({editable,dirty,busy,progress}){
+  if(typeof editable!=='boolean'||typeof dirty!=='boolean'
+    ||typeof busy!=='boolean'||!progress
+    ||typeof progress.loaded!=='boolean'
+    ||!Number.isSafeInteger(progress.total)||progress.total<0
+    ||!Number.isSafeInteger(progress.complete)||progress.complete<0
+    ||!Number.isSafeInteger(progress.pending)||progress.pending<0
+    ||progress.complete+progress.pending!==progress.total
+    ||!(progress.nextIncompleteNumber===null
+      ||(Number.isInteger(progress.nextIncompleteNumber)
+        &&progress.nextIncompleteNumber>0
+        &&progress.nextIncompleteNumber<=progress.total)))
+    throw new TypeError('Status kelengkapan pengajuan draft tidak valid.');
+  if(!editable)return {canSubmit:false,canJump:false,message:''};
+  if(!progress.loaded||![60,80].includes(progress.total))
+    return {canSubmit:false,canJump:false,message:'Sedang memuat kelengkapan indikator draft…'};
+  if(progress.pending>0){
+    if(progress.nextIncompleteNumber===null)
+      throw new TypeError('Daftar indikator belum lengkap tidak konsisten.');
+    return {canSubmit:false,canJump:!busy&&!dirty,
+      message:progress.complete+' dari '+progress.total+
+        ' indikator lengkap. Masih '+progress.pending+
+        ' indikator perlu peringkat sementara dan justifikasi tersimpan.'};
+  }
+  if(progress.nextIncompleteNumber!==null)
+    throw new TypeError('Progres indikator lengkap tidak konsisten.');
+  if(dirty)return {canSubmit:false,canJump:false,
+    message:'Simpan perubahan yang belum tersimpan sebelum mengajukan draft.'};
+  if(busy)return {canSubmit:false,canJump:false,
+    message:'Sedang memproses perubahan draft…'};
+  return {canSubmit:true,canJump:false,
+    message:'Semua '+progress.total+
+      ' indikator lengkap berdasarkan data tersimpan. Draft siap diajukan untuk pemeriksaan internal.'};
+}
+
 export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFailure}){
   const state={items:[],detail:null,workflow:null,dirty:false,busy:false,loaded:false,request:0,
     queue:[],queueMore:false,queueBusy:false,queueRequest:0};
@@ -68,7 +108,10 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
   const previewUI=createPadkScorePreviewUI({api,onAuthFailure});
   const indicatorUI=createPadkIndicatorNoteUI({
     api,onAuthFailure,getUserId,getPermissions,canEditDraft,
-    onDraftSaved:()=>{if(state.detail)void previewUI.load(state.detail);},
+    onDraftSaved:()=>{
+      if(state.detail)void previewUI.load(state.detail);
+      reviewMessage('');render();
+    },
   });
   const permitted=()=>getPermissions().includes('assessments:read');
   const writable=()=>getPermissions().includes('assessments:write');
@@ -115,9 +158,14 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
     $('pdk-review-state').textContent=(names[phase]??phase)+
       (workflow?' · Siklus '+workflow.submissionCycle:'')+
       ' · Skor resmi dan laporan final belum tersedia.';
-    const allowedSubmit=owner()&&!state.dirty&&!indicatorUI.isDirty()&&!state.busy;
-    $('pdk-review-submit').hidden=!allowedSubmit;
-    $('pdk-review-submit').disabled=!allowedSubmit;
+    const readiness=getPadkDraftSubmissionReadiness({
+      editable:Boolean(owner()),dirty:state.dirty||indicatorUI.isDirty(),
+      busy:state.busy,progress:indicatorUI.getReadiness(),
+    });
+    $('pdk-review-readiness').textContent=readiness.message;
+    $('pdk-review-submit').hidden=!owner();
+    $('pdk-review-submit').disabled=!readiness.canSubmit;
+    $('pdk-review-jump-pending').hidden=!owner()||!readiness.canJump;
     const allowedReview=Boolean(state.detail&&workflow&&phase==='submitted'
       &&getPermissions().includes('assessments:approve')
       &&state.detail.ownerUserId!==getUserId());
@@ -310,7 +358,14 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
   $('pdk-review-refresh').addEventListener('click',()=>{void reviewStatus().catch(
     error=>fail(error,'Gagal memuat status pemeriksaan.'));});
   $('pdk-review-submit').addEventListener('click',async()=>{
-    if(!owner()||state.busy||state.dirty||indicatorUI.isDirty())return;
+    const readiness=getPadkDraftSubmissionReadiness({
+      editable:Boolean(owner()),dirty:state.dirty||indicatorUI.isDirty(),
+      busy:state.busy,progress:indicatorUI.getReadiness(),
+    });
+    if(!readiness.canSubmit){
+      if(owner())reviewMessage(readiness.message,'warning');
+      return;
+    }
     state.busy=true;render();reviewMessage('');
     try{
       await api(reviewPath()+'/submit',{method:'POST'});
@@ -322,6 +377,13 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
         'Lengkapi seluruh indikator dan justifikasinya sebelum mengajukan draft.':
         'Gagal mengajukan draft. Periksa data dan izin.','error');
     }finally{state.busy=false;render();}
+  });
+  $('pdk-review-jump-pending').addEventListener('click',()=>{
+    if(!owner()||state.busy||state.dirty||indicatorUI.isDirty())return;
+    if(!indicatorUI.goToFirstIncomplete())return;
+    $('pdk-review-disclosure').open=false;
+    $('pdk-indicator-heading').focus({preventScroll:true});
+    $('pdk-indicator-heading').scrollIntoView({block:'start',behavior:'smooth'});
   });
   $('pdk-review-form').addEventListener('submit',async event=>{
     event.preventDefault();

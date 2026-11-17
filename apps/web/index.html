@@ -1334,8 +1334,12 @@
                 Semua indikator kategori yang dipilih harus punya peringkat sementara dan justifikasi
                 sebelum draft dapat diajukan.
               </p>
+              <p class="workspace-help">Status kelengkapan mengikuti jawaban yang sudah disimpan ke server. Draft yang belum lengkap tidak dapat diajukan.</p>
               <p id="pdk-review-state" role="status" aria-live="polite"></p>
+              <p id="pdk-review-readiness" class="workspace-help" role="status" aria-live="polite"></p>
               <p id="pdk-review-message" class="workspace-message" role="status" hidden></p>
+              <button type="button" id="pdk-review-jump-pending"
+                class="button button-outline" hidden>Lengkapi indikator yang tertunda</button>
               <button type="button" id="pdk-review-submit" class="button button-primary" hidden>
                 Ajukan pemeriksaan draft
               </button>
