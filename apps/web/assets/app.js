@@ -9,6 +9,7 @@ import {
 import { createWorkspace } from './assessment-workspace.js';
 import { pendingReviewQueue } from './assessment-review-model.js';
 import { createReporting } from './assessment-report.js';
+import {createRegisterExportButtons} from './register-export-buttons.js';
 import { createControlCatalogManagement } from './control-catalog.js';
 import { createMaturityManagement } from './maturity-ui.js';
 import { createMaturityAssessmentUI } from './maturity-assessment-ui.js';
@@ -172,6 +173,7 @@ function renderPermissions() {
   $('vendor-menu').hidden=!state.permissions.includes('vendors:read');
   $('recovery-menu').hidden=!state.permissions.includes('recovery:read');
   assetRegister.sync();riskRegister.sync();incidentManagement.sync();
+  registerExportButtons.sync();
   findingManagement.sync();vendorManagement.sync();recoveryManagement.sync();
   renderGettingStarted();
   const hasRead=state.permissions.includes('assessments:read');
@@ -749,6 +751,10 @@ const reporting=createReporting({
   getPermissions:()=>state.permissions,
   getAssessments:()=>state.assessments,
   onAuthFailure:authFailure,
+});
+
+const registerExportButtons=createRegisterExportButtons({
+  getPermissions:()=>state.permissions,onAuthFailure:authFailure,
 });
 
 const workspace=createWorkspace({

@@ -1,4 +1,5 @@
 import {userHasPermission} from './authorization.js';
+import {nextTiDocumentNumber} from './ti-document-numbers.js';
 
 const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const CODE=/^[A-Z][A-Z0-9_-]{1,31}$/;
@@ -171,6 +172,7 @@ export async function createIncidentInTransaction(db,{actorId,...payload}){
   await permission(db,actorId,'incidents:write');
   const d=validateIncident(payload);
   await references(db,actorId,d.assetId,d.riskId);
+  if(d.incidentCode==='AUTO')d.incidentCode=await nextTiDocumentNumber(db,{actorId,kind:'incident'});
   try{
     const r=await db.query('INSERT INTO ti_incidents(institution_id,incident_code,title,'+
       'category,severity,description,detected_at,asset_id,risk_id,pic,impact_summary,'+

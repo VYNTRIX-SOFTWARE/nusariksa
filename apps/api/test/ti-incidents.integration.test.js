@@ -207,6 +207,20 @@ test('insiden TI: sesi, role, FK aset/risiko, status, timeline immutable, arsip'
         await db.query('SAVEPOINT immutable_incidents');
         await assert.rejects(db.query('DELETE FROM ti_incident_events WHERE incident_id=$1',[created.id]));
         await db.query('ROLLBACK TO SAVEPOINT immutable_incidents');
+        const automated=await send('/incidents','POST',cookies.maker,{
+          ...data,incidentCode:'AUTO',title:'Kejadian otomatis nomor satu',
+        });
+        assert.equal(automated.status,201);
+        const one=await automated.json();
+        assert.match(one.incident_code,/^INC-[0-9]{4}-[0-9]{6}$/);
+        const automated2=await send('/incidents','POST',cookies.maker,{
+          ...data,incidentCode:'AUTO',title:'Kejadian otomatis nomor dua',
+        });
+        assert.equal(automated2.status,201);
+        const two=await automated2.json();
+        assert.notEqual(two.incident_code,one.incident_code);
+        assert.equal(Number(two.incident_code.slice(-6)),
+          Number(one.incident_code.slice(-6))+1);
       }finally{server.close();await once(server,'close');}
       await db.query('ROLLBACK');
     }finally{db.release();}

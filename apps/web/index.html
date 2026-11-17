@@ -342,6 +342,8 @@
               </label>
               <button class="button button-outline" type="submit">Cari</button>
               <button id="ti-recovery-reset-filters" class="button button-ghost" type="button">Reset filter</button>
+              <button type="button" id="ti-recovery-export" class="button button-outline" data-register-export="recovery" hidden>Ekspor rencana CSV</button>
+              <button type="button" id="ti-recovery-tests-export" class="button button-outline" data-register-export="recovery-tests" hidden>Ekspor hasil pengujian</button>
             </form>
             <p id="ti-recovery-list-summary" class="recovery-list-summary" aria-live="polite">Daftar rencana belum dimuat.</p>
             <div id="ti-recovery-list" class="ti-assets-list" aria-live="polite"></div>
@@ -527,11 +529,14 @@
         <section id="page-ti-vendors" class="page" aria-labelledby="ti-vendors-title" hidden>
           <div class="page-intro">
             <div><p class="eyebrow">TATA KELOLA TI / PIHAK KETIGA</p><h1 id="ti-vendors-title">Pengelolaan Vendor TI</h1>
-              <p class="supporting-copy">Catat penyedia layanan, kontrak, target layanan, masa berlaku, dan hasil evaluasinya.</p>
+              <p class="supporting-copy">Daftar penyedia, kontrak, target SLA, dan evaluasi realisasi layanan.</p>
             </div>
             <button id="ti-vendors-create" type="button" class="button button-primary workspace-primary" hidden>Tambah penyedia</button>
           </div>
           <p id="ti-vendors-message" class="workspace-message" role="status" aria-live="polite" hidden></p>
+          <nav class="nr-workflow-band" aria-label="Alur kerja">
+  <span>Penyedia TI</span><span>Kontrak dan SLA</span><span>Evaluasi berkala</span><span>Arsip</span>
+</nav>
           <section class="panel-card">
             <p class="ti-vendor-guidance">Periksa kontrak yang berakhir dalam 30 hari atau telah melewati masa berlaku.
               Penanda masa berlaku berasal dari tanggal perjanjian yang dicatat dan tidak menggantikan pemeriksaan dokumen kontrak.</p>
@@ -558,6 +563,9 @@
               </label>
               <button type="submit" class="button button-outline">Cari</button>
               <button id="ti-vendors-refresh" type="button" class="button button-outline">Muat ulang</button>
+              <button type="button" id="ti-vendors-export" class="button button-outline" data-register-export="vendors" hidden>Ekspor vendor</button>
+              <button type="button" id="ti-vendors-contracts-export" class="button button-outline" data-register-export="vendor-contracts" hidden>Ekspor kontrak</button>
+              <button type="button" id="ti-vendors-sla-export" class="button button-outline" data-register-export="vendor-sla" hidden>Ekspor evaluasi SLA</button>
             </form>
             <div id="ti-vendors-list" class="ti-assets-list" aria-live="polite"></div>
             <div class="ti-asset-pagination">
@@ -611,11 +619,14 @@
         <section id="page-ti-findings" class="page" aria-labelledby="ti-findings-title" hidden>
           <div class="page-intro">
             <div><p class="eyebrow">PEMERIKSAAN &amp; PERBAIKAN</p><h1 id="ti-findings-title">Tindak Lanjut Temuan</h1>
-              <p class="supporting-copy">Catat temuan, tetapkan penanggung jawab dan tenggat, lalu ajukan hasil perbaikan untuk diperiksa oleh petugas lain.</p>
+              <p class="supporting-copy">Kelola temuan audit dan asesmen hingga tindakan korektif diverifikasi.</p>
             </div>
             <button id="ti-findings-create" type="button" class="button button-primary workspace-primary" hidden>Tambah temuan</button>
           </div>
           <p id="ti-findings-message" class="workspace-message" role="status" aria-live="polite" hidden></p>
+          <nav class="nr-workflow-band" aria-label="Alur kerja">
+  <span>Temuan audit</span><span>Rencana perbaikan</span><span>Verifikasi</span><span>Selesai</span>
+</nav>
           <section class="panel-card">
             <form id="ti-findings-filter-form" class="ti-findings-filters">
               <label for="ti-findings-search">Cari kode, judul atau PIC
@@ -653,6 +664,7 @@
               </label>
               <button type="submit" class="button button-outline">Cari</button>
               <button id="ti-findings-refresh" type="button" class="button button-outline">Muat ulang</button>
+              <button type="button" id="ti-findings-export" class="button button-outline" data-register-export="findings" hidden>Ekspor CSV</button>
               <button id="ti-findings-reset-filters" type="button" class="button button-ghost">Reset filter</button>
             </form>
             <p id="ti-findings-list-summary" class="finding-list-summary" aria-live="polite">Memuat temuan...</p>
@@ -707,11 +719,14 @@
         <section id="page-ti-incidents" class="page" aria-labelledby="ti-incidents-title" hidden>
           <div class="page-intro">
             <div><p class="eyebrow">TATA KELOLA TI / INSIDEN</p><h1 id="ti-incidents-title">Manajemen Insiden TI/Siber</h1>
-              <p class="supporting-copy">Catat kejadian, tingkat dampak, PIC, kronologi pengendalian dan pemulihan, sampai penyelesaian dan arsip.</p>
+              <p class="supporting-copy">Kejadian TI dan siber, perkembangan penanganan, serta status pemulihan.</p>
             </div>
             <button id="ti-incidents-create" type="button" class="button button-primary workspace-primary" hidden>Tambah insiden</button>
           </div>
           <p id="ti-incidents-message" class="workspace-message" role="status" aria-live="polite" hidden></p>
+          <nav class="nr-workflow-band" aria-label="Alur kerja">
+  <span>Deteksi</span><span>Penanganan</span><span>Pemulihan</span><span>Penutupan</span>
+</nav>
           <section class="panel-card" aria-label="Ringkasan operasional insiden TI">
             <div class="panel-heading">
               <div><h2>Ringkasan insiden aktif</h2>
@@ -751,8 +766,7 @@
               </label>
               <button type="submit" class="button button-outline">Cari</button>
               <button id="ti-incidents-refresh" type="button" class="button button-outline">Muat ulang</button>
-              <a id="ti-incidents-export" class="button button-outline" download
-                href="/incidents/export.csv?view=all" hidden>Ekspor register CSV</a>
+              <button type="button" id="ti-incidents-export" class="button button-outline" data-register-export="incidents" hidden>Ekspor CSV</button>
             </form>
             <div id="ti-incidents-list" class="ti-assets-list" aria-live="polite"></div>
             <div class="ti-asset-pagination">
@@ -798,7 +812,7 @@
         <section id="page-ti-risks" class="page" aria-labelledby="ti-risks-title" hidden>
           <div class="page-intro">
             <div><p class="eyebrow">TATA KELOLA TI / RISIKO</p><h1 id="ti-risks-title">Register Risiko TI</h1>
-              <p class="supporting-copy">Identifikasi risiko, tautkan aset, nilai kemungkinan dan dampak, lalu pantau mitigasi serta PIC.</p>
+              <p class="supporting-copy">Daftar risiko TI, pemilik risiko, tingkat dampak, dan tindak mitigasi.</p>
             </div>
             <button id="ti-risks-create" type="button" class="button button-primary workspace-primary" hidden>Tambah risiko</button>
           </div>
@@ -850,6 +864,7 @@
               </label>
               <button type="submit" class="button button-outline">Cari</button>
               <button id="ti-risks-refresh" type="button" class="button button-outline">Muat ulang</button>
+              <button type="button" id="ti-risks-export" class="button button-outline" data-register-export="risks" hidden>Ekspor CSV</button>
               <button id="ti-risks-clear-filters" type="button" class="button button-ghost">Reset filter</button>
             </form>
             <p id="ti-risks-list-summary" class="risk-list-summary" aria-live="polite">Daftar risiko sesuai filter.</p>
@@ -900,7 +915,7 @@
         <section id="page-ti-assets" class="page" aria-labelledby="ti-assets-title" hidden>
           <div class="page-intro">
             <div><p class="eyebrow">TATA KELOLA TI / ASET</p><h1 id="ti-assets-title">Inventaris Aset TI</h1>
-              <p class="supporting-copy">Catat aset, PIC, lokasi, kritikalitas, dan status operasional dengan histori perubahan.</p>
+              <p class="supporting-copy">Pusat inventaris aset, penanggung jawab, dan riwayat perubahan.</p>
             </div>
             <button id="ti-assets-create" type="button" class="button button-primary workspace-primary" hidden>Tambah aset</button>
           </div>
@@ -927,6 +942,7 @@
               </label>
               <button type="submit" class="button button-outline">Cari</button>
               <button id="ti-assets-refresh" type="button" class="button button-outline">Muat ulang</button>
+              <button type="button" id="ti-assets-export" class="button button-outline" data-register-export="assets" hidden>Ekspor CSV</button>
               <button id="ti-assets-clear-filters" type="button" class="button button-ghost">Reset filter</button>
             </form>
             <p id="ti-assets-list-summary" class="asset-list-summary" aria-live="polite">Daftar aset yang sesuai filter.</p>
@@ -1186,6 +1202,7 @@
               <summary>Unduh kertas kerja PDF (draft internal)</summary>
               <p class="workspace-help">PDF berisi jawaban tersimpan, inventaris bukti, status review internal, dan simulasi bila tersedia. Bukan laporan resmi PADK/OJK.</p>
               <a id="pdk-workpaper-download" class="button button-outline" href="#" download hidden>Unduh PDF kertas kerja lengkap (draft)</a>
+              <button id="pdk-export-csv" type="button" class="button button-outline" hidden>Ekspor indikator CSV (draft)</button>
             </details>
             <section id="pdk-indicator-section" class="pdk-primary-workspace" aria-labelledby="pdk-indicator-heading" hidden>
               <div class="maturity-rubric-heading">
@@ -1555,6 +1572,7 @@
               <p id="ma-review-state" class="workspace-help" aria-live="polite">Status pemeriksaan —</p>
               <div class="maturity-actionbar">
                 <button id="ma-submit" class="button button-primary" type="button" hidden>Ajukan untuk review</button>
+                <button id="ma-export-csv" class="button button-outline" type="button" hidden>Ekspor maturitas CSV</button>
               </div>
               <form id="ma-review-form" class="maturity-edit-form" hidden>
                 <h3>Keputusan pemeriksa</h3>
@@ -2100,11 +2118,11 @@
         </label>
         <p id="ti-asset-kind-hint" class="workspace-help" role="status" aria-live="polite">Contoh digunakan sebagai panduan, bukan data aset lembaga.</p>
         <label for="ti-asset-code">Kode inventaris permanen
-          <input id="ti-asset-code" required minlength="2" maxlength="32" pattern="[A-Z][A-Z0-9_-]{1,31}" placeholder="Contoh: SRV-CBS-01" aria-describedby="ti-asset-code-hint">
+          <input id="ti-asset-code" required minlength="2" maxlength="32" pattern="[A-Z][A-Z0-9_-]{1,31}" value="AUTO" readonly aria-describedby="ti-asset-code-hint">
         </label>
         <div class="asset-inline-action">
-          <button id="ti-asset-suggest-code" type="button" class="button button-outline">Buat saran kode</button>
-          <span id="ti-asset-code-hint" class="asset-section-caption" role="status">Saran dapat diubah. Kode harus unik di lembaga dan tidak bisa diubah setelah disimpan.</span>
+          <button id="ti-asset-suggest-code" type="button" class="button button-outline" hidden>Buat saran kode</button>
+          <span id="ti-asset-code-hint" class="asset-section-caption" role="status">Kode diterbitkan otomatis saat data aset disimpan.</span>
         </div>
       </fieldset>
       <fieldset class="asset-form-section">
@@ -2256,7 +2274,7 @@
       <p class="workspace-help">Isi berdasarkan kejadian nyata; jangan memasukkan password maupun data nasabah mentah.</p>
       <label for="ti-incident-code">Kode insiden
         <input id="ti-incident-code" required minlength="2" maxlength="32"
-          pattern="[A-Z][A-Z0-9_-]{1,31}" placeholder="INC-CBS-001">
+          pattern="[A-Z][A-Z0-9_-]{1,31}" value="AUTO" readonly>
       </label>
       <label for="ti-incident-title">Judul kejadian
         <input id="ti-incident-title" required minlength="3" maxlength="200"

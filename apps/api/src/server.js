@@ -20,6 +20,7 @@ import {createIncidentHandler} from './ti-incidents-http.js';
 import {createFindingHandler} from './ti-findings-http.js';
 import {createVendorHandler} from './ti-vendors-http.js';
 import {createRecoveryHandler} from './ti-recovery-http.js';
+import {createTiRegisterExportsHandler} from './ti-register-exports-http.js';
 import { checkDatabase, createPool } from './database.js';
 import { createLoginLimiter } from './login-limiter.js';
 import { createRolesHandler } from './roles-http.js';
@@ -81,6 +82,7 @@ export function createServer({
   const handleFindings = createFindingHandler({db:authDb,appOrigin,...findingHandlers});
   const handleVendors = createVendorHandler({db:authDb,appOrigin,...vendorHandlers});
   const handleRecovery = createRecoveryHandler({db:authDb,appOrigin,...recoveryHandlers});
+  const handleRegisterExports=createTiRegisterExportsHandler({db:authDb,appOrigin});
   const handleResults = createAssessmentResultsHandler({ db: authDb, appOrigin, ...resultHandlers });
   const handleReviews = createAssessmentReviewsHandler({ db: authDb, appOrigin, ...reviewHandlers });
   const handleReport = createAssessmentReportsHandler({ db: authDb, appOrigin, report: reportHandler });
@@ -206,6 +208,9 @@ export function createServer({
       return;
     }
 
+    if(request.url?.startsWith('/register-exports/')){
+      await handleRegisterExports(request,response);return;
+    }
     if (request.url === '/risks' || request.url?.startsWith('/risks?')
       || request.url?.startsWith('/risks/')) {
       try{await handleRisks(request,response);}

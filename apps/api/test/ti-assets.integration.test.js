@@ -87,6 +87,16 @@ test('inventaris TI: persistence, role, tenant, filter, audit, revisi & arsip', 
         assert.equal(created.status,201);
         const asset=await created.json();
         assert.equal(asset.asset_code,data.assetCode);
+        assert.equal((await send('/register-exports/assets.csv')).status,401);
+        const exported=await send('/register-exports/assets.csv','GET',cookies.reviewer);
+        assert.equal(exported.status,200);
+        assert.match(exported.headers.get('content-type'),/text\/csv/);
+        assert.equal(exported.headers.get('cache-control'),'no-store');
+        const csv=await exported.text();
+        assert.ok(csv.includes('SRV-CBS-01'));
+        assert.ok(csv.includes('Server Core Banking'));
+        assert.ok(!csv.includes('hash-uji'));
+        assert.equal((await send('/register-exports/unknown.csv','GET',cookies.maker)).status,404);
         assert.equal(asset.revision,1);
         await db.query('SAVEPOINT duplicate_code');
         assert.equal((await send('/assets','POST',cookies.maker,data)).status,409);
@@ -124,6 +134,21 @@ test('inventaris TI: persistence, role, tenant, filter, audit, revisi & arsip', 
         const history=await send('/assets/'+asset.id+'/history','GET',cookies.reviewer);
         assert.equal(history.status,200);
         assert.deepEqual((await history.json()).events.map(x=>x.action),['ARCHIVED','UPDATED','CREATED']);
+        const autoOne=await send('/assets','POST',cookies.maker,{
+          ...data,assetCode:'AUTO',title:'Aset jaringan otomatis',kind:'network',
+        });
+        assert.equal(autoOne.status,201);
+        const generatedOne=await autoOne.json();
+        assert.match(generatedOne.asset_code,/^AST-[0-9]{4}-[0-9]{6}$/);
+        const autoTwo=await send('/assets','POST',cookies.maker,{
+          ...data,assetCode:'AUTO',title:'Aset jaringan tambahan',kind:'network',
+        });
+        assert.equal(autoTwo.status,201);
+        const generatedTwo=await autoTwo.json();
+        assert.match(generatedTwo.asset_code,/^AST-[0-9]{4}-[0-9]{6}$/);
+        assert.notEqual(generatedTwo.asset_code,generatedOne.asset_code);
+        assert.equal(Number(generatedTwo.asset_code.slice(-6)),
+          Number(generatedOne.asset_code.slice(-6))+1);
         const persisted=await db.query('SELECT count(*)::int AS total FROM ti_asset_events WHERE asset_id=$1',[asset.id]);
         assert.equal(persisted.rows[0].total,3);
         await db.query('SAVEPOINT protect_events');

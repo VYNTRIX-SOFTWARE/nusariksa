@@ -1,3 +1,4 @@
+import {mountRecordDetailDialog} from './record-detail-dialog.js';
 const $=id=>document.getElementById(id);
 const PLAN_FIELDS=[
  ['plan-code','planCode'],['service','serviceName'],['scenario','scenario'],
@@ -91,6 +92,7 @@ export function recoveryExerciseGuidance(outcome,plan={}){
  return 'Pilih hasil berdasarkan pengujian. Jika belum ada ukuran atau bukti memadai, pilih Belum dapat dinilai.';
 }
 export function createRecoveryUI({api,getPermissions,onAuthFailure}){
+  const detailWindow=mountRecordDetailDialog('ti-recovery-detail');
  const state={plans:[],selected:null,exercises:[],events:[],offset:0,
   hasMore:false,loaded:false,busy:false,request:0};
  const canRead=()=>getPermissions().includes('recovery:read');
@@ -109,6 +111,7 @@ export function createRecoveryUI({api,getPermissions,onAuthFailure}){
   $('ti-recovery-next').disabled=state.busy||!state.hasMore;
  }
  function clear(){
+    detailWindow.close();
   ++state.request;
   state.plans=[];state.selected=null;state.exercises=[];state.events=[];
   state.offset=0;state.hasMore=false;state.loaded=false;state.busy=false;
@@ -264,7 +267,7 @@ export function createRecoveryUI({api,getPermissions,onAuthFailure}){
     throw new TypeError('Rincian rencana tidak valid');
    state.selected=p;state.exercises=x.exercises;state.events=h.events;
    renderDetail(p,x);
-   $('ti-recovery-detail').scrollIntoView?.({block:'nearest'});
+      detailWindow.show();
   }catch(e){if(!onAuthFailure(e))message('Detail rencana tidak dapat dimuat.',true);}
  }
  function openPlan(p=null){

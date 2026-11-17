@@ -302,3 +302,20 @@ Saat membuat asesmen TI melalui **Gunakan katalog TI bawaan dan langsung mulai**
 Untuk asesmen **Draft** yang dibuat secara manual, pasang katalog terpublikasi terlebih dahulu, lalu centang kontrol pada bagian **Atur cakupan asesmen** sebelum menekan **Mulai asesmen**. Pilihan kontrol disimpan sebagai snapshot dan dikunci saat asesmen dimulai. Hanya kontrol terpilih yang muncul dalam daftar pengisian, syarat pengajuan pemeriksaan, dan laporan. Asesmen yang dibuat sebelum fitur ini tetap menggunakan seluruh versi katalog awalnya sehingga data lama tidak berubah.
 
 Katalog bawaan berreferensi saat ini berisi **26 kontrol operasional** dengan rujukan POJK 34/2025; angka **200** adalah **kapasitas maksimum per versi**, bukan klaim bahwa telah tersedia 200 kontrol atau bahwa semua kontrol merupakan salinan ketentuan resmi OJK. Katalog lama tidak dihapus; hanya tidak ditawarkan sebagai pilihan bawaan pada asesmen baru. Pembatasan cakupan merupakan keputusan internal lembaga dan **tidak menghapus kewajiban kepatuhan yang berlaku**.
+
+
+## Navigasi detail register dan kode otomatis
+
+Detail inventaris aset, risiko, insiden, tindak lanjut temuan, vendor, dan rencana pemulihan kini ditampilkan sebagai **dialog detail**. Klik item untuk membuka ringkasan dan riwayatnya; tutup dengan tombol **Tutup** atau Esc untuk kembali ke daftar pada posisi semula. Dialog tetap mempertahankan aksi ubah, pemeriksaan, serta riwayat sesuai hak akses.
+
+Pada inventaris aset dan insiden TI baru, kode berformat **AST-YYYY-NNNNNN** dan **INC-YYYY-NNNNNN** dialokasikan secara otomatis saat data berhasil dibuat. Nomor bersifat unik per lembaga, jenis catatan, dan tahun kalender WIB; perubahan atau pengarsipan tidak mendaur ulang nomor. Pengguna tidak perlu menentukan atau mengubah nomor. Kode yang sudah ada tetap dipertahankan pada catatan lama.
+
+## Unduhan laporan dan register
+
+Halaman laporan asesmen TI menyediakan PDF dan CSV. Kertas kerja PADK internal menyediakan PDF dan ekspor indikator CSV. Penilaian maturitas dapat diekspor sebagai CSV domain. Register aset, risiko, insiden, temuan, vendor, kontrak, evaluasi SLA, rencana pemulihan, dan pengujiannya dapat diunduh sebagai CSV dari menu terkait. Unduhan hanya mencakup data lembaga pemilik sesi yang aktif dan memerlukan izin baca domain serta laporan. Batas ekspor register operasional adalah **5.000 baris**, dengan penolakan eksplisit jika melebihi batas (tidak dipotong diam-diam).
+
+Unduhan PDF/CSV memakai sesi terautentikasi; jika terjadi HTTP 401, pengguna harus masuk kembali. File CSV tidak menyertakan berkas bukti terenkripsi. Dokumen hasil ekspor tetap merupakan keluaran internal lembaga, bukan pelaporan otomatis ke OJK. Simpan dan bagikan berkas sesuai kebijakan perlindungan data institusi.
+
+## Referensi risiko tambahan
+
+Pustaka contoh skenario risiko TI menyediakan **40 contoh situasi operasional** setelah pemutakhiran. Contoh dapat ditandai relevan atau tidak relevan, lalu disesuaikan menjadi risiko nyata milik lembaga. Contoh bukan hasil identifikasi lapangan, bukan tingkat risiko yang telah dinilai, dan bukan daftar kewajiban regulator yang komprehensif.

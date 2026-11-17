@@ -1,3 +1,4 @@
+import {mountRecordDetailDialog} from './record-detail-dialog.js';
 const $=id=>document.getElementById(id);
 const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const TYPES={server:'Server',workstation:'PC/Laptop',network:'Jaringan',software:'Aplikasi',storage:'Storage',other:'Lainnya'};
@@ -43,6 +44,7 @@ export function validateAssetResponse(asset){
   return asset;
 }
 export function createAssetRegisterUI({api,getPermissions,onAuthFailure}){
+  const detailWindow=mountRecordDetailDialog('ti-assets-detail');
   const state={items:[],selected:null,busy:false,loaded:false,offset:0,hasMore:false,request:0};
   const canRead=()=>getPermissions().includes('assets:read');
   const canWrite=()=>getPermissions().includes('assets:write');
@@ -50,6 +52,7 @@ export function createAssetRegisterUI({api,getPermissions,onAuthFailure}){
     const n=$('ti-assets-message');n.textContent=text??'';n.hidden=!text;n.dataset.kind=kind;
   };
   function clear(){
+    detailWindow.close();
     ++state.request;state.items=[];state.selected=null;state.busy=false;state.loaded=false;
     state.offset=0;state.hasMore=false;
     $('ti-assets-form').reset();
@@ -158,8 +161,8 @@ export function createAssetRegisterUI({api,getPermissions,onAuthFailure}){
   }
   function fillForm(asset){
     $('ti-assets-form').reset();
-    $('ti-asset-code').value=asset?.asset_code??'';
-    $('ti-asset-code').readOnly=Boolean(asset);
+    $('ti-asset-code').value=asset?.asset_code??'AUTO';
+    $('ti-asset-code').readOnly=true;
     $('ti-asset-title').value=asset?.title??'';
     $('ti-asset-kind').value=asset?.kind??'';
     $('ti-asset-owner').value=asset?.owner_name??'';
@@ -170,9 +173,9 @@ export function createAssetRegisterUI({api,getPermissions,onAuthFailure}){
     $('ti-assets-form').dataset.editId=asset?.id??'';
     $('ti-assets-form').dataset.revision=String(asset?.revision??0);
     $('ti-assets-dialog-title').textContent=asset?'Ubah aset TI':'Tambah aset TI';
-    $('ti-asset-suggest-code').hidden=Boolean(asset);
+    $('ti-asset-suggest-code').hidden=true;
     $('ti-asset-code-hint').textContent=asset
-      ?'Kode permanen untuk menjaga riwayat aset.':'Saran dapat diubah. Periksa keunikannya sebelum disimpan.';
+      ?'Kode tersimpan untuk jejak inventaris.':'Kode inventaris diterbitkan otomatis saat data disimpan.';
     $('ti-assets-error').hidden=true;$('ti-assets-error').textContent='';
     renderGuidance();
     $('ti-assets-dialog').showModal();
@@ -206,7 +209,7 @@ export function createAssetRegisterUI({api,getPermissions,onAuthFailure}){
     try{
       const asset=validateAssetResponse(await api('/assets/'+id));
       renderDetail(asset);
-      $('ti-assets-detail').scrollIntoView?.({block:'nearest'});
+      detailWindow.show();
       const history=await api('/assets/'+id+'/history');
       const root=$('ti-assets-history');root.replaceChildren();
       if(!Array.isArray(history.events))throw new TypeError('Invalid history');
@@ -262,8 +265,8 @@ export function createAssetRegisterUI({api,getPermissions,onAuthFailure}){
     }catch(error){
       if(!onAuthFailure(error)){
         $('ti-assets-error').textContent=error?.status===409
-          ?'Data aset telah berubah atau kode sudah dipakai. Muat ulang sebelum mengulangi.'
-          :'Gagal menyimpan aset. Periksa kode, isian wajib dan batas panjang.';
+          ?'Data aset telah berubah. Muat ulang sebelum menyimpan lagi.'
+          :'Data belum tersimpan. Periksa isian wajib dan coba kembali.';
         $('ti-assets-error').hidden=false;
       }
     }finally{state.busy=false;sync();}

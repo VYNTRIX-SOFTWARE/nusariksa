@@ -1,4 +1,5 @@
 import {userHasPermission} from './authorization.js';
+import {nextTiDocumentNumber} from './ti-document-numbers.js';
 
 const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const CODE=/^[A-Z][A-Z0-9_-]{1,31}$/;
@@ -114,6 +115,7 @@ export async function assetHistory(db,{actorId,id}){
 export async function createAssetInTransaction(db,{actorId,...input}){
   await authorized(db,actorId,'assets:write');
   const data=validateAssetInput(input);
+  if(data.assetCode==='AUTO')data.assetCode=await nextTiDocumentNumber(db,{actorId,kind:'asset'});
   try{
     const result=await db.query(
       'INSERT INTO ti_assets(institution_id,asset_code,title,kind,owner_name,location,'+

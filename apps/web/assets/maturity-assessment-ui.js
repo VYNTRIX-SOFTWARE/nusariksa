@@ -1,4 +1,5 @@
 import {confirmAssessmentAction} from './action-dialog.js';
+import {downloadPrivateReport,reportDownloadError} from './private-report-download.js';
 import {
   canReadMaturityAssessments,canCreateMaturityAssessments,
   canRateMaturityAssessment,validMaturityAssessments,validMaturityDetail,
@@ -171,6 +172,7 @@ export function createMaturityAssessmentUI({
   function renderDetail(){
     const data=state.detail;
     $('ma-detail').hidden=!data;
+    $('ma-export-csv').hidden=!data;
     if(!data){renderActions();return;}
     const summary=data.summary;
     $('ma-detail-title').textContent=data.title;
@@ -388,6 +390,15 @@ export function createMaturityAssessmentUI({
     const button=event.target.closest?.('[data-ma-review-id]');
     if(button&&$('ma-review-queue').contains(button))
       void open(button.dataset.maReviewId);
+  });
+  $('ma-export-csv').addEventListener('click',async()=>{
+    if(!state.detail)return;
+    const id=state.detail.id;
+    try{
+      await downloadPrivateReport('/register-exports/maturity/'+encodeURIComponent(id)+'.csv',
+        'nusariksa-maturitas-'+id+'.csv',{accept:'text/csv'});
+      message('Ekspor maturitas internal siap diunduh.','success');
+    }catch(error){if(!onAuthFailure(error))message(reportDownloadError(error),'error');}
   });
   $('ma-submit').addEventListener('click',async()=>{
     if(!canSubmit()||state.busy||!confirmLeave())return;

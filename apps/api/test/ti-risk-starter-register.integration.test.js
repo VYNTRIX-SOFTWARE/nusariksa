@@ -25,14 +25,14 @@ test('daftar awal risiko tersimpan di database dan dapat dinilai tanpa angka bua
       const seeded=await db.query(
         "SELECT count(*)::int AS n FROM ti_risk_reference_register WHERE institution_id=$1",
         [instId]);
-      assert.equal(seeded.rows[0].n,24);
+      assert.equal(seeded.rows[0].n,40);
       const catalog=await db.query(
         "SELECT count(*)::int AS n FROM ti_risk_reference_catalog");
-      assert.equal(catalog.rows[0].n,24);
+      assert.equal(catalog.rows[0].n,40);
       await db.query('SELECT add_risk_reference_register_for_institution($1)',[instId]);
       assert.equal((await db.query(
         'SELECT count(*)::int AS n FROM ti_risk_reference_register WHERE institution_id=$1',
-        [instId])).rows[0].n,24);
+        [instId])).rows[0].n,40);
       const owners={};
       const cookies={};
       for(const [key,role] of [['writer','IT_OFFICER'],['reader','VIEWER']]){
@@ -64,7 +64,7 @@ test('daftar awal risiko tersimpan di database dan dapat dinilai tanpa angka bua
         const all=await send('/risks/starter','GET',cookies.reader);
         assert.equal(all.status,200);
         const refs=(await all.json()).references;
-        assert.equal(refs.length,24);
+        assert.equal(refs.length,40);
         assert.ok(refs.every(x=>x.state==='pending'&&!x.adopted_risk_id));
         assert.ok(refs.every(x=>x.title&&x.scenario&&x.review&&x.controls));
         assert.equal((await db.query(

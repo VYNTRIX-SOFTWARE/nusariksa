@@ -1,3 +1,4 @@
+import {mountRecordDetailDialog} from './record-detail-dialog.js';
 const $=id=>document.getElementById(id);
 const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const CATEGORIES={availability:'Gangguan layanan',cybersecurity:'Keamanan siber',
@@ -54,6 +55,7 @@ export function validateIncidentOperationsOverview(value){
 }
 
 export function createIncidentManagementUI({api,getPermissions,onAuthFailure}){
+  const detailWindow=mountRecordDetailDialog('ti-incidents-detail');
   const state={rows:[],assets:[],risks:[],selected:null,loaded:false,offset:0,
     more:false,busy:false,request:0,detailRequest:0,overviewRequest:0,overviewBusy:false};
   const canRead=()=>getPermissions().includes('incidents:read');
@@ -76,6 +78,7 @@ export function createIncidentManagementUI({api,getPermissions,onAuthFailure}){
     $('ti-incidents-timeline-save').disabled=state.busy||!canWrite();
   }
   function clear(){
+    detailWindow.close();
     ++state.request;++state.detailRequest;++state.overviewRequest;
     state.rows=[];state.assets=[];state.risks=[];state.selected=null;
     state.loaded=false;state.offset=0;state.more=false;state.busy=false;
@@ -192,8 +195,8 @@ export function createIncidentManagementUI({api,getPermissions,onAuthFailure}){
   }
   function setForm(record){
     $('ti-incidents-form').reset();
-    $('ti-incident-code').value=record?.incident_code??'';
-    $('ti-incident-code').readOnly=!!record;
+    $('ti-incident-code').value=record?.incident_code??'AUTO';
+    $('ti-incident-code').readOnly=true;
     $('ti-incident-title').value=record?.title??'';
     $('ti-incident-description').value=record?.description??'';
     $('ti-incident-category').value=record?.category??'availability';
@@ -267,6 +270,7 @@ export function createIncidentManagementUI({api,getPermissions,onAuthFailure}){
       const incident=validateIncidentResponse(await api('/incidents/'+id));
       if(request!==state.detailRequest)return;
       renderDetail(incident);
+      detailWindow.show();
       const response=await api('/incidents/'+id+'/history');
       if(request!==state.detailRequest)return;
       if(!Array.isArray(response.events))throw new TypeError('Invalid history');
@@ -327,7 +331,7 @@ export function createIncidentManagementUI({api,getPermissions,onAuthFailure}){
         $('ti-incidents-form-error').hidden=false;
         $('ti-incidents-form-error').textContent=error?.status===409
           ?'Perpindahan status, tautan aset/risiko, atau revisi tidak valid. Periksa syarat penyelesaian.'
-          :'Gagal menyimpan insiden. Periksa kode, detail, PIC dan waktu kejadian.';
+          :'Insiden belum tersimpan. Periksa detail kejadian, PIC dan waktu deteksi.';
       }
     }finally{state.busy=false;sync();}
   });
