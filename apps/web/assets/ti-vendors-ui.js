@@ -1,3 +1,4 @@
+import {mountRecordDetailDialog} from './record-detail-dialog.js';
 const $=id=>document.getElementById(id);
 const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const CATEGORY={core_banking:'Core banking',infrastructure:'Infrastruktur & jaringan',
@@ -35,6 +36,8 @@ export function validContract(x){
   return x;
 }
 export function createVendorManagementUI({api,getPermissions,onAuthFailure}){
+  const detailWindow=mountRecordDetailDialog('ti-vendors-detail');
+  $('ti-vendors-detail').append($('ti-vendors-contract-detail'));
   const state={vendors:[],selected:null,contracts:[],contract:null,reviews:[],history:[],
     loaded:false,more:false,offset:0,busy:false,request:0,detailRequest:0,contractRequest:0};
   const canRead=()=>getPermissions().includes('vendors:read');
@@ -58,6 +61,7 @@ export function createVendorManagementUI({api,getPermissions,onAuthFailure}){
     $('ti-vendors-review-save').disabled=state.busy||!canWrite();
   }
   function clear(){
+    detailWindow.close();
     ++state.request;++state.detailRequest;++state.contractRequest;
     state.vendors=[];state.selected=null;state.contracts=[];state.contract=null;
     state.reviews=[];state.history=[];state.loaded=false;state.more=false;
@@ -170,6 +174,7 @@ export function createVendorManagementUI({api,getPermissions,onAuthFailure}){
       const v=validVendor(await api('/vendors/'+id));
       if(token!==state.detailRequest)return;
       showVendor(v);
+      detailWindow.show();
       state.contract=null;state.reviews=[];
       $('ti-vendors-contract-detail').hidden=true;
       const [contracts,history]=await Promise.all([

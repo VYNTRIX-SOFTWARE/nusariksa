@@ -1,5 +1,6 @@
 import {createPadkIndicatorNoteUI} from './padk-indicator-note-ui.js';
 import {confirmAssessmentAction} from './action-dialog.js';
+import {downloadPrivateReport,reportDownloadError} from './private-report-download.js';
 import {createPadkScorePreviewUI} from './padk-score-preview-ui.js';
 import {createPadkEvidenceCoverageUI} from './padk-evidence-coverage-ui.js';
 
@@ -210,6 +211,7 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
     $('pdk-review-queue-refresh').disabled=state.queueBusy;
     const report=$('pdk-workpaper-download');
     report.hidden=!state.detail;
+    $('pdk-export-csv').hidden=!state.detail;
     report.href=state.detail
       ?ENDPOINT+'/'+encodeURIComponent(state.detail.id)+'/workpaper.pdf':'#';
     $('pdk-first-run').hidden=!(state.loaded&&state.items.length===0&&writable());
@@ -392,6 +394,29 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
   }
   $('pdk-review-refresh').addEventListener('click',()=>{void reviewStatus().catch(
     error=>fail(error,'Gagal memuat status pemeriksaan.'));});
+  $('pdk-export-csv').addEventListener('click',async()=>{
+    if(!state.detail)return;
+    const id=state.detail.id;
+    try{
+      await downloadPrivateReport('/register-exports/padk/'+encodeURIComponent(id)+'.csv',
+        'nusariksa-draft-padk-'+id+'.csv',{accept:'text/csv'});
+      reviewMessage('Kertas kerja indikator CSV siap diunduh.','success');
+    }catch(error){
+      if(!onAuthFailure(error))reviewMessage(reportDownloadError(error),'error');
+    }
+  });
+  $('pdk-workpaper-download').addEventListener('click',async event=>{
+    event.preventDefault();
+    if(!state.detail)return;
+    const id=state.detail.id;
+    try{
+      await downloadPrivateReport(ENDPOINT+'/'+encodeURIComponent(id)+'/workpaper.pdf',
+        'nusariksa-draft-padk-'+id+'.pdf');
+      reviewMessage('Kertas kerja draft siap diunduh.','success');
+    }catch(error){
+      if(!onAuthFailure(error))reviewMessage(reportDownloadError(error),'error');
+    }
+  });
   $('pdk-review-submit').addEventListener('click',async()=>{
     const readiness=getPadkDraftSubmissionReadiness({
       editable:Boolean(owner()),dirty:state.dirty||indicatorUI.isDirty(),

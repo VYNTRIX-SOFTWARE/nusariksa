@@ -266,7 +266,8 @@ async function runBrowser(base,db,fixture){
       const diagnostic=await evalJs("(async()=>({loginVisible:!document.getElementById('login-screen').hidden,appVisible:!document.getElementById('app-screen').hidden,notice:document.getElementById('app-notice').textContent,loginError:document.getElementById('login-error').textContent,permissions:await fetch('/auth/permissions').then(async r=>({status:r.status,body:await r.text()})),assessments:await fetch('/assessments').then(async r=>({status:r.status,body:await r.text()})),missing:['ma-review-form','ma-review-queue-panel','ma-review-state','ma-review-queue','ma-submit','ma-review-history'].filter(id=>!document.getElementById(id)),menuHidden:document.getElementById('maturity-assessments-menu')?.hidden}))()");
       throw new Error(error.message+' | browser: '+JSON.stringify(diagnostic)+' | console: '+c.errors.join(' | '));
     }
-    await evalJs("document.getElementById('maturity-assessments-menu').click()");
+    await evalJs("document.querySelectorAll('dialog.nr-record-detail-dialog[open]').forEach(d=>d.close());"+
+      "document.getElementById('maturity-assessments-menu').click()");
     try{
       await until("document.getElementById('ma-detail') && !document.getElementById('ma-detail').hidden",'maturity details');
     }catch(error){
@@ -276,7 +277,8 @@ async function runBrowser(base,db,fixture){
   }
   async function openPadk(){
     await until("!document.getElementById('padk-preparations-menu').hidden",'PADK preparation navigation');
-    await evalJs("document.getElementById('padk-preparations-menu').click()");
+    await evalJs("document.querySelectorAll('dialog.nr-record-detail-dialog[open]').forEach(d=>d.close());"+
+      "document.getElementById('padk-preparations-menu').click()");
     await until("!document.getElementById('page-padk-preparations').hidden",'PADK preparation workspace');
   }
   async function logout(){
@@ -407,7 +409,8 @@ async function runBrowser(base,db,fixture){
     // Form penilaian memilih metodologi tersebut secara otomatis.
     await until("!document.getElementById('maturity-assessments-menu').hidden",
       'menu penilaian maturitas');
-    await evalJs("document.getElementById('maturity-assessments-menu').click()");
+    await evalJs("document.querySelectorAll('dialog.nr-record-detail-dialog[open]').forEach(d=>d.close());"+
+      "document.getElementById('maturity-assessments-menu').click()");
     await until("!document.getElementById('ma-create-toggle').hidden",
       'tombol buat penilaian maturitas');
     await evalJs("document.getElementById('ma-create-toggle').click()");
@@ -425,9 +428,11 @@ async function runBrowser(base,db,fixture){
     assert.equal(await evalJs("document.getElementById('ma-create-end').value.length"),10);
 
     await until("!document.getElementById('recovery-menu').hidden",'recovery navigation');
-    await evalJs("document.getElementById('recovery-menu').click()");
+    await evalJs("document.querySelectorAll('dialog.nr-record-detail-dialog[open]').forEach(d=>d.close());"+
+      "document.getElementById('recovery-menu').click()");
     await until("!document.getElementById('ti-recovery-create').hidden",'recovery create action');
-    await evalJs("document.getElementById('ti-recovery-create').click()");
+    await evalJs("document.querySelectorAll('dialog.nr-record-detail-dialog[open]').forEach(d=>d.close());"+
+      "document.getElementById('ti-recovery-create').click()");
     await until("document.getElementById('ti-recovery-dialog').open",'recovery plan dialog');
     assert.equal(await evalJs("document.querySelectorAll('#ti-recovery-form .recovery-form-section').length"),4);
     assert.equal(await evalJs("document.getElementById('ti-recovery-field-rto').value"),'');
@@ -483,9 +488,11 @@ async function runBrowser(base,db,fixture){
       "document.getElementById('ti-recovery-archive').hidden",
       'recovery plan archived');
     await until("!document.getElementById('vendor-menu').hidden",'vendor management navigation');
-    await evalJs("document.getElementById('vendor-menu').click()");
+    await evalJs("document.querySelectorAll('dialog.nr-record-detail-dialog[open]').forEach(d=>d.close());"+
+      "document.getElementById('vendor-menu').click()");
     await until("!document.getElementById('ti-vendors-create').hidden",'vendor creation action');
-    await evalJs("document.getElementById('ti-vendors-create').click()");
+    await evalJs("document.querySelectorAll('dialog.nr-record-detail-dialog[open]').forEach(d=>d.close());"+
+      "document.getElementById('ti-vendors-create').click()");
     await until("document.getElementById('ti-vendors-dialog').open",'new vendor dialog');
     await evalJs("document.getElementById('ti-vendor-code').value='VND-BROWSER-01';"+
       "document.getElementById('ti-vendor-name').value='Penyedia layanan pengujian CBS';"+
@@ -550,15 +557,20 @@ async function runBrowser(base,db,fixture){
       'vendor archived with contracts and reviews');
     assert.equal((await db.query('SELECT count(*)::int n FROM ti_vendor_change_events WHERE vendor_id=$1',
       [vendorRow.rows[0].id])).rows[0].n,5);
-    await evalJs("document.getElementById('asset-menu').click()");
+    await evalJs("document.querySelectorAll('dialog.nr-record-detail-dialog[open]').forEach(d=>d.close());"+
+      "document.getElementById('asset-menu').click()");
     // Real inventory browser journey: create, persist, edit, filter, archive, audit.
     await until("!document.getElementById('asset-menu').hidden",'asset register navigation');
-    await evalJs("document.getElementById('asset-menu').click()");
+    await evalJs("document.querySelectorAll('dialog.nr-record-detail-dialog[open]').forEach(d=>d.close());"+
+      "document.getElementById('asset-menu').click()");
     await until("!document.getElementById('ti-assets-create').hidden",'asset register create ready');
-    await evalJs("document.getElementById('ti-assets-create').click()");
+    await evalJs("document.querySelectorAll('dialog.nr-record-detail-dialog[open]').forEach(d=>d.close());"+
+      "document.getElementById('ti-assets-create').click()");
     await until("document.getElementById('ti-assets-dialog').open",'asset creation form');
     assert.equal(await evalJs("document.querySelectorAll('#ti-assets-form .asset-form-section').length"),3);
-    assert.equal(await evalJs("document.getElementById('ti-asset-suggest-code').hidden"),false);
+    assert.equal(await evalJs("document.getElementById('ti-asset-suggest-code').hidden"),true);
+    assert.equal(await evalJs("document.getElementById('ti-asset-code').value"),'AUTO');
+    assert.equal(await evalJs("document.getElementById('ti-asset-code').readOnly"),true);
     assert.equal(await evalJs("document.getElementById('ti-asset-kind').value"),'');
     assert.equal(await evalJs("document.getElementById('ti-asset-criticality').value"),'');
     assert.equal(await evalJs("document.getElementById('ti-assets-form').checkValidity()"),false);
@@ -601,7 +613,8 @@ async function runBrowser(base,db,fixture){
     await until("document.querySelectorAll('#ti-assets-list .ti-asset-item').length===1",
       'archived assets filter');
     // Create one active asset to exercise the actual risk-to-asset foreign key in the browser.
-    await evalJs("document.getElementById('ti-assets-create').click()");
+    await evalJs("document.querySelectorAll('dialog.nr-record-detail-dialog[open]').forEach(d=>d.close());"+
+      "document.getElementById('ti-assets-create').click()");
     await until("document.getElementById('ti-assets-dialog').open",'second asset form');
     assert.equal(await evalJs("document.getElementById('ti-asset-criticality').value"),'');
     await evalJs("document.getElementById('ti-asset-code').value='SRV-RISK-E2E';"+
@@ -615,13 +628,14 @@ async function runBrowser(base,db,fixture){
       'second asset persisted');
     const riskAsset=(await db.query("SELECT id FROM ti_assets WHERE asset_code='SRV-RISK-E2E'")).rows[0].id;
     await until("!document.getElementById('risk-menu').hidden",'risk register navigation');
-    await evalJs("document.getElementById('risk-menu').click()");
+    await evalJs("document.querySelectorAll('dialog.nr-record-detail-dialog[open]').forEach(d=>d.close());"+
+      "document.getElementById('risk-menu').click()");
     await until("!document.getElementById('ti-risks-register-panel').hidden",
       'bank starter register shown first');
-    await until("document.querySelectorAll('#ti-risk-starting-list .risk-starting-item').length===24",
-      '24 saved bank starter entries');
+    await until("document.querySelectorAll('#ti-risk-starting-list .risk-starting-item').length===40",
+      '40 saved bank starter entries');
     assert.equal(await evalJs("document.getElementById('ti-risk-reference-panel').hidden"),true);
-    assert.equal((await db.query("SELECT count(*)::int AS n FROM ti_risk_reference_register")).rows[0].n,24);
+    assert.equal((await db.query("SELECT count(*)::int AS n FROM ti_risk_reference_register")).rows[0].n,40);
     assert.equal((await db.query("SELECT count(*)::int AS n FROM ti_risks")).rows[0].n,0);
     await evalJs("document.querySelector('#ti-risk-starting-list .risk-starting-item button').click()");
     await until("document.getElementById('ti-risks-dialog').open",
@@ -637,13 +651,14 @@ async function runBrowser(base,db,fixture){
     await evalJs("document.getElementById('ti-risks-show-references').click()");
     await until("!document.getElementById('ti-risk-reference-panel').hidden",
       'reference catalog opened');
-    assert.equal(await evalJs("document.querySelectorAll('#ti-risk-reference-list .risk-reference-item').length"),24);
+    assert.equal(await evalJs("document.querySelectorAll('#ti-risk-reference-list .risk-reference-item').length"),40);
     await evalJs("document.getElementById('ti-risks-show-register').click()");
 
     await until("!document.getElementById('ti-risks-create').hidden && "+
       "[...document.querySelectorAll('#ti-risk-asset-id option')].some(x=>x.value==="+
       JSON.stringify(riskAsset)+")",'risk form loads real active assets');
-    await evalJs("document.getElementById('ti-risks-create').click()");
+    await evalJs("document.querySelectorAll('dialog.nr-record-detail-dialog[open]').forEach(d=>d.close());"+
+      "document.getElementById('ti-risks-create').click()");
     await until("document.getElementById('ti-risks-dialog').open",'new risk dialog');
     assert.equal(await evalJs("document.getElementById('ti-risk-likelihood').value"),'');
     assert.equal(await evalJs("document.getElementById('ti-risk-impact').value"),'');
@@ -674,7 +689,7 @@ async function runBrowser(base,db,fixture){
     assert.equal(riskRow.rows[0].score,20);
     assert.equal(riskRow.rows[0].residual_likelihood,null);
     assert.equal((await db.query("SELECT state FROM ti_risk_reference_register WHERE reference_code='CBS_GANGGUAN'")).rows[0].state,'adopted');
-    assert.equal((await db.query("SELECT count(*)::int AS n FROM ti_risk_reference_register WHERE state='pending'")).rows[0].n,23);
+    assert.equal((await db.query("SELECT count(*)::int AS n FROM ti_risk_reference_register WHERE state='pending'")).rows[0].n,39);
     assert.equal(await evalJs("document.getElementById('ti-risks-detail-summary').textContent.includes('Gangguan server saat transaksi')"),true);
     assert.equal(await evalJs("document.getElementById('ti-risks-detail-values').textContent.includes('Penanganan dan PIC')"),true);
     assert.equal(await evalJs("document.querySelector('#ti-risks-list .risk-record-action').textContent.includes('Lihat penilaian')"),true);
@@ -689,11 +704,13 @@ async function runBrowser(base,db,fixture){
       'residual saved in risk detail');
     assert.equal((await db.query("SELECT revision FROM ti_risks WHERE risk_code='RSK-E2E-01'")).rows[0].revision,2);
     await until("!document.getElementById('finding-menu').hidden",'finding register navigation');
-    await evalJs("document.getElementById('finding-menu').click()");
+    await evalJs("document.querySelectorAll('dialog.nr-record-detail-dialog[open]').forEach(d=>d.close());"+
+      "document.getElementById('finding-menu').click()");
     await until("!document.getElementById('ti-findings-create').hidden && "+
       "[...document.querySelectorAll('#ti-findings-list .ti-finding-row')].length===0",
       'finding creation ready');
-    await evalJs("document.getElementById('ti-findings-create').click()");
+    await evalJs("document.querySelectorAll('dialog.nr-record-detail-dialog[open]').forEach(d=>d.close());"+
+      "document.getElementById('ti-findings-create').click()");
     await until("document.getElementById('ti-findings-dialog').open",'finding form');
     assert.equal(await evalJs("document.querySelectorAll('#ti-findings-form .finding-form-section').length"),3);
     assert.equal(await evalJs("document.getElementById('ti-finding-priority').value"),'');
@@ -735,11 +752,13 @@ async function runBrowser(base,db,fixture){
       [findingRow.rows[0].id])).rows[0].submission_cycle,1);
     // Incident workflow: link a real asset + risk, record response, resolve and archive.
     await until("!document.getElementById('incident-menu').hidden",'incident register navigation');
-    await evalJs("document.getElementById('incident-menu').click()");
+    await evalJs("document.querySelectorAll('dialog.nr-record-detail-dialog[open]').forEach(d=>d.close());"+
+      "document.getElementById('incident-menu').click()");
     await until("!document.getElementById('ti-incidents-create').hidden && "+
       "[...document.querySelectorAll('#ti-incident-risk-id option')].some(x=>x.value==="+
       JSON.stringify(riskRow.rows[0].id)+")",'incident options from live risk register');
-    await evalJs("document.getElementById('ti-incidents-create').click()");
+    await evalJs("document.querySelectorAll('dialog.nr-record-detail-dialog[open]').forEach(d=>d.close());"+
+      "document.getElementById('ti-incidents-create').click()");
     await until("document.getElementById('ti-incidents-dialog').open",'incident form ready');
     await evalJs("document.getElementById('ti-incident-code').value='INC-E2E-01';"+
       "document.getElementById('ti-incident-title').value='Kegagalan layanan transaksi';"+
@@ -751,8 +770,8 @@ async function runBrowser(base,db,fixture){
       "document.getElementById('ti-incidents-form').requestSubmit()");
     await until("document.querySelector('#ti-incidents-overview .incident-overview-item strong')?.textContent==='1'",
       'incident operations overview shows one unresolved incident');
-    const exportResult=await evalJs("(async()=>{const link=document.getElementById('ti-incidents-export');"+
-      "const resp=await fetch(link.href);return {visible:!link.hidden,status:resp.status,"+
+    const exportResult=await evalJs("(async()=>{const button=document.getElementById('ti-incidents-export');"+
+      "const resp=await fetch('/register-exports/incidents.csv');return {visible:!button.hidden,status:resp.status,"+
       "type:resp.headers.get('content-type'),text:(await resp.text()).slice(0,1000)}})()");
     assert.equal(exportResult.visible,true);
     assert.equal(exportResult.status,200);
@@ -802,7 +821,8 @@ async function runBrowser(base,db,fixture){
       'incident archived with persistent history');
     assert.equal((await db.query('SELECT count(*)::int AS n FROM ti_incident_events WHERE incident_id=$1',
       [incident.rows[0].id])).rows[0].n,6);
-    await evalJs("document.getElementById('risk-menu').click()");
+    await evalJs("document.querySelectorAll('dialog.nr-record-detail-dialog[open]').forEach(d=>d.close());"+
+      "document.getElementById('risk-menu').click()");
     await until("!document.getElementById('ti-risks-detail').hidden",'return to risk register');
     await evalJs("window.confirm=()=>true;document.getElementById('ti-risks-archive').click()");
     await until("document.getElementById('ti-risks-detail-values').textContent.includes('Diarsipkan')",
@@ -813,9 +833,11 @@ async function runBrowser(base,db,fixture){
       "document.getElementById('ti-risks-view').dispatchEvent(new Event('change'))");
     await until("document.querySelectorAll('#ti-risks-list .ti-risk-list-item').length===1",
       'archived risk filter');
-    await evalJs("document.getElementById('assessment-menu').click()");
+    await evalJs("document.querySelectorAll('dialog.nr-record-detail-dialog[open]').forEach(d=>d.close());"+
+      "document.getElementById('assessment-menu').click()");
     await until("!document.getElementById('assessment-menu').hidden",'general assessment navigation');
-    await evalJs("document.getElementById('assessment-menu').click()");
+    await evalJs("document.querySelectorAll('dialog.nr-record-detail-dialog[open]').forEach(d=>d.close());"+
+      "document.getElementById('assessment-menu').click()");
     await until("!document.getElementById('assessment-create').hidden",'create assessment action');
     await evalJs("document.getElementById('assessment-create').click()");
     await until("document.getElementById('assessment-create-dialog').open",
@@ -849,7 +871,8 @@ async function runBrowser(base,db,fixture){
       'SELECT count(*)::int AS total FROM assessment_control_scope_items WHERE assessment_id=$1',
       [quickDb.rows[0].id])).rows[0].total,2);
     // Existing custom-catalog assessment workflow remains accessible.
-    await evalJs("document.getElementById('assessment-menu').click()");
+    await evalJs("document.querySelectorAll('dialog.nr-record-detail-dialog[open]').forEach(d=>d.close());"+
+      "document.getElementById('assessment-menu').click()");
     await until("!![...document.querySelectorAll('#assessments-table [data-workspace-id]')].find(x=>x.dataset.workspaceId==="+
       JSON.stringify(fixture.generalAssessmentId)+")",
       'previous custom assessment remains accessible');
@@ -1141,7 +1164,8 @@ async function runBrowser(base,db,fixture){
 
     await login('reviewer');
     await until("!document.getElementById('finding-menu').hidden",'reviewer can read findings');
-    await evalJs("document.getElementById('finding-menu').click()");
+    await evalJs("document.querySelectorAll('dialog.nr-record-detail-dialog[open]').forEach(d=>d.close());"+
+      "document.getElementById('finding-menu').click()");
     await until("!!document.querySelector('#ti-findings-list .ti-finding-open')",
       'pending finding appears in review list');
     await evalJs("document.querySelector('#ti-findings-list .ti-finding-open').click()");

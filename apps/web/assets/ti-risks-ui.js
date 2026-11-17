@@ -1,3 +1,4 @@
+import {mountRecordDetailDialog} from './record-detail-dialog.js';
 const $=id=>document.getElementById(id);
 const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const LEVEL={low:'Rendah',medium:'Sedang',high:'Tinggi',critical:'Kritis'};
@@ -40,6 +41,7 @@ export function validateRiskResponse(x){
   return x;
 }
 export function createRiskRegisterUI({api,getPermissions,onAuthFailure}){
+  const detailWindow=mountRecordDetailDialog('ti-risks-detail');
   const state={risks:[],assets:[],references:[],selected:null,loaded:false,busy:false,
     offset:0,more:false,request:0,detailRequest:0};
   const canRead=()=>getPermissions().includes('risks:read');
@@ -181,6 +183,7 @@ export function createRiskRegisterUI({api,getPermissions,onAuthFailure}){
     $('ti-risks-archive').disabled=state.busy;
   }
   function clear(){
+    detailWindow.close();
     ++state.request;++state.detailRequest;
     state.risks=[];state.assets=[];state.references=[];state.selected=null;state.loaded=false;
     state.busy=false;state.offset=0;state.more=false;
@@ -390,7 +393,7 @@ export function createRiskRegisterUI({api,getPermissions,onAuthFailure}){
       const record=validateRiskResponse(await api('/risks/'+id));
       if(req!==state.detailRequest)return;
       renderDetail(record);
-      $('ti-risks-detail').scrollIntoView?.({block:'nearest'});
+      detailWindow.show();
       const history=await api('/risks/'+id+'/history');
       if(req!==state.detailRequest)return;
       if(!Array.isArray(history.events))throw new TypeError('History invalid');

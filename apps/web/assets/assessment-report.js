@@ -3,6 +3,7 @@ import {
   reportRatingCounts, filteredReportControls, validateAssessmentReport,
   REPORT_RATINGS, REPORT_STATUS_LABELS,
 } from './assessment-report-model.js';
+import {downloadPrivateReport,reportDownloadError} from './private-report-download.js';
 
 const $ = id => document.getElementById(id);
 const el = (tag, className, value) => {
@@ -190,6 +191,24 @@ export function createReporting({ api, getPermissions, getAssessments, onAuthFai
     event.preventDefault();
     void open($('report-manual-id').value.trim());
   });
+  for(const [format,key] of [['pdf','report-download-pdf'],['csv','report-download-csv']]){
+    $(key).addEventListener('click',async event=>{
+      event.preventDefault();
+      const report=currentReport;
+      if(!report)return;
+      const link=$(key);
+      link.setAttribute('aria-busy','true');
+      try{
+        await downloadPrivateReport(
+          '/assessments/'+encodeURIComponent(report.assessment.id)+'/report.'+format,
+          'nusariksa-asesmen-ti-'+report.assessment.id+'.'+format
+        );
+        message('File '+format.toUpperCase()+' sudah disiapkan untuk diunduh.','success');
+      }catch(error){
+        if(!onAuthFailure(error))message(reportDownloadError(error),'error');
+      }finally{link.removeAttribute('aria-busy');}
+    });
+  }
   $('report-filter').addEventListener('change', () => {
     if (currentReport) renderControls(currentReport, $('report-filter').value);
   });

@@ -1,3 +1,4 @@
+import {mountRecordDetailDialog} from './record-detail-dialog.js';
 const $=id=>document.getElementById(id);
 const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const PRIORITY={low:'Rendah',medium:'Sedang',high:'Tinggi',critical:'Kritis'};
@@ -57,6 +58,7 @@ function formSourceValue(record){
   return record.incident_id;
 }
 export function createFindingManagementUI({api,getPermissions,getUserId,onAuthFailure}){
+  const detailWindow=mountRecordDetailDialog('ti-findings-detail');
   const state={items:[],options:null,selected:null,loaded:false,busy:false,
     offset:0,more:false,request:0,detailRequest:0};
   const read=()=>getPermissions().includes('findings:read');
@@ -82,6 +84,7 @@ export function createFindingManagementUI({api,getPermissions,getUserId,onAuthFa
     $('ti-findings-review-save').disabled=state.busy;
   }
   function clear(){
+    detailWindow.close();
     ++state.request;++state.detailRequest;
     state.items=[];state.options=null;state.selected=null;state.loaded=false;
     state.busy=false;state.offset=0;state.more=false;
@@ -323,7 +326,7 @@ export function createFindingManagementUI({api,getPermissions,getUserId,onAuthFa
       const item=validFinding(await api('/findings/'+id));
       if(request!==state.detailRequest)return;
       renderDetail(item);
-      $('ti-findings-detail').scrollIntoView?.({block:'nearest'});
+      detailWindow.show();
       const events=await api('/findings/'+id+'/history');
       if(request!==state.detailRequest)return;
       if(!Array.isArray(events.events))throw new TypeError('Invalid history');

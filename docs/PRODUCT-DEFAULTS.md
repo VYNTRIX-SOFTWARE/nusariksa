@@ -59,3 +59,10 @@ Dua alur yang sudah memiliki ekspor PDF internal menggunakan komponen layout ber
 Penilaian baru dapat menggunakan snapshot kontrol yang dipilih maker dari versi katalog terpublikasi, sebelum asesmen dimulai. Snapshot bersifat immutable. Pemilihan 1–200 kontrol harus berasal dari katalog terpasang; kontrol di luar pilihan ditolak pada penyimpanan hasil maupun bukti. Daftar, laporan, dan syarat lengkap untuk submit mengikuti snapshot yang sama. Absennya snapshot pada asesmen lama berarti seluruh kontrol katalog versi terpasang seperti semula.
 
 Pustaka berreferensi NusaRiksa saat ini mencakup 26 kontrol interpretasi operasional dengan sumber POJK 34/2025, tidak diklaim sebagai seluruh kewajiban regulator. Nilai 200 adalah batas kapasitas teknis. Template lama tetap ada untuk menjaga audit historis, tetapi tidak ditawarkan sebagai opsi bawaan kepada pengguna baru. Daftar kontrol yang dipilih tidak menggantikan pemenuhan peraturan yang relevan.
+
+
+## Pengalaman register dan keluaran laporan
+
+Detail register dibuka sebagai dialog yang mempertahankan posisi daftar. Kode aset dan insiden baru dibuat oleh server menggunakan counter transaksional per lembaga/jenis/tahun WIB, tanpa mengganti kode historis. Pustaka risiko awal diperluas menjadi 40 skenario contoh internal, bukan penilaian aktual atau instrumen wajib regulator.
+
+Ekspor internal mendukung asesmen TI (PDF/CSV), PADK (PDF/CSV draft), maturitas (CSV domain), serta register operasional (CSV), dengan pengendalian izin, isolasi institusi, batas 5.000 baris, proteksi formula spreadsheet, dan pencegahan cache. Ketersediaan CSV tidak bermakna adanya validasi regulator, pengiriman ke OJK, atau lampiran bukti terenkripsi.
