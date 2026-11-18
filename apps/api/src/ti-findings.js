@@ -97,14 +97,16 @@ export async function getFinding(db,{actorId,id}){
   await requirePermission(db,actorId,'findings:read');requireId(id);
   return one(db,actorId,id);
 }
-export async function listFindings(db,{actorId,q='',view='active',status='all',priority='all',source='all',offset=0}){
+export async function listFindings(db,{actorId,q='',view='active',status='all',priority='all',source='all',work='all',offset=0}){
   await requirePermission(db,actorId,'findings:read');
   if(typeof q!=='string'||q.length>80||!['active','archived','all'].includes(view)
+    ||!['all','mine','review','overdue'].includes(work)
     ||!(status==='all'||STATUSES.has(status))
     ||!(priority==='all'||PRIORITIES.has(priority))
     ||!(source==='all'||SOURCES.has(source))
     ||!Number.isSafeInteger(offset)||offset<0||offset>10000)
     throw new FindingError(400,'Filter temuan tidak valid');
+  if(work==='review')await requirePermission(db,actorId,'findings:verify');
   const args=[actorId],filters=['u.id=$1'];
   if(q.trim()){
     args.push(q.trim());const p='$'+args.length;
@@ -113,13 +115,21 @@ export async function listFindings(db,{actorId,q='',view='active',status='all',p
       'position(lower('+p+') in lower(f.pic))>0)');
   }
   if(view!=='all')filters.push(view==='archived'?'f.archived_at IS NOT NULL':'f.archived_at IS NULL');
+  if(work!=='all')filters.push('f.archived_at IS NULL');
+  if(work==='mine')
+    filters.push("f.created_by=$1 AND f.status IN ('open','in_progress','changes_requested')");
+  if(work==='review')
+    filters.push("f.status='pending_verification' AND f.created_by<>$1 AND f.submitted_by<>$1");
+  if(work==='overdue')
+    filters.push("f.status<>'closed' AND f.due_date<(now() AT TIME ZONE 'Asia/Jakarta')::date");
   for(const [name,value,field] of [['status',status,'f.status'],['priority',priority,'f.priority'],
     ['source',source,'f.source_type']]){
     if(value!=='all'){args.push(value);filters.push(field+'=$'+args.length);}
   }
   args.push(offset);
   const r=await db.query(QUERY+'WHERE '+filters.join(' AND ')+
-    ' ORDER BY f.updated_at DESC,f.id DESC LIMIT 51 OFFSET $'+args.length,args);
+    (work==='all'?' ORDER BY f.updated_at DESC,f.id DESC ':' ORDER BY f.due_date ASC,f.updated_at DESC,f.id DESC ')+
+    'LIMIT 51 OFFSET $'+args.length,args);
   return {findings:r.rows.slice(0,50),hasMore:r.rowCount>50,offset};
 }
 export async function findingSources(db,{actorId}){

@@ -491,6 +491,8 @@ async function runBrowser(base,db,fixture){
     await evalJs("document.querySelectorAll('dialog.nr-record-detail-dialog[open]').forEach(d=>d.close());"+
       "document.getElementById('vendor-menu').click()");
     await until("!document.getElementById('ti-vendors-create').hidden",'vendor creation action');
+    await until("document.getElementById('ti-vendors-active-count').textContent==='0'",
+      'vendor attention overview loaded');
     await evalJs("document.querySelectorAll('dialog.nr-record-detail-dialog[open]').forEach(d=>d.close());"+
       "document.getElementById('ti-vendors-create').click()");
     await until("document.getElementById('ti-vendors-dialog').open",'new vendor dialog');
@@ -522,6 +524,9 @@ async function runBrowser(base,db,fixture){
       "document.getElementById('ti-vendors-contract-values').textContent.includes('CTR-BROWSER-01')",
       'contract persisted with service and SLA');
     assert.equal(await evalJs("document.getElementById('ti-vendors-contract-values').textContent.includes('Berakhir dalam 30 hari')"),true);
+    await until("document.getElementById('ti-vendors-expiring-count').textContent==='1' && "+
+      "document.getElementById('ti-vendors-alert-list').textContent.includes('CTR-BROWSER-01')",
+      'upcoming contract appears in attention list');
     const contractRow=await db.query("SELECT id,vendor_id,sla_uptime_target FROM ti_vendor_contracts "+
       "WHERE contract_code='CTR-BROWSER-01'");
     assert.equal(contractRow.rowCount,1);
@@ -543,6 +548,13 @@ async function runBrowser(base,db,fixture){
       [contractRow.rows[0].id]);
     assert.equal(vendorReviews.rowCount,1);
     assert.equal(vendorReviews.rows[0].sla_result,'below_targets');
+    await until("document.getElementById('ti-vendors-unevaluated-count').textContent==='0'",
+      'vendor review removed from unevaluated count');
+    await evalJs("document.querySelector('dialog.nr-record-detail-dialog[open]')?.close();"+
+      "document.querySelector('#ti-vendors-alert-list button').click()");
+    await until("document.querySelector('[data-record-detail-id=ti-vendors-detail]').open && "+
+      "document.getElementById('ti-vendors-contract-values').textContent.includes('CTR-BROWSER-01')",
+      'alert deep-link opens vendor and contract detail');
     await evalJs("document.getElementById('ti-vendors-edit-contract').click()");
     await until("document.getElementById('ti-vendors-contract-dialog').open",'end contract dialog');
     await evalJs("document.getElementById('ti-vendor-contract-status').value='ended';"+
@@ -632,6 +644,8 @@ async function runBrowser(base,db,fixture){
       "document.getElementById('risk-menu').click()");
     await until("!document.getElementById('ti-risks-register-panel').hidden",
       'bank starter register shown first');
+    assert.equal(await evalJs("document.getElementById('ti-risk-starting-panel').open"),false);
+    await evalJs("document.getElementById('ti-risk-starting-panel').open=true");
     await until("document.querySelectorAll('#ti-risk-starting-list .risk-starting-item').length===40",
       '40 saved bank starter entries');
     assert.equal(await evalJs("document.getElementById('ti-risk-reference-panel').hidden"),true);
@@ -709,10 +723,15 @@ async function runBrowser(base,db,fixture){
     await until("!document.getElementById('ti-findings-create').hidden && "+
       "[...document.querySelectorAll('#ti-findings-list .ti-finding-row')].length===0",
       'finding creation ready');
+    await until("document.getElementById('ti-findings-active-count').textContent==='0'",
+      'empty finding action queue');
     await evalJs("document.querySelectorAll('dialog.nr-record-detail-dialog[open]').forEach(d=>d.close());"+
       "document.getElementById('ti-findings-create').click()");
     await until("document.getElementById('ti-findings-dialog').open",'finding form');
     assert.equal(await evalJs("document.querySelectorAll('#ti-findings-form .finding-form-section').length"),3);
+    assert.equal(await evalJs("document.getElementById('ti-finding-results-section').hidden"),true);
+    await evalJs("document.getElementById('ti-finding-results-toggle').click()");
+    assert.equal(await evalJs("document.getElementById('ti-finding-results-section').hidden"),false);
     assert.equal(await evalJs("document.getElementById('ti-finding-priority').value"),'');
     assert.equal(await evalJs("document.getElementById('ti-finding-source-type').value"),'');
     assert.equal(await evalJs("document.getElementById('ti-findings-form').checkValidity()"),false);
@@ -737,6 +756,8 @@ async function runBrowser(base,db,fixture){
     await until("!document.getElementById('ti-findings-detail').hidden && "+
       "document.getElementById('ti-findings-detail-values').textContent.includes('TEM-E2E-01')",
       'finding created and visible');
+    await until("document.getElementById('ti-findings-mine-count').textContent==='1'",
+      'maker finding work count');
     const findingRow=await db.query("SELECT id,risk_id,created_by,revision FROM ti_findings "+
       "WHERE finding_code='TEM-E2E-01'");
     assert.equal(findingRow.rowCount,1);
@@ -748,6 +769,8 @@ async function runBrowser(base,db,fixture){
     await evalJs("window.confirm=()=>true;document.getElementById('ti-findings-submit').click()");
     await until("document.getElementById('ti-findings-detail-values').textContent.includes('Menunggu pemeriksaan')",
       'finding submitted for independent review');
+    await until("document.getElementById('ti-findings-mine-count').textContent==='0'",
+      'submitted finding leaves maker work queue');
     assert.equal((await db.query("SELECT status,submission_cycle FROM ti_findings WHERE id=$1",
       [findingRow.rows[0].id])).rows[0].submission_cycle,1);
     // Incident workflow: link a real asset + risk, record response, resolve and archive.

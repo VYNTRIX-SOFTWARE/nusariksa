@@ -98,6 +98,11 @@ test('vendor TI: session, role, contract term, SLA, optimistic revision, audit d
         },...(body!==undefined?{body:JSON.stringify(body)}:{})});
       try{
         assert.equal((await send('/vendors')).status,401);
+        assert.equal((await send('/vendors/overview')).status,401);
+        assert.equal((await send('/vendors/overview?x=1','GET',cookies.viewer)).status,400);
+        const initialQueue=await (await send('/vendors/overview','GET',cookies.viewer)).json();
+        assert.equal(initialQueue.kind,'TI_VENDOR_WORK_QUEUE');
+        assert.equal(initialQueue.providers,0);
         assert.equal((await send('/vendors','POST',cookies.viewer,vendor)).status,403);
         assert.equal((await send('/vendors','POST',cookies.checker,vendor)).status,403);
         assert.equal((await send('/vendors','POST',cookies.maker,vendor,'https://evil.invalid')).status,403);
@@ -109,6 +114,9 @@ test('vendor TI: session, role, contract term, SLA, optimistic revision, audit d
         assert.equal(v.vendor_code,vendor.vendorCode);
         assert.equal(v.active_contracts,0);
         assert.equal(v.revision,1);
+        const vendorQueue=await (await send('/vendors/overview','GET',cookies.viewer)).json();
+        assert.equal(vendorQueue.providers,1);
+        assert.equal(vendorQueue.contracts,0);
         await db.query('SAVEPOINT dup_vendor');
         assert.equal((await send('/vendors','POST',cookies.maker,vendor)).status,409);
         await db.query('ROLLBACK TO SAVEPOINT dup_vendor');
@@ -122,6 +130,9 @@ test('vendor TI: session, role, contract term, SLA, optimistic revision, audit d
         assert.equal(c.contract_code,contract.contractCode);
         assert.equal(Number(c.sla_uptime_target),99.5);
         assert.equal(c.revision,1);
+        const contractQueue=await (await send('/vendors/overview','GET',cookies.viewer)).json();
+        assert.equal(contractQueue.contracts,1);
+        assert.equal(contractQueue.withoutReview,1);
         assert.equal((await send('/vendors/'+v.id+'/contracts','GET',cookies.viewer)).status,200);
         assert.equal((await send('/vendors/'+v.id+'/contracts/'+c.id,'GET',cookies.checker)).status,200);
         assert.equal((await send('/vendors/'+v.id,'PATCH',cookies.maker,
@@ -145,6 +156,8 @@ test('vendor TI: session, role, contract term, SLA, optimistic revision, audit d
         assert.equal(history.status,200);
         const reviews=(await history.json()).reviews;
         assert.equal(reviews.length,3);
+        const evaluatedQueue=await (await send('/vendors/overview','GET',cookies.viewer)).json();
+        assert.equal(evaluatedQueue.withoutReview,0);
         assert.equal(reviews.some(x=>x.sla_result==='not_assessed'),true);
         assert.equal((await send('/vendors/'+v.id+'/contracts/'+c.id,'PATCH',cookies.maker,
           {...contract,expectedRevision:1,slaUptimeTarget:99.9})).status,409);

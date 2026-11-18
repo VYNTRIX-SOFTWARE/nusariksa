@@ -116,6 +116,13 @@ test('temuan TI: sumber nyata, PIC, maker-checker, konflik revisi, arsip dan his
         },...(body!==undefined?{body:JSON.stringify(body)}:{})});
       try{
         assert.equal((await send('/findings')).status,401);
+        assert.equal((await send('/findings/overview')).status,401);
+        assert.equal((await send('/findings/overview?unexpected=1','GET',cookies.viewer)).status,400);
+        assert.equal((await send('/findings?work=wrong','GET',cookies.viewer)).status,400);
+        assert.equal((await send('/findings?work=review','GET',cookies.viewer)).status,403);
+        const emptyQueue=await (await send('/findings/overview','GET',cookies.maker)).json();
+        assert.equal(emptyQueue.kind,'TI_FINDINGS_WORK_QUEUE');
+        assert.equal(emptyQueue.myWork,0);
         assert.equal((await send('/findings','POST',cookies.checker,data)).status,403);
         assert.equal((await send('/findings','POST',cookies.viewer,data)).status,403);
         assert.equal((await send('/findings','POST',cookies.maker,data,'https://evil.example')).status,403);
@@ -140,6 +147,13 @@ test('temuan TI: sumber nyata, PIC, maker-checker, konflik revisi, arsip dan his
         assert.equal(found.control_code,'CTRL_BACKUP');
         assert.equal(found.status,'open');
         assert.equal(found.revision,1);
+        const myQueue=await (await send('/findings/overview','GET',cookies.maker)).json();
+        assert.equal(myQueue.myWork,1);
+        assert.equal(myQueue.active,1);
+        assert.equal((await (await send('/findings?work=mine','GET',cookies.maker))
+          .json()).findings.length,1);
+        assert.equal((await (await send('/findings?work=review','GET',cookies.checker))
+          .json()).findings.length,0);
         await db.query('SAVEPOINT duplicate_finding');
         assert.equal((await send('/findings','POST',cookies.maker,data)).status,409);
         await db.query('ROLLBACK TO SAVEPOINT duplicate_finding');
@@ -166,6 +180,13 @@ test('temuan TI: sumber nyata, PIC, maker-checker, konflik revisi, arsip dan his
           {expectedRevision:2});
         assert.equal(submitted.status,200);
         assert.equal((await submitted.json()).status,'pending_verification');
+        const reviewerQueue=await (await send('/findings/overview','GET',cookies.checker)).json();
+        assert.equal(reviewerQueue.canReview,true);
+        assert.equal(reviewerQueue.reviewable,1);
+        assert.equal((await (await send('/findings?work=review','GET',cookies.checker))
+          .json()).findings[0].id,found.id);
+        assert.equal((await (await send('/findings?work=review','GET',cookies.maker))
+          .status),403);
         assert.equal((await send('/findings/'+found.id+'/review','POST',cookies.maker,
           {expectedRevision:3,decision:'verify',note:'Bukti pemulihan telah diperiksa'})).status,403);
         assert.equal((await send('/findings/'+found.id+'/review','POST',cookies.viewer,
