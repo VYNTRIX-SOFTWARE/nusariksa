@@ -20,6 +20,38 @@ function dateToday(){
   const d=new Date(),p=n=>String(n).padStart(2,'0');
   return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate());
 }
+export function validateVendorWorkQueue(data){
+  const count=value=>Number.isSafeInteger(value)&&value>=0;
+  if(!data||data.kind!=='TI_VENDOR_WORK_QUEUE'
+    ||!['providers','contracts','expired','expiring','withoutReview'].every(k=>count(data[k]))
+    ||data.expired+data.expiring>data.contracts
+    ||data.withoutReview>data.contracts
+    ||typeof data.truncated!=='boolean'||!Array.isArray(data.alerts)
+    ||data.alerts.length>20
+    ||data.alerts.some(x=>!UUID.test(x.contractId)||!UUID.test(x.vendorId)
+      ||typeof x.contractCode!=='string'||typeof x.vendorName!=='string'
+      ||typeof x.serviceName!=='string'||!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(x.endDate)
+      ||!['expired','expiring'].includes(x.state)))
+    throw new TypeError('Ringkasan kontrak tidak valid');
+  return data;
+}
+export function vendorNextStep(v){
+  if(!v)return '';
+  if(v.archived_at)return 'Penyedia sudah diarsipkan; kontrak dan evaluasi tetap tersimpan.';
+  if(v.overdue_contracts>0)return 'Tinjau kontrak yang sudah melewati masa berlaku sebelum memperbarui statusnya.';
+  if(v.expiring_contracts>0)return 'Tentukan tindak lanjut kontrak yang mendekati tanggal akhir.';
+  if(v.active_contracts===0)return 'Belum ada kontrak aktif. Tambahkan perjanjian yang telah berlaku jika tersedia.';
+  return 'Tinjau realisasi layanan dan catat evaluasi SLA sesuai periode yang ditetapkan.';
+}
+export function contractNextStep(c){
+  if(!c)return '';
+  if(c.archived_at)return 'Kontrak diarsipkan. Riwayat evaluasi tetap tersedia.';
+  if(c.status==='ended')return 'Kontrak diakhiri. Arsipkan setelah memastikan tindak lanjut administratif selesai.';
+  if(c.term_state==='expired')return 'Tanggal kontrak telah lewat. Periksa status perpanjangan atau pengakhiran.';
+  if(c.term_state==='expiring')return 'Kontrak mendekati akhir masa berlaku. Tinjau keputusan perpanjangan.';
+  if(c.review_count===0)return 'Belum ada evaluasi SLA yang dicatat untuk kontrak ini.';
+  return 'Evaluasi SLA tersimpan. Periksa realisasi dan catat periode berikutnya saat tersedia.';
+}
 export function validVendor(x){
   if(!x||!UUID.test(x.id)||typeof x.vendor_code!=='string'
     ||typeof x.name!=='string'||!Object.hasOwn(CATEGORY,x.service_category)
@@ -39,11 +71,63 @@ export function createVendorManagementUI({api,getPermissions,onAuthFailure}){
   const detailWindow=mountRecordDetailDialog('ti-vendors-detail');
   $('ti-vendors-detail').append($('ti-vendors-contract-detail'));
   const state={vendors:[],selected:null,contracts:[],contract:null,reviews:[],history:[],
-    loaded:false,more:false,offset:0,busy:false,request:0,detailRequest:0,contractRequest:0};
+    loaded:false,more:false,offset:0,busy:false,request:0,detailRequest:0,contractRequest:0,
+    workRequest:0,workOverview:null};
   const canRead=()=>getPermissions().includes('vendors:read');
   const canWrite=()=>getPermissions().includes('vendors:write');
   function message(value,kind='info'){
     const x=$('ti-vendors-message');x.textContent=value??'';x.hidden=!value;x.dataset.kind=kind;
+  }
+  function renderAttention(){
+    const value=state.workOverview;
+    for(const [id,key] of [
+      ['ti-vendors-expired-count','expired'],
+      ['ti-vendors-expiring-count','expiring'],
+      ['ti-vendors-unevaluated-count','withoutReview'],
+      ['ti-vendors-active-count','contracts'],
+    ])$(id).textContent=value?String(value[key]):'—';
+    const root=$('ti-vendors-alert-list');root.replaceChildren();
+    const summary=$('ti-vendors-alert-summary');
+    if(!value){summary.textContent='Ringkasan belum tersedia.';return;}
+    const total=value.expired+value.expiring;
+    summary.textContent=total===0?'Tidak ada kontrak aktif yang segera berakhir.'
+      :value.truncated?'Menampilkan 20 dari '+total+' kontrak.'
+      :'Total '+total+' kontrak perlu ditinjau.';
+    if(!value.alerts.length){
+      root.append(el('p','Tidak ada kontrak yang perlu ditinjau dalam 30 hari.','nr-vendor-alert-empty'));
+      return;
+    }
+    for(const item of value.alerts){
+      const card=el('article','','nr-vendor-alert');
+      const content=el('div','');
+      const title=el('strong',item.vendorName+' · '+item.serviceName);
+      const stateLabel=el('span',item.state==='expired'?'Lewat masa berlaku':'Berakhir dalam 30 hari','nr-vendor-alert-state');
+      stateLabel.dataset.level=item.state;
+      content.append(title,el('p',item.contractCode+' · Akhir: '+item.endDate+' · '));
+      content.lastChild.append(stateLabel);
+      const action=el('button','Buka kontrak','button button-outline');
+      action.type='button';
+      action.addEventListener('click',async()=>{
+        await detail(item.vendorId);
+        if(state.selected?.id!==item.vendorId)return;
+        await contractDetail(item.contractId);
+        $('ti-vendors-contract-detail').scrollIntoView?.({block:'nearest'});
+      });
+      card.append(content,action);root.append(card);
+    }
+  }
+  async function loadAttention(){
+    const token=++state.workRequest;
+    try{
+      const value=validateVendorWorkQueue(await api('/vendors/overview'));
+      if(token!==state.workRequest)return;
+      state.workOverview=value;
+    }catch(error){
+      if(token!==state.workRequest)return;
+      state.workOverview=null;
+      if(onAuthFailure(error))return;
+    }
+    renderAttention();
   }
   function sync(){
     const v=state.selected,c=state.contract;
@@ -62,7 +146,8 @@ export function createVendorManagementUI({api,getPermissions,onAuthFailure}){
   }
   function clear(){
     detailWindow.close();
-    ++state.request;++state.detailRequest;++state.contractRequest;
+    ++state.request;++state.detailRequest;++state.contractRequest;++state.workRequest;
+    state.workOverview=null;
     state.vendors=[];state.selected=null;state.contracts=[];state.contract=null;
     state.reviews=[];state.history=[];state.loaded=false;state.more=false;
     state.offset=0;state.busy=false;
@@ -72,7 +157,7 @@ export function createVendorManagementUI({api,getPermissions,onAuthFailure}){
     $('ti-vendors-list').replaceChildren();$('ti-vendors-contracts').replaceChildren();
     $('ti-vendors-reviews').replaceChildren();$('ti-vendors-history').replaceChildren();
     $('ti-vendors-detail').hidden=true;$('ti-vendors-contract-detail').hidden=true;
-    message('');sync();
+    message('');renderAttention();sync();
   }
   function renderList(){
     const root=$('ti-vendors-list');root.replaceChildren();
@@ -102,6 +187,7 @@ export function createVendorManagementUI({api,getPermissions,onAuthFailure}){
     if(resetOffset)state.offset=0;
     const token=++state.request;
     state.loaded=false;renderList();
+    void loadAttention();
     const params=new URLSearchParams({
       q:$('ti-vendors-search').value.trim(),view:$('ti-vendors-view').value,
       category:$('ti-vendors-category-filter').value,
@@ -165,6 +251,7 @@ export function createVendorManagementUI({api,getPermissions,onAuthFailure}){
       const item=el('div','','ti-asset-detail-item');
       item.append(el('dt',key),el('dd',value));root.append(item);
     }
+    $('ti-vendors-next-step').textContent=vendorNextStep(v);
     $('ti-vendors-detail').hidden=false;sync();
   }
   async function detail(id){
@@ -277,6 +364,7 @@ export function createVendorManagementUI({api,getPermissions,onAuthFailure}){
       const item=el('div','','ti-asset-detail-item');
       item.append(el('dt',key),el('dd',value));root.append(item);
     }
+    $('ti-vendors-contract-next-step').textContent=contractNextStep(c);
     $('ti-vendors-contract-detail').hidden=false;sync();
   }
   async function contractDetail(id){
@@ -395,6 +483,7 @@ export function createVendorManagementUI({api,getPermissions,onAuthFailure}){
       $('ti-vendors-review-dialog').close();
       message('Evaluasi layanan disimpan sebagai catatan tetap dan tidak dapat diubah.','success');
       await detail(v.id);await contractDetail(c.id);
+      void loadAttention();
     }catch(error){
       if(!onAuthFailure(error)){
         $('ti-vendors-review-error').hidden=false;

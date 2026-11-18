@@ -1327,3 +1327,59 @@ h1,h2,p{margin-top:0}h1,h2{letter-spacing:-.027em}
 .nr-workflow-band>span{border:1px solid #E1E8F0;background:#FAFBFD;
  color:#41536B;font-size:12px;font-weight:600;border-radius:999px;padding:6px 11px}
 .nr-workflow-band>span+span::before{content:"›";margin-right:10px;color:#8794A6;font-weight:700}
+
+/* Operational work queues show actionable state before the register form. */
+.nr-work-cockpit{padding:19px 22px;margin:0 0 18px;border:1px solid #DFE5EE;
+  background:#FFF;border-radius:15px;box-shadow:0 2px 9px rgba(29,47,76,.035)}
+.nr-work-heading{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:15px}
+.nr-work-heading h2{font-size:17px;line-height:1.4;margin:0;color:#26354B}
+.nr-work-heading p{font-size:12px;color:#69778D;margin:0}
+.nr-work-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.nr-work-metric{min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:8px;
+  padding:15px 16px;border:1px solid #DDE5EF;border-radius:12px;background:#FAFCFF;
+  color:#44546B;font-family:inherit;line-height:1.45;text-align:left}
+button.nr-work-metric{cursor:pointer;transition:background-color .14s,border-color .14s}
+button.nr-work-metric:hover{background:#F2F5FC;border-color:#AAB7CD}
+button.nr-work-metric[aria-pressed="true"]{border-color:#6D62A1;background:#F5F3FB}
+.nr-work-metric[hidden]{display:none}
+.nr-work-metric span{font-size:12px;font-weight:650}
+.nr-work-metric strong{color:#25344A;font-size:26px;line-height:1.1;font-weight:780;font-variant-numeric:tabular-nums}
+.nr-work-status{color:#64748B;font-size:12px;line-height:1.5;margin:10px 0 0}
+.nr-work-alerts-heading{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
+  flex-wrap:wrap;margin:18px 0 10px}
+.nr-work-alerts-heading h3{font-size:14px;margin:0;color:#303F55}
+.nr-work-alerts-heading .nr-work-status{margin:0}
+.nr-vendor-alert-list{display:grid;gap:8px;max-height:275px;overflow:auto}
+.nr-vendor-alert{display:flex;align-items:center;justify-content:space-between;gap:15px;
+  padding:12px 14px;border:1px solid #E3E8F1;border-radius:10px;background:#FFF}
+.nr-vendor-alert strong{display:block;font-size:13px;color:#293A51}
+.nr-vendor-alert p{font-size:12px;color:#68758A;margin:4px 0 0}
+.nr-vendor-alert button{flex-shrink:0}
+.nr-vendor-alert-state{font-weight:700}
+.nr-vendor-alert-state[data-level="expired"]{color:#9C3636}
+.nr-vendor-alert-state[data-level="expiring"]{color:#845D22}
+.nr-vendor-alert-empty{font-size:13px;color:#64748B;margin:2px 0}
+.nr-work-metric:focus-visible,.nr-vendor-alert button:focus-visible,.nr-library-toggle:focus-visible{
+  outline:3px solid #7565BC;outline-offset:3px}
+.nr-detail-next-step{color:#33465F;font-size:13px;line-height:1.55;
+  border-left:3px solid #9085B5;padding:11px 14px;background:#F8F7FC;border-radius:0 9px 9px 0}
+.nr-work-due{font-weight:700;color:#9B3A34}
+.nr-reveal-button{justify-self:start}
+.finding-form-section[hidden]{display:none}
+.risk-starting-panel{display:block}
+.risk-starting-panel[open]>.risk-reference-heading{margin:16px 0}
+.risk-starting-panel[open]>.risk-starting-list{margin:0 0 4px}
+.nr-library-toggle{cursor:pointer;list-style:none;display:flex;align-items:center;
+  justify-content:space-between;gap:12px;flex-wrap:wrap;font-weight:750;color:#293951;
+  border-radius:9px;font-size:14px}
+.nr-library-toggle::-webkit-details-marker{display:none}
+.nr-library-toggle::before{content:"▸";font-size:13px;color:#7463A2;margin-right:1px}
+.risk-starting-panel[open]>.nr-library-toggle::before{content:"▾"}
+.nr-library-toggle .risk-reference-count{margin-left:auto}
+@media(max-width:850px){.nr-work-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:540px){.nr-work-cockpit{padding:15px}
+  .nr-work-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .nr-work-metric{padding:11px}
+  .nr-work-metric strong{font-size:23px}
+  .nr-vendor-alert{align-items:stretch;flex-direction:column}
+  .nr-vendor-alert button{width:100%}}

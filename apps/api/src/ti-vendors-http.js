@@ -1,6 +1,7 @@
 import {originAccepted,tokenFromCookies} from './auth-http.js';
 import {findSession} from './sessions.js';
 import {userHasPermission} from './authorization.js';
+import {getVendorWorkQueue} from './ti-work-queues.js';
 import {VendorError,createVendor,updateVendor,archiveVendor,listVendors,getVendor,vendorHistory,
   createContract,updateContract,archiveContract,listContracts,getContract,
   addServiceReview,listServiceReviews} from './ti-vendors.js';
@@ -29,7 +30,7 @@ async function json(req){
 }
 export function createVendorHandler({
   db,appOrigin,
-  list=listVendors,detail=getVendor,history=vendorHistory,
+  list=listVendors,overview=getVendorWorkQueue,detail=getVendor,history=vendorHistory,
   create=createVendor,update=updateVendor,archive=archiveVendor,
   contracts=listContracts,contract=getContract,
   addContract=createContract,editContract=updateContract,endContract=archiveContract,
@@ -38,12 +39,13 @@ export function createVendorHandler({
   return async function handle(req,res){
     let url;try{url=new URL(req.url,'http://localhost');}
     catch{reply(res,400,{error:'Invalid URL'});return;}
+    const overviewReq=url.pathname==='/vendors/overview';
     const root=url.pathname==='/vendors',v=VENDOR.exec(url.pathname),
       h=HISTORY.exec(url.pathname),a=ARCHIVE.exec(url.pathname),
       cs=CONTRACTS.exec(url.pathname),c=CONTRACT.exec(url.pathname),
       ca=CONTRACT_ARCHIVE.exec(url.pathname),rs=REVIEWS.exec(url.pathname);
     const routes=[
-      ['list',root,'GET'],['create',root,'POST'],['detail',Boolean(v),'GET'],
+      ['list',root,'GET'],['create',root,'POST'],['overview',overviewReq,'GET'],['detail',Boolean(v),'GET'],
       ['update',Boolean(v),'PATCH'],['history',Boolean(h),'GET'],
       ['archive',Boolean(a),'POST'],['contracts',Boolean(cs),'GET'],
       ['addContract',Boolean(cs),'POST'],['contract',Boolean(c),'GET'],
@@ -64,6 +66,10 @@ export function createVendorHandler({
     }
     const actorId=session.userId;
     try{
+      if(op==='overview'){
+        if(url.search)throw new VendorError(400,'Ringkasan tidak menerima filter');
+        reply(res,200,await overview(db,{actorId}));return;
+      }
       if(op==='list'){
         const keys=[...url.searchParams.keys()];
         if(keys.some(k=>!['q','view','category','status','offset'].includes(k))

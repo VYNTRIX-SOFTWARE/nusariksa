@@ -199,6 +199,7 @@ export function createRiskRegisterUI({api,getPermissions,onAuthFailure}){
     $('ti-risk-reference-search').value='';
     $('ti-risk-reference-group').value='all';
     showRiskPane('register');
+    $('ti-risk-starting-panel').open=false;
     message('');sync();
   }
   function assetOptions(){

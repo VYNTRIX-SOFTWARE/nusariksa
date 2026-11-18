@@ -319,3 +319,17 @@ Unduhan PDF/CSV memakai sesi terautentikasi; jika terjadi HTTP 401, pengguna har
 ## Referensi risiko tambahan
 
 Pustaka contoh skenario risiko TI menyediakan **40 contoh situasi operasional** setelah pemutakhiran. Contoh dapat ditandai relevan atau tidak relevan, lalu disesuaikan menjadi risiko nyata milik lembaga. Contoh bukan hasil identifikasi lapangan, bukan tingkat risiko yang telah dinilai, dan bukan daftar kewajiban regulator yang komprehensif.
+
+## Prioritas tindak lanjut temuan
+
+Halaman **Tindak Lanjut Temuan** menampilkan ringkasan seluruh temuan aktif lembaga, dipisahkan menjadi **Tugas perbaikan saya**, **Siap saya verifikasi**, dan **Melewati target**. Tombol kelompok memfilter daftar di server; hanya petugas dengan izin verifikasi yang melihat antrean pemeriksaan. Pembuat atau pengaju tidak dapat memverifikasi temuan miliknya. Gunakan **Seluruh temuan aktif** untuk kembali melihat register biasa.
+
+Form temuan dapat disimpan sebelum tersedia hasil dan bukti. Bagian hasil tindakan dibuka sesuai kebutuhan. Setelah rencana, progres, dan referensi bukti tercatat, pembuat mengajukan hasilnya. Pemeriksa independen dapat memverifikasi atau mengembalikan untuk diperbaiki; keputusan dan histori perubahan tetap terlacak.
+
+## Pemantauan kontrak vendor TI
+
+Ringkasan **Pemantauan kontrak** menghitung kontrak aktif seluruh lembaga yang telah melewati tanggal akhir atau berakhir dalam 30 hari, beserta kontrak aktif yang belum memiliki catatan evaluasi SLA. Daftar perhatian menampilkan maksimal 20 kontrak terdekat; **Buka kontrak** langsung membuka penyedia dan rincian perjanjian pada dialog yang sama. Tanggal tersebut bukan penilaian kualitas layanan atau keputusan perpanjangan otomatis.
+
+## Pustaka contoh risiko
+
+Daftar skenario awal risiko kini ditampilkan sebagai panel **Contoh risiko yang belum dinilai** yang tertutup secara default, agar register risiko lembaga menjadi fokus utama. Buka panel untuk menilai contoh yang relevan atau menandainya tidak relevan. Contoh tidak berubah menjadi temuan atau skor faktual sebelum disimpan oleh petugas.

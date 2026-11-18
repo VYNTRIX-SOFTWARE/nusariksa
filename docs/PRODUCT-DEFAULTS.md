@@ -66,3 +66,7 @@ Pustaka berreferensi NusaRiksa saat ini mencakup 26 kontrol interpretasi operasi
 Detail register dibuka sebagai dialog yang mempertahankan posisi daftar. Kode aset dan insiden baru dibuat oleh server menggunakan counter transaksional per lembaga/jenis/tahun WIB, tanpa mengganti kode historis. Pustaka risiko awal diperluas menjadi 40 skenario contoh internal, bukan penilaian aktual atau instrumen wajib regulator.
 
 Ekspor internal mendukung asesmen TI (PDF/CSV), PADK (PDF/CSV draft), maturitas (CSV domain), serta register operasional (CSV), dengan pengendalian izin, isolasi institusi, batas 5.000 baris, proteksi formula spreadsheet, dan pencegahan cache. Ketersediaan CSV tidak bermakna adanya validasi regulator, pengiriman ke OJK, atau lampiran bukti terenkripsi.
+
+## Fokus operasional pengguna
+
+Tindak lanjut temuan menyediakan antrean berdasarkan kepemilikan, izin pemeriksa independen, dan keterlambatan target, bukan ringkasan dari satu halaman paginasi. Vendor TI menyediakan ringkasan tanggal kontrak aktif seluruh lembaga serta akses cepat menuju kontrak yang memerlukan peninjauan. Daftar 40 contoh risiko tetap dapat diakses dalam panel tertutup secara default. Semua ringkasan merupakan data operasional internal yang menggunakan otorisasi institusi; tidak menyimpulkan kepatuhan regulatori ataupun menggantikan peninjauan dokumen asli.

@@ -534,12 +534,25 @@
             <button id="ti-vendors-create" type="button" class="button button-primary workspace-primary" hidden>Tambah penyedia</button>
           </div>
           <p id="ti-vendors-message" class="workspace-message" role="status" aria-live="polite" hidden></p>
-          <nav class="nr-workflow-band" aria-label="Alur kerja">
-  <span>Penyedia TI</span><span>Kontrak dan SLA</span><span>Evaluasi berkala</span><span>Arsip</span>
-</nav>
+          <section class="nr-work-cockpit" aria-labelledby="ti-vendors-attention-title">
+            <div class="nr-work-heading">
+              <h2 id="ti-vendors-attention-title">Pemantauan kontrak</h2>
+              <p>Prioritas berdasarkan tanggal akhir kontrak aktif yang tercatat.</p>
+            </div>
+            <div class="nr-work-metrics nr-work-metrics-static">
+              <div class="nr-work-metric"><span>Lewat masa berlaku</span><strong id="ti-vendors-expired-count">—</strong></div>
+              <div class="nr-work-metric"><span>Berakhir dalam 30 hari</span><strong id="ti-vendors-expiring-count">—</strong></div>
+              <div class="nr-work-metric"><span>Tanpa evaluasi SLA</span><strong id="ti-vendors-unevaluated-count">—</strong></div>
+              <div class="nr-work-metric"><span>Kontrak aktif</span><strong id="ti-vendors-active-count">—</strong></div>
+            </div>
+            <div class="nr-work-alerts-heading">
+              <h3>Kontrak yang perlu ditinjau</h3>
+              <span id="ti-vendors-alert-summary" class="nr-work-status" role="status" aria-live="polite"></span>
+            </div>
+            <div id="ti-vendors-alert-list" class="nr-vendor-alert-list"></div>
+          </section>
           <section class="panel-card">
-            <p class="ti-vendor-guidance">Periksa kontrak yang berakhir dalam 30 hari atau telah melewati masa berlaku.
-              Penanda masa berlaku berasal dari tanggal perjanjian yang dicatat dan tidak menggantikan pemeriksaan dokumen kontrak.</p>
+            <p class="ti-vendor-guidance">Masa berlaku dihitung dari tanggal kontrak. Keputusan perpanjangan dan evaluasi mengikuti dokumen perjanjian.</p>
             <form id="ti-vendors-filter-form" class="ti-vendor-filters">
               <label for="ti-vendors-search">Cari kode, penyedia atau PIC
                 <input id="ti-vendors-search" type="search" maxlength="80" placeholder="Contoh: VND-CBS-01">
@@ -582,6 +595,7 @@
                 <button id="ti-vendors-archive" type="button" class="button button-outline">Arsipkan penyedia</button>
               </div>
             </div>
+            <p id="ti-vendors-next-step" class="nr-detail-next-step" role="status"></p>
             <dl id="ti-vendors-detail-values" class="ti-assets-detail-values"></dl>
             <div class="ti-vendor-contracts-panel">
               <div class="panel-heading">
@@ -599,6 +613,7 @@
                   <button id="ti-vendors-archive-contract" type="button" class="button button-outline">Arsipkan kontrak</button>
                 </div>
               </div>
+              <p id="ti-vendors-contract-next-step" class="nr-detail-next-step" role="status"></p>
               <dl id="ti-vendors-contract-values" class="ti-assets-detail-values"></dl>
               <div class="ti-vendor-reviews-panel">
                 <div class="panel-heading">
@@ -624,9 +639,27 @@
             <button id="ti-findings-create" type="button" class="button button-primary workspace-primary" hidden>Tambah temuan</button>
           </div>
           <p id="ti-findings-message" class="workspace-message" role="status" aria-live="polite" hidden></p>
-          <nav class="nr-workflow-band" aria-label="Alur kerja">
-  <span>Temuan audit</span><span>Rencana perbaikan</span><span>Verifikasi</span><span>Selesai</span>
-</nav>
+          <section class="nr-work-cockpit" aria-labelledby="ti-findings-work-title">
+            <div class="nr-work-heading">
+              <h2 id="ti-findings-work-title">Pusat tindak lanjut</h2>
+              <p>Ringkasan seluruh temuan aktif lembaga, bukan hanya halaman daftar.</p>
+            </div>
+            <div class="nr-work-metrics" id="ti-findings-work-metrics">
+              <button type="button" class="nr-work-metric" data-finding-work="mine" aria-pressed="false">
+                <span>Tugas perbaikan saya</span><strong id="ti-findings-mine-count">—</strong>
+              </button>
+              <button type="button" class="nr-work-metric" data-finding-work="review" aria-pressed="false" hidden>
+                <span>Siap saya verifikasi</span><strong id="ti-findings-review-count">—</strong>
+              </button>
+              <button type="button" class="nr-work-metric" data-finding-work="overdue" aria-pressed="false">
+                <span>Melewati target</span><strong id="ti-findings-overdue-count">—</strong>
+              </button>
+              <button type="button" class="nr-work-metric" data-finding-work="all" aria-pressed="true">
+                <span>Seluruh temuan aktif</span><strong id="ti-findings-active-count">—</strong>
+              </button>
+            </div>
+            <p id="ti-findings-work-status" class="nr-work-status" role="status" aria-live="polite"></p>
+          </section>
           <section class="panel-card">
             <form id="ti-findings-filter-form" class="ti-findings-filters">
               <label for="ti-findings-search">Cari kode, judul atau PIC
@@ -677,7 +710,7 @@
           </section>
           <section id="ti-findings-detail" class="panel-card" aria-labelledby="ti-findings-detail-title" hidden>
             <div class="panel-heading">
-              <h2 id="ti-findings-detail-title">Detail dan pemeriksaan tindak lanjut</h2>
+              <h2 id="ti-findings-detail-title">Tindak lanjut temuan</h2>
               <div class="ti-assets-actions">
                 <button id="ti-findings-edit" type="button" class="button button-outline">Perbarui perbaikan</button>
                 <button id="ti-findings-submit" type="button" class="button button-primary">Ajukan pemeriksaan</button>
@@ -687,8 +720,8 @@
             <div id="ti-findings-detail-summary" class="finding-detail-summary"></div>
             <div id="ti-findings-next-step" class="finding-next-step" aria-live="polite"></div>
             <section id="ti-findings-submission-guide" class="finding-submission-guide" aria-labelledby="ti-findings-submission-guide-title">
-              <h3 id="ti-findings-submission-guide-title">Persiapan sebelum diajukan</h3>
-              <p>Petugas melengkapi rencana, hasil tindakan, dan referensi bukti. Semua harus sudah dicatat sebelum permintaan pemeriksaan dapat diajukan.</p>
+              <h3 id="ti-findings-submission-guide-title">Kelengkapan pengajuan</h3>
+              <p>Rencana, hasil, dan bukti diperlukan sebelum pemeriksaan.</p>
               <ul id="ti-findings-ready-checklist"></ul>
               <p id="ti-findings-submit-hint" class="workspace-help" role="status"></p>
             </section>
@@ -822,18 +855,16 @@
             <button id="ti-risks-show-register" type="button" class="button button-outline" aria-controls="ti-risks-register-panel" aria-pressed="true">Risiko Lembaga</button>
           </nav>
           <div id="ti-risks-register-panel">
-          <section id="ti-risk-starting-panel" class="panel-card risk-starting-panel" aria-labelledby="ti-risk-starting-title">
+          <details id="ti-risk-starting-panel" class="panel-card risk-starting-panel" aria-labelledby="ti-risk-starting-title">
+            <summary class="nr-library-toggle">Contoh risiko yang belum dinilai <span id="ti-risk-starting-count" class="risk-reference-count" aria-live="polite">Memuat…</span></summary>
             <div class="risk-reference-heading">
               <div>
-                <h2 id="ti-risk-starting-title">Daftar awal risiko TI — belum dinilai</h2>
-                <p>NusaRiksa telah menyiapkan skenario umum hingga spesifik di database lembaga.
-                  Data ini <strong>bukan hasil identifikasi faktual atau penilaian risiko bank</strong>.
-                  Pilih <strong>Nilai dan catat</strong> untuk melengkapi penilaian aktual; tandai yang tidak relevan tanpa menghapus referensinya.</p>
+                <h2 id="ti-risk-starting-title">Contoh skenario risiko</h2>
+                <p>Gunakan skenario yang relevan sebagai titik awal penilaian aktual. Contoh ini belum menjadi risiko lembaga.</p>
               </div>
-              <span id="ti-risk-starting-count" class="risk-reference-count" aria-live="polite">Memuat daftar awal…</span>
             </div>
             <div id="ti-risk-starting-list" class="risk-starting-list" aria-live="polite"></div>
-          </section>
+          </details>
           <section class="panel-card">
             <div class="ti-risk-rubric">
               <strong>Skala risiko internal NusaRiksa</strong>
@@ -2339,7 +2370,7 @@
   <dialog id="ti-findings-dialog" aria-labelledby="ti-findings-dialog-title" class="workspace-dialog">
     <form id="ti-findings-form" class="maturity-edit-form">
       <h2 id="ti-findings-dialog-title">Tambah temuan</h2>
-      <p class="finding-form-intro">Catat kondisi yang benar-benar ditemukan, tentukan siapa yang menindaklanjuti, lalu lengkapi hasil dan bukti saat pekerjaan telah dilakukan.</p>
+      <p class="finding-form-intro">Pencatatan temuan dan tindak lanjutnya dalam satu register.</p>
       <fieldset class="finding-form-section">
         <legend>1. Temuan dan sumber pemeriksaan</legend>
         <label for="ti-finding-title">Apa temuan yang perlu ditindaklanjuti?
@@ -2395,10 +2426,11 @@
           <textarea id="ti-finding-action-plan" rows="3" maxlength="2000"
             placeholder="Tindakan apa yang direncanakan, dan bagaimana keberhasilannya diperiksa?"></textarea>
         </label>
-        <p class="finding-field-help">Target, PIC, dan rencana harus ditetapkan oleh petugas. Tidak ada tanggal maupun tindakan otomatis.</p>
+        <p class="finding-field-help">Catat PIC, target, dan rencana yang telah ditetapkan lembaga.</p>
       </fieldset>
-      <fieldset class="finding-form-section">
-        <legend>3. Hasil tindakan dan bukti (isi saat tersedia)</legend>
+      <button id="ti-finding-results-toggle" type="button" class="button button-outline nr-reveal-button" aria-controls="ti-finding-results-section" aria-expanded="false">Tambahkan hasil tindakan dan bukti</button>
+      <fieldset id="ti-finding-results-section" class="finding-form-section" hidden>
+        <legend>3. Hasil tindakan dan bukti</legend>
         <label for="ti-finding-progress-note">Apa yang sudah dikerjakan?
           <textarea id="ti-finding-progress-note" rows="3" maxlength="2000"
             placeholder="Uraikan tindakan yang benar-benar dilakukan dan hasilnya."></textarea>
@@ -2407,7 +2439,7 @@
           <textarea id="ti-finding-evidence-reference" rows="2" maxlength="2000"
             placeholder="Contoh: nomor berita acara, tiket, atau lokasi dokumen internal."></textarea>
         </label>
-        <p class="finding-field-help">Boleh disimpan sebelum hasil dan bukti tersedia. Untuk mengajukan pemeriksaan, rencana, hasil, dan referensi bukti masing-masing minimal 10 karakter. Catatan bukan bukti yang otomatis terverifikasi.</p>
+        <p class="finding-field-help">Lengkapi bagian ini saat hasil dan referensi bukti sudah tersedia.</p>
       </fieldset>
       <p id="ti-findings-form-error" class="form-error" role="alert" hidden></p>
       <div class="workspace-save-actions finding-form-actions">

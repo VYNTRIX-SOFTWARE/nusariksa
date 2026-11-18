@@ -1,6 +1,7 @@
 import {originAccepted,tokenFromCookies} from './auth-http.js';
 import {findSession} from './sessions.js';
 import {userHasPermission} from './authorization.js';
+import {getFindingWorkQueue} from './ti-work-queues.js';
 import {FindingError,createFinding,updateFinding,submitFinding,reviewFinding,
   archiveFinding,listFindings,getFinding,findingHistory,findingSources}
   from './ti-findings.js';
@@ -29,7 +30,7 @@ async function readJson(req){
 }
 export function createFindingHandler({
   db,appOrigin,list=listFindings,detail=getFinding,history=findingHistory,
-  sources=findingSources,create=createFinding,update=updateFinding,
+  sources=findingSources,overview=getFindingWorkQueue,create=createFinding,update=updateFinding,
   submit=submitFinding,review=reviewFinding,archive=archiveFinding,
 }={}){
   return async function handle(req,res){
@@ -38,6 +39,7 @@ export function createFindingHandler({
     catch{reply(res,400,{error:'Invalid URL'});return;}
     const root=url.pathname==='/findings';
     const sourceOptions=url.pathname==='/findings/sources'&&req.method==='GET';
+    const overviewReq=url.pathname==='/findings/overview'&&req.method==='GET';
     const match=DETAIL.exec(url.pathname),hist=HISTORY.exec(url.pathname),
       sub=SUBMIT.exec(url.pathname),rev=REVIEW.exec(url.pathname),arc=ARCHIVE.exec(url.pathname);
     const listing=root&&req.method==='GET',creating=root&&req.method==='POST',
@@ -46,7 +48,7 @@ export function createFindingHandler({
       submitting=Boolean(sub)&&req.method==='POST',
       reviewing=Boolean(rev)&&req.method==='POST',
       archiving=Boolean(arc)&&req.method==='POST';
-    if(!listing&&!creating&&!sourceOptions&&!getting&&!editing&&!readingHistory
+    if(!listing&&!creating&&!sourceOptions&&!overviewReq&&!getting&&!editing&&!readingHistory
       &&!submitting&&!reviewing&&!archiving){
       reply(res,404,{error:'Not found'});return;
     }
@@ -61,9 +63,13 @@ export function createFindingHandler({
       reply(res,403,{error:'Forbidden'});return;
     }
     try{
+      if(overviewReq){
+        if(url.search)throw new FindingError(400,'Ringkasan tidak menerima filter');
+        reply(res,200,await overview(db,{actorId:session.userId}));return;
+      }
       if(listing){
         const keys=[...url.searchParams.keys()];
-        if(keys.some(k=>!['q','view','status','priority','source','offset'].includes(k))
+        if(keys.some(k=>!['q','view','status','priority','source','work','offset'].includes(k))
           ||new Set(keys).size!==keys.length)
           throw new FindingError(400,'Filter temuan tidak valid');
         reply(res,200,await list(db,{actorId:session.userId,
@@ -71,6 +77,7 @@ export function createFindingHandler({
           status:url.searchParams.get('status')??'all',
           priority:url.searchParams.get('priority')??'all',
           source:url.searchParams.get('source')??'all',
+          work:url.searchParams.get('work')??'all',
           offset:Number(url.searchParams.get('offset')??'0'),
         }));return;
       }
