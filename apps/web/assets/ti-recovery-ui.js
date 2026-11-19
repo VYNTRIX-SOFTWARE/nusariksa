@@ -275,16 +275,16 @@ export function createRecoveryUI({api,getPermissions,onAuthFailure}){
   form.dataset.id=p?.id??'';
   form.dataset.revision=String(p?.revision??0);
   for(const [name,key] of PLAN_FIELDS){
-   $('ti-recovery-field-'+name).value=p?.[DB_FIELDS[key]??key]??(name==='status'?'draft':'');
+   $('ti-recovery-field-'+name).value=p?.[DB_FIELDS[key]??key]??(name==='status'?'draft':name==='plan-code'?'AUTO':'');
   }
-  $('ti-recovery-field-plan-code').readOnly=!!p;
-  $('ti-recovery-suggest-code').hidden=Boolean(p);
+  $('ti-recovery-field-plan-code').readOnly=true;
+  $('ti-recovery-suggest-code').hidden=true;
   $('ti-recovery-template').disabled=Boolean(p);
   $('ti-recovery-use-template').hidden=Boolean(p);
   $('ti-recovery-template').value='';
   $('ti-recovery-code-hint').textContent=p
    ?'Kode permanen tidak dapat diubah setelah disimpan.':
-     'Kode usulan dapat disesuaikan. Periksa keunikannya sebelum menyimpan.';
+     'Nomor dibuat otomatis oleh server saat disimpan.';
   $('ti-recovery-template-hint').textContent='Gunakan kerangka hanya bila sesuai. Periksa seluruh isinya berdasarkan kebijakan bank.';
   $('ti-recovery-form-error').hidden=true;
   $('ti-recovery-dialog-title').textContent=p?'Perbarui rencana pemulihan':'Tambah rencana pemulihan';
@@ -331,17 +331,6 @@ export function createRecoveryUI({api,getPermissions,onAuthFailure}){
   $('ti-recovery-template-hint').textContent=
    'Kerangka terisi. Sesuaikan dengan prosedur bank. PIC, RTO, RPO dan bukti tidak diisi otomatis.';
  });
- $('ti-recovery-suggest-code').addEventListener('click',()=>{
-  const service=$('ti-recovery-field-service');
-  if(!service.value.trim()){
-   service.focus();$('ti-recovery-code-hint').textContent='Isi nama layanan terlebih dahulu.';return;
-  }
-  const code=suggestRecoveryCode(service.value);
-  if(code){
-   $('ti-recovery-field-plan-code').value=code;
-   $('ti-recovery-code-hint').textContent='Kode usulan: '+code+'. Periksa keunikannya sebelum menyimpan.';
-  }
- });
  $('ti-recovery-filter-form').addEventListener('submit',e=>{e.preventDefault();void load();});
  $('ti-recovery-reset-filters').addEventListener('click',()=>{
   $('ti-recovery-search').value='';$('ti-recovery-view').value='active';void load();
@@ -364,7 +353,7 @@ export function createRecoveryUI({api,getPermissions,onAuthFailure}){
     method:oldId?'PATCH':'POST',body,
    });
    $('ti-recovery-dialog').close();await load();await detail(p.id);
-   message('Rencana tersimpan. Periksa kembali terhadap dokumen dan kebijakan bank.');
+   message('Rencana '+p.plan_code+' tersimpan. Periksa kembali terhadap dokumen dan kebijakan bank.');
   }catch(err){
    if(!onAuthFailure(err))formError('ti-recovery-form-error',
     err?.status===409?'Data berubah atau kode telah dipakai. Muat ulang sebelum melanjutkan.':

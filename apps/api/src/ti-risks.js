@@ -1,4 +1,5 @@
 import {userHasPermission} from './authorization.js';
+import {nextTiDocumentNumber} from './ti-document-numbers.js';
 
 const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const CODE=/^[A-Z][A-Z0-9_-]{1,31}$/;
@@ -187,6 +188,7 @@ async function lockRisk(db,actorId,id){
 export async function createRiskInTransaction(db,{actorId,referenceCode,...input}){
   await permission(db,actorId,'risks:write');
   const d=validateRisk(input);
+  if(d.riskCode==='AUTO')d.riskCode=await nextTiDocumentNumber(db,{actorId,kind:'risk'});
   if(referenceCode!==undefined){
     if(typeof referenceCode!=='string'||!/^[A-Z][A-Z0-9_]{2,63}$/.test(referenceCode))
       throw new RiskError(400,'Kode referensi tidak valid');

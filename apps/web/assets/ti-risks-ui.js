@@ -82,8 +82,8 @@ export function createRiskRegisterUI({api,getPermissions,onAuthFailure}){
     $('ti-risk-example').value=reference.id;
     $('ti-risk-title').value=reference.title;
     $('ti-risk-scenario').value=reference.scenario;
-    $('ti-risk-code').value='RSK-'+reference.id;
-    $('ti-risk-code-hint').textContent='Kode disarankan dari referensi. Sesuaikan jika sudah dipakai di lembaga.';
+    $('ti-risk-code').value='AUTO';
+    $('ti-risk-code-hint').textContent='Nomor dibuat otomatis oleh server saat disimpan.';
     $('ti-risks-form').dataset.referenceCode=reference.id;
     $('ti-risk-example-hint').textContent='Draft dari database disiapkan. Tentukan kemungkinan, dampak, PIC, target dan mitigasi berdasarkan kondisi lembaga.';
   }
@@ -305,8 +305,9 @@ export function createRiskRegisterUI({api,getPermissions,onAuthFailure}){
   }
   function setForm(risk){
     const form=$('ti-risks-form');form.reset();
-    $('ti-risk-code').value=risk?.risk_code??'';
-    $('ti-risk-code').readOnly=Boolean(risk);
+    $('ti-risk-code').value=risk?.risk_code??'AUTO';
+    $('ti-risk-code').readOnly=true;
+    $('ti-risk-code-hint').textContent=risk?'Kode permanen tidak dapat diubah.':'Nomor dibuat otomatis oleh server saat disimpan.';
     $('ti-risk-title').value=risk?.title??'';
     $('ti-risk-scenario').value=risk?.scenario??'';
     const select=$('ti-risk-asset-id');
@@ -321,7 +322,7 @@ export function createRiskRegisterUI({api,getPermissions,onAuthFailure}){
     $('ti-risk-pic').value=risk?.pic??'';
     $('ti-risk-due-date').value=risk?.due_date??'';
     $('ti-risk-example').value='';
-    $('ti-risk-suggest-code').hidden=Boolean(risk);
+    $('ti-risk-suggest-code').hidden=true;
     $('ti-risk-use-example').hidden=Boolean(risk);
     $('ti-risk-example').disabled=Boolean(risk);
     $('ti-risk-residual-details').open=Boolean(risk?.residual_likelihood||risk?.residual_impact);
@@ -425,18 +426,9 @@ export function createRiskRegisterUI({api,getPermissions,onAuthFailure}){
       !window.confirm('Ganti judul dan skenario saat ini dengan contoh? Nilai risiko dan aset terkait tidak berubah.'))return;
     $('ti-risk-title').value=chosen.title;
     $('ti-risk-scenario').value=chosen.scenario;
-    $('ti-risk-code').value='RSK-'+chosen.id;
+    $('ti-risk-code').value='AUTO';
     $('ti-risks-form').dataset.referenceCode=chosen.id;
     $('ti-risk-example-hint').textContent='Contoh dari database diterapkan. Sesuaikan, lalu isi seluruh nilai faktual lembaga.';
-  });
-  $('ti-risk-suggest-code').addEventListener('click',()=>{
-    const title=$('ti-risk-title');
-    if(!title.value.trim()){title.focus();$('ti-risk-code-hint').textContent='Isi nama risiko terlebih dahulu.';return;}
-    const code=suggestRiskCode(title.value);
-    if(code){
-      $('ti-risk-code').value=code;
-      $('ti-risk-code-hint').textContent='Kode usulan: '+code+'. Periksa keunikan sebelum menyimpan.';
-    }
   });
   $('ti-risks-clear-filters').addEventListener('click',()=>{
     $('ti-risks-search').value='';$('ti-risks-view').value='active';

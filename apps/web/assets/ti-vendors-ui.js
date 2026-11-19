@@ -221,14 +221,14 @@ export function createVendorManagementUI({api,getPermissions,onAuthFailure}){
   function setVendorForm(v){
     $('ti-vendors-form').reset();
     for(const [key,value] of [
-      ['code',v?.vendor_code??''],['name',v?.name??''],
+      ['code',v?.vendor_code??'AUTO'],['name',v?.name??''],
       ['category',v?.service_category??'other'],
       ['contact',v?.contact_name??''],['email',v?.contact_email??''],
       ['phone',v?.contact_phone??''],['pic',v?.owner_pic??''],
       ['criticality',v?.criticality??'medium'],['note',v?.note??''],
       ['status',v?.status??'active']])
       $('ti-vendor-'+key).value=value;
-    $('ti-vendor-code').readOnly=!!v;
+    $('ti-vendor-code').readOnly=true;
     $('ti-vendors-form').dataset.id=v?.id??'';
     $('ti-vendors-form').dataset.revision=String(v?.revision??0);
     $('ti-vendors-form-error').hidden=true;
@@ -309,14 +309,14 @@ export function createVendorManagementUI({api,getPermissions,onAuthFailure}){
     const today=dateToday();
     const yearEnd=today.slice(0,4)+'-12-31';
     for(const [key,value] of [
-      ['code',c?.contract_code??''],['service',c?.service_name??''],
+      ['code',c?.contract_code??'AUTO'],['service',c?.service_name??''],
       ['reference',c?.contract_reference??''],['description',c?.service_description??''],
       ['start',c?.start_date??today],['end',c?.end_date??yearEnd],
       ['pic',c?.owner_pic??state.selected.owner_pic],
       ['uptime',c?.sla_uptime_target??''],['response',c?.sla_response_target_hours??''],
       ['status',c?.status??'active'],['note',c?.note??''],
     ])$('ti-vendor-contract-'+key).value=String(value);
-    $('ti-vendor-contract-code').readOnly=!!c;
+    $('ti-vendor-contract-code').readOnly=true;
     const stat=$('ti-vendor-contract-status');
     stat.replaceChildren();
     stat.add(new Option('Aktif','active'));
@@ -422,7 +422,7 @@ export function createVendorManagementUI({api,getPermissions,onAuthFailure}){
           ?{...body,expectedRevision:Number($('ti-vendors-form').dataset.revision)}:body,
       }));
       $('ti-vendors-dialog').close();
-      message(id?'Data penyedia diperbarui.':'Penyedia berhasil ditambahkan.','success');
+      message(id?'Data penyedia diperbarui.':'Penyedia '+vendor.vendor_code+' berhasil ditambahkan.','success');
       await load();await detail(vendor.id);
     }catch(error){
       if(!onAuthFailure(error)){
@@ -446,7 +446,7 @@ export function createVendorManagementUI({api,getPermissions,onAuthFailure}){
         method:id?'PATCH':'POST',body:id
           ?{...body,expectedRevision:Number($('ti-vendors-contract-form').dataset.revision)}:body,
       }));
-      $('ti-vendors-contract-dialog').close();message('Kontrak berhasil disimpan.','success');
+      $('ti-vendors-contract-dialog').close();message('Kontrak '+contract.contract_code+' berhasil disimpan.','success');
       await load();await detail(vendorId);await contractDetail(contract.id);
     }catch(error){
       if(!onAuthFailure(error)){
