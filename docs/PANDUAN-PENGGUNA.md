@@ -333,3 +333,10 @@ Ringkasan **Pemantauan kontrak** menghitung kontrak aktif seluruh lembaga yang t
 ## Pustaka contoh risiko
 
 Daftar skenario awal risiko kini ditampilkan sebagai panel **Contoh risiko yang belum dinilai** yang tertutup secara default, agar register risiko lembaga menjadi fokus utama. Buka panel untuk menilai contoh yang relevan atau menandainya tidak relevan. Contoh tidak berubah menjadi temuan atau skor faktual sebelum disimpan oleh petugas.
+
+
+## Mengunduh laporan PDF register TI
+
+Pada halaman aset, risiko, insiden, temuan, penyedia TI, kontrak dan evaluasi SLA, serta pemulihan dan hasil uji, gunakan tombol **Unduh PDF** untuk memperoleh salinan register internal. File mencakup semua catatan tersimpan (termasuk arsip), bukan hanya hasil pencarian atau halaman yang sedang tampil. Nama lembaga, tanggal pembuatan (UTC), jumlah catatan, dan rincian isian yang tersimpan dicantumkan. Isian yang kosong tetap ditandai belum dicatat.
+
+Unduhan memerlukan hak baca laporan dan hak baca modul yang relevan. Jika register berisi lebih dari 500 catatan, gunakan tombol **Ekspor CSV** untuk mengolah data lengkap (maksimum 5.000 catatan). PDF ini **bukan laporan resmi OJK** dan tidak mewakili penilaian atau persetujuan otomatis.

@@ -75,3 +75,10 @@ Tindak lanjut temuan menyediakan antrean berdasarkan kepemilikan, izin pemeriksa
 ## Nomor referensi register operasional
 
 Antarmuka CREATE memakai sentinel `AUTO`; backend menghasilkan nomor `PREFIX-YYYY-000001` per lembaga, jenis, dan tahun kalender `Asia/Jakarta`. Prefix: `AST` aset, `INC` insiden, `RSK` risiko, `FND` temuan, `VND` vendor, `CTR` kontrak, `RCP` pemulihan. Kode lama tetap; UPDATE tidak dapat mengubah kode, sedangkan API CREATE tetap mendukung kode manual untuk kompatibilitas sistem lama. Kode ini adalah identitas internal Nusariksa, **bukan format resmi OJK**.
+
+
+## Laporan PDF register TI
+
+Setiap register operasional dapat diunduh sebagai PDF internal menggunakan identitas lembaga, waktu pembuatan, jumlah catatan, dan rincian dari data tersimpan. PDF dibuat dari seluruh register, termasuk catatan diarsipkan, bukan dari satu halaman daftar atau filter layar. CSV tetap tersedia untuk analisis dan pengolahan data.
+
+PDF dibatasi **500 catatan** dan gagal dengan pesan yang jelas jika melebihi kapasitas, tanpa pemotongan diam-diam; gunakan ekspor CSV sampai 5.000 catatan untuk kebutuhan data besar. Unduhan memerlukan sesi aktif, izin `reports:read` dan izin baca register yang bersangkutan. Dokumen memakai header/footer internal, penanda halaman dan `no-store`, tidak berisi persetujuan, tanda tangan, atau klaim laporan resmi OJK.

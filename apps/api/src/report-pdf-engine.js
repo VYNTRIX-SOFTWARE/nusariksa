@@ -79,6 +79,7 @@ function encodePdf(streams){
   return Buffer.from(output.join(''),'latin1');
 }
 export function createProfessionalReport({status='PRATINJAU INTERNAL',
+  header='LAPORAN ASESMEN TI INTERNAL',
   footer='ASESMEN TI INTERNAL - BUKAN PENGESAHAN OJK'}={}){
   const pages=[];let commands=[],y=TOP;
   const add=s=>commands.push(s);
@@ -105,7 +106,7 @@ export function createProfessionalReport({status='PRATINJAU INTERNAL',
   const startPage=()=>{if(commands.length)pages.push(commands);commands=[];y=TOP;
     rect(0,0,WIDTH,6,PURPLE);
     text(LEFT,38,'NUSARIKSA.',{size:12,bold:true,fill:PURPLE});
-    text(355,38,'LAPORAN ASESMEN TI INTERNAL',{size:8,bold:true,fill:MUTED});
+    text(355,38,header,{size:8,bold:true,fill:MUTED});
     rule(LEFT,52,RIGHT);
     text(LEFT,70,status,{size:8,bold:true,fill:PURPLE});
   };
