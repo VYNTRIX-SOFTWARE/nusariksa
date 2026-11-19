@@ -47,7 +47,7 @@ test('PDF register risiko mencetak seluruh data aktual dan mengamankan karakter 
   assert.match(body,/RSK-2026-000001/);
   assert.match(body,/RSK-2026-000065/);
   assert.match(body,/Gangguan layanan/);
-  assert.ok(body.includes(String.raw`\\(CBS\\)`));
+  assert.ok(body.includes(String.raw`\(CBS\)`));
   assert.match(body,/HYPERLINK/);
   assert.match(body,/DIARSIPKAN/);
   assert.match(body,/BUKAN LAPORAN RESMI OJK/);
