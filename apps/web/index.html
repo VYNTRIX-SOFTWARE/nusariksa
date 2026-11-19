@@ -343,7 +343,9 @@
               <button class="button button-outline" type="submit">Cari</button>
               <button id="ti-recovery-reset-filters" class="button button-ghost" type="button">Reset filter</button>
               <button type="button" id="ti-recovery-export" class="button button-outline" data-register-export="recovery" hidden>Ekspor rencana CSV</button>
+              <button type="button" id="ti-recovery-pdf" class="button button-outline" data-register-pdf="recovery" hidden>Unduh PDF rencana</button>
               <button type="button" id="ti-recovery-tests-export" class="button button-outline" data-register-export="recovery-tests" hidden>Ekspor hasil pengujian</button>
+              <button type="button" id="ti-recovery-tests-pdf" class="button button-outline" data-register-pdf="recovery-tests" hidden>Unduh PDF hasil uji</button>
             </form>
             <p id="ti-recovery-list-summary" class="recovery-list-summary" aria-live="polite">Daftar rencana belum dimuat.</p>
             <div id="ti-recovery-list" class="ti-assets-list" aria-live="polite"></div>
@@ -577,8 +579,11 @@
               <button type="submit" class="button button-outline">Cari</button>
               <button id="ti-vendors-refresh" type="button" class="button button-outline">Muat ulang</button>
               <button type="button" id="ti-vendors-export" class="button button-outline" data-register-export="vendors" hidden>Ekspor vendor</button>
+              <button type="button" id="ti-vendors-pdf" class="button button-outline" data-register-pdf="vendors" hidden>Unduh PDF vendor</button>
               <button type="button" id="ti-vendors-contracts-export" class="button button-outline" data-register-export="vendor-contracts" hidden>Ekspor kontrak</button>
+              <button type="button" id="ti-vendors-contracts-pdf" class="button button-outline" data-register-pdf="vendor-contracts" hidden>Unduh PDF kontrak</button>
               <button type="button" id="ti-vendors-sla-export" class="button button-outline" data-register-export="vendor-sla" hidden>Ekspor evaluasi SLA</button>
+              <button type="button" id="ti-vendors-sla-pdf" class="button button-outline" data-register-pdf="vendor-sla" hidden>Unduh PDF evaluasi SLA</button>
             </form>
             <div id="ti-vendors-list" class="ti-assets-list" aria-live="polite"></div>
             <div class="ti-asset-pagination">
@@ -698,6 +703,7 @@
               <button type="submit" class="button button-outline">Cari</button>
               <button id="ti-findings-refresh" type="button" class="button button-outline">Muat ulang</button>
               <button type="button" id="ti-findings-export" class="button button-outline" data-register-export="findings" hidden>Ekspor CSV</button>
+              <button type="button" id="ti-findings-pdf" class="button button-outline" data-register-pdf="findings" hidden>Unduh PDF temuan</button>
               <button id="ti-findings-reset-filters" type="button" class="button button-ghost">Reset filter</button>
             </form>
             <p id="ti-findings-list-summary" class="finding-list-summary" aria-live="polite">Memuat temuan...</p>
@@ -800,6 +806,7 @@
               <button type="submit" class="button button-outline">Cari</button>
               <button id="ti-incidents-refresh" type="button" class="button button-outline">Muat ulang</button>
               <button type="button" id="ti-incidents-export" class="button button-outline" data-register-export="incidents" hidden>Ekspor CSV</button>
+              <button type="button" id="ti-incidents-pdf" class="button button-outline" data-register-pdf="incidents" hidden>Unduh PDF insiden</button>
             </form>
             <div id="ti-incidents-list" class="ti-assets-list" aria-live="polite"></div>
             <div class="ti-asset-pagination">
@@ -896,6 +903,7 @@
               <button type="submit" class="button button-outline">Cari</button>
               <button id="ti-risks-refresh" type="button" class="button button-outline">Muat ulang</button>
               <button type="button" id="ti-risks-export" class="button button-outline" data-register-export="risks" hidden>Ekspor CSV</button>
+              <button type="button" id="ti-risks-pdf" class="button button-outline" data-register-pdf="risks" hidden>Unduh PDF risiko</button>
               <button id="ti-risks-clear-filters" type="button" class="button button-ghost">Reset filter</button>
             </form>
             <p id="ti-risks-list-summary" class="risk-list-summary" aria-live="polite">Daftar risiko sesuai filter.</p>
@@ -974,6 +982,7 @@
               <button type="submit" class="button button-outline">Cari</button>
               <button id="ti-assets-refresh" type="button" class="button button-outline">Muat ulang</button>
               <button type="button" id="ti-assets-export" class="button button-outline" data-register-export="assets" hidden>Ekspor CSV</button>
+              <button type="button" id="ti-assets-pdf" class="button button-outline" data-register-pdf="assets" hidden>Unduh PDF aset</button>
               <button id="ti-assets-clear-filters" type="button" class="button button-ghost">Reset filter</button>
             </form>
             <p id="ti-assets-list-summary" class="asset-list-summary" aria-live="polite">Daftar aset yang sesuai filter.</p>

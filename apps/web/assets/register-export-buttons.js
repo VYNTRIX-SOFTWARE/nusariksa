@@ -13,21 +13,23 @@ const groups=Object.freeze({
   'recovery-tests':'ti-recovery-message',
 });
 export function createRegisterExportButtons({getPermissions,onAuthFailure}){
-  const buttons=[...document.querySelectorAll('[data-register-export]')];
+  const buttons=[...document.querySelectorAll('[data-register-export],[data-register-pdf]')];
   for(const button of buttons){
-    const type=button.dataset.registerExport;
+    const type=button.dataset.registerExport??button.dataset.registerPdf;
     if(!Object.hasOwn(permissions,type))
       throw new TypeError('Tipe ekspor register tidak dikenal');
     button.addEventListener('click',async()=>{
+      const format=button.dataset.registerPdf?'pdf':'csv';
       const available=getPermissions();
       if(!available.includes('reports:read')||!available.includes(permissions[type])
         ||button.disabled)return;
       button.disabled=true;
       const message=document.getElementById(groups[type]);
       try{
-        await downloadPrivateReport('/register-exports/'+type+'.csv',
-          'nusariksa-'+type+'-internal.csv',{accept:'text/csv'});
-        if(message){message.textContent='CSV register siap diunduh.';message.hidden=false;message.dataset.kind='success';}
+        await downloadPrivateReport('/register-exports/'+type+'.'+format,
+          'nusariksa-'+type+'-internal.'+format,
+          {accept:format==='pdf'?'application/pdf':'text/csv'});
+        if(message){message.textContent=(format==='pdf'?'PDF':'CSV')+' register siap diunduh.';message.hidden=false;message.dataset.kind='success';}
       }catch(error){
         if(!onAuthFailure(error)&&message){
           message.textContent=reportDownloadError(error);message.hidden=false;message.dataset.kind='error';
@@ -38,7 +40,7 @@ export function createRegisterExportButtons({getPermissions,onAuthFailure}){
   function sync(){
     const allowed=getPermissions();
     for(const button of buttons){
-      const type=button.dataset.registerExport;
+      const type=button.dataset.registerExport??button.dataset.registerPdf;
       button.hidden=!(allowed.includes('reports:read')&&allowed.includes(permissions[type]));
     }
   }

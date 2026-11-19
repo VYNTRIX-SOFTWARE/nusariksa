@@ -7,13 +7,14 @@ import {
   REGISTER_EXPORTS,RegisterExportError,exportOperationalRegister,
   exportMaturityWorksheet,exportPadkDraftWorksheet,
 } from './ti-register-exports.js';
+import {exportOperationalRegisterPdf} from './ti-register-pdf.js';
 
 const UUID='([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})';
 const SINGLE=new RegExp('^/register-exports/(maturity|padk)/'+UUID+'\\.csv$','i');
-const ROOT=/^\/register-exports\/([a-z-]+)\.csv$/;
+const ROOT=/^\/register-exports\/([a-z-]+)\.(csv|pdf)$/;
 const respond=(res,status,body)=>{res.writeHead(status);res.end(JSON.stringify(body));};
 export function createTiRegisterExportsHandler({db,appOrigin,
-  register=exportOperationalRegister,
+  register=exportOperationalRegister,pdf=exportOperationalRegisterPdf,
   maturity=exportMaturityWorksheet,padk=exportPadkDraftWorksheet}={}){
   return async function handle(req,res){
     const path=req.url??'',detail=req.method==='GET'?SINGLE.exec(path):null;
@@ -29,15 +30,18 @@ export function createTiRegisterExportsHandler({db,appOrigin,
       respond(res,403,{error:'Forbidden'});return;
     }
     try{
+      const format=detail?'csv':simple[2];
+      const type=detail?detail[1].toLowerCase():simple[1];
       const file=detail
-        ?(detail[1].toLowerCase()==='maturity'
+        ?(type==='maturity'
           ?await maturity(db,{actorId:session.userId,id:detail[2]})
           :await padk(db,{actorId:session.userId,id:detail[2]}))
-        :await register(db,{actorId:session.userId,type:simple[1]});
-      res.setHeader('Content-Type','text/csv; charset=utf-8');
+        :format==='pdf'
+          ?await pdf(db,{actorId:session.userId,type})
+          :await register(db,{actorId:session.userId,type});
+      res.setHeader('Content-Type',format==='pdf'?'application/pdf':'text/csv; charset=utf-8');
       res.setHeader('Content-Disposition',
-        'attachment; filename="nusariksa-'+(detail?detail[1].toLowerCase():simple[1])+
-        '-internal.csv"');
+        'attachment; filename="nusariksa-'+type+'-internal.'+format+'"');
       res.setHeader('Cache-Control','no-store');
       res.setHeader('X-Content-Type-Options','nosniff');
       res.setHeader('Content-Security-Policy','sandbox');
