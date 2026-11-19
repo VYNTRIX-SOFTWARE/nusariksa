@@ -274,16 +274,16 @@ export function createFindingManagementUI({api,getPermissions,getUserId,onAuthFa
   }
   function fillForm(record){
     const form=$('ti-findings-form');form.reset();
-    $('ti-finding-code').value=record?.finding_code??'';
-    $('ti-finding-code').readOnly=!!record;
+    $('ti-finding-code').value=record?.finding_code??'AUTO';
+    $('ti-finding-code').readOnly=true;
     $('ti-finding-title').value=record?.title??'';
     $('ti-finding-description').value=record?.description??'';
     $('ti-finding-priority').value=record?.priority??'';
     $('ti-finding-source-type').value=record?.source_type??'';
-    $('ti-finding-suggest-code').hidden=Boolean(record);
+    $('ti-finding-suggest-code').hidden=true;
     $('ti-finding-code-hint').textContent=record
       ?'Kode temuan permanen untuk menjaga riwayat pencatatan.'
-      :'Saran kode dapat diubah. Pastikan unik sebelum disimpan.';
+      :'Nomor dibuat otomatis oleh server saat disimpan.';
     $('ti-finding-priority-hint').textContent=findingPriorityGuidance($('ti-finding-priority').value);
     $('ti-finding-source-type').disabled=!!record;
     sourceOptions(formSourceValue(record));
@@ -428,17 +428,6 @@ export function createFindingManagementUI({api,getPermissions,getUserId,onAuthFa
   $('ti-findings-next-step').after($('ti-findings-review-form'));
   $('ti-finding-priority').addEventListener('change',()=>{
     $('ti-finding-priority-hint').textContent=findingPriorityGuidance($('ti-finding-priority').value);
-  });
-  $('ti-finding-suggest-code').addEventListener('click',()=>{
-    const title=$('ti-finding-title');
-    if(!title.value.trim()){
-      title.focus();$('ti-finding-code-hint').textContent='Isi judul temuan terlebih dahulu.';return;
-    }
-    const code=suggestFindingCode(title.value);
-    if(code){
-      $('ti-finding-code').value=code;
-      $('ti-finding-code-hint').textContent='Kode usulan: '+code+'. Periksa keunikan sebelum menyimpan.';
-    }
   });
   $('ti-findings-reset-filters').addEventListener('click',()=>{
     state.workFilter='all';renderWorkQueue();

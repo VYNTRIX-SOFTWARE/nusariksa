@@ -1,4 +1,5 @@
 import {userHasPermission} from './authorization.js';
+import {nextTiDocumentNumber} from './ti-document-numbers.js';
 const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const CODE=/^[A-Z][A-Z0-9_-]{1,31}$/;
 const FIELDS=['planCode','serviceName','scenario','businessImpact','activationCriteria',
@@ -79,6 +80,7 @@ export async function getRecoveryPlan(db,{actorId,id}){
 }
 export async function createRecoveryPlanInTransaction(db,{actorId,...payload}){
  await permit(db,actorId,'recovery:write');const p=validatePlan(payload);
+ if(p.planCode==='AUTO')p.planCode=await nextTiDocumentNumber(db,{actorId,kind:'recovery'});
  const keys=FIELDS.map(x=>({planCode:'plan_code',serviceName:'service_name',businessImpact:'business_impact',activationCriteria:'activation_criteria',ownerPic:'owner_pic',alternatePic:'alternate_pic',rtoMinutes:'rto_minutes',rpoMinutes:'rpo_minutes',recoverySteps:'recovery_steps',communicationSteps:'communication_steps',backupReference:'backup_reference',evidenceLocation:'evidence_location'}[x]??x));
  const values=FIELDS.map(k=>p[k]);
  try{

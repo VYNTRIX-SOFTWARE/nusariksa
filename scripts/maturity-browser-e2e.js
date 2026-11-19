@@ -496,6 +496,7 @@ async function runBrowser(base,db,fixture){
     await evalJs("document.querySelectorAll('dialog.nr-record-detail-dialog[open]').forEach(d=>d.close());"+
       "document.getElementById('ti-vendors-create').click()");
     await until("document.getElementById('ti-vendors-dialog').open",'new vendor dialog');
+    assert.equal(await evalJs("document.getElementById('ti-vendor-code').value"),'AUTO');
     await evalJs("document.getElementById('ti-vendor-code').value='VND-BROWSER-01';"+
       "document.getElementById('ti-vendor-name').value='Penyedia layanan pengujian CBS';"+
       "document.getElementById('ti-vendor-category').value='core_banking';"+
@@ -512,6 +513,7 @@ async function runBrowser(base,db,fixture){
     const vendorEnd=new Date(Date.now()+20*86400000).toISOString().slice(0,10);
     await evalJs("document.getElementById('ti-vendors-add-contract').click()");
     await until("document.getElementById('ti-vendors-contract-dialog').open",'vendor contract dialog');
+    assert.equal(await evalJs("document.getElementById('ti-vendor-contract-code').value"),'AUTO');
     await evalJs("document.getElementById('ti-vendor-contract-code').value='CTR-BROWSER-01';"+
       "document.getElementById('ti-vendor-contract-service').value='Layanan CBS dan SLA';"+
       "document.getElementById('ti-vendor-contract-reference').value='PKS-TEST-2026';"+
@@ -655,7 +657,7 @@ async function runBrowser(base,db,fixture){
     await until("document.getElementById('ti-risks-dialog').open",
       'starter entry opens an unscored record');
     assert.equal(await evalJs("document.getElementById('ti-risk-title').value.length>0"),true);
-    assert.equal(await evalJs("document.getElementById('ti-risk-code').value.startsWith('RSK-')"),true);
+    assert.equal(await evalJs("document.getElementById('ti-risk-code').value==='AUTO'"),true);
     assert.equal(await evalJs("document.getElementById('ti-risk-likelihood').value"),'');
     assert.equal(await evalJs("document.getElementById('ti-risk-impact').value"),'');
     assert.equal(await evalJs("document.getElementById('ti-risk-pic').value"),'');
@@ -674,6 +676,7 @@ async function runBrowser(base,db,fixture){
     await evalJs("document.querySelectorAll('dialog.nr-record-detail-dialog[open]').forEach(d=>d.close());"+
       "document.getElementById('ti-risks-create').click()");
     await until("document.getElementById('ti-risks-dialog').open",'new risk dialog');
+    assert.equal(await evalJs("document.getElementById('ti-risk-code').value"),'AUTO');
     assert.equal(await evalJs("document.getElementById('ti-risk-likelihood').value"),'');
     assert.equal(await evalJs("document.getElementById('ti-risk-impact').value"),'');
     assert.equal(await evalJs("document.getElementById('ti-risk-due-date').value"),'');
@@ -735,9 +738,8 @@ async function runBrowser(base,db,fixture){
     assert.equal(await evalJs("document.getElementById('ti-finding-priority').value"),'');
     assert.equal(await evalJs("document.getElementById('ti-finding-source-type').value"),'');
     assert.equal(await evalJs("document.getElementById('ti-findings-form').checkValidity()"),false);
-    await evalJs("document.getElementById('ti-finding-title').value='Perbaikan prosedur pemulihan CBS';"+
-      "document.getElementById('ti-finding-suggest-code').click()");
-    assert.equal(await evalJs("document.getElementById('ti-finding-code').value.startsWith('TEM-')"),true);
+    await evalJs("document.getElementById('ti-finding-title').value='Perbaikan prosedur pemulihan CBS'");
+    assert.equal(await evalJs("document.getElementById('ti-finding-code').value==='AUTO'"),true);
     await evalJs("document.getElementById('ti-finding-source-type').value='risk';"+
       "document.getElementById('ti-finding-source-type').dispatchEvent(new Event('change'))");
     await until("[...document.querySelectorAll('#ti-finding-source option')].some(x=>x.value==="+

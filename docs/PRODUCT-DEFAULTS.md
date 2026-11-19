@@ -70,3 +70,8 @@ Ekspor internal mendukung asesmen TI (PDF/CSV), PADK (PDF/CSV draft), maturitas 
 ## Fokus operasional pengguna
 
 Tindak lanjut temuan menyediakan antrean berdasarkan kepemilikan, izin pemeriksa independen, dan keterlambatan target, bukan ringkasan dari satu halaman paginasi. Vendor TI menyediakan ringkasan tanggal kontrak aktif seluruh lembaga serta akses cepat menuju kontrak yang memerlukan peninjauan. Daftar 40 contoh risiko tetap dapat diakses dalam panel tertutup secara default. Semua ringkasan merupakan data operasional internal yang menggunakan otorisasi institusi; tidak menyimpulkan kepatuhan regulatori ataupun menggantikan peninjauan dokumen asli.
+
+
+## Nomor referensi register operasional
+
+Antarmuka CREATE memakai sentinel `AUTO`; backend menghasilkan nomor `PREFIX-YYYY-000001` per lembaga, jenis, dan tahun kalender `Asia/Jakarta`. Prefix: `AST` aset, `INC` insiden, `RSK` risiko, `FND` temuan, `VND` vendor, `CTR` kontrak, `RCP` pemulihan. Kode lama tetap; UPDATE tidak dapat mengubah kode, sedangkan API CREATE tetap mendukung kode manual untuk kompatibilitas sistem lama. Kode ini adalah identitas internal Nusariksa, **bukan format resmi OJK**.

@@ -1,4 +1,5 @@
 import {userHasPermission} from './authorization.js';
+import {nextTiDocumentNumber} from './ti-document-numbers.js';
 
 const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const CODE=/^[A-Z][A-Z0-9_-]{1,31}$/;
@@ -148,6 +149,7 @@ async function lockVendor(db,actorId,id){
 export async function createVendorInTransaction(db,{actorId,...payload}){
   await permission(db,actorId,'vendors:write');
   const d=validateVendor(payload);
+  if(d.vendorCode==='AUTO')d.vendorCode=await nextTiDocumentNumber(db,{actorId,kind:'vendor'});
   try{
     const r=await db.query('INSERT INTO ti_vendors(institution_id,vendor_code,name,'+
       'service_category,contact_name,contact_email,contact_phone,owner_pic,criticality,'+
@@ -235,6 +237,7 @@ export async function createContractInTransaction(db,{actorId,vendorId,...payloa
   const vendor=await lockVendor(db,actorId,vendorId);
   if(vendor.archived_at||vendor.status!=='active')
     throw new VendorError(409,'Penyedia harus aktif untuk membuat kontrak');
+  if(d.contractCode==='AUTO')d.contractCode=await nextTiDocumentNumber(db,{actorId,kind:'contract'});
   try{
     const r=await db.query('INSERT INTO ti_vendor_contracts(institution_id,vendor_id,'+
       'contract_code,service_name,contract_reference,service_description,start_date,end_date,'+
