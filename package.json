@@ -22,6 +22,7 @@
     "regulatory:rank-batch": "node scripts/padk-rank-batch.js",
     "test:browser": "node scripts/maturity-browser-e2e.js",
     "recovery:drill": "node scripts/recovery-drill.js",
+    "pilot:preflight": "node scripts/pilot-preflight.js",
     "regulatory:workpack": "node scripts/padk-review-workpack.js"
   },
   "license": "AGPL-3.0-only",

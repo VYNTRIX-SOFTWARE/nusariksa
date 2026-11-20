@@ -82,6 +82,7 @@ Simpan kunci di luar repository dan bersama cadangan yang aman. Jangan menggunak
 - [Instalasi dan pemeliharaan teknis](docs/DEVELOPMENT.md)
 - [Penilaian keamanan siber dan referensinya](docs/PADK.md)
 - [Pemulihan database dan berkas bukti](docs/RECOVERY.md)
+- [Checklist kesiapan uji coba terbatas](docs/PILOT-READINESS.md)
 - [Panduan kontribusi](CONTRIBUTING.md)
 - [Kebijakan keamanan](SECURITY.md)
 

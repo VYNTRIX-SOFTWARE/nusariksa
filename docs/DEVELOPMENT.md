@@ -69,3 +69,14 @@ Untuk melakukan uji pemulihan terisolasi gunakan `npm run recovery:drill` sesuai
 ## Sebelum menggunakan data produksi
 
 NusaRiksa masih dalam pengembangan. Penerapan produksi memerlukan review otorisasi, manajemen dan pemulihan kunci, keamanan unggahan, backup–restore, pengujian operasional, serta pemeriksaan independen atas instrumen PADK. CI yang lulus tidak membuktikan aplikasi aman untuk data bank.
+
+## Pemeriksaan awal uji coba terbatas
+
+Sebelum UAT, gunakan database terisolasi dengan **data sintetis** dan jalankan pemeriksaan non-destruktif:
+
+```bash
+export NUSARIKSA_PILOT_DATA_MODE=synthetic
+npm run pilot:preflight -- --database
+```
+
+Alat ini membaca konfigurasi, memeriksa koneksi PostgreSQL dalam transaksi read-only dan membandingkan checksum seluruh migrasi. Hasilnya tidak memuat kredensial, tetapi hanya membuktikan sebagian persyaratan teknis. **Tidak memberikan persetujuan produksi atau kelayakan penilaian PADK resmi**. Checklist instalasi, UAT, dan keputusan Go/No-Go tersedia di [panduan kesiapan pilot](PILOT-READINESS.md).
