@@ -21,6 +21,7 @@ import {createIncidentManagementUI} from './ti-incidents-ui.js';
 import {createFindingManagementUI} from './ti-findings-ui.js';
 import {createVendorManagementUI} from './ti-vendors-ui.js';
 import {createRecoveryUI} from './ti-recovery-ui.js';
+import {createTiWorkUI} from './ti-work-ui.js';
 import {createCrosswalkReviewUI} from './padk-crosswalk-review-ui.js';
 import {invitationCodeLooksValid,invitationCodeProgress,passwordReadiness} from './account-access-model.js';
 
@@ -53,7 +54,7 @@ const state = {
   userId: null, permissions: [], assessments: [], load: 'loading', page: 'overview',
   year: 'all', status: 'all', search: '', sort: 'newest', workspaceOrigin:'assessments',
 };
-const pages = {overview: 'Dashboard', assessments: 'Daftar Asesmen', reviews: 'Review & Persetujuan', reports: 'Laporan Asesmen', catalogs: 'Katalog Kontrol', maturity: 'Metodologi Maturitas', 'maturity-assessments': 'Penilaian Maturitas', 'padk-preparations':'Persiapan PADK', 'padk-crosswalk':'QA Pemetaan PADK', 'admin-onboarding':'Akses Pengguna', 'ti-assets':'Inventaris Aset TI', 'ti-risks':'Register Risiko TI', 'ti-incidents':'Insiden TI/Siber', 'ti-findings':'Tindak Lanjut Temuan', 'ti-vendors':'Vendor TI', 'ti-recovery':'Rencana Pemulihan TI', workspace: 'Assessment Workspace'};
+const pages = {overview: 'Dashboard', assessments: 'Daftar Asesmen', reviews: 'Review & Persetujuan', reports: 'Laporan Asesmen', catalogs: 'Katalog Kontrol', maturity: 'Metodologi Maturitas', 'maturity-assessments': 'Penilaian Maturitas', 'padk-preparations':'Persiapan PADK', 'padk-crosswalk':'QA Pemetaan PADK', 'admin-onboarding':'Akses Pengguna', 'ti-assets':'Inventaris Aset TI', 'ti-risks':'Register Risiko TI', 'ti-incidents':'Insiden TI/Siber', 'ti-findings':'Tindak Lanjut Temuan', 'ti-vendors':'Vendor TI', 'ti-recovery':'Rencana Pemulihan TI', 'ti-work':'Pusat Pekerjaan TI', workspace: 'Assessment Workspace'};
 
 function show(screen) {
   for (const [name, element] of Object.entries(screens)) element.hidden = name !== screen;
@@ -109,6 +110,7 @@ function cleanSession() {
   findingManagement.clear();
   vendorManagement.clear();
   recoveryManagement.clear();
+  tiWork.clear();
   notice('');
 }
 function authFailure(error) {
@@ -172,6 +174,11 @@ function renderPermissions() {
   $('finding-menu').hidden=!state.permissions.includes('findings:read');
   $('vendor-menu').hidden=!state.permissions.includes('vendors:read');
   $('recovery-menu').hidden=!state.permissions.includes('recovery:read');
+  const tiWorkRead=['findings:read','incidents:read','risks:read','vendors:read','recovery:read'];
+  const allowedTiWork=tiWorkRead.some(p=>state.permissions.includes(p));
+  $('ti-work-menu').hidden=!allowedTiWork;
+  tiWork.sync();
+  if(!allowedTiWork&&state.page==='ti-work')navigate('overview');
   assetRegister.sync();riskRegister.sync();incidentManagement.sync();
   registerExportButtons.sync();
   findingManagement.sync();vendorManagement.sync();recoveryManagement.sync();
@@ -349,6 +356,8 @@ function navigate(page) {
   if(page==='ti-findings'&&!state.permissions.includes('findings:read'))return false;
   if(page==='ti-vendors'&&!state.permissions.includes('vendors:read'))return false;
   if(page==='ti-recovery'&&!state.permissions.includes('recovery:read'))return false;
+  if(page==='ti-work'&&!['findings:read','incidents:read','risks:read',
+    'vendors:read','recovery:read'].some(p=>state.permissions.includes(p)))return false;
   if(['reviews','padk-crosswalk'].includes(page)&&!state.permissions.includes('assessments:approve'))return false;
   if(state.page==='workspace' && page!=='workspace' && !workspace.confirmLeave())return false;
   if(state.page==='maturity' && page!=='maturity' && !maturity.confirmLeave())return false;
@@ -373,6 +382,7 @@ function navigate(page) {
   if(page==='ti-findings')void findingManagement.load();
   if(page==='ti-vendors')void vendorManagement.load();
   if(page==='ti-recovery')void recoveryManagement.load();
+  if(page==='ti-work')void tiWork.load();
   if(page==='catalogs') void catalogs.load();
   if(page==='maturity') void maturity.load();
   if(page==='maturity-assessments') void maturityAssessments.load();
@@ -705,6 +715,7 @@ const vendorManagement=createVendorManagementUI({
 const findingManagement=createFindingManagementUI({
   api:requestJson,getPermissions:()=>state.permissions,getUserId:()=>state.userId,
   onAuthFailure:authFailure,
+  onOpenSource:(source)=>void openTiWorkRecord(source),
 });
 const incidentManagement=createIncidentManagementUI({
   api:requestJson,getPermissions:()=>state.permissions,onAuthFailure:authFailure,
@@ -714,6 +725,23 @@ const riskRegister=createRiskRegisterUI({
 });
 const assetRegister=createAssetRegisterUI({
   api:requestJson,getPermissions:()=>state.permissions,onAuthFailure:authFailure,
+});
+async function openTiWorkRecord(item){
+  const pagesByType={findings:'ti-findings',incidents:'ti-incidents',
+    risks:'ti-risks',vendors:'ti-vendors',recovery:'ti-recovery'};
+  const page=pagesByType[item?.type];
+  if(!page||!navigate(page))return;
+  if(page==='ti-findings')await findingManagement.openRecord(item.id);
+  if(page==='ti-incidents')await incidentManagement.openRecord(item.id);
+  if(page==='ti-risks')await riskRegister.openRecord(item.id);
+  if(page==='ti-vendors')await vendorManagement.openRecord(item.relatedId??item.id,
+    item.relatedId?item.id:null);
+  if(page==='ti-recovery')await recoveryManagement.openRecord(item.id);
+}
+const tiWork=createTiWorkUI({api:requestJson,
+  getPermissions:()=>state.permissions,onAuthFailure:authFailure,
+  onOpenRecord:(item)=>void openTiWorkRecord(item),
+  onOpenModule:(page)=>navigate(page),
 });
 const adminOnboarding=createAdminOnboardingUI({
   api:requestJson,

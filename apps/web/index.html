@@ -149,6 +149,9 @@
         <button type="button" class="nav-link is-active" data-page="overview" aria-current="page" title="Dashboard">
           <svg class="icon nav-icon"><use href="#i-grid"></use></svg><span class="nav-label">Dashboard</span>
         </button>
+        <button type="button" class="nav-link" data-page="ti-work" id="ti-work-menu" title="Pusat Pekerjaan TI" hidden>
+          <svg class="icon nav-icon"><use href="#i-clipboard"></use></svg><span class="nav-label">Pusat Pekerjaan TI</span>
+        </button>
         <div class="sidebar-section-label sidebar-gap" id="assessment-menu-group" hidden>ASESMEN TI</div>
         <button type="button" class="nav-link" data-page="assessments" id="assessment-menu" title="Daftar asesmen" hidden>
           <svg class="icon nav-icon"><use href="#i-clipboard"></use></svg><span class="nav-label">Daftar Asesmen</span>
@@ -276,6 +279,33 @@
           </div>
         </section>
 
+        <section id="page-ti-work" class="page" aria-labelledby="ti-work-title" hidden>
+          <div class="page-intro">
+            <div><p class="eyebrow">OPERASIONAL / LINTAS REGISTER TI</p>
+              <h1 id="ti-work-title">Pusat Pekerjaan TI</h1>
+              <p class="supporting-copy">Lihat catatan yang membutuhkan perhatian dan buka langsung register terkait. Angka dihitung dari data lembaga sesuai hak baca akun.</p>
+            </div>
+            <button type="button" id="ti-work-refresh" class="button button-outline">Muat ulang</button>
+          </div>
+          <p class="scope-note">Ringkasan ini membantu menentukan perhatian operasional, bukan hasil pemeriksaan, skor kepatuhan, atau keputusan otomatis. Tugas pengguna dan catatan lembaga tetap dibedakan dalam rinciannya.</p>
+          <section class="panel-card" aria-labelledby="ti-work-summary-title">
+            <div class="panel-heading"><div><p class="eyebrow">RINGKASAN REGISTER</p>
+              <h2 id="ti-work-summary-title">Perlu perhatian</h2></div>
+              <span id="ti-work-updated" class="workspace-help" aria-live="polite"></span>
+            </div>
+            <div id="ti-work-groups" class="ti-work-groups" aria-label="Jumlah catatan per modul"></div>
+          </section>
+          <section class="panel-card" aria-labelledby="ti-work-list-title">
+            <div class="panel-heading"><div><p class="eyebrow">DAFTAR PRIORITAS</p>
+              <h2 id="ti-work-list-title">Catatan yang bisa dibuka</h2></div>
+              <label for="ti-work-filter">Modul
+                <select id="ti-work-filter"><option value="all">Semua modul</option></select>
+              </label>
+            </div>
+            <p id="ti-work-status" class="workspace-help" role="status" aria-live="polite">Ringkasan belum dimuat.</p>
+            <div id="ti-work-list" class="ti-work-list" aria-live="polite"></div>
+          </section>
+        </section>
         <section id="page-admin-onboarding" class="page" aria-labelledby="admin-onboard-title" hidden>
           <div class="page-intro">
             <div>

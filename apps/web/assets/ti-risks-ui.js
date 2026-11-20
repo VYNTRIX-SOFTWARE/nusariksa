@@ -497,5 +497,5 @@ export function createRiskRegisterUI({api,getPermissions,onAuthFailure}){
     }catch(e){if(!onAuthFailure(e))message('Pengarsipan gagal. Muat ulang risiko.','error');}
     finally{state.busy=false;sync();}
   });
-  showRiskPane('register');sync();return {load,clear,sync};
+  showRiskPane('register');sync();return {load,clear,sync,openRecord:detail};
 }

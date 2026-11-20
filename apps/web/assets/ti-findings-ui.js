@@ -78,7 +78,7 @@ function formSourceValue(record){
   if(record.source_type==='risk')return record.risk_id;
   return record.incident_id;
 }
-export function createFindingManagementUI({api,getPermissions,getUserId,onAuthFailure}){
+export function createFindingManagementUI({api,getPermissions,getUserId,onAuthFailure,onOpenSource}){
   const detailWindow=mountRecordDetailDialog('ti-findings-detail');
   const state={items:[],options:null,selected:null,loaded:false,busy:false,
     offset:0,more:false,request:0,detailRequest:0,workRequest:0,
@@ -355,6 +355,19 @@ export function createFindingManagementUI({api,getPermissions,getUserId,onAuthFa
     summary.append(head,el('span',STATUS[record.status],
       'finding-status-pill finding-status-'+record.status));
     $('ti-findings-next-step').textContent=findingNextStep(record);
+    if(typeof onOpenSource==='function' && ['risk','incident'].includes(record.source_type)){
+      const sourceType=record.source_type==='risk'?'risks':'incidents';
+      const sourceId=record.source_type==='risk'?record.risk_id:record.incident_id;
+      const permission=record.source_type==='risk'?'risks:read':'incidents:read';
+      if(UUID.test(sourceId??'')&&getPermissions().includes(permission)){
+        const link=el('button','Buka sumber '+SOURCES[record.source_type],
+          'button button-outline');
+        link.type='button';
+        link.addEventListener('click',()=>{detailWindow.close();onOpenSource({type:sourceType,id:sourceId});});
+        summary.append(link);
+      }
+    }
+
     renderSubmissionGuide(record);
     const root=$('ti-findings-detail-values');root.replaceChildren();
     for(const [name,fields] of [
@@ -525,5 +538,5 @@ export function createFindingManagementUI({api,getPermissions,getUserId,onAuthFa
     }catch(error){if(!onAuthFailure(error))message('Arsip gagal. Muat ulang temuan.','error');}
     finally{state.busy=false;sync();}
   });
-  sync();return {load,clear,sync};
+  sync();return {load,clear,sync,openRecord:detail};
 }

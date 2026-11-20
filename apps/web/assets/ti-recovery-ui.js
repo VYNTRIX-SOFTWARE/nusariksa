@@ -396,5 +396,5 @@ export function createRecoveryUI({api,getPermissions,onAuthFailure}){
     'Gagal menyimpan. Hasil berhasil perlu RTO terukur, bukti, dan pemenuhan target yang berlaku.');
   }finally{state.busy=false;$('ti-recovery-exercise-save').disabled=false;sync();}
  });
- sync();return {load,clear,sync};
+ sync();return {load,clear,sync,openRecord:detail};
 }
