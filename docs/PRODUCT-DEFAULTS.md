@@ -82,3 +82,10 @@ Antarmuka CREATE memakai sentinel `AUTO`; backend menghasilkan nomor `PREFIX-YYY
 Setiap register operasional dapat diunduh sebagai PDF internal menggunakan identitas lembaga, waktu pembuatan, jumlah catatan, dan rincian dari data tersimpan. PDF dibuat dari seluruh register, termasuk catatan diarsipkan, bukan dari satu halaman daftar atau filter layar. CSV tetap tersedia untuk analisis dan pengolahan data.
 
 PDF dibatasi **500 catatan** dan gagal dengan pesan yang jelas jika melebihi kapasitas, tanpa pemotongan diam-diam; gunakan ekspor CSV sampai 5.000 catatan untuk kebutuhan data besar. Unduhan memerlukan sesi aktif, izin `reports:read` dan izin baca register yang bersangkutan. Dokumen memakai header/footer internal, penanda halaman dan `no-store`, tidak berisi persetujuan, tanda tangan, atau klaim laporan resmi OJK.
+
+
+## Pusat Pekerjaan TI
+
+Endpoint `GET /ti-work/overview` mengembalikan jumlah catatan perhatian dan maksimum 20 referensi prioritas dari register temuan, insiden, risiko, kontrak penyedia, dan pemulihan. Permintaan memerlukan sesi aktif. Backend hanya melakukan query pada register yang memiliki izin baca; temuan yang dapat diverifikasi juga memerlukan `findings:verify`, dan tetap mengecualikan pembuat maupun pengaju yang sama.
+
+Ringkasan tidak mengeksekusi perubahan status dan tidak merupakan penilaian kepatuhan. Angka dihitung pada scope lembaga (bukan pagination frontend); daftar dibatasi hingga 8 kandidat per modul dan 20 total. Kondisi perhatian: temuan milik pembuat/perlu verifikasi/melewati target, insiden belum selesai, risiko inheren tinggi/kritis belum ditutup, kontrak mendekati habis atau tanpa evaluasi tercatat, dan rencana pemulihan tanpa uji tercatat. Tanggal dan status diambil dari database.

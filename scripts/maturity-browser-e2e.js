@@ -846,9 +846,22 @@ async function runBrowser(base,db,fixture){
       'incident archived with persistent history');
     assert.equal((await db.query('SELECT count(*)::int AS n FROM ti_incident_events WHERE incident_id=$1',
       [incident.rows[0].id])).rows[0].n,6);
+    // Pusat pekerjaan menggabungkan register dan membuka detail asli tanpa URL publik.
     await evalJs("document.querySelectorAll('dialog.nr-record-detail-dialog[open]').forEach(d=>d.close());"+
-      "document.getElementById('risk-menu').click()");
-    await until("!document.getElementById('ti-risks-detail').hidden",'return to risk register');
+      "document.getElementById('ti-work-menu').click()");
+    await until("!document.getElementById('page-ti-work').hidden && "+
+      "[...document.querySelectorAll('#ti-work-list .ti-work-code')].some(x=>x.textContent.includes('RSK-E2E-01'))",
+      'cross-register attention center loads risk');
+    assert.equal(await evalJs("document.querySelectorAll('#ti-work-groups .ti-work-stat').length"),5);
+    // The sample contract was archived earlier, so it must not appear as active attention.
+    assert.equal(await evalJs("document.getElementById('ti-work-list').textContent.includes('CTR-BROWSER-01')"),false);
+    await evalJs("[...document.querySelectorAll('#ti-work-list .ti-work-row')]"+
+      ".find(x=>x.textContent.includes('RSK-E2E-01')).querySelector('button').click()");
+    await until("!document.getElementById('page-ti-risks').hidden && "+
+      "!document.getElementById('ti-risks-detail').hidden && "+
+      "document.getElementById('ti-risks-detail-summary').textContent.includes('RSK-E2E-01')",
+      'opens real risk detail from the center');
+
     await evalJs("window.confirm=()=>true;document.getElementById('ti-risks-archive').click()");
     await until("document.getElementById('ti-risks-detail-values').textContent.includes('Diarsipkan')",
       'risk archived with history');

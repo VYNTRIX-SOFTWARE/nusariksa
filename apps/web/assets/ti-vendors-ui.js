@@ -521,5 +521,7 @@ export function createVendorManagementUI({api,getPermissions,onAuthFailure}){
     }catch(error){if(!onAuthFailure(error))message('Akhiri kontrak aktif atau muat ulang penyedia.','error');}
     finally{state.busy=false;sync();}
   });
-  sync();return {load,clear,sync};
+  sync();return {load,clear,sync,openRecord:async(vendorId,contractId=null)=>{
+    await detail(vendorId);if(contractId&&state.selected?.id===vendorId)await contractDetail(contractId);
+  }};
 }

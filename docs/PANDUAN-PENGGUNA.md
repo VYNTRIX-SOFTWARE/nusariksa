@@ -340,3 +340,18 @@ Daftar skenario awal risiko kini ditampilkan sebagai panel **Contoh risiko yang 
 Pada halaman aset, risiko, insiden, temuan, penyedia TI, kontrak dan evaluasi SLA, serta pemulihan dan hasil uji, gunakan tombol **Unduh PDF** untuk memperoleh salinan register internal. File mencakup semua catatan tersimpan (termasuk arsip), bukan hanya hasil pencarian atau halaman yang sedang tampil. Nama lembaga, tanggal pembuatan (UTC), jumlah catatan, dan rincian isian yang tersimpan dicantumkan. Isian yang kosong tetap ditandai belum dicatat.
 
 Unduhan memerlukan hak baca laporan dan hak baca modul yang relevan. Jika register berisi lebih dari 500 catatan, gunakan tombol **Ekspor CSV** untuk mengolah data lengkap (maksimum 5.000 catatan). PDF ini **bukan laporan resmi OJK** dan tidak mewakili penilaian atau persetujuan otomatis.
+
+
+## Pusat Pekerjaan TI
+
+Pilih **Pusat Pekerjaan TI** pada navigasi untuk melihat catatan lintas register yang perlu diperhatikan. Ringkasan hanya memuat modul yang boleh dibaca oleh akun aktif. Jumlah tiap modul dihitung dari catatan lembaga, bukan dari satu halaman hasil pencarian. Pilih **Buka modul** untuk daftar lengkap, atau **Lihat detail** untuk membuka catatan langsung.
+
+- **Temuan:** pekerjaan milik pembuat, pemeriksaan independen yang dapat dilakukan akun reviewer, dan temuan terlambat. Pemeriksa tidak dapat menyetujui temuan yang dibuat/diajukannya sendiri.
+- **Insiden:** insiden yang belum dinyatakan pulih atau ditutup.
+- **Risiko:** risiko inheren tinggi/kritis yang belum ditutup, sesuai rubrik risiko internal NusaRiksa.
+- **Kontrak vendor:** kontrak aktif yang melewati atau mendekati akhir masa berlaku (30 hari), atau belum punya evaluasi SLA tercatat.
+- **Pemulihan:** rencana yang belum memiliki catatan pengujian di aplikasi.
+
+Dari detail **Temuan** yang bersumber dari risiko/insiden, tombol *Buka sumber* membawa pengguna ke catatan asal bila akun memiliki izin membaca modul tersebut. Tautan ini tidak mengubah data.
+
+Daftar utama menampilkan maksimal 20 catatan perhatian, dengan hingga 8 kandidat dari tiap modul. Angka ringkasan tetap menunjukkan keseluruhan catatan yang memenuhi kriteria. Pusat Pekerjaan TI bukan penilaian kepatuhan OJK dan tidak mengisi fakta, melakukan verifikasi, atau membuat keputusan atas nama petugas.

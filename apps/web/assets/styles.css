@@ -1383,3 +1383,22 @@ button.nr-work-metric[aria-pressed="true"]{border-color:#6D62A1;background:#F5F3
   .nr-work-metric strong{font-size:23px}
   .nr-vendor-alert{align-items:stretch;flex-direction:column}
   .nr-vendor-alert button{width:100%}}
+
+/* Pusat Pekerjaan TI: ringkas, mudah dibaca dan responsif. */
+.ti-work-groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:12px}
+.ti-work-stat{display:flex;flex-direction:column;align-items:flex-start;gap:6px;text-align:left;
+  padding:17px;border:1px solid var(--border,#dce2ec);border-radius:12px;
+  background:var(--surface,#fff);color:inherit;cursor:pointer}
+.ti-work-stat:hover,.ti-work-stat:focus-visible{border-color:#6848ce;outline-offset:3px}
+.ti-work-stat strong{font-size:1.7rem;font-variant-numeric:tabular-nums}
+.ti-work-stat span{font-weight:600}
+.ti-work-stat small,.ti-work-code{color:var(--muted,#566279)}
+.ti-work-list{display:flex;flex-direction:column;gap:10px;margin-top:14px}
+.ti-work-row{display:flex;align-items:center;justify-content:space-between;gap:18px;
+  border:1px solid var(--border,#dce2ec);padding:15px 17px;border-radius:12px}
+.ti-work-content{min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:6px;overflow-wrap:anywhere}
+.ti-work-content strong{font-size:1rem}
+.ti-work-content p{margin:0;color:var(--muted,#566279)}
+.ti-work-row .button{flex-shrink:0}
+@media(max-width:650px){.ti-work-row{align-items:stretch;flex-direction:column}
+  .ti-work-row .button{width:100%}.ti-work-groups{grid-template-columns:repeat(2,minmax(0,1fr))}}

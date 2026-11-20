@@ -371,5 +371,5 @@ export function createIncidentManagementUI({api,getPermissions,onAuthFailure}){
     }catch(error){if(!onAuthFailure(error))message('Arsip gagal. Periksa revisi terbaru.','error');}
     finally{state.busy=false;sync();}
   });
-  sync();return {load:async()=>{await Promise.all([load(),loadOverview()]);},clear,sync};
+  sync();return {load:async()=>{await Promise.all([load(),loadOverview()]);},clear,sync,openRecord:detail};
 }
