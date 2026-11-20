@@ -48,6 +48,13 @@ jobs:
         run: npm run db:migrate
       - name: Jalankan pemeriksaan
         run: npm run check
+      - name: Periksa konfigurasi pilot pada database uji
+        env:
+          APP_ORIGIN: http://127.0.0.1:3000
+          NUSARIKSA_PILOT_DATA_MODE: synthetic
+          EVIDENCE_KEYRING: '{"v1":"0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"}'
+          EVIDENCE_ACTIVE_KEY_ID: v1
+        run: npm run pilot:preflight -- --database
       - name: Uji browser alur maker-checker maturitas
         run: npm run test:browser
       - name: Uji recovery PostgreSQL dan bukti terenkripsi
