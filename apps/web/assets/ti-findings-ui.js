@@ -1,3 +1,4 @@
+import {createRegisterFormExperience} from './register-form-experience.js';
 import {mountRecordDetailDialog} from './record-detail-dialog.js';
 const $=id=>document.getElementById(id);
 const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -79,6 +80,8 @@ function formSourceValue(record){
   return record.incident_id;
 }
 export function createFindingManagementUI({api,getPermissions,getUserId,onAuthFailure,onOpenSource}){
+  const findingFormUX=createRegisterFormExperience({formId:'ti-findings-form',
+    dialogId:'ti-findings-dialog',errorId:'ti-findings-form-error',cancelId:'ti-findings-cancel'});
   const detailWindow=mountRecordDetailDialog('ti-findings-detail');
   const state={items:[],options:null,selected:null,loaded:false,busy:false,
     offset:0,more:false,request:0,detailRequest:0,workRequest:0,
@@ -298,7 +301,7 @@ export function createFindingManagementUI({api,getPermissions,getUserId,onAuthFa
     form.dataset.revision=String(record?.revision??0);
     $('ti-findings-form-error').hidden=true;
     $('ti-findings-dialog-title').textContent=record?'Perbarui tindak lanjut':'Tambah temuan';
-    $('ti-findings-dialog').showModal();
+    findingFormUX.open();
   }
   function fields(){
     const type=$('ti-finding-source-type').value,value=$('ti-finding-source').value;
@@ -464,7 +467,6 @@ export function createFindingManagementUI({api,getPermissions,getUserId,onAuthFa
   for(const id of ['ti-findings-view','ti-findings-status-filter',
     'ti-findings-priority-filter','ti-findings-source-filter'])
     $(id).addEventListener('change',()=>void load());
-  $('ti-findings-cancel').addEventListener('click',()=>$('ti-findings-dialog').close());
   $('ti-findings-form').addEventListener('submit',async event=>{
     event.preventDefault();
     if(state.busy||!write())return;
@@ -472,8 +474,7 @@ export function createFindingManagementUI({api,getPermissions,getUserId,onAuthFa
     let d;
     try{d=fields();}
     catch(error){
-      $('ti-findings-form-error').hidden=false;
-      $('ti-findings-form-error').textContent=error.message;return;
+      findingFormUX.showError(error.message);return;
     }
     state.busy=true;sync();$('ti-findings-form-error').hidden=true;
     try{
@@ -485,10 +486,9 @@ export function createFindingManagementUI({api,getPermissions,getUserId,onAuthFa
       await load();await detail(result.id);
     }catch(error){
       if(!onAuthFailure(error)){
-        $('ti-findings-form-error').hidden=false;
-        $('ti-findings-form-error').textContent=error?.status===409
+        findingFormUX.showError(error?.status===409
           ?'Data sudah berubah atau sumber tidak tersedia. Muat ulang sebelum mencoba lagi.'
-          :'Gagal menyimpan temuan. Periksa isian wajib dan sumber yang dipilih.';
+          :'Gagal menyimpan temuan. Periksa isian wajib dan sumber yang dipilih.');
       }
     }finally{state.busy=false;sync();}
   });

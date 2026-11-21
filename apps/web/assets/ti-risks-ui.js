@@ -1,3 +1,4 @@
+import {createRegisterFormExperience} from './register-form-experience.js';
 import {mountRecordDetailDialog} from './record-detail-dialog.js';
 const $=id=>document.getElementById(id);
 const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -41,6 +42,8 @@ export function validateRiskResponse(x){
   return x;
 }
 export function createRiskRegisterUI({api,getPermissions,onAuthFailure}){
+  const riskFormUX=createRegisterFormExperience({formId:'ti-risks-form',
+    dialogId:'ti-risks-dialog',errorId:'ti-risks-form-error',cancelId:'ti-risks-cancel'});
   const detailWindow=mountRecordDetailDialog('ti-risks-detail');
   const state={risks:[],assets:[],references:[],selected:null,loaded:false,busy:false,
     offset:0,more:false,request:0,detailRequest:0};
@@ -333,7 +336,7 @@ export function createRiskRegisterUI({api,getPermissions,onAuthFailure}){
     form.dataset.revision=String(risk?.revision??0);
     $('ti-risks-form-error').hidden=true;
     $('ti-risks-dialog-title').textContent=risk?'Ubah risiko TI':'Tambah risiko TI';
-    preview();$('ti-risks-dialog').showModal();
+    preview();riskFormUX.open();
   }
   function fields(){
     const rl=$('ti-risk-residual-likelihood').value,ri=$('ti-risk-residual-impact').value;
@@ -445,22 +448,20 @@ export function createRiskRegisterUI({api,getPermissions,onAuthFailure}){
     $(id).addEventListener('change',()=>void load());
   for(const id of ['ti-risk-likelihood','ti-risk-impact','ti-risk-residual-likelihood','ti-risk-residual-impact'])
     $(id).addEventListener('change',preview);
-  $('ti-risks-cancel').addEventListener('click',()=>$('ti-risks-dialog').close());
   $('ti-risks-form').addEventListener('submit',async e=>{
     e.preventDefault();
     if(state.busy||!canWrite())return;
     const id=$('ti-risks-form').dataset.editId;
     let data;
     if(!$('ti-risk-likelihood').value||!$('ti-risk-impact').value){
-      $('ti-risks-form-error').hidden=false;
-      $('ti-risks-form-error').textContent='Nilai kemungkinan dan dampak harus dipilih berdasarkan kondisi lembaga.';
-      (!$('ti-risk-likelihood').value?$('ti-risk-likelihood'):$('ti-risk-impact')).focus();
+      riskFormUX.showError('Nilai kemungkinan dan dampak harus dipilih berdasarkan kondisi lembaga.',
+        !$('ti-risk-likelihood').value?'ti-risk-likelihood':'ti-risk-impact');
       return;
     }
     try{data=fields();}
     catch{
-      $('ti-risks-form-error').hidden=false;
-      $('ti-risks-form-error').textContent='Nilai residual harus diisi pada kedua kolom atau kosongkan keduanya.';
+      riskFormUX.showError('Nilai residual harus diisi pada kedua kolom atau kosongkan keduanya.',
+        !$('ti-risk-residual-likelihood').value?'ti-risk-residual-likelihood':'ti-risk-residual-impact');
       return;
     }
     state.busy=true;sync();$('ti-risks-form-error').hidden=true;
@@ -476,10 +477,9 @@ export function createRiskRegisterUI({api,getPermissions,onAuthFailure}){
       await load();await detail(record.id);
     }catch(error){
       if(!onAuthFailure(error)){
-        $('ti-risks-form-error').textContent=error?.status===409
+        riskFormUX.showError(error?.status===409
           ?'Ada konflik revisi atau syarat penutupan belum terpenuhi. Periksa dan muat ulang sebelum mengulangi.'
-          :'Gagal menyimpan risiko. Periksa isian, aset terkait, PIC, target dan nilai risiko.';
-        $('ti-risks-form-error').hidden=false;
+          :'Gagal menyimpan risiko. Periksa isian, aset terkait, PIC, target dan nilai risiko.');
       }
     }finally{state.busy=false;sync();}
   });

@@ -1,3 +1,4 @@
+import {createRegisterFormExperience} from './register-form-experience.js';
 import {mountRecordDetailDialog} from './record-detail-dialog.js';
 const $=id=>document.getElementById(id);
 const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -55,6 +56,8 @@ export function validateIncidentOperationsOverview(value){
 }
 
 export function createIncidentManagementUI({api,getPermissions,onAuthFailure}){
+  const incidentFormUX=createRegisterFormExperience({formId:'ti-incidents-form',
+    dialogId:'ti-incidents-dialog',errorId:'ti-incidents-form-error',cancelId:'ti-incidents-cancel'});
   const detailWindow=mountRecordDetailDialog('ti-incidents-detail');
   const state={rows:[],assets:[],risks:[],selected:null,loaded:false,offset:0,
     more:false,busy:false,request:0,detailRequest:0,overviewRequest:0,overviewBusy:false};
@@ -221,7 +224,7 @@ export function createIncidentManagementUI({api,getPermissions,onAuthFailure}){
     $('ti-incidents-form').dataset.revision=String(record?.revision??0);
     $('ti-incidents-form-error').hidden=true;
     $('ti-incidents-dialog-title').textContent=record?'Perbarui insiden TI':'Laporkan insiden TI';
-    $('ti-incidents-dialog').showModal();
+    incidentFormUX.open();
   }
   function fields(){
     const date=$('ti-incident-detected-at').value;
@@ -306,7 +309,6 @@ export function createIncidentManagementUI({api,getPermissions,onAuthFailure}){
     const risk=state.risks.find(x=>x.id===$('ti-incident-risk-id').value);
     if(risk?.asset_id)$('ti-incident-asset-id').value=risk.asset_id;
   });
-  $('ti-incidents-cancel').addEventListener('click',()=>$('ti-incidents-dialog').close());
   $('ti-incidents-form').addEventListener('submit',async e=>{
     e.preventDefault();
     if(!canWrite()||state.busy)return;
@@ -314,8 +316,7 @@ export function createIncidentManagementUI({api,getPermissions,onAuthFailure}){
     let data;
     try{data=fields();}
     catch{
-      $('ti-incidents-form-error').hidden=false;
-      $('ti-incidents-form-error').textContent='Tanggal deteksi tidak valid.';return;
+      incidentFormUX.showError('Tanggal deteksi tidak valid.','ti-incident-detected-at');return;
     }
     state.busy=true;sync();$('ti-incidents-form-error').hidden=true;
     try{
@@ -328,10 +329,9 @@ export function createIncidentManagementUI({api,getPermissions,onAuthFailure}){
       await load();void loadOverview();await detail(result.id);
     }catch(error){
       if(!onAuthFailure(error)){
-        $('ti-incidents-form-error').hidden=false;
-        $('ti-incidents-form-error').textContent=error?.status===409
+        incidentFormUX.showError(error?.status===409
           ?'Perpindahan status, tautan aset/risiko, atau revisi tidak valid. Periksa syarat penyelesaian.'
-          :'Insiden belum tersimpan. Periksa detail kejadian, PIC dan waktu deteksi.';
+          :'Insiden belum tersimpan. Periksa detail kejadian, PIC dan waktu deteksi.');
       }
     }finally{state.busy=false;sync();}
   });

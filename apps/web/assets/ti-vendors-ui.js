@@ -1,3 +1,4 @@
+import {createRegisterFormExperience} from './register-form-experience.js';
 import {mountRecordDetailDialog} from './record-detail-dialog.js';
 const $=id=>document.getElementById(id);
 const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -68,6 +69,12 @@ export function validContract(x){
   return x;
 }
 export function createVendorManagementUI({api,getPermissions,onAuthFailure}){
+  const vendorFormUX=createRegisterFormExperience({formId:'ti-vendors-form',
+    dialogId:'ti-vendors-dialog',errorId:'ti-vendors-form-error',cancelId:'ti-vendors-cancel'});
+  const contractFormUX=createRegisterFormExperience({formId:'ti-vendors-contract-form',
+    dialogId:'ti-vendors-contract-dialog',errorId:'ti-vendors-contract-form-error',cancelId:'ti-vendors-contract-cancel'});
+  const reviewFormUX=createRegisterFormExperience({formId:'ti-vendors-review-form',
+    dialogId:'ti-vendors-review-dialog',errorId:'ti-vendors-review-error',cancelId:'ti-vendors-review-cancel'});
   const detailWindow=mountRecordDetailDialog('ti-vendors-detail');
   $('ti-vendors-detail').append($('ti-vendors-contract-detail'));
   const state={vendors:[],selected:null,contracts:[],contract:null,reviews:[],history:[],
@@ -233,7 +240,7 @@ export function createVendorManagementUI({api,getPermissions,onAuthFailure}){
     $('ti-vendors-form').dataset.revision=String(v?.revision??0);
     $('ti-vendors-form-error').hidden=true;
     $('ti-vendors-dialog-title').textContent=v?'Perbarui penyedia':'Tambah penyedia TI';
-    $('ti-vendors-dialog').showModal();
+    vendorFormUX.open();
   }
   function showVendor(v){
     state.selected=v;
@@ -326,7 +333,7 @@ export function createVendorManagementUI({api,getPermissions,onAuthFailure}){
     form.dataset.revision=String(c?.revision??0);
     $('ti-vendors-contract-form-error').hidden=true;
     $('ti-vendors-contract-dialog-title').textContent=c?'Perbarui kontrak':'Tambah kontrak layanan';
-    $('ti-vendors-contract-dialog').showModal();
+    contractFormUX.open();
   }
   function contractFields(){
     const optionalNumber=id=>{
@@ -411,7 +418,6 @@ export function createVendorManagementUI({api,getPermissions,onAuthFailure}){
     state.offset=Math.max(0,state.offset-50);void load({resetOffset:false});
   });
   $('ti-vendors-next').addEventListener('click',()=>{state.offset+=50;void load({resetOffset:false});});
-  $('ti-vendors-cancel').addEventListener('click',()=>$('ti-vendors-dialog').close());
   $('ti-vendors-form').addEventListener('submit',async e=>{
     e.preventDefault();if(state.busy||!canWrite())return;
     const id=$('ti-vendors-form').dataset.id,body=fields();
@@ -426,16 +432,14 @@ export function createVendorManagementUI({api,getPermissions,onAuthFailure}){
       await load();await detail(vendor.id);
     }catch(error){
       if(!onAuthFailure(error)){
-        $('ti-vendors-form-error').hidden=false;
-        $('ti-vendors-form-error').textContent=error?.status===409
+        vendorFormUX.showError(error?.status===409
           ?'Kode sudah digunakan, revisi berubah, atau masih ada kontrak aktif.'
-          :'Gagal menyimpan penyedia. Periksa semua isian.';
+          :'Gagal menyimpan penyedia. Periksa semua isian.');
       }
     }finally{state.busy=false;sync();}
   });
   $('ti-vendors-add-contract').addEventListener('click',()=>{if(state.selected)setContractForm(null);});
   $('ti-vendors-edit-contract').addEventListener('click',()=>{if(state.contract&&!state.contract.archived_at)setContractForm(state.contract);});
-  $('ti-vendors-contract-cancel').addEventListener('click',()=>$('ti-vendors-contract-dialog').close());
   $('ti-vendors-contract-form').addEventListener('submit',async e=>{
     e.preventDefault();if(state.busy||!canWrite()||!state.selected)return;
     const vendorId=state.selected.id,id=$('ti-vendors-contract-form').dataset.id;
@@ -450,10 +454,9 @@ export function createVendorManagementUI({api,getPermissions,onAuthFailure}){
       await load();await detail(vendorId);await contractDetail(contract.id);
     }catch(error){
       if(!onAuthFailure(error)){
-        $('ti-vendors-contract-form-error').hidden=false;
-        $('ti-vendors-contract-form-error').textContent=error?.status===409
+        contractFormUX.showError(error?.status===409
           ?'Kontrak tidak dapat diperbarui. Periksa status, revisi, dan hasil evaluasi yang sudah tercatat.'
-          :'Gagal menyimpan kontrak. Periksa tanggal, target SLA, dan nomor perjanjian.';
+          :'Gagal menyimpan kontrak. Periksa tanggal, target SLA, dan nomor perjanjian.');
       }
     }finally{state.busy=false;sync();}
   });
@@ -464,9 +467,8 @@ export function createVendorManagementUI({api,getPermissions,onAuthFailure}){
     $('ti-vendor-review-end').value=
       state.contract.end_date<dateToday()?state.contract.end_date:dateToday();
     $('ti-vendors-review-error').hidden=true;
-    $('ti-vendors-review-dialog').showModal();
+    reviewFormUX.open();
   });
-  $('ti-vendors-review-cancel').addEventListener('click',()=>$('ti-vendors-review-dialog').close());
   $('ti-vendors-review-form').addEventListener('submit',async e=>{
     e.preventDefault();if(state.busy||!canWrite()||!state.contract||!state.selected)return;
     const c=state.contract,v=state.selected;
@@ -486,10 +488,9 @@ export function createVendorManagementUI({api,getPermissions,onAuthFailure}){
       void loadAttention();
     }catch(error){
       if(!onAuthFailure(error)){
-        $('ti-vendors-review-error').hidden=false;
-        $('ti-vendors-review-error').textContent=error?.status===409
+        reviewFormUX.showError(error?.status===409
           ?'Periksa periode evaluasi; tanggal harus dalam masa kontrak dan tidak di masa depan.'
-          :'Evaluasi tidak dapat disimpan. Periksa target SLA, realisasi, dan catatan.';
+          :'Evaluasi tidak dapat disimpan. Periksa target SLA, realisasi, dan catatan.');
       }
     }finally{state.busy=false;sync();}
   });
