@@ -590,19 +590,24 @@ async function runBrowser(base,db,fixture){
     assert.equal(await evalJs("document.getElementById('ti-assets-form').checkValidity()"),false);
     await until("document.getElementById('ti-asset-title').getAttribute('aria-invalid')==='true' && "+
       "!!document.getElementById('ti-asset-title-validation')",'field-level error is visible');
+    // Earlier E2E flows automatically approve confirmation dialogs. Disable
+    // that observer here so this test exercises both real user decisions.
+    await evalJs("window.__nrActionDialogObserver.disconnect()");
     await evalJs("document.getElementById('ti-asset-title').value='Draf sementara';"+
       "document.getElementById('ti-assets-cancel').click()");
-    const diagnostic=await evalJs("JSON.stringify({guard:document.getElementById('ti-assets-form').dataset.nrGuardDebug,"+
-      "title:document.getElementById('ti-asset-title').value,"+
-      "dialog:document.getElementById('nr-action-dialog')?.open??false,"+
-      "dialogs:[...document.querySelectorAll('dialog[open]')].map(x=>x.id),"+
-      "trace:window.__nrDialogTrace??null})");
-    console.log('Guard diagnostic:',diagnostic);
     await until("document.getElementById('nr-action-dialog')?.open",'discard draft confirmation');
     assert.equal(await evalJs("document.getElementById('ti-assets-dialog').open"),true);
     await evalJs("document.querySelector('#nr-action-dialog .button-outline').click()");
     await until("!document.getElementById('nr-action-dialog') && "+
       "document.getElementById('ti-assets-dialog').open",'kept draft after cancelling discard');
+    assert.equal(await evalJs("document.getElementById('ti-asset-title').value"),'Draf sementara');
+    await evalJs("document.getElementById('ti-assets-cancel').click()");
+    await until("document.getElementById('nr-action-dialog')?.open",'second discard request');
+    await evalJs("document.getElementById('nr-action-accept').click()");
+    await until("!document.getElementById('ti-assets-dialog').open",'discard confirmed');
+    await evalJs("document.getElementById('ti-assets-create').click()");
+    await until("document.getElementById('ti-assets-dialog').open",'asset creation reopened');
+    await evalJs("window.__nrActionDialogObserver.observe(document.body,{childList:true,subtree:true})");
     await evalJs("document.getElementById('ti-asset-kind').value='server';"+
       "document.getElementById('ti-asset-kind').dispatchEvent(new Event('change'))");
     assert.equal(await evalJs("document.getElementById('ti-asset-kind-hint').textContent.includes('core banking')"),true);

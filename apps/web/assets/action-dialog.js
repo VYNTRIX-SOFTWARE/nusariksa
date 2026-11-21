@@ -2,7 +2,7 @@
  * Accessible same-origin confirmation for consequential assessment actions.
  * Text is assigned with textContent (never HTML) and CSP remains unchanged.
  */
-let activeDialog=null;
+let pending=false;
 export function confirmAssessmentAction({
   title,description,confirmLabel='Lanjutkan',tone='primary',
 }={}){
@@ -11,12 +11,9 @@ export function confirmAssessmentAction({
     ||typeof confirmLabel!=='string'||!confirmLabel.trim()
     ||!['primary','danger'].includes(tone))
     return Promise.reject(new TypeError('Dialog konfirmasi tidak valid.'));
-  // A detached or already closed dialog must never block future confirmations.
-  if(activeDialog?.isConnected&&activeDialog.open)return Promise.resolve(false);
-  activeDialog?.remove();
+  if(pending)return Promise.resolve(false);
+  pending=true;
   const dialog=document.createElement('dialog');
-  activeDialog=dialog;
-  window.__nrDialogTrace=[{phase:'created'}];
   dialog.className='nr-action-dialog';
   dialog.id='nr-action-dialog';
   dialog.setAttribute('aria-labelledby','nr-action-title');
@@ -38,15 +35,13 @@ export function confirmAssessmentAction({
     let resolved=false;
     function finish(accepted){
       if(resolved)return;
-      resolved=true;
-      if(activeDialog===dialog)activeDialog=null;
-      dialog.remove();resolve(accepted);
+      resolved=true;pending=false;dialog.remove();resolve(accepted);
     }
-    cancel.addEventListener('click',e=>{window.__nrDialogTrace.push({phase:'cancel clicked',trusted:e.isTrusted});dialog.close('cancel');});
-    yes.addEventListener('click',e=>{window.__nrDialogTrace.push({phase:'yes clicked',trusted:e.isTrusted});dialog.close('accept');});
-    dialog.addEventListener('close',()=>{window.__nrDialogTrace.push({phase:'close',value:dialog.returnValue});finish(dialog.returnValue==='accept');},{once:true});
-    dialog.addEventListener('cancel',()=>{window.__nrDialogTrace.push({phase:'cancel event'});finish(false);},{once:true});
-    try{dialog.showModal();window.__nrDialogTrace.push({phase:'shown'});cancel.focus();}
-    catch(e){window.__nrDialogTrace.push({phase:'exception',error:String(e)});finish(false);}
+    cancel.addEventListener('click',()=>dialog.close('cancel'));
+    yes.addEventListener('click',()=>dialog.close('accept'));
+    dialog.addEventListener('close',()=>finish(dialog.returnValue==='accept'),{once:true});
+    dialog.addEventListener('cancel',()=>finish(false),{once:true});
+    try{dialog.showModal();cancel.focus();}
+    catch{finish(false);}
   });
 }
