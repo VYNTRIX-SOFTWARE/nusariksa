@@ -885,7 +885,9 @@ async function runBrowser(base,db,fixture){
     await evalJs("document.querySelector('dialog[data-record-detail-id=ti-risks-detail]').close();"+
       "document.getElementById('ti-work-return').click()");
     await until("!document.getElementById('page-ti-work').hidden && "+
-      "document.getElementById('ti-work-return-bar').hidden",'return to attention center');
+      "document.getElementById('ti-work-return-bar').hidden && "+
+      "[...document.querySelectorAll('#ti-work-list .ti-work-row')].some(x=>x.textContent.includes('RSK-E2E-01'))",
+      'return to populated attention center');
     await evalJs("[...document.querySelectorAll('#ti-work-list .ti-work-row')]"+
       ".find(x=>x.textContent.includes('RSK-E2E-01')).querySelector('button').click()");
     await until("!document.getElementById('page-ti-risks').hidden && "+
