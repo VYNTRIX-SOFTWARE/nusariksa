@@ -595,7 +595,8 @@ async function runBrowser(base,db,fixture){
     const diagnostic=await evalJs("JSON.stringify({guard:document.getElementById('ti-assets-form').dataset.nrGuardDebug,"+
       "title:document.getElementById('ti-asset-title').value,"+
       "dialog:document.getElementById('nr-action-dialog')?.open??false,"+
-      "dialogs:[...document.querySelectorAll('dialog[open]')].map(x=>x.id)})");
+      "dialogs:[...document.querySelectorAll('dialog[open]')].map(x=>x.id),"+
+      "trace:window.__nrDialogTrace??null})");
     console.log('Guard diagnostic:',diagnostic);
     await until("document.getElementById('nr-action-dialog')?.open",'discard draft confirmation');
     assert.equal(await evalJs("document.getElementById('ti-assets-dialog').open"),true);

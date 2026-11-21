@@ -16,6 +16,7 @@ export function confirmAssessmentAction({
   activeDialog?.remove();
   const dialog=document.createElement('dialog');
   activeDialog=dialog;
+  window.__nrDialogTrace=[{phase:'created'}];
   dialog.className='nr-action-dialog';
   dialog.id='nr-action-dialog';
   dialog.setAttribute('aria-labelledby','nr-action-title');
@@ -41,11 +42,11 @@ export function confirmAssessmentAction({
       if(activeDialog===dialog)activeDialog=null;
       dialog.remove();resolve(accepted);
     }
-    cancel.addEventListener('click',()=>dialog.close('cancel'));
-    yes.addEventListener('click',()=>dialog.close('accept'));
-    dialog.addEventListener('close',()=>finish(dialog.returnValue==='accept'),{once:true});
-    dialog.addEventListener('cancel',()=>finish(false),{once:true});
-    try{dialog.showModal();cancel.focus();}
-    catch{finish(false);}
+    cancel.addEventListener('click',e=>{window.__nrDialogTrace.push({phase:'cancel clicked',trusted:e.isTrusted});dialog.close('cancel');});
+    yes.addEventListener('click',e=>{window.__nrDialogTrace.push({phase:'yes clicked',trusted:e.isTrusted});dialog.close('accept');});
+    dialog.addEventListener('close',()=>{window.__nrDialogTrace.push({phase:'close',value:dialog.returnValue});finish(dialog.returnValue==='accept');},{once:true});
+    dialog.addEventListener('cancel',()=>{window.__nrDialogTrace.push({phase:'cancel event'});finish(false);},{once:true});
+    try{dialog.showModal();window.__nrDialogTrace.push({phase:'shown'});cancel.focus();}
+    catch(e){window.__nrDialogTrace.push({phase:'exception',error:String(e)});finish(false);}
   });
 }
