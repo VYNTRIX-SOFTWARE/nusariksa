@@ -39,8 +39,29 @@ export function validateTiWorkOverview(data){
   }
   return data;
 }
+
+/** Date-only deadlines are compared against the bank's WIB calendar day. */
+export function workDueDescription(value,now=new Date()){
+  const day=typeof value==='string'?value.slice(0,10):'';
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(day))return null;
+  const date=Date.parse(day+'T00:00:00Z');
+  if(!Number.isFinite(date)||new Date(date).toISOString().slice(0,10)!==day
+    ||!(now instanceof Date)||!Number.isFinite(now.getTime()))return null;
+  const parts=Object.fromEntries(new Intl.DateTimeFormat('en-US',{
+    timeZone:'Asia/Jakarta',year:'numeric',month:'2-digit',day:'2-digit',
+  }).formatToParts(now).map(part=>[part.type,part.value]));
+  const today=Date.parse(parts.year+'-'+parts.month+'-'+parts.day+'T00:00:00Z');
+  const days=Math.round((date-today)/86400000);
+  const friendly=new Date(date).toLocaleDateString('id-ID',{
+    timeZone:'UTC',day:'numeric',month:'short',year:'numeric',
+  });
+  if(days<0)return {label:'Lewat target '+Math.abs(days)+' hari ('+friendly+')',late:true};
+  if(days===0)return {label:'Target hari ini ('+friendly+')',late:false};
+  if(days<=7)return {label:'Target '+days+' hari lagi ('+friendly+')',late:false};
+  return {label:'Target '+friendly,late:false};
+}
 export function createTiWorkUI({api,getPermissions,onAuthFailure,onOpenRecord,onOpenModule}){
-  const state={snapshot:null,request:0,loading:false,filter:'all'};
+  const state={snapshot:null,request:0,loading:false,filter:'all',error:''};
   const permitted=()=>Object.values(MODULES).some(x=>
     getPermissions().includes(x.permission));
   function visibleGroups(){
@@ -70,22 +91,27 @@ export function createTiWorkUI({api,getPermissions,onAuthFailure,onOpenRecord,on
     const status=$('ti-work-status');
     if(state.loading){status.textContent='Memuat pekerjaan dari register TI…';return;}
     if(!state.snapshot){
-      status.textContent='Ringkasan belum tersedia. Pilih Muat ulang untuk mencoba lagi.';return;
+      status.textContent=state.error||'Ringkasan belum tersedia. Pilih Muat ulang untuk mencoba lagi.';return;
     }
     const items=state.snapshot.items.filter(item=>
       getPermissions().includes(MODULES[item.type].permission)
       &&(state.filter==='all'||item.type===state.filter));
     status.textContent=items.length
       ?items.length+' catatan perhatian ditampilkan'+
-        (state.snapshot.hasMore?' dari antrean yang lebih besar.':' .')
-      :'Belum ada catatan perhatian pada pilihan ini.';
+        (state.snapshot.hasMore?' dari antrean yang lebih besar.':'.')
+      :state.snapshot.hasMore&&state.filter!=='all'&&groups.some(g=>g.type===state.filter&&g.count>0)
+        ?'Tidak ada catatan modul ini dalam daftar prioritas terbatas. Buka modul untuk melihat seluruh catatannya.'
+        :'Belum ada catatan perhatian pada pilihan ini.';
     for(const item of items){
       const article=node('article','','ti-work-row');
       const body=node('div','','ti-work-content');
       body.append(node('span',MODULES[item.type].title+' · '+item.code,'ti-work-code'),
         node('strong',item.title),node('p',item.reason));
-      if(item.dueDate&&item.type!=='incidents'&&item.type!=='recovery')
-        body.append(node('small','Tanggal tercatat: '+String(item.dueDate).slice(0,10)));
+      if(item.dueDate&&item.type!=='incidents'&&item.type!=='recovery'){
+        const due=workDueDescription(item.dueDate);
+        if(due)body.append(node('small',due.label,
+          due.late?'nr-work-due nr-work-overdue':'nr-work-due'));
+      }
       const action=node('button','Lihat detail','button button-outline');
       action.type='button';
       action.addEventListener('click',()=>onOpenRecord(item));
@@ -102,7 +128,7 @@ export function createTiWorkUI({api,getPermissions,onAuthFailure,onOpenRecord,on
   }
   async function load(){
     if(!permitted())return;
-    const seq=++state.request;state.loading=true;render();
+    const seq=++state.request;state.loading=true;state.error='';sync();render();
     try{
       const data=validateTiWorkOverview(await api('/ti-work/overview'));
       if(seq!==state.request)return;
@@ -111,12 +137,13 @@ export function createTiWorkUI({api,getPermissions,onAuthFailure,onOpenRecord,on
       if(seq!==state.request)return;
       state.snapshot=null;
       if(onAuthFailure(error))return;
+      state.error='Data pekerjaan tidak dapat dimuat. Periksa koneksi dan pilih Muat ulang.';
     }finally{
-      if(seq===state.request){state.loading=false;render();}
+      if(seq===state.request){state.loading=false;sync();render();}
     }
   }
   function clear(){
-    ++state.request;state.snapshot=null;state.loading=false;state.filter='all';
+    ++state.request;state.snapshot=null;state.loading=false;state.filter='all';state.error='';
     $('ti-work-updated').textContent='';
     render();
   }

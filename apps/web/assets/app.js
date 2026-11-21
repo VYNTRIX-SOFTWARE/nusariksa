@@ -345,6 +345,7 @@ function closeMobile() {
   $('sidebar-backdrop').hidden=true;
   $('mobile-nav-toggle').setAttribute('aria-expanded','false');
 }
+let returnToTiWork=false;
 function navigate(page) {
   if (!(page in pages)) return false;
   if(['assessments','workspace','reviews','catalogs','maturity','maturity-assessments','padk-preparations'].includes(page)&&!state.permissions.includes('assessments:read'))return false;
@@ -366,6 +367,8 @@ function navigate(page) {
   if(state.page==='padk-crosswalk' && page!=='padk-crosswalk' && !padkCrosswalk.confirmLeave())return false;
   if(state.page==='workspace' && page!=='workspace')workspace.close();
   if(state.page==='admin-onboarding'&&page!=='admin-onboarding')adminOnboarding.conceal();
+  returnToTiWork=false;
+  $('ti-work-return-bar').hidden=true;
   state.page=page;
   for(const section of document.querySelectorAll('.page'))section.hidden=section.id!=='page-'+page;
   for(const btn of document.querySelectorAll('[data-page]')) {
@@ -730,7 +733,9 @@ async function openTiWorkRecord(item){
   const pagesByType={findings:'ti-findings',incidents:'ti-incidents',
     risks:'ti-risks',vendors:'ti-vendors',recovery:'ti-recovery'};
   const page=pagesByType[item?.type];
+  const cameFromQueue=state.page==='ti-work'||returnToTiWork;
   if(!page||!navigate(page))return;
+  if(cameFromQueue){returnToTiWork=true;$('ti-work-return-bar').hidden=false;}
   if(page==='ti-findings')await findingManagement.openRecord(item.id);
   if(page==='ti-incidents')await incidentManagement.openRecord(item.id);
   if(page==='ti-risks')await riskRegister.openRecord(item.id);
@@ -738,6 +743,7 @@ async function openTiWorkRecord(item){
     item.relatedId?item.id:null);
   if(page==='ti-recovery')await recoveryManagement.openRecord(item.id);
 }
+$('ti-work-return').addEventListener('click',()=>{navigate('ti-work');$('main-content').focus({preventScroll:true});});
 const tiWork=createTiWorkUI({api:requestJson,
   getPermissions:()=>state.permissions,onAuthFailure:authFailure,
   onOpenRecord:(item)=>void openTiWorkRecord(item),

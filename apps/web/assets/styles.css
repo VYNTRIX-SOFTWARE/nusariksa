@@ -1402,3 +1402,17 @@ button.nr-work-metric[aria-pressed="true"]{border-color:#6D62A1;background:#F5F3
 .ti-work-row .button{flex-shrink:0}
 @media(max-width:650px){.ti-work-row{align-items:stretch;flex-direction:column}
   .ti-work-row .button{width:100%}.ti-work-groups{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* Shared record forms: explain invalid fields in place, without erasing drafts. */
+.nr-register-field-error{display:block;margin:6px 0 3px;font-size:.82rem;
+  line-height:1.45;color:#a52d35;font-weight:600}
+.maturity-edit-form [aria-invalid="true"],.recovery-dialog [aria-invalid="true"]{
+  border-color:#b23b42!important;outline-offset:2px}
+.nr-work-due{font-size:.81rem;font-weight:600;color:#5b5376}
+.nr-work-overdue{color:#a52d35;background:#fff3f1;padding:4px 8px;
+  border-radius:6px}
+.nr-work-return-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  margin-bottom:18px;color:var(--muted,#566279);font-size:.85rem}
+.nr-work-return-bar[hidden]{display:none}
+@media(max-width:650px){.nr-work-return-bar{align-items:flex-start;flex-direction:column;
+  gap:6px}.nr-work-return-bar .button{width:100%}}
