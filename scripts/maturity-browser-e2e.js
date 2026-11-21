@@ -592,6 +592,11 @@ async function runBrowser(base,db,fixture){
       "!!document.getElementById('ti-asset-title-validation')",'field-level error is visible');
     await evalJs("document.getElementById('ti-asset-title').value='Draf sementara';"+
       "document.getElementById('ti-assets-cancel').click()");
+    const diagnostic=await evalJs("JSON.stringify({guard:document.getElementById('ti-assets-form').dataset.nrGuardDebug,"+
+      "title:document.getElementById('ti-asset-title').value,"+
+      "dialog:document.getElementById('nr-action-dialog')?.open??false,"+
+      "dialogs:[...document.querySelectorAll('dialog[open]')].map(x=>x.id)})");
+    console.log('Guard diagnostic:',diagnostic);
     await until("document.getElementById('nr-action-dialog')?.open",'discard draft confirmation');
     assert.equal(await evalJs("document.getElementById('ti-assets-dialog').open"),true);
     await evalJs("document.querySelector('#nr-action-dialog .button-outline').click()");

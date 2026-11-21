@@ -105,15 +105,23 @@ export function createRegisterFormExperience({formId,dialogId,errorId,cancelId})
     clear();dialog.showModal();baseline=registerFormSnapshot(form);
   }
   async function requestClose(){
-    if(confirming||!dialog.open)return;
-    if(registerFormSnapshot(form)===baseline){dialog.close();return;}
+    form.dataset.nrGuardDebug='handler entered';
+    if(confirming||!dialog.open){form.dataset.nrGuardDebug='ignored';return;}
+    const dirty=registerFormSnapshot(form)!==baseline;
+    form.dataset.nrGuardDebug='changed: '+dirty;
+    if(!dirty){dialog.close();return;}
     confirming=true;
     try{
-      if(await confirmAssessmentAction({
+      form.dataset.nrGuardDebug='prompt requested';
+      const accepted=await confirmAssessmentAction({
         title:'Buang perubahan yang belum disimpan?',
         description:'Isian pada formulir ini akan hilang jika Anda keluar tanpa menyimpan.',
         confirmLabel:'Buang perubahan',tone:'danger',
-      }))dialog.close();
+      });
+      form.dataset.nrGuardDebug='answered: '+accepted;
+      if(accepted)dialog.close();
+    }catch(error){
+      form.dataset.nrGuardDebug='error: '+String(error);
     }finally{confirming=false;}
   }
   cancel.addEventListener('click',()=>void requestClose());
