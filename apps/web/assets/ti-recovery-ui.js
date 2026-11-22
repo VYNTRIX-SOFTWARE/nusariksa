@@ -1,3 +1,4 @@
+import {createRegisterFormExperience} from './register-form-experience.js';
 import {mountRecordDetailDialog} from './record-detail-dialog.js';
 const $=id=>document.getElementById(id);
 const PLAN_FIELDS=[
@@ -92,6 +93,10 @@ export function recoveryExerciseGuidance(outcome,plan={}){
  return 'Pilih hasil berdasarkan pengujian. Jika belum ada ukuran atau bukti memadai, pilih Belum dapat dinilai.';
 }
 export function createRecoveryUI({api,getPermissions,onAuthFailure}){
+  const recoveryFormUX=createRegisterFormExperience({formId:'ti-recovery-form',
+    dialogId:'ti-recovery-dialog',errorId:'ti-recovery-form-error',cancelId:'ti-recovery-cancel'});
+  const exerciseFormUX=createRegisterFormExperience({formId:'ti-recovery-exercise-form',
+    dialogId:'ti-recovery-exercise-dialog',errorId:'ti-recovery-exercise-error',cancelId:'ti-recovery-exercise-cancel'});
   const detailWindow=mountRecordDetailDialog('ti-recovery-detail');
  const state={plans:[],selected:null,exercises:[],events:[],offset:0,
   hasMore:false,loaded:false,busy:false,request:0};
@@ -288,7 +293,7 @@ export function createRecoveryUI({api,getPermissions,onAuthFailure}){
   $('ti-recovery-template-hint').textContent='Gunakan kerangka hanya bila sesuai. Periksa seluruh isinya berdasarkan kebijakan bank.';
   $('ti-recovery-form-error').hidden=true;
   $('ti-recovery-dialog-title').textContent=p?'Perbarui rencana pemulihan':'Tambah rencana pemulihan';
-  $('ti-recovery-dialog').showModal();
+  recoveryFormUX.open();
  }
  function payload(mapping,prefix){
   return Object.fromEntries(mapping.map(([name,key])=>{
@@ -340,8 +345,6 @@ export function createRecoveryUI({api,getPermissions,onAuthFailure}){
  $('ti-recovery-next').addEventListener('click',()=>{state.offset+=50;void load(false);});
  $('ti-recovery-create').addEventListener('click',()=>openPlan());
  $('ti-recovery-edit').addEventListener('click',()=>{if(state.selected)openPlan(state.selected);});
- $('ti-recovery-cancel').addEventListener('click',()=>$('ti-recovery-dialog').close());
- $('ti-recovery-exercise-cancel').addEventListener('click',()=>$('ti-recovery-exercise-dialog').close());
  $('ti-recovery-form').addEventListener('submit',async e=>{
   e.preventDefault();if(state.busy||!canWrite())return;
   state.busy=true;$('ti-recovery-save').disabled=true;
@@ -355,7 +358,7 @@ export function createRecoveryUI({api,getPermissions,onAuthFailure}){
    $('ti-recovery-dialog').close();await load();await detail(p.id);
    message('Rencana '+p.plan_code+' tersimpan. Periksa kembali terhadap dokumen dan kebijakan bank.');
   }catch(err){
-   if(!onAuthFailure(err))formError('ti-recovery-form-error',
+   if(!onAuthFailure(err))recoveryFormUX.showError(
     err?.status===409?'Data berubah atau kode telah dipakai. Muat ulang sebelum melanjutkan.':
     'Gagal menyimpan. Periksa isian wajib, ukuran teks dan format data.');
   }finally{state.busy=false;$('ti-recovery-save').disabled=false;sync();}
@@ -377,7 +380,7 @@ export function createRecoveryUI({api,getPermissions,onAuthFailure}){
   $('ti-recovery-test-outcome').value='';
   $('ti-recovery-exercise-error').hidden=true;
   syncExerciseGuidance();
-  $('ti-recovery-exercise-dialog').showModal();
+  exerciseFormUX.open();
  });
  $('ti-recovery-test-outcome').addEventListener('change',syncExerciseGuidance);
  $('ti-recovery-exercise-form').addEventListener('submit',async e=>{
@@ -392,7 +395,7 @@ export function createRecoveryUI({api,getPermissions,onAuthFailure}){
    $('ti-recovery-exercise-dialog').close();await detail(id);
    message('Catatan pengujian tersimpan. Hasil tetap perlu diperiksa petugas.');
   }catch(err){
-   if(!onAuthFailure(err))formError('ti-recovery-exercise-error',
+   if(!onAuthFailure(err))exerciseFormUX.showError(
     'Gagal menyimpan. Hasil berhasil perlu RTO terukur, bukti, dan pemenuhan target yang berlaku.');
   }finally{state.busy=false;$('ti-recovery-exercise-save').disabled=false;sync();}
  });

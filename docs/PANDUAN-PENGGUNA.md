@@ -355,3 +355,12 @@ Pilih **Pusat Pekerjaan TI** pada navigasi untuk melihat catatan lintas register
 Dari detail **Temuan** yang bersumber dari risiko/insiden, tombol *Buka sumber* membawa pengguna ke catatan asal bila akun memiliki izin membaca modul tersebut. Tautan ini tidak mengubah data.
 
 Daftar utama menampilkan maksimal 20 catatan perhatian, dengan hingga 8 kandidat dari tiap modul. Angka ringkasan tetap menunjukkan keseluruhan catatan yang memenuhi kriteria. Pusat Pekerjaan TI bukan penilaian kepatuhan OJK dan tidak mengisi fakta, melakukan verifikasi, atau membuat keputusan atas nama petugas.
+
+
+## Formulir dan pekerjaan TI
+
+Pada formulir aset, risiko, insiden, temuan, penyedia TI, kontrak, evaluasi SLA, rencana pemulihan, dan catatan pengujian, kolom yang belum valid akan diberi pesan di dekat kolomnya. Perbaiki isian yang ditandai dan simpan kembali. Jika server menolak penyimpanan karena data sudah berubah, periksa versi terbaru terlebih dahulu agar perubahan petugas lain tidak tertimpa.
+
+Tombol **Batal** dan tombol **Escape** akan meminta konfirmasi apabila ada perubahan formulir yang belum disimpan. Memilih **Tetap mengedit** (Batal pada dialog konfirmasi) mempertahankan isian sementara; memilih **Buang perubahan** menutup formulir tanpa menyimpan. Peringatan ini hanya melindungi isian selama formulir terbuka, bukan penyimpanan draf otomatis.
+
+Pada **Pusat Pekerjaan TI**, tanggal target ditampilkan relatif terhadap hari kerja WIB, termasuk penanda target yang sudah terlewati. Daftar prioritas dapat memuat sebagian catatan; gunakan tombol kelompok modul untuk melihat semua pekerjaan register. Ketika membuka detail dari pusat pekerjaan, tutup dialog rincian lalu gunakan **Kembali ke Pusat Pekerjaan TI** untuk kembali ke antrean sebelumnya. Tidak ada keputusan tindak lanjut yang dibuat otomatis oleh aplikasi.

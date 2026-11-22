@@ -588,6 +588,26 @@ async function runBrowser(base,db,fixture){
     assert.equal(await evalJs("document.getElementById('ti-asset-kind').value"),'');
     assert.equal(await evalJs("document.getElementById('ti-asset-criticality').value"),'');
     assert.equal(await evalJs("document.getElementById('ti-assets-form').checkValidity()"),false);
+    await until("document.getElementById('ti-asset-title').getAttribute('aria-invalid')==='true' && "+
+      "!!document.getElementById('ti-asset-title-validation')",'field-level error is visible');
+    // Earlier E2E flows automatically approve confirmation dialogs. Disable
+    // that observer here so this test exercises both real user decisions.
+    await evalJs("window.__nrActionDialogObserver.disconnect()");
+    await evalJs("document.getElementById('ti-asset-title').value='Draf sementara';"+
+      "document.getElementById('ti-assets-cancel').click()");
+    await until("document.getElementById('nr-action-dialog')?.open",'discard draft confirmation');
+    assert.equal(await evalJs("document.getElementById('ti-assets-dialog').open"),true);
+    await evalJs("document.querySelector('#nr-action-dialog .button-outline').click()");
+    await until("!document.getElementById('nr-action-dialog') && "+
+      "document.getElementById('ti-assets-dialog').open",'kept draft after cancelling discard');
+    assert.equal(await evalJs("document.getElementById('ti-asset-title').value"),'Draf sementara');
+    await evalJs("document.getElementById('ti-assets-cancel').click()");
+    await until("document.getElementById('nr-action-dialog')?.open",'second discard request');
+    await evalJs("document.getElementById('nr-action-accept').click()");
+    await until("!document.getElementById('ti-assets-dialog').open",'discard confirmed');
+    await evalJs("document.getElementById('ti-assets-create').click()");
+    await until("document.getElementById('ti-assets-dialog').open",'asset creation reopened');
+    await evalJs("window.__nrActionDialogObserver.observe(document.body,{childList:true,subtree:true})");
     await evalJs("document.getElementById('ti-asset-kind').value='server';"+
       "document.getElementById('ti-asset-kind').dispatchEvent(new Event('change'))");
     assert.equal(await evalJs("document.getElementById('ti-asset-kind-hint').textContent.includes('core banking')"),true);
@@ -861,6 +881,18 @@ async function runBrowser(base,db,fixture){
       "!document.getElementById('ti-risks-detail').hidden && "+
       "document.getElementById('ti-risks-detail-summary').textContent.includes('RSK-E2E-01')",
       'opens real risk detail from the center');
+    assert.equal(await evalJs("document.getElementById('ti-work-return-bar').hidden"),false);
+    await evalJs("document.querySelector('dialog[data-record-detail-id=ti-risks-detail]').close();"+
+      "document.getElementById('ti-work-return').click()");
+    await until("!document.getElementById('page-ti-work').hidden && "+
+      "document.getElementById('ti-work-return-bar').hidden && "+
+      "[...document.querySelectorAll('#ti-work-list .ti-work-row')].some(x=>x.textContent.includes('RSK-E2E-01'))",
+      'return to populated attention center');
+    await evalJs("[...document.querySelectorAll('#ti-work-list .ti-work-row')]"+
+      ".find(x=>x.textContent.includes('RSK-E2E-01')).querySelector('button').click()");
+    await until("!document.getElementById('page-ti-risks').hidden && "+
+      "document.getElementById('ti-risks-detail-summary').textContent.includes('RSK-E2E-01')",
+      'risk detail reopened from center');
 
     await evalJs("window.confirm=()=>true;document.getElementById('ti-risks-archive').click()");
     await until("document.getElementById('ti-risks-detail-values').textContent.includes('Diarsipkan')",

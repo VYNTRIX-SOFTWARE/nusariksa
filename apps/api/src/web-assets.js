@@ -34,6 +34,7 @@ const ASSETS = new Map([
   ['/assets/maturity-assessment-ui.js', { file: 'assets/maturity-assessment-ui.js', type: 'text/javascript; charset=utf-8' }],
   ['/assets/padk-preparation-ui.js', { file: 'assets/padk-preparation-ui.js', type: 'text/javascript; charset=utf-8' }],
   ['/assets/action-dialog.js', { file: 'assets/action-dialog.js', type: 'text/javascript; charset=utf-8' }],
+  ['/assets/register-form-experience.js', { file: 'assets/register-form-experience.js', type: 'text/javascript; charset=utf-8' }],
   ['/assets/record-detail-dialog.js', { file: 'assets/record-detail-dialog.js', type: 'text/javascript; charset=utf-8' }],
   ['/assets/private-report-download.js', { file: 'assets/private-report-download.js', type: 'text/javascript; charset=utf-8' }],
   ['/assets/register-export-buttons.js', { file: 'assets/register-export-buttons.js', type: 'text/javascript; charset=utf-8' }],

@@ -1,3 +1,4 @@
+import {createRegisterFormExperience} from './register-form-experience.js';
 import {mountRecordDetailDialog} from './record-detail-dialog.js';
 const $=id=>document.getElementById(id);
 const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -44,6 +45,8 @@ export function validateAssetResponse(asset){
   return asset;
 }
 export function createAssetRegisterUI({api,getPermissions,onAuthFailure}){
+  const assetFormUX=createRegisterFormExperience({formId:'ti-assets-form',
+    dialogId:'ti-assets-dialog',errorId:'ti-assets-error',cancelId:'ti-assets-cancel'});
   const detailWindow=mountRecordDetailDialog('ti-assets-detail');
   const state={items:[],selected:null,busy:false,loaded:false,offset:0,hasMore:false,request:0};
   const canRead=()=>getPermissions().includes('assets:read');
@@ -178,7 +181,7 @@ export function createAssetRegisterUI({api,getPermissions,onAuthFailure}){
       ?'Kode tersimpan untuk jejak inventaris.':'Kode inventaris diterbitkan otomatis saat data disimpan.';
     $('ti-assets-error').hidden=true;$('ti-assets-error').textContent='';
     renderGuidance();
-    $('ti-assets-dialog').showModal();
+    assetFormUX.open();
   }
   function renderDetail(asset){
     state.selected=asset;
@@ -264,10 +267,9 @@ export function createAssetRegisterUI({api,getPermissions,onAuthFailure}){
       await load();await detail(result.id);
     }catch(error){
       if(!onAuthFailure(error)){
-        $('ti-assets-error').textContent=error?.status===409
+        assetFormUX.showError(error?.status===409
           ?'Data aset telah berubah. Muat ulang sebelum menyimpan lagi.'
-          :'Data belum tersimpan. Periksa isian wajib dan coba kembali.';
-        $('ti-assets-error').hidden=false;
+          :'Data belum tersimpan. Periksa isian wajib dan coba kembali.');
       }
     }finally{state.busy=false;sync();}
   });
@@ -285,7 +287,6 @@ export function createAssetRegisterUI({api,getPermissions,onAuthFailure}){
     }catch(error){if(!onAuthFailure(error))message('Pengarsipan gagal. Muat ulang aset.','error');}
     finally{state.busy=false;sync();}
   });
-  $('ti-assets-cancel').addEventListener('click',()=>{$('ti-assets-dialog').close();});
   sync();
   return {load,clear,sync};
 }

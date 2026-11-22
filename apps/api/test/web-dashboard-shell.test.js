@@ -37,6 +37,10 @@ test('shell disajikan tanpa melemahkan CSP atau mengaktifkan fitur palsu',async(
     assert.match(css,/flex-basis:68px/);
     assert.match(css,/prefers-reduced-motion/);
     assert.match(css,/@media \(max-width: 760px\)/);
+    const registerUX=await fetch(base+'/assets/register-form-experience.js');
+    assert.equal(registerUX.status,200);
+    assert.match(registerUX.headers.get('content-type'),/text\/javascript/);
+    assert.match(await registerUX.text(),/createRegisterFormExperience/);
     const model=await fetch(base+'/assets/assessment-model.js');
     assert.equal(model.status,200);
     assert.match(model.headers.get('content-type'),/text\/javascript/);
