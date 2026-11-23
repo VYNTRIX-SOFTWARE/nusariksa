@@ -4,6 +4,8 @@
 
 NusaRiksa membantu lembaga mencatat hasil pemeriksaan TI, menyimpan bukti, dan menindaklanjuti pekerjaan pengelolaan aset, risiko, serta insiden. Panduan ini menjelaskan langkah penggunaan melalui browser.
 
+Panduan ini disusun berdasarkan pekerjaan yang dilakukan petugas. Untuk instalasi, upgrade, dan pemulihan database, gunakan [dokumentasi administrator](OPERATIONS.md). Dokumen proyek lainnya tersedia pada [indeks dokumentasi](README.md).
+
 ## 1. Mulai menggunakan aplikasi
 
 ### Masuk ke akun
@@ -17,9 +19,7 @@ NusaRiksa membantu lembaga mencatat hasil pemeriksaan TI, menyimpan bukti, dan m
 
 Kode undangan hanya dapat digunakan sekali. Jika sudah kedaluwarsa, salah, atau telah digunakan, minta administrator memeriksa undangan melalui jalur yang aman. Jangan mengirim kode melalui tangkapan layar publik, URL, atau tiket terbuka. Jika terlalu banyak percobaan, ikuti pesan pembatasan percobaan. Setelah berhasil aktif, masuk menggunakan **email yang diundang** dan kata sandi baru. Jika menu belum muncul, administrator perlu menetapkan peran Anda terlebih dahulu.
 
-Logo pada layar login, navigasi aplikasi, dan ikon tab browser mengikuti identitas resmi Nusariksa dari brand kit. Tampilan gelap menggunakan versi logo terang, sedangkan sidebar putih memakai logo utama.
-
-Tidak semua pengguna memiliki menu dan tombol yang sama. Hak akses ditentukan berdasarkan peran yang diberikan administrator.
+Pada halaman masuk, tombol **Lihat** membantu memeriksa kata sandi sebelum dikirim. Tidak semua pengguna memiliki menu dan tombol yang sama. Hak akses ditentukan berdasarkan peran yang diberikan administrator.
 
 ## 2. Membuat asesmen TI
 
@@ -52,6 +52,22 @@ Setelah seluruh informasi yang diperlukan terisi, ikuti pilihan pengajuan pemeri
 
 Untuk memakai daftar pemeriksaan yang disusun lembaga sendiri, nonaktifkan opsi katalog bawaan ketika membuat asesmen. Anda dapat memilih katalog yang sudah diterbitkan sebelum memulai pengisian.
 
+Katalog bawaan memuat rujukan pasal POJK 34/2025 sebagai petunjuk pemeriksaan, bukan transkripsi peraturan atau kesimpulan kepatuhan lembaga.
+
+### Memilih kontrol yang diperiksa
+
+Saat membuat asesmen TI melalui **Gunakan katalog TI bawaan dan langsung mulai**, aplikasi memuat pustaka kontrol berreferensi. Semua kontrol awalnya dicentang, tetapi petugas dapat mencari, memilih, atau menghapus centang untuk menentukan **kontrol yang relevan**. Minimal satu kontrol harus dipilih. Tombol **Centang yang terlihat** dan **Kosongkan yang terlihat** hanya memengaruhi hasil pencarian yang tampak; pilihan lain tidak diubah.
+
+Untuk asesmen **Draft** yang dibuat secara manual, pasang katalog terpublikasi terlebih dahulu, lalu centang kontrol pada bagian **Atur cakupan asesmen** sebelum menekan **Mulai asesmen**. Pilihan kontrol disimpan sebagai snapshot dan dikunci saat asesmen dimulai. Hanya kontrol terpilih yang muncul dalam daftar pengisian, syarat pengajuan pemeriksaan, dan laporan. Asesmen yang dibuat sebelum fitur ini tetap menggunakan seluruh versi katalog awalnya sehingga data lama tidak berubah.
+
+Katalog bawaan berreferensi saat ini berisi **26 kontrol operasional** dengan rujukan POJK 34/2025; angka **200** adalah **kapasitas maksimum per versi**, bukan klaim bahwa telah tersedia 200 kontrol atau bahwa semua kontrol merupakan salinan ketentuan resmi OJK. Katalog lama tidak dihapus; hanya tidak ditawarkan sebagai pilihan bawaan pada asesmen baru. Pembatasan cakupan merupakan keputusan internal lembaga dan **tidak menghapus kewajiban kepatuhan yang berlaku**.
+
+### Validasi dan navigasi kontrol
+
+Saat memilih hasil selain **Memenuhi**, catatan pemeriksaan wajib berisi sekurangnya 10 karakter (setelah spasi awal dan akhir diabaikan). Pesan kesalahan ditampilkan **langsung di bawah kolom Catatan pemeriksaan**; kolom ditandai merah dan difokuskan jika pengguna mencoba menyimpan catatan yang belum valid. Setelah diperbaiki, penandaan kesalahan hilang secara langsung. Hasil **Memenuhi** tetap memperbolehkan catatan kosong. Validasi server tetap berlaku; tampilan hanya memberi panduan agar pengguna tidak kehilangan konteks akibat harus kembali ke atas halaman.
+
+Pada layar desktop, area **Daftar kontrol** memanjang sampai bagian bawah workspace penilaian (sebelum bagian review internal), sementara isi daftar menggunakan scrollbar sendiri dan navigasinya tetap terlihat ketika layar digulir. Pada layar sempit, layout menjadi satu kolom dan daftar dibatasi tinggi agar editor tetap mudah dijangkau. Tidak ada perubahan pada hak akses, metode penyimpanan, atau hasil penilaian yang sudah tersimpan.
+
 ## 3. Mengisi penilaian keamanan siber
 
 Gunakan **Persiapan Penilaian PADK** untuk mencatat penilaian indikator keamanan siber.
@@ -67,6 +83,12 @@ Sebelum memulai, buka **Ketentuan penilaian dan penyampaian hasil** pada halaman
 7. Petugas pemeriksa dapat meninjau kelengkapan dan meminta perbaikan.
 
 Hasil komposit dan berkas PDF pada halaman ini digunakan sebagai **bahan kerja dan peninjauan internal**. Sebelum dipakai untuk keperluan resmi, pastikan instrumen, perhitungan, dan kesimpulan telah diperiksa menurut ketentuan yang berlaku.
+
+### Mengisi indikator satu per satu
+
+Setelah membuat persiapan penilaian, NusaRiksa membuka **indikator pertama** dan mengarahkan fokus ke ruang kerja penilaian. Kerjakan satu indikator pada satu waktu: baca ringkasannya, buka tingkat kriteria yang ingin dibandingkan, periksa uraian terhadap sumber PADK, pilih **peringkat sementara**, tulis **justifikasi**, lalu tekan **Simpan & lanjut**. Ini adalah catatan kerja, bukan nilai yang sudah divalidasi regulator.
+
+Gunakan **Cari yang belum lengkap** untuk melanjutkan indikator yang belum selesai. Pilihan **Cari atau pilih indikator lain** menyediakan pencarian nomor, kata kunci, dan filter status tanpa memenuhi layar awal. Jika ingin menambahkan bukti pada indikator yang sama, tekan **Simpan indikator ini**; bagian **Dokumen bukti pendukung** dapat dibuka setelah jawaban tersimpan. Rincian sumber, riwayat, review, simulasi, dan PDF draft disajikan sebagai bagian lanjutan yang bisa dibuka bila diperlukan. Status kertas kerja internal tetap terlihat; dokumen dan skor resmi PADK/OJK tidak dihasilkan secara otomatis.
 
 ## 4. Mengelola inventaris aset TI
 
@@ -119,6 +141,12 @@ Jika pengendalian telah dievaluasi, isi kemungkinan dan dampak **residual**. Bia
 
 Pilih risiko dari daftar untuk mengubah mitigasi, PIC, tenggat, atau status penanganannya. Riwayat pembaruan tetap tersimpan. Penutupan risiko membutuhkan mitigasi yang tercatat dan hasil residual yang memenuhi batas penutupan internal aplikasi. Penilaian dan keputusan akhir tetap merupakan tanggung jawab pejabat berwenang.
 
+### Contoh risiko yang belum dinilai
+
+Pustaka contoh skenario risiko TI menyediakan **40 contoh situasi operasional** setelah pemutakhiran. Contoh dapat ditandai relevan atau tidak relevan, lalu disesuaikan menjadi risiko nyata milik lembaga. Contoh bukan hasil identifikasi lapangan, bukan tingkat risiko yang telah dinilai, dan bukan daftar kewajiban regulator yang komprehensif.
+
+Daftar skenario awal risiko ditampilkan sebagai panel **Contoh risiko yang belum dinilai** yang tertutup secara default, agar register risiko lembaga menjadi fokus utama. Buka panel untuk menilai contoh yang relevan atau menandainya tidak relevan. Contoh tidak berubah menjadi temuan atau skor faktual sebelum disimpan oleh petugas.
+
 ## 6. Mencatat dan menangani insiden TI/siber
 
 Buka **Insiden TI/Siber** untuk mendokumentasikan gangguan, kejadian keamanan, atau masalah lain yang memengaruhi sistem dan data.
@@ -170,6 +198,12 @@ Daftar temuan menampilkan kartu dengan judul, status, prioritas, PIC, target, da
 
 **Referensi bukti** berisi keterangan yang dapat ditelusuri, seperti nomor tiket, nama berita acara, atau lokasi dokumen internal. Kolom ini belum menggantikan pemeriksaan dokumen aslinya. Jangan mencantumkan kata sandi atau data nasabah yang tidak diperlukan.
 
+### Menentukan prioritas tindak lanjut
+
+Halaman **Tindak Lanjut Temuan** menampilkan ringkasan seluruh temuan aktif lembaga, dipisahkan menjadi **Tugas perbaikan saya**, **Siap saya verifikasi**, dan **Melewati target**. Tombol kelompok memfilter daftar di server; hanya petugas dengan izin verifikasi yang melihat antrean pemeriksaan. Pembuat atau pengaju tidak dapat memverifikasi temuan miliknya. Gunakan **Seluruh temuan aktif** untuk kembali melihat register biasa.
+
+Form temuan dapat disimpan sebelum tersedia hasil dan bukti. Bagian hasil tindakan dibuka sesuai kebutuhan. Setelah rencana, progres, dan referensi bukti tercatat, pembuat mengajukan hasilnya. Pemeriksa independen dapat memverifikasi atau mengembalikan untuk diperbaiki; keputusan dan histori perubahan tetap terlacak.
+
 ## 8. Mengelola penyedia layanan dan kontrak TI
 
 Buka **Vendor TI** untuk mencatat penyedia jasa, kontrak, serta hasil evaluasi layanan yang digunakan lembaga.
@@ -197,38 +231,11 @@ NusaRiksa membandingkan realisasi dengan target numerik yang diisi pada kontrak.
 
 Evaluasi yang telah disimpan menjadi catatan tetap. Sesudah ada evaluasi, periode kontrak dan target SLA tidak bisa diubah pada catatan yang sama. Untuk kontrak yang telah diakhiri, gunakan status **Diakhiri** dan arsipkan bila diperlukan. Data riwayat perjanjian maupun hasil evaluasi tetap tersimpan.
 
-## 9. Dokumen bukti dan riwayat pemeriksaan
+### Memantau masa berlaku kontrak
 
-Untuk hasil pemeriksaan yang memerlukan bukti, unggah berkas yang sesuai dengan kontrol atau indikator. Gunakan dokumen yang memang berlaku di lembaga, periksa isinya sebelum mengunggah, dan jangan membuat bukti hanya untuk memenuhi kolom aplikasi.
+Ringkasan **Pemantauan kontrak** menghitung kontrak aktif seluruh lembaga yang telah melewati tanggal akhir atau berakhir dalam 30 hari, beserta kontrak aktif yang belum memiliki catatan evaluasi SLA. Daftar perhatian menampilkan maksimal 20 kontrak terdekat; **Buka kontrak** langsung membuka penyedia dan rincian perjanjian pada dialog yang sama. Tanggal tersebut bukan penilaian kualitas layanan atau keputusan perpanjangan otomatis.
 
-Riwayat perubahan membantu petugas menelusuri kapan informasi diperbarui. Pada pengelolaan aset, risiko, dan insiden, gunakan tampilan detail untuk melihat catatan yang tersimpan.
-
-Jangan memasukkan password, token akses, kunci enkripsi, atau data pribadi nasabah yang tidak diperlukan ke dalam catatan dan lampiran.
-
-## 10. Jika mengalami kendala
-
-| Kondisi | Tindakan yang disarankan |
-| --- | --- |
-| Tidak bisa masuk | Periksa email, kata sandi, dan kode verifikasi. Hubungi administrator bila akun belum diaktifkan. |
-| Menu atau tombol tidak terlihat | Periksa apakah peran akun sudah sesuai dengan pekerjaan yang ditugaskan. |
-| Perubahan gagal disimpan | Periksa isian wajib, lalu muat ulang data bila muncul pemberitahuan konflik perubahan. |
-| Aset tidak muncul sebagai pilihan risiko/insiden | Pastikan aset tercatat dan belum diarsipkan. |
-| Risiko tidak muncul sebagai pilihan insiden | Pastikan risiko masih aktif dan pilih aset yang sesuai jika risiko sudah tertaut ke aset tertentu. |
-| Insiden tidak dapat ditutup | Periksa status sebelumnya serta kelengkapan akar penyebab dan hasil pemulihan. |
-| Temuan tidak dapat diajukan | Periksa kelengkapan rencana, catatan hasil tindakan, dan referensi bukti. |
-| Penyedia tidak bisa diarsipkan | Akhiri terlebih dahulu kontrak yang masih berstatus aktif. |
-| Evaluasi vendor ditolak | Pastikan periode berada dalam masa kontrak dan realisasi hanya diisi untuk target SLA yang tercantum. |
-| Tombol verifikasi tidak tersedia | Pastikan akun pemeriksa punya hak verifikasi dan bukan pembuat temuan. |
-| Bukti tidak dapat dibuka atau diunggah | Hubungi administrator untuk memeriksa izin berkas dan konfigurasi penyimpanan bukti. |
-
-## 11. Meninjau hasil sebelum digunakan
-
-Gunakan hasil asesmen dan catatan operasional sebagai bahan pemeriksaan serta pengambilan keputusan internal. Sebelum menjadikannya dasar laporan eksternal, petugas yang berwenang perlu meninjau ketepatan data, bukti, perhitungan, dan ketentuan yang relevan.
-
-Untuk bantuan instalasi, akun, atau konfigurasi server, hubungi administrator NusaRiksa di lembaga Anda.
-
-
-## Rencana Pemulihan TI (BCP/DRP)
+## 9. Menyusun dan menguji rencana pemulihan TI
 
 Buka **Rencana Pemulihan TI**, lalu pilih **Tambah rencana**. Daftar rencana menampilkan kode, layanan, PIC, status, target RTO/RPO, dan jumlah pengujian yang tercatat. Gunakan pencarian dan **Reset filter** bila diperlukan. Jumlah hasil menunjukkan isi halaman yang sedang ditampilkan, bukan total seluruh rencana.
 
@@ -245,104 +252,7 @@ Gunakan **Catat pengujian** hanya setelah pengujian sungguh dilaksanakan. Petuga
 
 Gunakan **Arsipkan** untuk rencana yang tidak lagi dipakai tanpa menghapus jejak perubahannya. **NusaRiksa tidak menjalankan prosedur pemulihan maupun mengesahkan kesiapan layanan secara otomatis.**
 
-
-## Katalog TI bawaan dengan referensi POJK
-
-Saat membuat asesmen internal, biarkan opsi **Gunakan katalog TI bawaan dan langsung mulai** aktif. NusaRiksa otomatis memasang 26 kontrol operasional yang sudah berisi pertanyaan, contoh evidence, dan referensi pasal terkait POJK 34/2025. Petugas cukup mengisi kondisi sebenarnya di bank dan melampirkan bukti yang relevan. Referensi pasal adalah acuan pendukung, bukan transkripsi hukum yang menggantikan pembacaan peraturan. Katalog lama dan seluruh assessment historis tetap dipertahankan.
-
-
-## Aktivasi akun yang dipandu
-
-Pada halaman masuk, gunakan tombol **Lihat** untuk memeriksa kata sandi jika perlu. Untuk akun baru, klik **Aktifkan akun**: langkah pertama memasukkan kode undangan dari administrator, lalu langkah kedua membuat dan mengonfirmasi kata sandi minimal 12 karakter. Informasi kecocokan kata sandi tampil sebelum tombol aktivasi aktif. Kode undangan baru diverifikasi oleh server saat proses aktivasi dikirim. Jangan membagikan kode undangan atau kata sandi melalui tangkapan layar.
-
-
-## Alur penilaian PADK yang disederhanakan (draft)
-
-Setelah membuat persiapan penilaian, NusaRiksa membuka **indikator pertama** dan mengarahkan fokus ke ruang kerja penilaian. Kerjakan satu indikator pada satu waktu: baca ringkasannya, buka tingkat kriteria yang ingin dibandingkan, periksa uraian terhadap sumber PADK, pilih **peringkat sementara**, tulis **justifikasi**, lalu tekan **Simpan & lanjut**. Ini adalah catatan kerja, bukan nilai yang sudah divalidasi regulator.
-
-Gunakan **Cari yang belum lengkap** untuk melanjutkan indikator yang belum selesai. Pilihan **Cari atau pilih indikator lain** menyediakan pencarian nomor, kata kunci, dan filter status tanpa memenuhi layar awal. Jika ingin menambahkan bukti pada indikator yang sama, tekan **Simpan indikator ini**; bagian **Dokumen bukti pendukung** dapat dibuka setelah jawaban tersimpan. Rincian sumber, riwayat, review, simulasi, dan PDF draft disajikan sebagai bagian lanjutan yang bisa dibuka bila diperlukan. Status kertas kerja internal tetap terlihat; dokumen dan skor resmi PADK/OJK tidak dihasilkan secara otomatis.
-
-
-## Validasi catatan dan navigasi kontrol di Assessment Workspace
-
-Saat memilih hasil selain **Memenuhi**, catatan pemeriksaan wajib berisi sekurangnya 10 karakter (setelah spasi awal dan akhir diabaikan). Pesan kesalahan ditampilkan **langsung di bawah kolom Catatan pemeriksaan**; kolom ditandai merah dan difokuskan jika pengguna mencoba menyimpan catatan yang belum valid. Setelah diperbaiki, penandaan kesalahan hilang secara langsung. Hasil **Memenuhi** tetap memperbolehkan catatan kosong. Validasi server tetap berlaku; tampilan hanya memberi panduan agar pengguna tidak kehilangan konteks akibat harus kembali ke atas halaman.
-
-Pada layar desktop, area **Daftar kontrol** memanjang sampai bagian bawah workspace penilaian (sebelum bagian review internal), sementara isi daftar menggunakan scrollbar sendiri dan navigasinya tetap terlihat ketika layar digulir. Pada layar sempit, layout menjadi satu kolom dan daftar dibatasi tinggi agar editor tetap mudah dijangkau. Tidak ada perubahan pada hak akses, metode penyimpanan, atau hasil penilaian yang sudah tersimpan.
-
-
-## Ekspor laporan asesmen TI internal
-
-Pada menu **Laporan Asesmen**, pilih asesmen lalu buka laporannya. Tombol **Unduh PDF** menghasilkan kertas kerja untuk pemeriksaan, sementara **Unduh CSV (Excel)** menyediakan data kontrol dan catatan untuk dibuka di Excel atau aplikasi spreadsheet lain. CSV adalah format teks tabular, **bukan file .xlsx**. Unduhan didasarkan pada data tersimpan yang diambil ulang dari server (bukan filter tabel saat ini), memerlukan sesi aktif serta izin `reports:read`, dan tidak memerlukan penilaian 100% atau persetujuan sebelumnya. Sebelum status `approved`, header menyatakan **PRATINJAU INTERNAL**; setelah disetujui reviewer, **FINAL INTERNAL**. Keduanya mencantumkan peringatan bahwa dokumen bukan bukti kepatuhan/pengesahan resmi OJK.
-
-Data laporan (termasuk catatan pemeriksaan) bisa bersifat sensitif. Server mengirim lampiran dengan `Cache-Control: no-store` dan `Content-Disposition: attachment`; file unduhan tetap menjadi tanggung jawab pengguna untuk disimpan di lokasi aman. Ekspor CSV memperlakukan seluruh kolom sebagai teks dan menetralkan awalan rumus yang berisiko mengeksekusi formula pada aplikasi spreadsheet. Status draft/final tidak boleh disamakan dengan hasil penilaian maturitas PADK yang masih menunggu verifikasi sumber.
-
-
-## PDF laporan profesional V2
-
-Ekspor **Laporan Asesmen TI** kini disajikan sebagai dokumen A4 dengan sampul, identitas lembaga, status pratinjau/final internal, ringkasan eksekutif, distribusi hasil kontrol, rincian jawaban beserta referensi, daftar kontrol yang perlu telaah tindak lanjut, ringkasan keputusan pemeriksa, dan ruang tanda tangan manual yang belum terisi. Kontrol yang tidak memiliki catatan tetap dinyatakan belum diisi; NusaRiksa tidak membuat skor kepatuhan dari persentase pengisian. Pengunduhan CSV untuk Excel tetap tersedia seperti sebelumnya.
-
-PDF **Kertas Kerja PADK** juga menggunakan tampilan profesional A4: halaman identitas, status belum terverifikasi, progres 60/80 indikator, ringkasan lima domain (simulasi internal apabila datanya cukup), justifikasi yang benar-benar tersimpan, inventaris bukti, serta riwayat pemeriksaan draft. Dokumen asli bukti tidak disisipkan otomatis. Status regulator, penyampaian resmi, skor dan pengesahan resmi **tidak** dihasilkan. Penilaian yang belum lengkap menampilkan keterangan bahwa komposit simulasi belum tersedia. Bagian yang belum dikerjakan tidak diisi otomatis.
-
-Nomor halaman dan footer dibentuk oleh PDF renderer A4, bukan membatasi setiap 53 baris teks. Untuk memeriksa kualitas, tinjau PDF hasil data pendek dan panjang; pastikan baris catatan tidak terpotong saat berganti halaman dan laporan tidak mengubah makna status draft/final.
-
-## Bukti penilaian dan konfirmasi pemeriksaan
-
-Untuk asesmen TI operasional, pilih kontrol pada asesmen yang sudah dimulai lalu buka **Bukti pendukung**. Maker berizin dapat mengunggah PDF/PNG/JPEG maksimum **10 MiB per berkas** dan **250 MiB total per asesmen**; batas dokumen per kontrol tetap berlaku. Bukti disimpan terenkripsi dan tidak bisa diubah/hapus dari aplikasi. Jika unggahan ditolak karena konfigurasi enkripsi atau batas penyimpanan, hubungi administrator. Jangan unggah data nasabah yang tidak diperlukan.
-
-Saat pengajuan hasil dan pengambilan keputusan pemeriksa, aplikasi menampilkan dialog konfirmasi yang menjelaskan dampak keputusan dan memerlukan tindakan eksplisit pengguna.
-
-Pada **Persiapan Penilaian Keamanan Siber**, ikuti tahapan yang ditampilkan. Ketika memilih peringkat sementara, aplikasi hanya mengisi **draf kalimat dengan bagian kosong**. Ganti bagian dalam tanda kurung siku dengan kondisi nyata serta dokumen/hasil pemeriksaan yang relevan. Draf yang belum dilengkapi tidak dapat disimpan sebagai justifikasi yang sah. Keputusan dan hasil PADK tetap merupakan kertas kerja internal, bukan skor regulatori resmi.
-
-Pada **Penilaian Maturitas**, tombol **Buka domain berikutnya yang belum dinilai** membantu menyelesaikan pekerjaan domain demi domain. Level dipilih berdasarkan kondisi aktual dan kriteria rubrik yang diterbitkan.
-
-## Memilih sendiri kontrol asesmen
-
-Saat membuat asesmen TI melalui **Gunakan katalog TI bawaan dan langsung mulai**, aplikasi memuat pustaka kontrol berreferensi. Semua kontrol awalnya dicentang, tetapi petugas dapat mencari, memilih, atau menghapus centang untuk menentukan **kontrol yang relevan**. Minimal satu kontrol harus dipilih. Tombol **Centang yang terlihat** dan **Kosongkan yang terlihat** hanya memengaruhi hasil pencarian yang tampak; pilihan lain tidak diubah.
-
-Untuk asesmen **Draft** yang dibuat secara manual, pasang katalog terpublikasi terlebih dahulu, lalu centang kontrol pada bagian **Atur cakupan asesmen** sebelum menekan **Mulai asesmen**. Pilihan kontrol disimpan sebagai snapshot dan dikunci saat asesmen dimulai. Hanya kontrol terpilih yang muncul dalam daftar pengisian, syarat pengajuan pemeriksaan, dan laporan. Asesmen yang dibuat sebelum fitur ini tetap menggunakan seluruh versi katalog awalnya sehingga data lama tidak berubah.
-
-Katalog bawaan berreferensi saat ini berisi **26 kontrol operasional** dengan rujukan POJK 34/2025; angka **200** adalah **kapasitas maksimum per versi**, bukan klaim bahwa telah tersedia 200 kontrol atau bahwa semua kontrol merupakan salinan ketentuan resmi OJK. Katalog lama tidak dihapus; hanya tidak ditawarkan sebagai pilihan bawaan pada asesmen baru. Pembatasan cakupan merupakan keputusan internal lembaga dan **tidak menghapus kewajiban kepatuhan yang berlaku**.
-
-
-## Navigasi detail register dan kode otomatis
-
-Detail inventaris aset, risiko, insiden, tindak lanjut temuan, vendor, dan rencana pemulihan kini ditampilkan sebagai **dialog detail**. Klik item untuk membuka ringkasan dan riwayatnya; tutup dengan tombol **Tutup** atau Esc untuk kembali ke daftar pada posisi semula. Dialog tetap mempertahankan aksi ubah, pemeriksaan, serta riwayat sesuai hak akses.
-
-Pada inventaris aset dan insiden TI baru, kode berformat **AST-YYYY-NNNNNN** dan **INC-YYYY-NNNNNN** dialokasikan secara otomatis saat data berhasil dibuat. Nomor bersifat unik per lembaga, jenis catatan, dan tahun kalender WIB; perubahan atau pengarsipan tidak mendaur ulang nomor. Pengguna tidak perlu menentukan atau mengubah nomor. Kode yang sudah ada tetap dipertahankan pada catatan lama.
-
-## Unduhan laporan dan register
-
-Halaman laporan asesmen TI menyediakan PDF dan CSV. Kertas kerja PADK internal menyediakan PDF dan ekspor indikator CSV. Penilaian maturitas dapat diekspor sebagai CSV domain. Register aset, risiko, insiden, temuan, vendor, kontrak, evaluasi SLA, rencana pemulihan, dan pengujiannya dapat diunduh sebagai CSV dari menu terkait. Unduhan hanya mencakup data lembaga pemilik sesi yang aktif dan memerlukan izin baca domain serta laporan. Batas ekspor register operasional adalah **5.000 baris**, dengan penolakan eksplisit jika melebihi batas (tidak dipotong diam-diam).
-
-Unduhan PDF/CSV memakai sesi terautentikasi; jika terjadi HTTP 401, pengguna harus masuk kembali. File CSV tidak menyertakan berkas bukti terenkripsi. Dokumen hasil ekspor tetap merupakan keluaran internal lembaga, bukan pelaporan otomatis ke OJK. Simpan dan bagikan berkas sesuai kebijakan perlindungan data institusi.
-
-## Referensi risiko tambahan
-
-Pustaka contoh skenario risiko TI menyediakan **40 contoh situasi operasional** setelah pemutakhiran. Contoh dapat ditandai relevan atau tidak relevan, lalu disesuaikan menjadi risiko nyata milik lembaga. Contoh bukan hasil identifikasi lapangan, bukan tingkat risiko yang telah dinilai, dan bukan daftar kewajiban regulator yang komprehensif.
-
-## Prioritas tindak lanjut temuan
-
-Halaman **Tindak Lanjut Temuan** menampilkan ringkasan seluruh temuan aktif lembaga, dipisahkan menjadi **Tugas perbaikan saya**, **Siap saya verifikasi**, dan **Melewati target**. Tombol kelompok memfilter daftar di server; hanya petugas dengan izin verifikasi yang melihat antrean pemeriksaan. Pembuat atau pengaju tidak dapat memverifikasi temuan miliknya. Gunakan **Seluruh temuan aktif** untuk kembali melihat register biasa.
-
-Form temuan dapat disimpan sebelum tersedia hasil dan bukti. Bagian hasil tindakan dibuka sesuai kebutuhan. Setelah rencana, progres, dan referensi bukti tercatat, pembuat mengajukan hasilnya. Pemeriksa independen dapat memverifikasi atau mengembalikan untuk diperbaiki; keputusan dan histori perubahan tetap terlacak.
-
-## Pemantauan kontrak vendor TI
-
-Ringkasan **Pemantauan kontrak** menghitung kontrak aktif seluruh lembaga yang telah melewati tanggal akhir atau berakhir dalam 30 hari, beserta kontrak aktif yang belum memiliki catatan evaluasi SLA. Daftar perhatian menampilkan maksimal 20 kontrak terdekat; **Buka kontrak** langsung membuka penyedia dan rincian perjanjian pada dialog yang sama. Tanggal tersebut bukan penilaian kualitas layanan atau keputusan perpanjangan otomatis.
-
-## Pustaka contoh risiko
-
-Daftar skenario awal risiko kini ditampilkan sebagai panel **Contoh risiko yang belum dinilai** yang tertutup secara default, agar register risiko lembaga menjadi fokus utama. Buka panel untuk menilai contoh yang relevan atau menandainya tidak relevan. Contoh tidak berubah menjadi temuan atau skor faktual sebelum disimpan oleh petugas.
-
-
-## Mengunduh laporan PDF register TI
-
-Pada halaman aset, risiko, insiden, temuan, penyedia TI, kontrak dan evaluasi SLA, serta pemulihan dan hasil uji, gunakan tombol **Unduh PDF** untuk memperoleh salinan register internal. File mencakup semua catatan tersimpan (termasuk arsip), bukan hanya hasil pencarian atau halaman yang sedang tampil. Nama lembaga, tanggal pembuatan (UTC), jumlah catatan, dan rincian isian yang tersimpan dicantumkan. Isian yang kosong tetap ditandai belum dicatat.
-
-Unduhan memerlukan hak baca laporan dan hak baca modul yang relevan. Jika register berisi lebih dari 500 catatan, gunakan tombol **Ekspor CSV** untuk mengolah data lengkap (maksimum 5.000 catatan). PDF ini **bukan laporan resmi OJK** dan tidak mewakili penilaian atau persetujuan otomatis.
-
-
-## Pusat Pekerjaan TI
+## 10. Pusat Pekerjaan TI
 
 Pilih **Pusat Pekerjaan TI** pada navigasi untuk melihat catatan lintas register yang perlu diperhatikan. Ringkasan hanya memuat modul yang boleh dibaca oleh akun aktif. Jumlah tiap modul dihitung dari catatan lembaga, bukan dari satu halaman hasil pencarian. Pilih **Buka modul** untuk daftar lengkap, atau **Lihat detail** untuk membuka catatan langsung.
 
@@ -356,11 +266,86 @@ Dari detail **Temuan** yang bersumber dari risiko/insiden, tombol *Buka sumber* 
 
 Daftar utama menampilkan maksimal 20 catatan perhatian, dengan hingga 8 kandidat dari tiap modul. Angka ringkasan tetap menunjukkan keseluruhan catatan yang memenuhi kriteria. Pusat Pekerjaan TI bukan penilaian kepatuhan OJK dan tidak mengisi fakta, melakukan verifikasi, atau membuat keputusan atas nama petugas.
 
+## 11. Bukti dan laporan internal
 
-## Formulir dan pekerjaan TI
+### Bukti dan riwayat pemeriksaan
+
+Untuk hasil pemeriksaan yang memerlukan bukti, unggah berkas yang sesuai dengan kontrol atau indikator. Gunakan dokumen yang memang berlaku di lembaga, periksa isinya sebelum mengunggah, dan jangan membuat bukti hanya untuk memenuhi kolom aplikasi.
+
+Riwayat perubahan membantu petugas menelusuri kapan informasi diperbarui. Pada pengelolaan aset, risiko, dan insiden, gunakan tampilan detail untuk melihat catatan yang tersimpan.
+
+Jangan memasukkan password, token akses, kunci enkripsi, atau data pribadi nasabah yang tidak diperlukan ke dalam catatan dan lampiran.
+
+### Bukti penilaian dan konfirmasi pemeriksaan
+
+Untuk asesmen TI operasional, pilih kontrol pada asesmen yang sudah dimulai lalu buka **Bukti pendukung**. Maker berizin dapat mengunggah PDF/PNG/JPEG maksimum **10 MiB per berkas** dan **250 MiB total per asesmen**; batas dokumen per kontrol tetap berlaku. Bukti disimpan terenkripsi dan tidak bisa diubah/hapus dari aplikasi. Jika unggahan ditolak karena konfigurasi enkripsi atau batas penyimpanan, hubungi administrator. Jangan unggah data nasabah yang tidak diperlukan.
+
+Saat pengajuan hasil dan pengambilan keputusan pemeriksa, aplikasi menampilkan dialog konfirmasi yang menjelaskan dampak keputusan dan memerlukan tindakan eksplisit pengguna.
+
+Pada **Persiapan Penilaian Keamanan Siber**, ikuti tahapan yang ditampilkan. Ketika memilih peringkat sementara, aplikasi hanya mengisi **draf kalimat dengan bagian kosong**. Ganti bagian dalam tanda kurung siku dengan kondisi nyata serta dokumen/hasil pemeriksaan yang relevan. Draf yang belum dilengkapi tidak dapat disimpan sebagai justifikasi yang sah. Keputusan dan hasil PADK tetap merupakan kertas kerja internal, bukan skor regulatori resmi.
+
+Pada **Penilaian Maturitas**, tombol **Buka domain berikutnya yang belum dinilai** membantu menyelesaikan pekerjaan domain demi domain. Level dipilih berdasarkan kondisi aktual dan kriteria rubrik yang diterbitkan.
+
+### Laporan asesmen TI
+
+Pada menu **Laporan Asesmen**, pilih asesmen lalu buka laporannya. Tombol **Unduh PDF** menghasilkan kertas kerja untuk pemeriksaan, sementara **Unduh CSV (Excel)** menyediakan data kontrol dan catatan untuk dibuka di Excel atau aplikasi spreadsheet lain. CSV adalah format teks tabular, **bukan file .xlsx**. Unduhan didasarkan pada data tersimpan yang diambil ulang dari server (bukan filter tabel saat ini), memerlukan sesi aktif serta izin `reports:read`, dan tidak memerlukan penilaian 100% atau persetujuan sebelumnya. Sebelum status `approved`, header menyatakan **PRATINJAU INTERNAL**; setelah disetujui reviewer, **FINAL INTERNAL**. Keduanya mencantumkan peringatan bahwa dokumen bukan bukti kepatuhan/pengesahan resmi OJK.
+
+Data laporan (termasuk catatan pemeriksaan) bisa bersifat sensitif. Server mengirim lampiran dengan `Cache-Control: no-store` dan `Content-Disposition: attachment`; file unduhan tetap menjadi tanggung jawab pengguna untuk disimpan di lokasi aman. Ekspor CSV memperlakukan seluruh kolom sebagai teks dan menetralkan awalan rumus yang berisiko mengeksekusi formula pada aplikasi spreadsheet. Status draft/final tidak boleh disamakan dengan hasil penilaian maturitas PADK yang masih menunggu verifikasi sumber.
+
+### Isi laporan PDF
+
+Ekspor **Laporan Asesmen TI** disajikan sebagai dokumen A4 dengan sampul, identitas lembaga, status pratinjau/final internal, ringkasan eksekutif, distribusi hasil kontrol, rincian jawaban beserta referensi, daftar kontrol yang perlu telaah tindak lanjut, ringkasan keputusan pemeriksa, dan ruang tanda tangan manual yang belum terisi. Kontrol yang tidak memiliki catatan tetap dinyatakan belum diisi; NusaRiksa tidak membuat skor kepatuhan dari persentase pengisian. Pengunduhan CSV untuk Excel tetap tersedia.
+
+PDF **Kertas Kerja PADK** juga menggunakan tampilan profesional A4: halaman identitas, status belum terverifikasi, progres 60/80 indikator, ringkasan lima domain (simulasi internal apabila datanya cukup), justifikasi yang benar-benar tersimpan, inventaris bukti, serta riwayat pemeriksaan draft. Dokumen asli bukti tidak disisipkan otomatis. Status regulator, penyampaian resmi, skor dan pengesahan resmi **tidak** dihasilkan. Penilaian yang belum lengkap menampilkan keterangan bahwa komposit simulasi belum tersedia. Bagian yang belum dikerjakan tidak diisi otomatis.
+
+Nomor halaman dan footer dibentuk oleh PDF renderer A4, bukan membatasi setiap 53 baris teks. Untuk memeriksa kualitas, tinjau PDF hasil data pendek dan panjang; pastikan baris catatan tidak terpotong saat berganti halaman dan laporan tidak mengubah makna status draft/final.
+
+### Unduhan laporan dan register
+
+Halaman laporan asesmen TI menyediakan PDF dan CSV. Kertas kerja PADK internal menyediakan PDF dan ekspor indikator CSV. Penilaian maturitas dapat diekspor sebagai CSV domain. Register aset, risiko, insiden, temuan, vendor, kontrak, evaluasi SLA, rencana pemulihan, dan pengujiannya dapat diunduh sebagai CSV dari menu terkait. Unduhan hanya mencakup data lembaga pemilik sesi yang aktif dan memerlukan izin baca domain serta laporan. Batas ekspor register operasional adalah **5.000 baris**, dengan penolakan eksplisit jika melebihi batas (tidak dipotong diam-diam).
+
+Unduhan PDF/CSV memakai sesi terautentikasi; jika terjadi HTTP 401, pengguna harus masuk kembali. File CSV tidak menyertakan berkas bukti terenkripsi. Dokumen hasil ekspor tetap merupakan keluaran internal lembaga, bukan pelaporan otomatis ke OJK. Simpan dan bagikan berkas sesuai kebijakan perlindungan data institusi.
+
+### PDF register TI
+
+Pada halaman aset, risiko, insiden, temuan, penyedia TI, kontrak dan evaluasi SLA, serta pemulihan dan hasil uji, gunakan tombol **Unduh PDF** untuk memperoleh salinan register internal. File mencakup semua catatan tersimpan (termasuk arsip), bukan hanya hasil pencarian atau halaman yang sedang tampil. Nama lembaga, tanggal pembuatan (UTC), jumlah catatan, dan rincian isian yang tersimpan dicantumkan. Isian yang kosong tetap ditandai belum dicatat.
+
+Unduhan memerlukan hak baca laporan dan hak baca modul yang relevan. Jika register berisi lebih dari 500 catatan, gunakan tombol **Ekspor CSV** untuk mengolah data lengkap (maksimum 5.000 catatan). PDF ini **bukan laporan resmi OJK** dan tidak mewakili penilaian atau persetujuan otomatis.
+
+## 12. Navigasi dan formulir register
+
+### Membuka detail dan nomor catatan
+
+Detail inventaris aset, risiko, insiden, tindak lanjut temuan, vendor, dan rencana pemulihan ditampilkan sebagai **dialog detail**. Klik item untuk membuka ringkasan dan riwayatnya; tutup dengan tombol **Tutup** atau Esc untuk kembali ke daftar pada posisi semula. Dialog tetap mempertahankan aksi ubah, pemeriksaan, serta riwayat sesuai hak akses.
+
+Pada inventaris aset dan insiden TI baru, kode berformat **AST-YYYY-NNNNNN** dan **INC-YYYY-NNNNNN** dialokasikan secara otomatis saat data berhasil dibuat. Nomor bersifat unik per lembaga, jenis catatan, dan tahun kalender WIB; perubahan atau pengarsipan tidak mendaur ulang nomor. Pengguna tidak perlu menentukan atau mengubah nomor. Kode yang sudah ada tetap dipertahankan pada catatan lama.
+
+### Memeriksa isian dan membatalkan perubahan
 
 Pada formulir aset, risiko, insiden, temuan, penyedia TI, kontrak, evaluasi SLA, rencana pemulihan, dan catatan pengujian, kolom yang belum valid akan diberi pesan di dekat kolomnya. Perbaiki isian yang ditandai dan simpan kembali. Jika server menolak penyimpanan karena data sudah berubah, periksa versi terbaru terlebih dahulu agar perubahan petugas lain tidak tertimpa.
 
 Tombol **Batal** dan tombol **Escape** akan meminta konfirmasi apabila ada perubahan formulir yang belum disimpan. Memilih **Tetap mengedit** (Batal pada dialog konfirmasi) mempertahankan isian sementara; memilih **Buang perubahan** menutup formulir tanpa menyimpan. Peringatan ini hanya melindungi isian selama formulir terbuka, bukan penyimpanan draf otomatis.
 
 Pada **Pusat Pekerjaan TI**, tanggal target ditampilkan relatif terhadap hari kerja WIB, termasuk penanda target yang sudah terlewati. Daftar prioritas dapat memuat sebagian catatan; gunakan tombol kelompok modul untuk melihat semua pekerjaan register. Ketika membuka detail dari pusat pekerjaan, tutup dialog rincian lalu gunakan **Kembali ke Pusat Pekerjaan TI** untuk kembali ke antrean sebelumnya. Tidak ada keputusan tindak lanjut yang dibuat otomatis oleh aplikasi.
+
+## 13. Jika mengalami kendala
+
+| Kondisi | Tindakan yang disarankan |
+| --- | --- |
+| Tidak bisa masuk | Periksa email, kata sandi, dan kode verifikasi. Hubungi administrator bila akun belum diaktifkan. |
+| Menu atau tombol tidak terlihat | Periksa apakah peran akun sudah sesuai dengan pekerjaan yang ditugaskan. |
+| Perubahan gagal disimpan | Periksa isian wajib, lalu muat ulang data bila muncul pemberitahuan konflik perubahan. |
+| Aset tidak muncul sebagai pilihan risiko/insiden | Pastikan aset tercatat dan belum diarsipkan. |
+| Risiko tidak muncul sebagai pilihan insiden | Pastikan risiko masih aktif dan pilih aset yang sesuai jika risiko sudah tertaut ke aset tertentu. |
+| Insiden tidak dapat ditutup | Periksa status sebelumnya serta kelengkapan akar penyebab dan hasil pemulihan. |
+| Temuan tidak dapat diajukan | Periksa kelengkapan rencana, catatan hasil tindakan, dan referensi bukti. |
+| Penyedia tidak bisa diarsipkan | Akhiri terlebih dahulu kontrak yang masih berstatus aktif. |
+| Evaluasi vendor ditolak | Pastikan periode berada dalam masa kontrak dan realisasi hanya diisi untuk target SLA yang tercantum. |
+| Tombol verifikasi tidak tersedia | Pastikan akun pemeriksa punya hak verifikasi dan bukan pembuat temuan. |
+| Bukti tidak dapat dibuka atau diunggah | Hubungi administrator untuk memeriksa izin berkas dan konfigurasi penyimpanan bukti. |
+
+## 14. Meninjau hasil sebelum digunakan
+
+Gunakan hasil asesmen dan catatan operasional sebagai bahan pemeriksaan serta pengambilan keputusan internal. Sebelum menjadikannya dasar laporan eksternal, petugas yang berwenang perlu meninjau ketepatan data, bukti, perhitungan, dan ketentuan yang relevan.
+
+Untuk bantuan instalasi, akun, atau konfigurasi server, hubungi administrator NusaRiksa di lembaga Anda.

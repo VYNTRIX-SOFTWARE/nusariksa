@@ -14,7 +14,7 @@ Petugas BPR/BPRS seharusnya cukup:
 
 **Jangan otomatis mengisikan jawaban hasil penilaian, bukti atau sign-off:** BPR bertanggung jawab atas kondisi faktual.
 
-## Paket standar saat ini
+## Paket standar dan batas instrumen
 
 | Paket | Isi bawaan yang benar-benar tersedia | Catatan status |
 | --- | --- | --- |
@@ -25,28 +25,21 @@ Petugas BPR/BPRS seharusnya cukup:
 
 Untuk PADK, pengguna tidak perlu membuat indikator/kriteria dari nol. Namun **dilarang menandai kriteria sebagai terverifikasi** hingga review independen selesai. Rincian ketidakcocokan sumber dipertahankan dalam proses review tanpa mengungkap dokumen pembanding privat.
 
-## Ketentuan data contoh dan instrumen
+### Data contoh dan fakta lembaga
 
 Contoh aset, risiko, insiden, temuan, atau prosedur pemulihan merupakan **referensi**, bukan catatan kondisi faktual lembaga. Pencatatan data aktual hanya dilakukan berdasarkan pilihan dan konfirmasi petugas. Risiko tidak boleh dibuat otomatis sebagai kejadian nyata, atau memperoleh nilai likelihood/impact tanpa penilaian pengguna.
 
 Instrumen standar harus memiliki identitas dan versi stabil, status verifikasi sumber, cakupan, serta audit trail perubahan. Versi yang telah terbit tidak boleh diubah diam-diam. Bank dapat menggunakan metodologi khusus tanpa harus membuat data faktual dari contoh.
 
-## Ekspor dan label dokumen
+## Asesmen dan metodologi
 
-- Asesmen TI operasional: laporan web/JSON plus unduhan **PDF internal** dan **CSV untuk Excel**. CSV bukan .xlsx dan dibangun dari data tersimpan, bukan isi filter saat ini.
-- PADK: saat ini **PDF kertas kerja draft internal** saja. **Jangan mengaktifkan ekspor laporan OJK/final** selama instrumen berstatus DRAFT_UNVERIFIED.
-- Semua unduhan membutuhkan sesi dan hak baca laporan, mencantumkan ID, periode, status draft/final internal, penilaian dan review. Tidak boleh membuat skor kepatuhan otomatis dari jumlah jawaban.
-- Laporan khusus regulator hanya boleh diaktifkan setelah pemeriksaan substansi dan release gate regulatori terpenuhi.
+### Cakupan kontrol per asesmen
 
-## Kriteria UAT
+Penilaian baru dapat menggunakan snapshot kontrol yang dipilih maker dari versi katalog terpublikasi, sebelum asesmen dimulai. Snapshot bersifat immutable. Pemilihan 1–200 kontrol harus berasal dari katalog terpasang; kontrol di luar pilihan ditolak pada penyimpanan hasil maupun bukti. Daftar, laporan, dan syarat lengkap untuk submit mengikuti snapshot yang sama. Absennya snapshot pada asesmen lama berarti seluruh kontrol katalog versi terpasang seperti semula.
 
-UAT pengguna baru sukses jika dari login mereka dapat memilih penilaian yang siap pakai, menyimpan jawaban pertama dalam beberapa langkah tanpa membuka halaman metodologi/katalog kontrol, meninjau status penyimpanan, mengirim review internal, dan mengunduh hasil tanpa mencari dokumentasi teknis.
+Pustaka berreferensi NusaRiksa saat ini mencakup 26 kontrol interpretasi operasional dengan sumber POJK 34/2025, tidak diklaim sebagai seluruh kewajiban regulator. Nilai 200 adalah batas kapasitas teknis. Template lama tetap ada untuk menjaga audit historis, tetapi tidak ditawarkan sebagai opsi bawaan kepada pengguna baru. Daftar kontrol yang dipilih tidak menggantikan pemenuhan peraturan yang relevan.
 
-## Standar keluaran dokumen (Report Engine V2)
-
-Dua alur yang sudah memiliki ekspor PDF internal menggunakan komponen layout bersama dengan header/footer, pagination, tipografi, ringkasan yang dapat ditelusuri, dan detail data tersimpan. Laporan hanya boleh menampilkan informasi yang tersedia di snapshot server; tidak boleh menambahkan hasil, temuan, tanda tangan, rencana aksi aktual, atau skor yang tidak ada. Ini berlaku untuk seluruh modul baru. Tidak boleh menyamakan **Asesmen TI operasional** (26 kontrol NusaRiksa) dengan instrumen **PADK maturitas keamanan siber** (kategori 1/2, 80/60 indikator). PADK tetap berstatus `DRAFT_UNVERIFIED` sampai regulator release gate ditutup secara formal setelah verifikasi.
-
-## Metodologi maturitas internal bawaan
+### Metodologi maturitas internal
 
 - Saat pengguna pertama aktif, migrasi memasang versi 1 yang sudah dipublikasikan, dengan 6 domain dan 6 kriteria level per domain, tanpa membuat penilaian atau hasil nilai otomatis.
 - Tenant existing mendapat backfill idempotent. Kode stabil `NUSARIKSA_INTERNAL`; pada update berikutnya jangan mengubah versi published, buat versi baru bila metodologi berubah.
@@ -54,38 +47,43 @@ Dua alur yang sudah memiliki ekspor PDF internal menggunakan komponen layout ber
 - Form penilaian memilih model serta versi published secara otomatis, sementara pilihan metodologi lain tetap tersedia. Judul dan periode disarankan dan dapat dikoreksi.
 - UAT manual pada browser Windows dan pemeriksaan alur maker-checker tetap diperlukan sebelum public release.
 
-## Cakupan kontrol berdasarkan pilihan asesmen
-
-Penilaian baru dapat menggunakan snapshot kontrol yang dipilih maker dari versi katalog terpublikasi, sebelum asesmen dimulai. Snapshot bersifat immutable. Pemilihan 1–200 kontrol harus berasal dari katalog terpasang; kontrol di luar pilihan ditolak pada penyimpanan hasil maupun bukti. Daftar, laporan, dan syarat lengkap untuk submit mengikuti snapshot yang sama. Absennya snapshot pada asesmen lama berarti seluruh kontrol katalog versi terpasang seperti semula.
-
-Pustaka berreferensi NusaRiksa saat ini mencakup 26 kontrol interpretasi operasional dengan sumber POJK 34/2025, tidak diklaim sebagai seluruh kewajiban regulator. Nilai 200 adalah batas kapasitas teknis. Template lama tetap ada untuk menjaga audit historis, tetapi tidak ditawarkan sebagai opsi bawaan kepada pengguna baru. Daftar kontrol yang dipilih tidak menggantikan pemenuhan peraturan yang relevan.
-
-
-## Pengalaman register dan keluaran laporan
+## Pengelolaan register TI
 
 Detail register dibuka sebagai dialog yang mempertahankan posisi daftar. Kode aset dan insiden baru dibuat oleh server menggunakan counter transaksional per lembaga/jenis/tahun WIB, tanpa mengganti kode historis. Pustaka risiko awal diperluas menjadi 40 skenario contoh internal, bukan penilaian aktual atau instrumen wajib regulator.
 
 Ekspor internal mendukung asesmen TI (PDF/CSV), PADK (PDF/CSV draft), maturitas (CSV domain), serta register operasional (CSV), dengan pengendalian izin, isolasi institusi, batas 5.000 baris, proteksi formula spreadsheet, dan pencegahan cache. Ketersediaan CSV tidak bermakna adanya validasi regulator, pengiriman ke OJK, atau lampiran bukti terenkripsi.
 
-## Fokus operasional pengguna
+### Antrean pekerjaan dan pemantauan kontrak
 
 Tindak lanjut temuan menyediakan antrean berdasarkan kepemilikan, izin pemeriksa independen, dan keterlambatan target, bukan ringkasan dari satu halaman paginasi. Vendor TI menyediakan ringkasan tanggal kontrak aktif seluruh lembaga serta akses cepat menuju kontrak yang memerlukan peninjauan. Daftar 40 contoh risiko tetap dapat diakses dalam panel tertutup secara default. Semua ringkasan merupakan data operasional internal yang menggunakan otorisasi institusi; tidak menyimpulkan kepatuhan regulatori ataupun menggantikan peninjauan dokumen asli.
 
-
-## Nomor referensi register operasional
+### Nomor referensi register
 
 Antarmuka CREATE memakai sentinel `AUTO`; backend menghasilkan nomor `PREFIX-YYYY-000001` per lembaga, jenis, dan tahun kalender `Asia/Jakarta`. Prefix: `AST` aset, `INC` insiden, `RSK` risiko, `FND` temuan, `VND` vendor, `CTR` kontrak, `RCP` pemulihan. Kode lama tetap; UPDATE tidak dapat mengubah kode, sedangkan API CREATE tetap mendukung kode manual untuk kompatibilitas sistem lama. Kode ini adalah identitas internal Nusariksa, **bukan format resmi OJK**.
 
+### Pusat Pekerjaan TI
 
-## Laporan PDF register TI
+Endpoint `GET /ti-work/overview` mengembalikan jumlah catatan perhatian dan maksimum 20 referensi prioritas dari register temuan, insiden, risiko, kontrak penyedia, dan pemulihan. Permintaan memerlukan sesi aktif. Backend hanya melakukan query pada register yang memiliki izin baca; temuan yang dapat diverifikasi juga memerlukan `findings:verify`, dan tetap mengecualikan pembuat maupun pengaju yang sama.
+
+Ringkasan tidak mengeksekusi perubahan status dan tidak merupakan penilaian kepatuhan. Angka dihitung pada scope lembaga (bukan pagination frontend); daftar dibatasi hingga 8 kandidat per modul dan 20 total. Kondisi perhatian: temuan milik pembuat/perlu verifikasi/melewati target, insiden belum selesai, risiko inheren tinggi/kritis belum ditutup, kontrak mendekati habis atau tanpa evaluasi tercatat, dan rencana pemulihan tanpa uji tercatat. Tanggal dan status diambil dari database.
+
+## Laporan dan unduhan
+
+- Asesmen TI operasional: laporan web/JSON plus unduhan **PDF internal** dan **CSV untuk Excel**. CSV bukan .xlsx dan dibangun dari data tersimpan, bukan isi filter saat ini.
+- PADK: saat ini **PDF kertas kerja draft internal** saja. **Jangan mengaktifkan ekspor laporan OJK/final** selama instrumen berstatus DRAFT_UNVERIFIED.
+- Semua unduhan membutuhkan sesi dan hak baca laporan, mencantumkan ID, periode, status draft/final internal, penilaian dan review. Tidak boleh membuat skor kepatuhan otomatis dari jumlah jawaban.
+- Laporan khusus regulator hanya boleh diaktifkan setelah pemeriksaan substansi dan release gate regulatori terpenuhi.
+
+### Standar PDF internal
+
+Dua alur yang sudah memiliki ekspor PDF internal menggunakan komponen layout bersama dengan header/footer, pagination, tipografi, ringkasan yang dapat ditelusuri, dan detail data tersimpan. Laporan hanya boleh menampilkan informasi yang tersedia di snapshot server; tidak boleh menambahkan hasil, temuan, tanda tangan, rencana aksi aktual, atau skor yang tidak ada. Ini berlaku untuk seluruh modul baru. Tidak boleh menyamakan **Asesmen TI operasional** (26 kontrol NusaRiksa) dengan instrumen **PADK maturitas keamanan siber** (kategori 1/2, 80/60 indikator). PADK tetap berstatus `DRAFT_UNVERIFIED` sampai regulator release gate ditutup secara formal setelah verifikasi.
+
+### PDF register TI
 
 Setiap register operasional dapat diunduh sebagai PDF internal menggunakan identitas lembaga, waktu pembuatan, jumlah catatan, dan rincian dari data tersimpan. PDF dibuat dari seluruh register, termasuk catatan diarsipkan, bukan dari satu halaman daftar atau filter layar. CSV tetap tersedia untuk analisis dan pengolahan data.
 
 PDF dibatasi **500 catatan** dan gagal dengan pesan yang jelas jika melebihi kapasitas, tanpa pemotongan diam-diam; gunakan ekspor CSV sampai 5.000 catatan untuk kebutuhan data besar. Unduhan memerlukan sesi aktif, izin `reports:read` dan izin baca register yang bersangkutan. Dokumen memakai header/footer internal, penanda halaman dan `no-store`, tidak berisi persetujuan, tanda tangan, atau klaim laporan resmi OJK.
 
+## Kriteria penerimaan pengguna
 
-## Pusat Pekerjaan TI
-
-Endpoint `GET /ti-work/overview` mengembalikan jumlah catatan perhatian dan maksimum 20 referensi prioritas dari register temuan, insiden, risiko, kontrak penyedia, dan pemulihan. Permintaan memerlukan sesi aktif. Backend hanya melakukan query pada register yang memiliki izin baca; temuan yang dapat diverifikasi juga memerlukan `findings:verify`, dan tetap mengecualikan pembuat maupun pengaju yang sama.
-
-Ringkasan tidak mengeksekusi perubahan status dan tidak merupakan penilaian kepatuhan. Angka dihitung pada scope lembaga (bukan pagination frontend); daftar dibatasi hingga 8 kandidat per modul dan 20 total. Kondisi perhatian: temuan milik pembuat/perlu verifikasi/melewati target, insiden belum selesai, risiko inheren tinggi/kritis belum ditutup, kontrak mendekati habis atau tanpa evaluasi tercatat, dan rencana pemulihan tanpa uji tercatat. Tanggal dan status diambil dari database.
+UAT pengguna baru sukses jika dari login mereka dapat memilih penilaian yang siap pakai, menyimpan jawaban pertama dalam beberapa langkah tanpa membuka halaman metodologi/katalog kontrol, meninjau status penyimpanan, mengirim review internal, dan mengunduh hasil tanpa mencari dokumentasi teknis.
