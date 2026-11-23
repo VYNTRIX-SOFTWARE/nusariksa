@@ -40,14 +40,14 @@ npm ci
 Atur koneksi dan alamat aplikasi. Contoh pada Linux/macOS:
 
 ```bash
-export DATABASE_URL='postgresql://user:password@127.0.0.1:5432/nusariksa_dev'
+export DATABASE_URL='postgresql://user:password@127.0.0.1:5432/nusariksa'
 export APP_ORIGIN='http://localhost:3000'
 ```
 
 Contoh pada PowerShell:
 
 ```powershell
-$env:DATABASE_URL = 'postgresql://user:password@127.0.0.1:5432/nusariksa_dev'
+$env:DATABASE_URL = 'postgresql://user:password@127.0.0.1:5432/nusariksa'
 $env:APP_ORIGIN = 'http://localhost:3000'
 ```
 
@@ -56,7 +56,7 @@ Jalankan migrasi, periksa kesesuaian database, buat administrator awal, lalu mul
 ```bash
 npm run db:migrate
 npm run db:status
-npm run admin:bootstrap -- --name "BPR Contoh" --kind BPR --email admin@example.test
+npm run admin:bootstrap -- --name "BPR ABC" --kind BPR --email admin@example.test
 npm start
 ```
 
