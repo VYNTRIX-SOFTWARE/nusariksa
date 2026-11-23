@@ -21,13 +21,15 @@ $env:NUSARIKSA_PILOT_DATA_MODE = 'synthetic'
 npm run pilot:preflight -- --database
 ```
 
-Pemeriksaan membaca versi Node.js, format APP_ORIGIN dan DATABASE_URL, PORT, struktur keyring bukti, serta konfirmasi data sintetis. Opsi `--database` melakukan koneksi **read-only** dan membandingkan checksum seluruh migrasi dengan source code. Perintah tidak memodifikasi database, tidak mengunggah data, dan tidak mencetak URL koneksi, password, atau material kunci. Gunakan `--json` untuk hasil yang mudah diproses dalam otomasi.
+Pemeriksaan membaca versi Node.js, format APP_ORIGIN dan DATABASE_URL, PORT, struktur keyring bukti, **kunci MFA**, serta konfirmasi data sintetis. Opsi `--database` melakukan koneksi **read-only** dan membandingkan checksum seluruh migrasi dengan source code. Perintah tidak memodifikasi database, tidak mengunggah data, dan tidak mencetak URL koneksi, password, atau material kunci. Gunakan `--json` untuk hasil yang mudah diproses dalam otomasi.
 
 Arti hasil:
 
 - `BLOCKED`: satu atau lebih prasyarat tidak terpenuhi. Hentikan rencana pilot.
 - `REVIEW_REQUIRED`: belum memeriksa database atau terdapat risiko yang perlu diperiksa manusia (misalnya reverse proxy publik).
 - `PREFLIGHT_CHECKS_PASSED`: semua pemeriksaan **otomatis ini** lulus, bukan keputusan Go/No-Go.
+
+Gunakan juga `npm run db:status` untuk memeriksa versi PostgreSQL 17 dan checksum migrasi tanpa mengubah data. Prosedur aman untuk upgrade instalasi yang sudah berjalan tersedia di [panduan operasional](OPERATIONS.md).
 
 Hasil selain `PREFLIGHT_CHECKS_PASSED` menghasilkan exit code bukan nol. Koneksi database jarak jauh yang tidak dikonfigurasi untuk verifikasi sertifikat dan hostname tidak akan diperiksa. Bukti ini sendiri tidak menjamin bahwa data uji benar-benar sintetis; operator wajib memastikan.
 
@@ -37,10 +39,10 @@ Seluruh pemeriksaan harus memiliki hasil, bukti privat, dan nama penanggung jawa
 
 | Pemeriksaan | Bukti yang perlu disimpan secara privat |
 | --- | --- |
-| Instalasi bersih Node.js dan PostgreSQL 17 | Versi, langkah instalasi, hasil migrasi, startup, dan tanggal uji |
+| Instalasi bersih Node.js dan PostgreSQL 17 | Versi, langkah instalasi, `db:status`, hasil migrasi, startup, serta `/ready` dan tanggal uji |
 | Isolasi lingkungan | Bukti data sintetis, segmentasi jaringan, kontrol akses host/database, tidak terbuka ke internet tanpa persetujuan |
 | HTTPS dan reverse proxy bila diakses selain loopback | Sertifikat valid, daftar origin, konfigurasi reverse proxy, pembatasan akses langsung |
-| Keyring, hak akses, rotasi, dan cadangan kunci | Prosedur dan uji pemulihan kunci; **jangan salin nilai kunci** |
+| Keyring bukti, kunci MFA, hak akses, rotasi, dan cadangan kunci | Prosedur serta uji pemulihan seluruh kunci; **jangan salin nilai kunci** |
 | Database dan file backup | Jadwal, enkripsi, retensi, lokasi terpisah, akses minimal, serta bukti keberhasilan |
 | Recovery drill | Hasil `npm run recovery:drill`, bukti non-nol untuk payload terenkripsi, serta verifikasi layanan setelah restore |
 | Pemantauan dan audit | Log akses, log kegagalan, penyimpanan aman, notifikasi, dan prosedur eskalasi |

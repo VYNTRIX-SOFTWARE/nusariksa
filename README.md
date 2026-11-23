@@ -55,6 +55,7 @@ Jalankan migrasi, buat akun administrator pertama, lalu mulai aplikasi:
 
 ```bash
 npm run db:migrate
+npm run db:status
 npm run admin:bootstrap -- --name "BPR Contoh" --kind BPR --email admin@example.test
 npm start
 ```
@@ -74,7 +75,7 @@ Berkas bukti menggunakan enkripsi pada penyimpanan. Sebelum mengunggah berkas, a
 - `EVIDENCE_ENCRYPTION_KEY` untuk bukti yang masih menggunakan format kunci lama;
 - `EVIDENCE_KEYRING` dan `EVIDENCE_ACTIVE_KEY_ID` untuk pengelolaan beberapa versi kunci.
 
-Simpan kunci di luar repository dan bersama cadangan yang aman. Jangan menggunakan data nasabah, kata sandi, atau dokumen rahasia sebagai data uji. Petunjuk pengelolaan dan pemulihan kunci tersedia dalam [dokumentasi teknis](docs/DEVELOPMENT.md) dan [panduan pemulihan](docs/RECOVERY.md).
+Konfigurasikan juga `MFA_ENCRYPTION_KEY` (32 byte acak berformat base64) untuk fitur MFA, dan simpan backup kunci tersebut bersama rencana pemulihan. Simpan kunci di luar repository dan bersama cadangan yang aman. Jangan menggunakan data nasabah, kata sandi, atau dokumen rahasia sebagai data uji. Petunjuk pengelolaan dan pemulihan kunci tersedia dalam [dokumentasi teknis](docs/DEVELOPMENT.md) dan [panduan pemulihan](docs/RECOVERY.md).
 
 ## Dokumentasi
 
@@ -83,6 +84,7 @@ Simpan kunci di luar repository dan bersama cadangan yang aman. Jangan menggunak
 - [Penilaian keamanan siber dan referensinya](docs/PADK.md)
 - [Pemulihan database dan berkas bukti](docs/RECOVERY.md)
 - [Checklist kesiapan uji coba terbatas](docs/PILOT-READINESS.md)
+- [Prosedur instalasi, upgrade, dan rollback aman](docs/OPERATIONS.md)
 - [Panduan kontribusi](CONTRIBUTING.md)
 - [Kebijakan keamanan](SECURITY.md)
 

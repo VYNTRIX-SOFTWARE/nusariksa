@@ -8,6 +8,7 @@ const fixtures=()=>({
   DATABASE_URL:'postgresql://operator:never-print-this@127.0.0.1:5432/nusariksa_test',
   EVIDENCE_KEYRING:JSON.stringify({v1:key}),
   EVIDENCE_ACTIVE_KEY_ID:'v1',
+  MFA_ENCRYPTION_KEY:Buffer.from('0123456789abcdef0123456789abcdef').toString('base64'),
   NUSARIKSA_PILOT_DATA_MODE:'synthetic',
 });
 const state=(result,id)=>result.checks.find(x=>x.id===id).state;
@@ -80,4 +81,12 @@ test('port hanya menerima bilangan integer dalam rentang',()=>{
   for(const value of ['0','65536','-1','3000x','3.0'])
     assert.equal(state(evaluatePilotConfiguration({...env,PORT:value},'v24.9.0'),
       'port'),'BLOCK');
+});
+
+test('preflight menolak MFA key kosong, invalid, atau pola contoh berulang',()=>{
+  const env=fixtures();
+  for(const value of [undefined,'not-base64',Buffer.alloc(32,7).toString('base64')])
+    assert.equal(state(evaluatePilotConfiguration({...env,MFA_ENCRYPTION_KEY:value},
+      'v24.9.0'),'mfa_key'),'BLOCK');
+  assert.equal(state(evaluatePilotConfiguration(env,'v24.9.0'),'mfa_key'),'PASS');
 });
