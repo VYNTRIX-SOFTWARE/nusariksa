@@ -4,10 +4,11 @@ Dokumen ini ditujukan kepada administrator sistem dan kontributor yang memasang,
 
 ## Lingkungan lokal
 
-Gunakan Node.js `>=24.7.0 <27`, npm, dan PostgreSQL 17. Buat database kosong, lalu atur `DATABASE_URL` dan `APP_ORIGIN` sebagaimana dijelaskan di README.
+Gunakan Node.js `>=24.22.3 <25`, npm, dan PostgreSQL 17. Buat database kosong, lalu atur `DATABASE_URL` dan `APP_ORIGIN` sebagaimana dijelaskan di README.
 
 ```bash
 npm ci
+npm run runtime:check
 npm run db:migrate
 npm run db:status
 npm run admin:bootstrap -- --name "BPR Contoh" --kind BPR --email admin@example.test
@@ -27,6 +28,12 @@ Bootstrap pertama meminta password melalui terminal. Gunakan data contoh, bukan 
 | `MFA_ENCRYPTION_KEY` | Kunci acak 32 byte format base64 untuk rahasia TOTP dan kode pemulihan MFA; wajib bagi preflight pilot |
 
 Simpan semua kunci di luar repositori. Untuk mulai rotasi, tetapkan `EVIDENCE_KEYRING` sebagai JSON object berisi ID kunci dan kuncinya, dan `EVIDENCE_ACTIVE_KEY_ID=v2` secara bersamaan. Unggahan baru menggunakan kunci aktif dan menyimpan ID di database yang ikut diautentikasi oleh AES-GCM. Baris lama dengan `key_id IS NULL` tetap membutuhkan `EVIDENCE_ENCRYPTION_KEY` semula. Jangan menghapus kunci versi lama dari keyring selama masih ada bukti yang bergantung padanya. Rotasi ini tidak mengenkripsi ulang data historis. Simpan backup kunci terpisah, lakukan uji pemulihan database dan kunci bersama-sama. Konfigurasi invalid gagal tertutup (503), bukan fallback otomatis. Kehilangan kunci dapat menyebabkan berkas bukti tidak dapat dipulihkan.
+
+## Baseline keamanan Node.js
+
+Aplikasi hanya mendukung Node.js 24 LTS versi **24.22.3 atau lebih baru** dalam lini mayor yang sama. Baseline ini mencakup perbaikan Brotli (CVE-2026-111497) serta pembaruan keamanan pada rilis Node.js 24.22.3 tanggal 11 November 2026. Versi 25 dan 26 ditolak sampai dukungan kompatibilitasnya ditetapkan terpisah. Kebijakan versi diperiksa pada `npm run runtime:check`, pada startup HTTP, dan dalam preflight pilot.
+
+GitHub Actions menggunakan lini Node 24 terkini dan menjalankan guard minimum sebelum memasang dependensi. Setelah memperbarui Node.js pada server/staging, **restart proses aplikasi** dan verifikasi `node --version` dari lingkungan proses sebenarnya, bukan hanya shell operator. Kebijakan ini bukan jaminan bebas kerentanan di masa depan; ikuti rilis keamanan resmi Node.js dan patch host/container secara berkala.
 
 ## Struktur kode
 

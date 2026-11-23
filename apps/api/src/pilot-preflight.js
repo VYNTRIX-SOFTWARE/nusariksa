@@ -1,16 +1,15 @@
 import {configureEvidenceKeys,encryptionKeyFor} from './evidence-keyring.js';
 import {readMfaKey} from './totp-mfa.js';
+import {isSupportedNodeVersion} from './node-runtime-policy.js';
 
 const STATE=Object.freeze({pass:'PASS',warn:'WARN',block:'BLOCK'});
 const localHost=value=>['localhost','127.0.0.1','[::1]'].includes(value);
 const checked=(id,state,note)=>({id,state,note});
 function runtime(version){
-  const match=/^v?(\d+)\.(\d+)\.(\d+)$/.exec(version??'');
-  if(!match)return checked('node',STATE.block,'Versi Node.js tidak dikenali.');
-  const [major,minor]=match.slice(1).map(Number);
-  return major>=24&&major<27&&(major!==24||minor>=7)
-    ?checked('node',STATE.pass,'Versi Node.js sesuai dukungan aplikasi.')
-    :checked('node',STATE.block,'Gunakan Node.js versi >=24.7.0 dan <27.');
+  return isSupportedNodeVersion(version)
+    ?checked('node',STATE.pass,'Node.js memenuhi baseline patch keamanan 24 LTS.')
+    :checked('node',STATE.block,
+      'Gunakan Node.js 24.22.3 atau lebih baru dalam lini 24 LTS.');
 }
 function origin(value){
   if(typeof value!=='string'||!value)

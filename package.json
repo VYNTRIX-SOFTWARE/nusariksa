@@ -5,13 +5,13 @@
   "type": "module",
   "description": "Fondasi awal NusaRiksa, belum untuk produksi",
   "engines": {
-    "node": ">=24.7.0 <27"
+    "node": ">=24.22.3 <25"
   },
   "scripts": {
     "start": "node apps/api/src/server.js",
     "check:syntax": "node scripts/check-syntax.js",
     "test": "node --test",
-    "check": "npm run check:syntax && npm test && npm run regulatory:draft-status && npm run regulatory:candidates && npm run regulatory:check",
+    "check": "npm run runtime:check && npm run check:syntax && npm test && npm run regulatory:draft-status && npm run regulatory:candidates && npm run regulatory:check",
     "regulatory:candidates": "node scripts/check-padk-regulatory-candidates.js",
     "db:migrate": "node scripts/migrate.js",
     "admin:bootstrap": "node scripts/bootstrap-admin.js",
@@ -24,7 +24,9 @@
     "recovery:drill": "node scripts/recovery-drill.js",
     "pilot:preflight": "node scripts/pilot-preflight.js",
     "regulatory:workpack": "node scripts/padk-review-workpack.js",
-    "db:status": "node scripts/db-status.js"
+    "db:status": "node scripts/db-status.js",
+    "runtime:check": "node scripts/check-node-runtime.js",
+    "prestart": "npm run runtime:check"
   },
   "license": "AGPL-3.0-only",
   "dependencies": {
