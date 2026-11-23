@@ -27,7 +27,7 @@ Nilai domain adalah rata-rata peringkat indikator pada domain tersebut. Komposit
 
 **Kebijakan pembulatan belum terverifikasi.** Kalkulator simulasi menggunakan pembulatan half-up dua desimal. Jangan memperlakukannya sebagai kebijakan regulator yang sudah disahkan.
 
-## Data instrumen
+## Data instrumen dan pemeriksaan sumber
 
 - `regulations/padk43/cyber/drafts/kategori-1.json` dan `kategori-2.json`: 80 dan 60 indikator kerja, masih `DRAFT_UNVERIFIED`.
 - `regulations/padk43/cyber/drafts/table3-criteria-source.br`: ekstraksi **80 baris Tabel 3 × 5 peringkat = 400 teks kriteria unik**.
@@ -40,6 +40,18 @@ PDF yang pernah digunakan dalam ekstraksi memiliki SHA-256 `63868e2fe99a48485b17
 
 Pemetaan Kategori 2 nomor **3, 18, 19, 20, 24, 29, 32** memerlukan pemeriksaan khusus. Periksa pula redaksi Tabel 3 nomor 2, 26, 36 dan header 74/79.
 
+### Perbedaan redaksi parameter dan kriteria sumber
+
+Tabel 3 pada PDF salinan kerja memiliki beberapa perbedaan antara kolom parameter dan kriteria peringkat. Untuk nomor **2, 20, 21, 22, 27, 28, dan 29**, panel kriteria menampilkan peringatan serta menonaktifkan tombol pemilihan peringkat langsung berdasarkan kriteria tersebut. Halaman fisik PDF sumber yang diperiksa: **157, 167–168, dan 170–171**. Kriteria masih dapat dibaca sebagai bahan pemeriksaan. Catatan draft dan proses review internal tetap tersedia; ini **tidak** berarti redaksi sumber telah diperbaiki ataupun official scoring telah diaktifkan. Perbedaan harus ditindaklanjuti melalui pemeriksaan substansi terhadap PDF resmi dan review independen.
+
+Pemeriksaan sumber perlu mencakup **parameter dan seluruh lima kriteria** per baris, bukan hanya kriteria peringkat pertama. Rangkaian ketidaksesuaian pada nomor 20–22 dan 27–29 tidak boleh diselesaikan dengan memindahkan rank ke nomor lain tanpa keputusan substansi dan review independen.
+
+### Master 80 parameter dan penanda Kategori 2
+
+Master Tabel 3 memuat 80 parameter, masing-masing dengan lima kriteria kerja hasil ekstraksi. File `regulations/padk43/cyber/review/category-scope.json` merekam 60 penanda Kategori 2 untuk pembandingan internal dengan status `DRAFT_UNVERIFIED`. Dataset ini belum diverifikasi sebagai pemetaan regulatori. Redaksi 60 indikator Kategori 2 tetap berasal dari daftar kerja Tabel 2 yang terpisah; tidak ditimpa redaksi master.
+
+Aplikasi membandingkan kandidat pemetaan internal NusaRiksa dengan penanda pembanding. **59 dari 60** pasangan sama secara nomor; Kategori 2 nomor **29** berbeda: kandidat NusaRiksa ke Tabel 3 nomor **35** (simulasi phishing), sedangkan penanda pembanding ke nomor **32** (pelatihan). Kedua kriteria ditampilkan bersamaan sebagai referensi kerja; tombol memilih peringkat otomatis dinonaktifkan untuk indikator ini. Pengguna tetap dapat menuliskan peringkat sementara secara manual dengan justifikasi dan evidence. Tidak ada pemilihan otomatis, persetujuan mapping, atau scoring regulatori baru.
+
 ## Mengisi kertas kerja draft
 
 1. Pilih kategori dan periode penilaian.
@@ -51,9 +63,53 @@ Pemetaan Kategori 2 nomor **3, 18, 19, 20, 24, 29, 32** memerlukan pemeriksaan k
 
 Bukti PDF/PNG/JPEG disimpan terenkripsi dan ditautkan ke indikator. Daftar bukti di PDF bukan pengganti file asli.
 
-## Antrean pemeriksaan draft internal
+### Membuat persiapan penilaian
+
+Ketika membuka **Buat persiapan**, NusaRiksa mengisi usulan nama penilaian dan rentang tahun kalender berjalan (1 Januari hingga 31 Desember) untuk mendukung penilaian tahunan posisi akhir Desember. Nama dan tanggal boleh diedit. Tombol **Gunakan saran** mengembalikan nama otomatis berdasarkan tahun akhir periode. Kategori **tidak dipilih otomatis** karena harus berdasarkan karakteristik layanan BPR/BPRS dan dikonfirmasi petugas. Kategori 1 berisi 80 indikator, Kategori 2 berisi 60 indikator. Penginian dapat menggunakan periode yang disesuaikan; rentang kalender pada formulir adalah metadata kertas kerja dan bukan klaim penetapan kewajiban pelaporan. Status instrumen tetap `DRAFT_UNVERIFIED`.
+
+### Ruang kerja indikator
+
+Alur utama dibuat lebih ringkas agar petugas dapat memulai dari indikator pertama: nama indikator dan progres, lima kriteria dalam panel yang dapat dibuka satu per satu, pilihan peringkat sementara, justifikasi, serta penyimpanan. Pencarian, detail sumber, evidence, histori, review kelengkapan, simulasi, dan unduhan draft dipindahkan ke bagian sekunder yang dapat dibuka sesuai kebutuhan. Pengguna tidak kehilangan akses ke referensi sumber; status `DRAFT_UNVERIFIED` tetap terlihat, sementara rincian teknis hanya muncul bila diminta. Peringkat, evidence, dan laporan tetap merupakan **bahan kerja internal yang belum tervalidasi regulator**.
+
+### Navigasi indikator
+
+Gunakan **Cari indikator** untuk menemukan nomor parameter atau kata kunci. Gunakan **Status pengisian** untuk menampilkan yang belum lengkap atau sudah lengkap untuk draft internal. Filter tidak mengubah status jawaban, tidak menyimpan data, dan tidak mempengaruhi skor. Indikator yang sedang dibuka tetap terlihat pada daftar meskipun tidak cocok dengan filter; tombol **Reset filter** mengembalikan seluruh indikator. Jika jawaban belum disimpan, aplikasi akan memperingatkan sebelum berpindah indikator, keluar dari halaman, logout, atau menutup tab. Status tersimpan hanya muncul setelah server mengonfirmasi penyimpanan.
+
+### Petunjuk pengisian dan penyimpanan
+
+Kolom jawaban menampilkan tiga tahapan yang berubah langsung saat petugas mengisi formulir: memilih peringkat sementara, menulis justifikasi minimal 20 karakter, dan menyimpan. Label **tersimpan di server** hanya muncul setelah permintaan penyimpanan berhasil dan revisi diperbarui; mengetik saja tidak dihitung sebagai progres. Peringkat serta justifikasi tetap merupakan **draft internal**, bukan hasil resmi. Bila ingin melampirkan bukti untuk indikator yang sedang dibuka, gunakan **Simpan indikator ini** sebelum berpindah dengan **Simpan & lanjut**. Petugas dengan akses baca melihat petunjuk pemeriksaan, bukan instruksi mengedit.
+
+### Validasi dan bukti pendukung
+
+Halaman persiapan menampilkan tahapan yang mudah diikuti: membuat penilaian, mengisi peringkat serta alasan, menambahkan bukti yang tersedia, pemeriksaan internal dan unduhan kertas kerja draft.
+
+Pemilihan peringkat otomatis menyiapkan **draf justifikasi yang dapat diedit**, dengan placeholder kondisi faktual dan bukti yang harus diganti oleh maker. Teks placeholder tidak diterima server sebagai justifikasi final. Jika belum lengkap, pengguna diarahkan ke input yang perlu diperbaiki; peringatan tidak hanya muncul di bagian atas halaman.
+
+Bukti PDF/PNG/JPEG dapat berukuran hingga **10 MiB per berkas** dengan batas total **250 MiB per persiapan**. File yang sudah masuk bersifat permanen dan terenkripsi; pengunggahan mengikuti izin maker dan status pemeriksaan internal. Batas ini merupakan kebijakan penyimpanan aplikasi, bukan angka kewajiban regulator.
+
+### Tampilan penilaian pada browser
+
+Ruang kerja indikator didahulukan daripada review dan simulasi. Di layar lebar, kriteria dan jawaban ditampilkan berdampingan; di layar kecil disusun satu kolom. Gunakan **Simpan & lanjut** untuk menyimpan dan berpindah ke indikator belum lengkap. Catatan tambahan disimpan dalam panel opsional; catatan yang sudah ada otomatis ditampilkan kembali. Progres hanya menyatakan kelengkapan draft internal, bukan verifikasi PADK resmi.
+
+## Pemeriksaan draft internal
 
 Pemeriksa dengan izin `assessments:approve` dapat membuka bagian **Draft menunggu pemeriksaan** pada halaman Persiapan PADK. Daftar menampilkan draft `submitted` milik maker lain dalam institusi yang sama, diurutkan dari waktu pengajuan yang paling lama, dengan batas 50 entri per muatan. Pemeriksa dapat membuka satu draft langsung untuk mengecek catatan, bukti, dan memutuskan pengembalian atau penerimaan **kelengkapan draft internal**. Setelah keputusan dibuat, draft keluar dari antrean saat dimuat ulang. Antrean bukan persetujuan regulator atau hasil final.
+
+### Kelengkapan sebelum pengajuan
+
+Sebelum maker mengajukan pemeriksaan internal, halaman menampilkan jumlah indikator yang **sudah lengkap dan tersimpan di server**, bukan hanya yang sedang diketik. Pengajuan hanya aktif setelah seluruh 80 atau 60 indikator (sesuai kategori) memiliki peringkat sementara dan justifikasi minimal 20 karakter yang tersimpan. Jika ada yang tertunda, gunakan **Lengkapi indikator yang tertunda** untuk langsung membuka indikator pertama yang belum lengkap. Tombol ini tidak mengubah nilai atau bukti.
+
+Pada indikator yang sudah lengkap dan tersimpan, **Simpan & lanjut** dapat dipakai untuk langsung berpindah ke indikator berikutnya yang belum lengkap tanpa menyimpan ulang jawaban yang tidak berubah. Saat ada perubahan yang belum tersimpan, alur tetap menyimpan melalui server sebelum berpindah. Jika terjadi perubahan data dari sesi lain, muat ulang draft untuk menyinkronkan kelengkapan; server tetap memeriksa semua syarat saat pengajuan.
+
+Semua pesan kelengkapan ini hanya untuk **pemeriksaan draft internal**; tidak menjadikan penilaian sebagai hasil resmi PADK/OJK.
+
+### Ringkasan bukti untuk pemeriksa
+
+Pada bagian **Pemeriksaan kelengkapan draft**, petugas yang memiliki izin membaca bukti dapat membuka **Ringkasan dokumen bukti pendukung**. Aplikasi menampilkan jumlah indikator yang sudah memiliki lampiran, jumlah seluruh berkas dan rincian jumlah berkas per indikator (80 untuk Kategori 1, 60 untuk Kategori 2). Pilih satu indikator lalu gunakan **Buka indikator terpilih** untuk memeriksa bukti dan catatan yang terkait. Pemeriksa hanya dapat membaca jawaban milik maker; peringkat tetap tidak dapat diubah pada tahap review.
+
+Ringkasan dihitung di server berdasarkan lampiran yang benar-benar telah tersimpan. Berkas, nama file dan isi bukti tidak disalin ke respons ringkasan. Pengguna dapat memuat ulang setelah ada perubahan lampiran. Semua berkas aktual tetap dilindungi oleh mekanisme akses serta enkripsi yang sudah diterapkan.
+
+**Ketiadaan lampiran tidak otomatis menghalangi pengajuan draft internal.** Ringkasan hanya membantu pemeriksa mengidentifikasi bukti yang perlu ditelaah dan bukan klaim verifikasi PADK maupun jaminan kecukupan bukti.
 
 ## Syarat sebelum dipakai secara resmi
 
@@ -66,7 +122,7 @@ Pemeriksa dengan izin `assessments:approve` dapat membuka bagian **Draft menungg
 
 Penilaian maturitas keamanan siber tidak mewakili seluruh kewajiban **POJK 34/2025**. PDF penilaian juga tidak otomatis merupakan laporan yang harus diunggah melalui APOLO.
 
-## Perintah pemeriksaan
+### Perintah pemeriksaan
 
 ```bash
 npm run regulatory:draft-status
@@ -75,67 +131,3 @@ npm run regulatory:release-gate
 ```
 
 Perintah terakhir memang harus gagal sampai persyaratan rilis terpenuhi. Untuk bentuk regulatory pack, lihat [panduan data PADK](../regulations/padk43/cyber/README.md). Untuk pemeriksaan PDF secara lokal, baca [panduan alat review](../tools/padk-review/README.md).
-
-## Mengisi indikator melalui aplikasi
-
-Ruang kerja indikator didahulukan daripada review dan simulasi. Di layar lebar, kriteria dan jawaban ditampilkan berdampingan; di layar kecil disusun satu kolom. Gunakan **Simpan & lanjut** untuk menyimpan dan berpindah ke indikator belum lengkap. Catatan tambahan disimpan dalam panel opsional; catatan yang sudah ada otomatis ditampilkan kembali. Progres hanya menyatakan kelengkapan draft internal, bukan verifikasi PADK resmi.
-
-
-## Perbedaan redaksi parameter dan kriteria sumber
-
-Tabel 3 pada PDF salinan kerja memiliki beberapa perbedaan antara kolom parameter dan kriteria peringkat. Untuk nomor **2, 20, 21, 22, 27, 28, dan 29**, panel kriteria menampilkan peringatan serta menonaktifkan tombol pemilihan peringkat langsung berdasarkan kriteria tersebut. Halaman fisik PDF sumber yang diperiksa: **157, 167–168, dan 170–171**. Kriteria masih dapat dibaca sebagai bahan pemeriksaan. Catatan draft dan proses review internal tetap tersedia; ini **tidak** berarti redaksi sumber telah diperbaiki ataupun official scoring telah diaktifkan. Perbedaan harus ditindaklanjuti melalui pemeriksaan substansi terhadap PDF resmi dan review independen.
-
-
-Pemeriksaan sumber perlu mencakup **parameter dan seluruh lima kriteria** per baris, bukan hanya kriteria peringkat pertama. Rangkaian ketidaksesuaian pada nomor 20–22 dan 27–29 tidak boleh diselesaikan dengan memindahkan rank ke nomor lain tanpa keputusan substansi dan review independen.
-
-
-## Master 80 dengan penanda Kategori 2
-
-Master Tabel 3 memuat 80 parameter, masing-masing dengan lima kriteria kerja hasil ekstraksi. File `regulations/padk43/cyber/review/category-scope.json` merekam 60 penanda Kategori 2 untuk pembandingan internal dengan status `DRAFT_UNVERIFIED`. Dataset ini belum diverifikasi sebagai pemetaan regulatori. Redaksi 60 indikator Kategori 2 tetap berasal dari daftar kerja Tabel 2 yang terpisah; tidak ditimpa redaksi master.
-
-Aplikasi membandingkan kandidat pemetaan internal NusaRiksa dengan penanda pembanding. **59 dari 60** pasangan sama secara nomor; Kategori 2 nomor **29** berbeda: kandidat NusaRiksa ke Tabel 3 nomor **35** (simulasi phishing), sedangkan penanda pembanding ke nomor **32** (pelatihan). Kedua kriteria ditampilkan bersamaan sebagai referensi kerja; tombol memilih peringkat otomatis dinonaktifkan untuk indikator ini. Pengguna tetap dapat menuliskan peringkat sementara secara manual dengan justifikasi dan evidence. Tidak ada pemilihan otomatis, persetujuan mapping, atau scoring regulatori baru.
-
-
-## Navigasi cepat indikator
-
-Gunakan **Cari indikator** untuk menemukan nomor parameter atau kata kunci. Gunakan **Status pengisian** untuk menampilkan yang belum lengkap atau sudah lengkap untuk draft internal. Filter tidak mengubah status jawaban, tidak menyimpan data, dan tidak mempengaruhi skor. Indikator yang sedang dibuka tetap terlihat pada daftar meskipun tidak cocok dengan filter; tombol **Reset filter** mengembalikan seluruh indikator. Jika jawaban belum disimpan, aplikasi akan memperingatkan sebelum berpindah indikator, keluar dari halaman, logout, atau menutup tab. Status tersimpan hanya muncul setelah server mengonfirmasi penyimpanan.
-
-
-## Panduan pengisian per indikator
-
-Kolom jawaban menampilkan tiga tahapan yang berubah langsung saat petugas mengisi formulir: memilih peringkat sementara, menulis justifikasi minimal 20 karakter, dan menyimpan. Label **tersimpan di server** hanya muncul setelah permintaan penyimpanan berhasil dan revisi diperbarui; mengetik saja tidak dihitung sebagai progres. Peringkat serta justifikasi tetap merupakan **draft internal**, bukan hasil resmi. Bila ingin melampirkan bukti untuk indikator yang sedang dibuka, gunakan **Simpan indikator ini** sebelum berpindah dengan **Simpan & lanjut**. Petugas dengan akses baca melihat petunjuk pemeriksaan, bukan instruksi mengedit.
-
-
-## Mulai penilaian tanpa mengisi semuanya dari nol
-
-Ketika membuka **Buat persiapan**, NusaRiksa mengisi usulan nama penilaian dan rentang tahun kalender berjalan (1 Januari hingga 31 Desember) untuk mendukung penilaian tahunan posisi akhir Desember. Nama dan tanggal boleh diedit. Tombol **Gunakan saran** mengembalikan nama otomatis berdasarkan tahun akhir periode. Kategori **tidak dipilih otomatis** karena harus berdasarkan karakteristik layanan BPR/BPRS dan dikonfirmasi petugas. Kategori 1 berisi 80 indikator, Kategori 2 berisi 60 indikator. Penginian dapat menggunakan periode yang disesuaikan; rentang kalender pada formulir adalah metadata kertas kerja dan bukan klaim penetapan kewajiban pelaporan. Status instrumen tetap `DRAFT_UNVERIFIED`.
-
-
-## Workspace PADK terfokus pada indikator aktif
-
-Alur utama dibuat lebih ringkas agar petugas dapat memulai dari indikator pertama: nama indikator dan progres, lima kriteria dalam panel yang dapat dibuka satu per satu, pilihan peringkat sementara, justifikasi, serta penyimpanan. Pencarian, detail sumber, evidence, histori, review kelengkapan, simulasi, dan unduhan draft dipindahkan ke bagian sekunder yang dapat dibuka sesuai kebutuhan. Pengguna tidak kehilangan akses ke referensi sumber; status `DRAFT_UNVERIFIED` tetap terlihat, sementara rincian teknis hanya muncul bila diminta. Peringkat, evidence, dan laporan tetap merupakan **bahan kerja internal yang belum tervalidasi regulator**.
-
-
-## Pemeriksaan kelengkapan sebelum pengajuan draft
-
-Sebelum maker mengajukan pemeriksaan internal, halaman menampilkan jumlah indikator yang **sudah lengkap dan tersimpan di server**, bukan hanya yang sedang diketik. Pengajuan hanya aktif setelah seluruh 80 atau 60 indikator (sesuai kategori) memiliki peringkat sementara dan justifikasi minimal 20 karakter yang tersimpan. Jika ada yang tertunda, gunakan **Lengkapi indikator yang tertunda** untuk langsung membuka indikator pertama yang belum lengkap. Tombol ini tidak mengubah nilai atau bukti.
-
-Pada indikator yang sudah lengkap dan tersimpan, **Simpan & lanjut** dapat dipakai untuk langsung berpindah ke indikator berikutnya yang belum lengkap tanpa menyimpan ulang jawaban yang tidak berubah. Saat ada perubahan yang belum tersimpan, alur tetap menyimpan melalui server sebelum berpindah. Jika terjadi perubahan data dari sesi lain, muat ulang draft untuk menyinkronkan kelengkapan; server tetap memeriksa semua syarat saat pengajuan.
-
-Semua pesan kelengkapan ini hanya untuk **pemeriksaan draft internal**; tidak menjadikan penilaian sebagai hasil resmi PADK/OJK.
-
-## Ringkasan cakupan bukti saat pemeriksaan draft
-
-Pada bagian **Pemeriksaan kelengkapan draft**, petugas yang memiliki izin membaca bukti dapat membuka **Ringkasan dokumen bukti pendukung**. Aplikasi menampilkan jumlah indikator yang sudah memiliki lampiran, jumlah seluruh berkas dan rincian jumlah berkas per indikator (80 untuk Kategori 1, 60 untuk Kategori 2). Pilih satu indikator lalu gunakan **Buka indikator terpilih** untuk memeriksa bukti dan catatan yang terkait. Pemeriksa hanya dapat membaca jawaban milik maker; peringkat tetap tidak dapat diubah pada tahap review.
-
-Ringkasan dihitung di server berdasarkan lampiran yang benar-benar telah tersimpan. Berkas, nama file dan isi bukti tidak disalin ke respons ringkasan. Pengguna dapat memuat ulang setelah ada perubahan lampiran. Semua berkas aktual tetap dilindungi oleh mekanisme akses serta enkripsi yang sudah diterapkan.
-
-**Ketiadaan lampiran tidak otomatis menghalangi pengajuan draft internal.** Ringkasan hanya membantu pemeriksa mengidentifikasi bukti yang perlu ditelaah dan bukan klaim verifikasi PADK maupun jaminan kecukupan bukti.
-
-## Bantuan pengisian dan validasi faktual
-
-Halaman persiapan menampilkan tahapan yang mudah diikuti: membuat penilaian, mengisi peringkat serta alasan, menambahkan bukti yang tersedia, pemeriksaan internal dan unduhan kertas kerja draft.
-
-Pemilihan peringkat otomatis menyiapkan **draf justifikasi yang dapat diedit**, dengan placeholder kondisi faktual dan bukti yang harus diganti oleh maker. Teks placeholder tidak diterima server sebagai justifikasi final. Jika belum lengkap, pengguna diarahkan ke input yang perlu diperbaiki; peringatan tidak hanya muncul di bagian atas halaman.
-
-Bukti PDF/PNG/JPEG dapat berukuran hingga **10 MiB per berkas** dengan batas total **250 MiB per persiapan**. File yang sudah masuk bersifat permanen dan terenkripsi; pengunggahan mengikuti izin maker dan status pemeriksaan internal. Batas ini merupakan kebijakan penyimpanan aplikasi, bukan angka kewajiban regulator.
