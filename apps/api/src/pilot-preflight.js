@@ -1,4 +1,5 @@
 import {configureEvidenceKeys,encryptionKeyFor} from './evidence-keyring.js';
+import {readMfaKey} from './totp-mfa.js';
 
 const STATE=Object.freeze({pass:'PASS',warn:'WARN',block:'BLOCK'});
 const localHost=value=>['localhost','127.0.0.1','[::1]'].includes(value);
@@ -71,6 +72,19 @@ function keys(env){
       'Kunci bukti belum tersedia atau konfigurasinya tidak valid.');
   }
 }
+function mfaKey(value){
+  let key;
+  try{
+    key=readMfaKey(value);
+    if(key.every(byte=>byte===key[0]))
+      return checked('mfa_key',STATE.block,
+        'Kunci MFA tidak boleh berupa nilai contoh berulang.');
+    return checked('mfa_key',STATE.pass,'Kunci enkripsi MFA memiliki format yang valid.');
+  }catch{
+    return checked('mfa_key',STATE.block,
+      'MFA_ENCRYPTION_KEY wajib berupa 32 byte dalam base64 yang valid.');
+  }finally{key?.fill(0);}
+}
 function port(value){
   const n=Number(value??3000);
   return /^[0-9]+$/.test(String(value??3000))&&Number.isInteger(n)&&n>0&&n<=65535
@@ -92,7 +106,8 @@ export function summarizePilotChecks(checks,{databaseRequested=false}={}){
 export function evaluatePilotConfiguration(env,version){
   const checks=[
     runtime(version),origin(env.APP_ORIGIN),database(env.DATABASE_URL),
-    port(env.PORT),keys(env),synthetic(env.NUSARIKSA_PILOT_DATA_MODE),
+    port(env.PORT),keys(env),mfaKey(env.MFA_ENCRYPTION_KEY),
+    synthetic(env.NUSARIKSA_PILOT_DATA_MODE),
   ];
   return {scope:'PILOT_PREFLIGHT_ONLY',checks,
     overall:summarizePilotChecks(checks),

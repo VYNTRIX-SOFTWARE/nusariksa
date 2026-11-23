@@ -9,6 +9,7 @@ Gunakan Node.js `>=24.7.0 <27`, npm, dan PostgreSQL 17. Buat database kosong, la
 ```bash
 npm ci
 npm run db:migrate
+npm run db:status
 npm run admin:bootstrap -- --name "BPR Contoh" --kind BPR --email admin@example.test
 npm start
 ```
@@ -23,6 +24,7 @@ Bootstrap pertama meminta password melalui terminal. Gunakan data contoh, bukan 
 | `EVIDENCE_ENCRYPTION_KEY` | Kunci bukti legacy (64 digit hex) untuk seluruh baris historis tanpa key ID |
 | `EVIDENCE_KEYRING` | JSON object ID versi kunci ke 64 digit hex; simpan sebagai secret |
 | `EVIDENCE_ACTIVE_KEY_ID` | ID versi kunci aktif untuk unggahan baru |
+| `MFA_ENCRYPTION_KEY` | Kunci acak 32 byte format base64 untuk rahasia TOTP dan kode pemulihan MFA; wajib bagi preflight pilot |
 
 Simpan semua kunci di luar repositori. Untuk mulai rotasi, tetapkan `EVIDENCE_KEYRING` sebagai JSON object berisi ID kunci dan kuncinya, dan `EVIDENCE_ACTIVE_KEY_ID=v2` secara bersamaan. Unggahan baru menggunakan kunci aktif dan menyimpan ID di database yang ikut diautentikasi oleh AES-GCM. Baris lama dengan `key_id IS NULL` tetap membutuhkan `EVIDENCE_ENCRYPTION_KEY` semula. Jangan menghapus kunci versi lama dari keyring selama masih ada bukti yang bergantung padanya. Rotasi ini tidak mengenkripsi ulang data historis. Simpan backup kunci terpisah, lakukan uji pemulihan database dan kunci bersama-sama. Konfigurasi invalid gagal tertutup (503), bukan fallback otomatis. Kehilangan kunci dapat menyebabkan berkas bukti tidak dapat dipulihkan.
 
@@ -65,6 +67,12 @@ Pedoman kontribusi dan prosedur peninjauan kode tersedia di [CONTRIBUTING.md](..
 ## Uji pemulihan
 
 Untuk melakukan uji pemulihan terisolasi gunakan `npm run recovery:drill` sesuai [panduan pemulihan](RECOVERY.md). Perintah menguji `pg_dump`/`pg_restore`, riwayat migrasi, serta dekripsi dan hash bukti dari database hasil pemulihan. Tool ini tidak menggantikan kebijakan backup produksi, disaster recovery, atau pemulihan kunci eksternal. Jalankan hanya pada target lokal kosong dan terpisah.
+
+## Pemeriksaan versi database dan kesiapan layanan
+
+Setelah migrasi, jalankan `npm run db:status` untuk memeriksa PostgreSQL 17 dan checksum seluruh migrasi dalam transaksi read-only. `GET /health` hanya membuktikan proses HTTP hidup, sedangkan `GET /ready` juga menuntut database terhubung dan skema sesuai source. Pemeriksaan readiness di-cache tiga detik agar tidak mengulang pembacaan berkas migrasi pada setiap polling. Saat menerima `SIGTERM`/`SIGINT`, aplikasi menghentikan koneksi masuk dan menutup pool secara terkontrol, dengan batas drain sepuluh detik.
+
+Langkah upgrade, verifikasi sebelum/sesudah perubahan, dan penanganan kegagalan ada di [panduan operasional](OPERATIONS.md). Jangan menganggap rollback aplikasi otomatis membatalkan migrasi database.
 
 ## Sebelum menggunakan data produksi
 

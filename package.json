@@ -23,7 +23,8 @@
     "test:browser": "node scripts/maturity-browser-e2e.js",
     "recovery:drill": "node scripts/recovery-drill.js",
     "pilot:preflight": "node scripts/pilot-preflight.js",
-    "regulatory:workpack": "node scripts/padk-review-workpack.js"
+    "regulatory:workpack": "node scripts/padk-review-workpack.js",
+    "db:status": "node scripts/db-status.js"
   },
   "license": "AGPL-3.0-only",
   "dependencies": {

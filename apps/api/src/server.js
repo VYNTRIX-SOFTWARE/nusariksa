@@ -22,7 +22,9 @@ import {createVendorHandler} from './ti-vendors-http.js';
 import {createRecoveryHandler} from './ti-recovery-http.js';
 import {createTiRegisterExportsHandler} from './ti-register-exports-http.js';
 import {createTiWorkHandler} from './ti-work-http.js';
-import { checkDatabase, createPool } from './database.js';
+import {createPool} from './database.js';
+import {createReadinessProbe} from './runtime-readiness.js';
+import {createServiceShutdown,installShutdownSignals} from './service-lifecycle.js';
 import { createLoginLimiter } from './login-limiter.js';
 import { createRolesHandler } from './roles-http.js';
 import { createUserAccountsHandler } from './users-http.js';
@@ -413,11 +415,19 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   } else {
     const pool = createPool();
     const server = createServer({
-      checkReadiness: () => checkDatabase(pool),
+      checkReadiness: createReadinessProbe(pool),
       authDb: pool,
       appOrigin: process.env.APP_ORIGIN,
     });
-    server.on('close', () => { if (pool) void pool.end(); });
+    const shutdown=createServiceShutdown({server,pool});
+    installShutdownSignals(shutdown,{onError:()=>{
+      console.error('Layanan gagal dihentikan dengan bersih.');
+      process.exitCode=1;
+    }});
+    server.on('error',()=>{
+      console.error('Layanan gagal membuka port yang dikonfigurasi.');
+      process.exitCode=1;
+    });
     server.listen(port, '127.0.0.1', () => {
       console.log('API pengembangan tersedia di http://127.0.0.1:' + port);
     });

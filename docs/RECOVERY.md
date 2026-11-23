@@ -39,3 +39,8 @@ NusaRiksa menyediakan *recovery drill* yang membuat salinan sementara dengan `pg
 - Proses dump berjalan dengan snapshot PostgreSQL, tetapi verifikasi data target tidak menilai transaksi bisnis sesudah snapshot. RPO/RTO perlu diukur melalui latihan DRP lengkap.
 - Jika sumber memuat data pribadi, database hasil restore **juga memuat data tersebut**; perlakukan sebagai data sensitif dan segera hapus setelah pengujian.
 - Penilaian PADK pada aplikasi tetap bersifat **draft/simulasi**; recovery drill tidak mengesahkan regulasi atau laporan resmi.
+
+
+## Penanganan rilis dan upgrade
+
+Sebelum migrasi pada instalasi yang sudah berjalan, ikuti [prosedur upgrade dan rollback aman](OPERATIONS.md), lakukan backup teruji yang mencakup database **dan seluruh kunci bukti/MFA**, lalu simpan bukti di tempat privat. Perintah `npm run db:status` memeriksa integritas migrasi secara read-only dan tidak membuat backup. Prosedur `recovery:drill` tetap merupakan uji pada target kosong terisolasi, bukan rollback otomatis atau layanan backup produksi.
