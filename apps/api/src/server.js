@@ -25,6 +25,7 @@ import {createTiWorkHandler} from './ti-work-http.js';
 import {createPool} from './database.js';
 import {createReadinessProbe} from './runtime-readiness.js';
 import {createServiceShutdown,installShutdownSignals} from './service-lifecycle.js';
+import {assertSupportedNodeVersion} from './node-runtime-policy.js';
 import { createLoginLimiter } from './login-limiter.js';
 import { createRolesHandler } from './roles-http.js';
 import { createUserAccountsHandler } from './users-http.js';
@@ -70,6 +71,7 @@ export function createServer({
   evidenceKeyring=process.env.EVIDENCE_KEYRING,
   evidenceActiveKeyId=process.env.EVIDENCE_ACTIVE_KEY_ID,
 } = {}) {
+  assertSupportedNodeVersion();
   const handleAuth = createAuthHandler({
     db:authDb,appOrigin,limiter:loginLimiter,changeUserPassword,
     mfaEncryptionKey,mfaActions,

@@ -25,11 +25,13 @@ Petugas TI, kepatuhan, serta pemeriksa dapat mulai dari [Panduan Penggunaan Nusa
 
 Persyaratan:
 
-- Node.js **24.7.0 atau lebih baru, tetapi di bawah 27**;
+- Node.js **24.22.3 atau lebih baru dalam lini 24 LTS**;
 - npm;
 - PostgreSQL **17**.
 
-Buat database PostgreSQL kosong untuk pengujian, lalu pasang dependensi:
+Buat database PostgreSQL kosong untuk pengujian. Pastikan runtime sudah dipatch dengan `node --version` dan `npm run runtime:check`. Instalasi dengan Node.js versi lama ditolak oleh aplikasi.
+
+Pasang dependensi:
 
 ```bash
 npm ci

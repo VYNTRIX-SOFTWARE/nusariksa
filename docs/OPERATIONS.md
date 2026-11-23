@@ -4,7 +4,7 @@ Panduan ini untuk administrator lingkungan **uji/pilot dengan data sintetis**. P
 
 ## Syarat sebelum mulai
 
-- Kunci versi kode yang akan dijalankan dan simpan SHA/tag sebelumnya. Gunakan Node.js 24.7–26 serta PostgreSQL **17**. Periksa dependensi melalui `npm ci --ignore-scripts` sesuai kebijakan organisasi.
+- Kunci versi kode yang akan dijalankan dan simpan SHA/tag sebelumnya. Gunakan Node.js **24.22.3 atau lebih baru dalam lini 24 LTS** serta PostgreSQL **17**. Periksa dependensi melalui `npm ci --ignore-scripts` sesuai kebijakan organisasi.
 - Sediakan PostgreSQL dan akun aplikasi dengan izin minimal, database khusus instalasi, segmentasi jaringan, serta backup terpisah. Tidak ada mekanisme *multi-tenant* untuk menjalankan beberapa lembaga dalam satu instalasi.
 - `APP_ORIGIN` harus alamat browser yang diizinkan. HTTP dibatasi loopback; untuk akses jaringan gunakan terminasi HTTPS pada reverse proxy tepercaya dan pembatasan akses langsung. Server NusaRiksa sendiri hanya mendengarkan `127.0.0.1`.
 - Konfigurasikan `DATABASE_URL`, `APP_ORIGIN`, `EVIDENCE_KEYRING`, `EVIDENCE_ACTIVE_KEY_ID`, `MFA_ENCRYPTION_KEY`, dan jika ada bukti lama `EVIDENCE_ENCRYPTION_KEY`. Gunakan secret store; jangan simpan nilainya pada repository, riwayat shell, tiket, log, atau lampiran PR. **Kunci MFA** harus 32 byte acak dalam format base64 dan harus ikut dalam rencana backup key material.
@@ -12,7 +12,7 @@ Panduan ini untuk administrator lingkungan **uji/pilot dengan data sintetis**. P
 
 ## Instalasi baru dengan data sintetis
 
-1. Siapkan database PostgreSQL 17 kosong dan `npm ci --ignore-scripts`.
+1. Siapkan database PostgreSQL 17 kosong. Pastikan `node --version` menunjukkan Node.js 24.22.3 atau lebih baru dalam lini 24, lalu jalankan `npm run runtime:check` dan `npm ci --ignore-scripts`.
 2. Setel semua environment melalui media rahasia yang aman. Buat kunci acak sendiri untuk lingkungan uji; jangan gunakan kunci produksi.
 3. Jalankan `npm run db:migrate` satu kali. Jangan mengubah berkas migrasi yang sudah pernah dirilis.
 4. Jalankan `npm run db:status`. Harus menghasilkan `status: PASS`, versi PostgreSQL 17 dan jumlah checksum migrasi yang cocok dengan source. Perintah ini **read-only**.
@@ -24,7 +24,7 @@ Panduan ini untuk administrator lingkungan **uji/pilot dengan data sintetis**. P
 
 1. **Sebelum downtime:** pastikan ada hasil UAT yang relevan, SHA versi lama, hasil `npm run db:status` dengan kode yang sedang berjalan, kapasitas penyimpanan, dan backup DB serta **semua kunci** yang dapat dipulihkan. Simpan bukti operator dan waktu secara privat.
 2. Jadwalkan *maintenance window*. Hentikan pembuatan catatan dan unggahan, lalu hentikan proses aplikasi menggunakan `SIGTERM` atau `SIGINT`. Server menghentikan koneksi masuk, mencoba menyelesaikan request yang sedang aktif hingga 10 detik, kemudian mengakhiri pool database.
-3. Pasang versi baru yang sudah ditinjau dan diuji, jalankan `npm ci --ignore-scripts`, lalu `npm run db:migrate`. Migrasi menggunakan transaksi dan advisory lock, tetapi perubahan struktur tetap memerlukan backup.
+3. Perbarui Node.js pada host/container ke patch 24 LTS yang didukung dan verifikasi versi runtime yang digunakan layanan. Pasang versi aplikasi yang sudah ditinjau dan diuji; jalankan `npm run runtime:check`, `npm ci --ignore-scripts`, lalu `npm run db:migrate`. Migrasi menggunakan transaksi dan advisory lock, tetapi perubahan struktur tetap memerlukan backup.
 4. Jalankan `npm run db:status` dari **kode versi baru**. Jika BLOCKED, jangan nyalakan kembali layanan atau memulai pilot sebelum penyebab migrasi diperiksa.
 5. Jalankan `npm run pilot:preflight -- --database` hanya di lingkungan dengan data sintetis. Mulai aplikasi, periksa `/ready`, lalu uji login, MFA, izin, penulisan dan pembacaan, satu laporan, serta backup/recovery. Catat hasil dan keputusan operator.
 6. Lanjutkan layanan hanya setelah semua pemeriksaan dan persetujuan internal sesuai kewenangan terpenuhi.
