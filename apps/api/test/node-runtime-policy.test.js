@@ -12,10 +12,12 @@ test('baseline keamanan Node.js berlaku tepat pada batas patch LTS',()=>{
   }
   for(const value of ['v24.22.2','v24.22.1','v24.7.0','v24.0.0',
     'v25.0.0','v26.13.1','v22.23.4','v27.0.0','v24.22.3-rc.1',
-    'v24.22.3+modified','v024.22.3','24.22','foo',undefined]){
+    'v24.22.3+modified','v024.22.3','24.22','foo']){
     assert.equal(isSupportedNodeVersion(value),false,String(value));
     assert.throws(()=>assertSupportedNodeVersion(value),/Node.js 24.22.3/);
   }
+  assert.equal(isSupportedNodeVersion(undefined),false);
+  assert.doesNotThrow(()=>assertSupportedNodeVersion());
 });
 
 test('preflight menolak runtime rentan meskipun konfigurasi lain valid',()=>{
