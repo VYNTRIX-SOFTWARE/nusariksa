@@ -65,7 +65,7 @@ Bukti PDF/PNG/JPEG disimpan terenkripsi dan ditautkan ke indikator. Daftar bukti
 
 ### Membuat persiapan penilaian
 
-Ketika membuka **Buat persiapan**, NusaRiksa mengisi usulan nama penilaian dan rentang tahun kalender berjalan (1 Januari hingga 31 Desember) untuk mendukung penilaian tahunan posisi akhir Desember. Nama dan tanggal boleh diedit. Tombol **Gunakan saran** mengembalikan nama otomatis berdasarkan tahun akhir periode. Kategori **tidak dipilih otomatis** karena harus berdasarkan karakteristik layanan BPR/BPRS dan dikonfirmasi petugas. Kategori 1 berisi 80 indikator, Kategori 2 berisi 60 indikator. Penginian dapat menggunakan periode yang disesuaikan; rentang kalender pada formulir adalah metadata kertas kerja dan bukan klaim penetapan kewajiban pelaporan. Status instrumen tetap `DRAFT_UNVERIFIED`.
+Ketika membuka **+ Buat penilaian**, NusaRiksa mengisi usulan nama penilaian dan rentang tahun kalender berjalan (1 Januari hingga 31 Desember) untuk mendukung penilaian tahunan posisi akhir Desember. Nama dan tanggal boleh diedit. Tombol **Gunakan saran** mengembalikan nama otomatis berdasarkan tahun akhir periode. Kategori **tidak dipilih otomatis** karena harus berdasarkan karakteristik layanan BPR/BPRS dan dikonfirmasi petugas. Kategori 1 berisi 80 indikator, Kategori 2 berisi 60 indikator. Penginian dapat menggunakan periode yang disesuaikan; rentang kalender pada formulir adalah metadata kertas kerja dan bukan klaim penetapan kewajiban pelaporan. Status instrumen tetap `DRAFT_UNVERIFIED`.
 
 ### Ruang kerja indikator
 

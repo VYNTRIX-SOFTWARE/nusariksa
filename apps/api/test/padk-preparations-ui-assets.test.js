@@ -4,7 +4,7 @@ import {test} from 'node:test';
 import {createServer} from '../src/server.js';
 import {validatePreparationInput,validatePreparationResponse,validatePadkReviewQueue,
   suggestPadkAnnualPreparation,suggestPadkTitleFromEnd,
-  getPadkDraftSubmissionReadiness}
+  getPadkDraftSubmissionReadiness,validatePreparationListItem,filterPreparations}
   from '../../web/assets/padk-preparation-ui.js';
 
 test('PADK preparation page and module are served with CSP',async()=>{
@@ -18,7 +18,9 @@ test('PADK preparation page and module are served with CSP',async()=>{
     const html=await home.text();
     for(const id of [
       'page-padk-preparations','padk-preparations-menu',
-      'first-run-card','first-run-action','pdk-first-run','pdk-empty-start',
+      'first-run-card','first-run-action','pdk-first-run','pdk-list-view',
+      'pdk-create-dialog','pdk-create-cancel','pdk-back-list','pdk-list-search','pdk-list-status',
+      'pdk-stat-total','pdk-stat-editing','pdk-stat-review','pdk-create-message',
       'admin-setup-menu','page-admin-onboarding','admin-invite-form',
       'admin-invite-email','admin-invite-result','admin-invite-token',
       'admin-users-list','admin-users-refresh','activation-open',
@@ -164,4 +166,21 @@ test('pengajuan draft hanya siap dari kelengkapan jawaban tersimpan di server',(
       assert.throws(()=>getPadkDraftSubmissionReadiness({...common,progress}),TypeError);
     }
   }
+});
+
+test('daftar PADK menggunakan status internal dan progres tersimpan dengan cakupan kategori',()=>{
+  const item={id:'11111111-1111-4111-8111-111111111111',title:'Penilaian 2026',
+    category:2,revision:1,ownerUserId:'22222222-2222-4222-8222-222222222222',
+    preparationNotes:'',evidencePlan:'',status:'PREPARATION_ONLY',scoringAvailable:false,
+    submissionAvailable:false,finalReportAvailable:false,periodStart:'2026-01-01',
+    periodEnd:'2026-12-31',reviewStatus:'in_progress',indicatorProgress:{complete:1,total:60}};
+  assert.equal(validatePreparationListItem(item),item);
+  for(const bad of [{...item,reviewStatus:'approved'},{...item,indicatorProgress:{complete:61,total:60}},
+    {...item,indicatorProgress:{complete:1,total:80}},{...item,indicatorProgress:null}])
+    assert.throws(()=>validatePreparationListItem(bad),TypeError);
+  const second={...item,title:'Penilaian 2027',reviewStatus:'submitted'};
+  assert.deepEqual(filterPreparations([item,second],'2026'),[item,second].filter(x=>x.title.includes('2026')||x.periodStart.includes('2026')));
+  assert.deepEqual(filterPreparations([item,second],'penilaian 2027'),[second]);
+  assert.deepEqual(filterPreparations([item,second],'','submitted'),[second]);
+  assert.deepEqual(filterPreparations([item,second],'tidak ada'),[]);
 });

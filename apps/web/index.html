@@ -1173,22 +1173,18 @@
         </section>
 
         <section id="page-padk-preparations" class="page" aria-labelledby="pdk-heading" hidden>
-          <div class="page-intro">
+          <div class="page-intro pdk-page-intro">
             <div>
               <p class="eyebrow">PADK 43/2025 · LAMPIRAN IV</p>
-              <h1 id="pdk-heading">Persiapan Penilaian Keamanan Siber</h1>
-              <p class="supporting-copy">Mulai penilaian dengan memilih kategori dan periode. Simpan catatan kesiapan serta rencana bukti secara bertahap.</p>
+              <h1 id="pdk-heading">Penilaian Keamanan Siber</h1>
+              <p class="supporting-copy">Kelola kertas kerja penilaian dan pemeriksaan internal lembaga.</p>
             </div>
-            <button id="pdk-refresh" type="button" class="button button-outline">Muat ulang</button>
+            <div class="pdk-page-actions">
+              <button id="pdk-refresh" type="button" class="button button-outline">Muat ulang</button>
+              <button id="pdk-create-toggle" class="button button-primary" type="button" hidden>+ Buat penilaian</button>
+              <button id="pdk-back-list" class="button button-outline" type="button" hidden>← Daftar penilaian</button>
+            </div>
           </div>
-          <nav class="pdk-user-journey" aria-label="Tahapan penilaian PADK">
-            <div data-pdk-flow-step="1"><strong>1. Siapkan</strong><span>Pilih kategori dan periode</span></div>
-            <div data-pdk-flow-step="2"><strong>2. Nilai indikator</strong><span>Pilih peringkat dan isi alasan faktual</span></div>
-            <div data-pdk-flow-step="3"><strong>3. Lampirkan</strong><span>Tambahkan bukti jika tersedia (opsional)</span></div>
-            <div data-pdk-flow-step="4"><strong>4. Periksa</strong><span>Ajukan untuk review internal</span></div>
-            <div data-pdk-flow-step="5"><strong>5. Dokumentasikan</strong><span>Unduh kertas kerja draft</span></div>
-          </nav>
-          <p id="pdk-journey-hint" class="workspace-help" role="status" aria-live="polite">Mulai dengan membuat penilaian.</p>
           <div class="pdk-mode-notice" role="note">
             <strong>Mode kertas kerja internal</strong>
             <span>Data kandidat instrumen telah disusun lengkap (80 + 60 indikator; 700 penempatan kriteria). Pemetaan dan kriteria masih menunggu verifikasi substansi; hasil belum boleh digunakan sebagai laporan resmi OJK.</span>
@@ -1206,16 +1202,13 @@
               <p><strong>Sumber:</strong> <a href="https://www.ojk.go.id/id/regulasi/Pages/POJK-34-Tahun-2025-Penyelenggaraan-Teknologi-Informasi-oleh-Bank-Perekonomian-Rakyat-dan-Bank-Perekonomian-Rakyat-Syariah.aspx" target="_blank" rel="noopener noreferrer">POJK 34/2025 Pasal 24</a> dan <a href="https://ojk.go.id/id/regulasi/Pages/PADK-43-PADK03-2025-Penyelenggaraan-Teknologi-Informasi-oleh-BPR-BPRS.aspx" target="_blank" rel="noopener noreferrer">PADK 43/PADK.03/2025 Lampiran IV serta FAQ</a>.</p>
             </div>
           </details>
-          <section id="pdk-first-run" class="onboard-hero onboard-padk-start" hidden>
-            <div class="onboard-hero-main">
-              <p class="eyebrow">LANGKAH PERTAMA</p>
-              <h2>Mulai penilaian keamanan siber pertama</h2>
-              <p>Mulai dari nama penilaian, kategori bank, dan periode. Setelah dibuat, isi indikator satu per satu dengan bukti dan alasan yang dapat ditelusuri.</p>
-              <button id="pdk-empty-start" type="button" class="button button-primary workspace-primary">Buat penilaian pertama</button>
-            </div>
-            <div class="onboard-hero-aside" aria-hidden="true"><span class="onboard-step-number">01</span><strong>Buat</strong><span>Isi</span><span>Ajukan draft</span></div>
-          </section>
           <p id="pdk-message" class="workspace-message" role="status" aria-live="polite" hidden></p>
+          <div id="pdk-list-view">
+            <div class="pdk-list-stats" aria-label="Ringkasan catatan terbaru">
+              <div class="stat-card"><span>Penilaian terbaru</span><strong id="pdk-stat-total">—</strong><small>Maksimal 50 catatan</small></div>
+              <div class="stat-card"><span>Dalam pengerjaan</span><strong id="pdk-stat-editing">—</strong><small>Termasuk perbaikan</small></div>
+              <div class="stat-card"><span>Menunggu pemeriksaan</span><strong id="pdk-stat-review">—</strong><small>Draft internal</small></div>
+            </div>
           <details id="pdk-review-queue-disclosure" class="pdk-secondary-disclosure" hidden>
             <summary>Untuk pemeriksa: lihat antrean draft</summary>
             <section id="pdk-review-queue" class="panel-card"
@@ -1230,48 +1223,85 @@
             <div id="pdk-review-queue-list" aria-live="polite"></div>
           </section>
           </details>
-          <div class="panel-card">
-            <div class="panel-heading">
-              <div><h2>Persiapan penilaian</h2><p id="pdk-count" class="panel-caption">Belum dimuat.</p></div>
-              <button id="pdk-create-toggle" class="button button-primary" type="button" hidden>Buat persiapan</button>
+            <section class="panel-card pdk-list-panel" aria-labelledby="pdk-list-heading">
+              <div class="panel-heading">
+                <div><h2 id="pdk-list-heading" tabindex="-1">Daftar penilaian</h2><p id="pdk-count" class="panel-caption" aria-live="polite">Belum dimuat.</p></div>
+              </div>
+              <div class="pdk-list-toolbar">
+                <div><label for="pdk-list-search">Cari penilaian</label><input id="pdk-list-search" type="search" maxlength="100" placeholder="Nama penilaian atau periode"></div>
+                <div><label for="pdk-list-status">Status pemeriksaan</label><select id="pdk-list-status">
+                  <option value="all">Semua status</option>
+                  <option value="in_progress">Dalam pengerjaan</option>
+                  <option value="changes_requested">Perlu perbaikan</option>
+                  <option value="submitted">Menunggu pemeriksaan</option>
+                  <option value="draft_accepted">Draft internal diterima</option>
+                </select></div>
+              </div>
+              <div class="table-scroll pdk-list-scroll" tabindex="0" aria-label="Tabel penilaian keamanan siber">
+                <table class="pdk-list-table">
+                  <thead><tr><th scope="col">Penilaian</th><th scope="col">Kategori</th><th scope="col">Periode</th><th scope="col">Kelengkapan</th><th scope="col">Status</th><th scope="col">Tindakan</th></tr></thead>
+                  <tbody id="pdk-list"></tbody>
+                </table>
+              </div>
+              <div id="pdk-first-run" class="pdk-empty-state" hidden>
+                <strong>Belum ada penilaian</strong>
+                <p>Penilaian yang dibuat akan muncul dalam daftar ini.</p>
+              </div>
+              <p id="pdk-list-empty-filter" class="empty-note" hidden>Tidak ada penilaian sesuai pencarian atau filter.</p>
+              <p class="panel-caption pdk-list-footnote">Kelengkapan dihitung dari peringkat sementara dan justifikasi yang tersimpan. Bukan skor kepatuhan atau nilai resmi OJK.</p>
+            </section>
+          </div>
+          <dialog id="pdk-create-dialog" class="pdk-create-dialog" aria-labelledby="pdk-create-heading">
+            <div class="pdk-dialog-heading">
+              <div><h2 id="pdk-create-heading">Buat penilaian keamanan siber</h2><p class="panel-caption">PADK 43/2025 · Lampiran IV</p></div>
+              <button id="pdk-create-close" type="button" class="button button-ghost" aria-label="Tutup formulir">×</button>
             </div>
-            <label for="pdk-list">Pilih penilaian untuk dilanjutkan</label>
-            <select id="pdk-list"><option value="">Pilih persiapan…</option></select>
-            <form id="pdk-create-form" class="maturity-edit-form" hidden>
-              <h3>Mulai penilaian keamanan siber</h3>
-              <p class="workspace-help">Nama dan periode tahunan sudah disiapkan. Anda cukup memastikan kategori dan kesesuaian datanya.</p>
-              <label for="pdk-category">1. Kategori BPR/BPRS</label>
+            <form id="pdk-create-form" class="pdk-create-form">
+              <p class="workspace-help">Pastikan kategori sesuai layanan lembaga dan periksa periode penilaian.</p>
+              <label for="pdk-category">Kategori BPR/BPRS</label>
               <select id="pdk-category" required aria-describedby="pdk-category-help">
                 <option value="">Pilih kategori sesuai layanan BPR/BPRS</option>
                 <option value="1">Kategori 1 — 80 indikator</option>
                 <option value="2">Kategori 2 — 60 indikator</option>
               </select>
               <p id="pdk-category-help" class="pdk-setup-explanation">Ada dua kategori pada instrumen penilaian ini. Pilih berdasarkan karakteristik layanan lembaga Anda.</p>
-              <label for="pdk-title">2. Nama penilaian</label>
+              <label for="pdk-title">Nama penilaian</label>
               <div class="pdk-title-suggestion">
                 <input id="pdk-title" type="text" minlength="3" maxlength="200" required
                   placeholder="Nama akan disiapkan otomatis">
                 <button id="pdk-title-suggest" type="button" class="button button-outline">Gunakan saran</button>
               </div>
               <p class="pdk-setup-explanation">Nama dibuat otomatis berdasarkan tahun dan boleh diubah.</p>
-              <p class="pdk-form-caption">3. Periode penilaian</p>
+              <p class="pdk-form-caption">Periode penilaian</p>
               <div class="workspace-date-grid">
                 <div><label for="pdk-period-start">Awal periode</label><input id="pdk-period-start" type="date" required></div>
                 <div><label for="pdk-period-end">Akhir periode / posisi penilaian</label><input id="pdk-period-end" type="date" required></div>
               </div>
               <p id="pdk-period-help" class="pdk-setup-explanation">Default penilaian tahunan: posisi akhir Desember. Untuk penginian, tanggal dapat disesuaikan.</p>
               <p class="workspace-help">Kategori dan periode tidak dapat diubah setelah dibuat. Data indikator dan kriteria masih draft internal, belum terverifikasi sebagai instrumen pelaporan resmi.</p>
-              <button id="pdk-create-submit" type="submit" class="button button-primary">Buat & mulai penilaian</button>
+              <p id="pdk-create-message" class="workspace-message" role="alert" hidden></p>
+              <div class="pdk-dialog-actions">
+                <button id="pdk-create-cancel" type="button" class="button button-outline">Batal</button>
+                <button id="pdk-create-submit" type="submit" class="button button-primary">Buat &amp; mulai penilaian</button>
+              </div>
             </form>
-          </div>
+          </dialog>
           <section id="pdk-detail" class="panel-card" aria-labelledby="pdk-detail-heading" hidden>
             <div class="panel-heading">
               <div>
                 <h2 id="pdk-detail-heading">Penilaian yang sedang dikerjakan</h2>
                 <p id="pdk-summary" class="panel-caption"></p>
               </div>
-              <span class="status-chip" data-status="draft">Draft internal</span>
+              <span id="pdk-detail-status" class="status-chip" data-status="draft">Draft internal</span>
             </div>
+          <nav class="pdk-user-journey" aria-label="Tahapan penilaian PADK">
+            <div data-pdk-flow-step="1"><strong>1. Siapkan</strong><span>Pilih kategori dan periode</span></div>
+            <div data-pdk-flow-step="2"><strong>2. Nilai indikator</strong><span>Pilih peringkat dan isi alasan faktual</span></div>
+            <div data-pdk-flow-step="3"><strong>3. Lampirkan</strong><span>Tambahkan bukti jika tersedia (opsional)</span></div>
+            <div data-pdk-flow-step="4"><strong>4. Periksa</strong><span>Ajukan untuk review internal</span></div>
+            <div data-pdk-flow-step="5"><strong>5. Dokumentasikan</strong><span>Unduh kertas kerja draft</span></div>
+          </nav>
+          <p id="pdk-journey-hint" class="workspace-help" role="status" aria-live="polite">Mulai dengan membuat penilaian.</p>
             <details id="pdk-report-disclosure" class="pdk-secondary-disclosure">
               <summary>Unduh kertas kerja PDF (draft internal)</summary>
               <p class="workspace-help">PDF berisi jawaban tersimpan, inventaris bukti, status review internal, dan simulasi bila tersedia. Bukan laporan resmi PADK/OJK.</p>
