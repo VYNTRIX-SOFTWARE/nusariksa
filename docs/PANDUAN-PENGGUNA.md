@@ -72,6 +72,8 @@ Pada layar desktop, area **Daftar kontrol** memanjang sampai bagian bawah worksp
 
 Gunakan **Persiapan Penilaian PADK** untuk mencatat penilaian indikator keamanan siber.
 
+Halaman **Penilaian Keamanan Siber** menampilkan daftar maksimal 50 penilaian terbaru, ringkasan status pemeriksaan, dan kelengkapan indikator yang tersimpan. Cari nama atau periode, gunakan filter status, lalu pilih **Buka** pada catatan yang sesuai. Pilih **+ Buat penilaian** untuk membuka dialog kategori, nama, dan periode. Setelah selesai atau ingin berpindah penilaian, pilih **Daftar penilaian**. Kelengkapan bukan skor kepatuhan.
+
 Sebelum memulai, buka **Ketentuan penilaian dan penyampaian hasil** pada halaman tersebut. Ada **dua kategori (80/60 indikator)**; penilaian tahunan berposisi akhir Desember, pertama kali Desember 2026. Hasilnya perlu didokumentasikan, bukan otomatis dikirim sebagai laporan bulanan atau melalui APOLO. Rujukan dan batasan rinci tersedia dalam [matriks ketentuan keamanan siber](MATRIKS-KETENTUAN-PENILAIAN-KEAMANAN-SIBER.md).
 
 1. Buat penilaian berdasarkan periode dan kategori yang sesuai dengan layanan lembaga.

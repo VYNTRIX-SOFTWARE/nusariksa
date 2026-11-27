@@ -386,8 +386,16 @@ async function runBrowser(base,db,fixture){
       'first PADK workspace reachable from CTA');
     await until("!document.getElementById('pdk-first-run').hidden",
       'first assessment empty state visible');
-    await evalJs("document.getElementById('pdk-empty-start').click()");
-    assert.equal(await evalJs("document.getElementById('pdk-create-form').hidden"),false);
+    assert.equal(await evalJs("document.querySelectorAll('#page-padk-preparations #pdk-create-toggle').length"),1);
+    assert.equal(await evalJs("document.querySelector('#page-padk-preparations .pdk-user-journey').closest('#pdk-detail').hidden"),true);
+    await until("!document.getElementById('pdk-create-toggle').disabled",'PADK list ready');
+    await evalJs("document.getElementById('pdk-create-toggle').click()");
+    assert.equal(await evalJs("document.getElementById('pdk-create-dialog').open"),true);
+    assert.equal(await evalJs("document.activeElement.id"),'pdk-category');
+    await c.command('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:1,mobile:true});
+    assert.equal(await evalJs("document.getElementById('pdk-create-dialog').getBoundingClientRect().width<=innerWidth"),true);
+    assert.equal(await evalJs("getComputedStyle(document.querySelector('#pdk-create-form .workspace-date-grid')).gridTemplateColumns.split(' ').length"),1);
+    await c.command('Emulation.clearDeviceMetricsOverride');
     assert.equal(await evalJs("document.getElementById('pdk-category').value"),'');
     assert.equal(await evalJs("document.getElementById('pdk-period-end').value.endsWith('-12-31')"),true);
     assert.equal(await evalJs("document.getElementById('pdk-period-start').value.endsWith('-01-01')"),true);
@@ -402,6 +410,14 @@ async function runBrowser(base,db,fixture){
     assert.equal(await evalJs("document.getElementById('pdk-title').value"),'Nama khusus lembaga');
     await evalJs("document.getElementById('pdk-title-suggest').click()");
     assert.equal(await evalJs("document.getElementById('pdk-title').value.endsWith('2027')"),true);
+    await evalJs("document.getElementById('pdk-create-cancel').click()");
+    assert.equal(await evalJs("document.getElementById('pdk-create-dialog').open"),false);
+    assert.equal(await evalJs("document.activeElement.id"),'pdk-create-toggle');
+    await evalJs("document.getElementById('pdk-create-toggle').click()");
+    assert.equal(await evalJs("document.getElementById('pdk-category').value"),'');
+    await c.command('Input.dispatchKeyEvent',{type:'keyDown',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});
+    await c.command('Input.dispatchKeyEvent',{type:'keyUp',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});
+    await until("!document.getElementById('pdk-create-dialog').open",'Escape closes PADK creation dialog');
     await logout();
     await login('maker');
 
@@ -1044,6 +1060,9 @@ async function runBrowser(base,db,fixture){
       "document.getElementById('pdk-period-end').value='2026-12-31';"+
       "document.getElementById('pdk-create-form').requestSubmit()");
     await until("!document.getElementById('pdk-detail').hidden",'PADK created through UI');
+    assert.equal(await evalJs("document.getElementById('pdk-create-dialog').open"),false);
+    assert.equal(await evalJs("document.getElementById('pdk-list-view').hidden"),true);
+    assert.equal(await evalJs("document.getElementById('pdk-create-toggle').hidden"),true);
     await until("document.getElementById('pdk-indicator-title').textContent.length>10 && "+
       "document.activeElement?.id==='pdk-indicator-heading'",
       'new draft focuses first indicator');
@@ -1199,12 +1218,19 @@ async function runBrowser(base,db,fixture){
     // Direct database fixture changes are intentionally invisible until a server reload.
     // The UI must not infer readiness from unrefreshed, client-side indicator data.
     assert.equal(await evalJs("document.getElementById('pdk-review-submit').disabled"),true);
-    await evalJs("document.getElementById('pdk-refresh').click()");
+    await evalJs("document.getElementById('pdk-back-list').click()");
     await until("document.getElementById('pdk-detail').hidden && "+
-      "document.getElementById('pdk-list').options.length>=2",
+      "document.querySelectorAll('#pdk-list tr[data-preparation-id]').length>=1",
       'PADK server data reloaded');
-    await evalJs("document.getElementById('pdk-list').value="+JSON.stringify(padkId)+";"+
-      "document.getElementById('pdk-list').dispatchEvent(new Event('change',{bubbles:true}))");
+    await until("[...document.querySelectorAll('#pdk-list tr[data-preparation-id]')].some(r=>r.dataset.preparationId==="+JSON.stringify(padkId)+" && r.textContent.includes('80 / 80 indikator'))",'list displays persisted completeness');
+    await evalJs("document.getElementById('pdk-list-search').value='judul-tidak-ada-123';document.getElementById('pdk-list-search').dispatchEvent(new Event('input',{bubbles:true}))");
+    assert.equal(await evalJs("document.getElementById('pdk-list-empty-filter').hidden"),false);
+    assert.equal(await evalJs("document.getElementById('pdk-first-run').hidden"),true);
+    await evalJs("document.getElementById('pdk-list-search').value='';document.getElementById('pdk-list-search').dispatchEvent(new Event('input',{bubbles:true}));document.getElementById('pdk-list-status').value='submitted';document.getElementById('pdk-list-status').dispatchEvent(new Event('change',{bubbles:true}))");
+    assert.equal(await evalJs("[...document.querySelectorAll('#pdk-list tr[data-preparation-id]')].some(r=>r.dataset.preparationId==="+JSON.stringify(padkId)+")"),false);
+    await evalJs("document.getElementById('pdk-list-status').value='all';document.getElementById('pdk-list-status').dispatchEvent(new Event('change',{bubbles:true}))");
+    await until("!document.getElementById('pdk-list-view').hidden && [...document.querySelectorAll('#pdk-list button[data-open-preparation]')].some(b=>b.dataset.openPreparation==="+JSON.stringify(padkId)+" && !b.disabled)",'PADK row is ready');
+    await evalJs("[...document.querySelectorAll('#pdk-list button[data-open-preparation]')].find(b=>b.dataset.openPreparation==="+JSON.stringify(padkId)+").click()");
     await until("document.getElementById('pdk-review-readiness').textContent.includes('siap diajukan')",
       'all saved draft indicators confirmed ready for submission');
     assert.equal(await evalJs("document.getElementById('pdk-review-submit').disabled"),false);
@@ -1293,11 +1319,11 @@ async function runBrowser(base,db,fixture){
     assert.equal(audit.rowCount,1);
     assert.equal(audit.rows[0].review_track,'SUBSTANCE');
     await openPadk();
-    await until("document.getElementById('pdk-list').options.length>1",
+    await until("document.querySelectorAll('#pdk-list tr[data-preparation-id]').length>0",
       'PADK reviewer can list same-institution preparations');
     const padkForReview=(await db.query('SELECT id FROM padk_assessment_preparations LIMIT 1')).rows[0].id;
-    await evalJs("document.getElementById('pdk-list').value="+JSON.stringify(padkForReview)+";"+
-      "document.getElementById('pdk-list').dispatchEvent(new Event('change',{bubbles:true}))");
+    await until("!document.getElementById('pdk-list-view').hidden && [...document.querySelectorAll('#pdk-list button[data-open-preparation]')].some(b=>b.dataset.openPreparation==="+JSON.stringify(padkForReview)+" && !b.disabled)",'PADK row is ready');
+    await evalJs("[...document.querySelectorAll('#pdk-list button[data-open-preparation]')].find(b=>b.dataset.openPreparation==="+JSON.stringify(padkForReview)+").click()");
     await until("!document.getElementById('pdk-review-form').hidden",
       'PADK provisional draft reviewer form');
     await evalJs("document.getElementById('pdk-review-decision').value='request_changes';"+
@@ -1326,10 +1352,10 @@ async function runBrowser(base,db,fixture){
 
     await login('maker');
     await openPadk();
-    await until("document.getElementById('pdk-list').options.length>1",'PADK previous preparation listed');
+    await until("document.querySelectorAll('#pdk-list tr[data-preparation-id]').length>0",'PADK previous preparation listed');
     const preparation=(await db.query('SELECT id FROM padk_assessment_preparations LIMIT 1')).rows[0].id;
-    await evalJs("document.getElementById('pdk-list').value="+JSON.stringify(preparation)+";"+
-      "document.getElementById('pdk-list').dispatchEvent(new Event('change',{bubbles:true}))");
+    await until("!document.getElementById('pdk-list-view').hidden && [...document.querySelectorAll('#pdk-list button[data-open-preparation]')].some(b=>b.dataset.openPreparation==="+JSON.stringify(preparation)+" && !b.disabled)",'PADK row is ready');
+    await evalJs("[...document.querySelectorAll('#pdk-list button[data-open-preparation]')].find(b=>b.dataset.openPreparation==="+JSON.stringify(preparation)+").click()");
     await until("!document.getElementById('pdk-detail').hidden",'PADK reopen from list');
     await until("document.getElementById('pdk-review-state').textContent.includes('Dikembalikan')",
       'PADK maker can edit returned draft');
@@ -1360,11 +1386,11 @@ async function runBrowser(base,db,fixture){
 
     await login('reviewer');
     await openPadk();
-    await until("document.getElementById('pdk-list').options.length>1",
+    await until("document.querySelectorAll('#pdk-list tr[data-preparation-id]').length>0",
       'PADK reviewer can reopen resubmitted draft');
     const padkDecision=(await db.query('SELECT id FROM padk_assessment_preparations LIMIT 1')).rows[0].id;
-    await evalJs("document.getElementById('pdk-list').value="+JSON.stringify(padkDecision)+";"+
-      "document.getElementById('pdk-list').dispatchEvent(new Event('change',{bubbles:true}))");
+    await until("!document.getElementById('pdk-list-view').hidden && [...document.querySelectorAll('#pdk-list button[data-open-preparation]')].some(b=>b.dataset.openPreparation==="+JSON.stringify(padkDecision)+" && !b.disabled)",'PADK row is ready');
+    await evalJs("[...document.querySelectorAll('#pdk-list button[data-open-preparation]')].find(b=>b.dataset.openPreparation==="+JSON.stringify(padkDecision)+").click()");
     await until("!document.getElementById('pdk-review-form').hidden",
       'PADK reviewer can accept resubmitted draft');
     await evalJs("document.getElementById('pdk-review-decision').value='accept_draft';"+
@@ -1410,10 +1436,10 @@ async function runBrowser(base,db,fixture){
 
     await login('viewer');
     await openPadk();
-    await until("document.getElementById('pdk-list').options.length>1",'viewer can list PADK preparations');
+    await until("document.querySelectorAll('#pdk-list tr[data-preparation-id]').length>0",'viewer can list PADK preparations');
     const id=await db.query('SELECT id FROM padk_assessment_preparations LIMIT 1');
-    await evalJs("document.getElementById('pdk-list').value="+JSON.stringify(id.rows[0].id)+";"+
-      "document.getElementById('pdk-list').dispatchEvent(new Event('change',{bubbles:true}))");
+    await until("!document.getElementById('pdk-list-view').hidden && [...document.querySelectorAll('#pdk-list button[data-open-preparation]')].some(b=>b.dataset.openPreparation==="+JSON.stringify(id.rows[0].id)+" && !b.disabled)",'PADK row is ready');
+    await evalJs("[...document.querySelectorAll('#pdk-list button[data-open-preparation]')].find(b=>b.dataset.openPreparation==="+JSON.stringify(id.rows[0].id)+").click()");
     await until("!document.getElementById('pdk-detail').hidden",'viewer PADK details');
     assert.equal(await evalJs("document.getElementById('pdk-save').hidden"),true);
     assert.equal(await evalJs("document.getElementById('pdk-notes').readOnly"),true);

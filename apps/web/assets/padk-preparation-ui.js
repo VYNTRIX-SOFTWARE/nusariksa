@@ -46,6 +46,30 @@ export function validatePreparationResponse(data){
     throw new TypeError('Respons persiapan PADK tidak valid.');
   return data;
 }
+const LIST_STATUS={
+  in_progress:'Dalam pengerjaan',
+  submitted:'Menunggu pemeriksaan',
+  changes_requested:'Perlu perbaikan',
+  draft_accepted:'Draft internal diterima',
+};
+export function validatePreparationListItem(item){
+  validatePreparationResponse(item);
+  const progress=item.indicatorProgress;
+  if(!Object.hasOwn(LIST_STATUS,item.reviewStatus)||!progress
+    ||progress.total!==(item.category===1?80:60)
+    ||!Number.isSafeInteger(progress.complete)||progress.complete<0
+    ||progress.complete>progress.total
+    ||!/^\d{4}-\d{2}-\d{2}$/.test(item.periodStart)
+    ||!/^\d{4}-\d{2}-\d{2}$/.test(item.periodEnd))
+    throw new TypeError('Ringkasan penilaian PADK tidak valid.');
+  return item;
+}
+export function filterPreparations(items,query='',status='all'){
+  const term=query.trim().toLocaleLowerCase('id-ID');
+  return items.filter(item=>(status==='all'||item.reviewStatus===status)
+    &&(!term||[item.title,item.periodStart,item.periodEnd,'Kategori '+item.category]
+      .some(value=>value.toLocaleLowerCase('id-ID').includes(term))));
+}
 const REVIEW_QUEUE=ENDPOINT+'/draft-review/pending';
 export function validatePadkReviewQueue(data){
   if(!data||data.draftOnly!==true||data.officialApprovalAvailable!==false
@@ -156,12 +180,56 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
     $('pdk-draft-review-panel').hidden=true;
     $('pdk-review-form').reset();
     $('pdk-review-events').replaceChildren();
-    $('pdk-create-form').hidden=true;$('pdk-create-form').reset();
+    if($('pdk-create-dialog').open)$('pdk-create-dialog').close();
+    $('pdk-create-form').reset();createMessage('');suggestedTitle='';
+    $('pdk-list-search').value='';$('pdk-list-status').value='all';
     $('pdk-detail').hidden=true;$('pdk-note-form').reset();
     $('pdk-list').replaceChildren();
     $('pdk-history').replaceChildren(text('p','Belum ada riwayat.'));
     message('');
     render();
+  }
+  function createMessage(value,kind='error'){
+    const panel=$('pdk-create-message');
+    panel.textContent=value??'';panel.hidden=!value;panel.dataset.kind=kind;
+  }
+  function renderList(){
+    const items=state.loaded?state.items:[];
+    const visible=filterPreparations(items,$('pdk-list-search').value,$('pdk-list-status').value);
+    const list=$('pdk-list');
+    list.replaceChildren();
+    for(const item of visible){
+      const row=document.createElement('tr');
+      row.dataset.preparationId=item.id;
+      const name=text('td','');
+      name.append(text('strong',item.title),text('small',
+        item.ownerUserId===getUserId()?'Penilaian saya':'Penilaian lembaga'));
+      const period=text('td',item.periodStart.split('-').reverse().join('/')+' – '+
+        item.periodEnd.split('-').reverse().join('/'));
+      const progress=text('td','');
+      const bar=document.createElement('progress');
+      bar.max=item.indicatorProgress.total;bar.value=item.indicatorProgress.complete;
+      bar.setAttribute('aria-label','Kelengkapan '+item.title);
+      progress.append(text('span',item.indicatorProgress.complete+' / '+item.indicatorProgress.total+
+        ' indikator'),bar);
+      const status=text('td',''),chip=text('span',LIST_STATUS[item.reviewStatus],'status-chip');
+      chip.dataset.status=item.reviewStatus;status.append(chip);
+      const action=text('td',''),button=text('button','Buka','button button-outline');
+      button.type='button';button.dataset.openPreparation=item.id;
+      button.setAttribute('aria-label','Buka '+item.title);
+      button.disabled=state.busy;action.append(button);
+      row.append(name,text('td','Kategori '+item.category),period,progress,status,action);
+      list.append(row);
+    }
+    $('pdk-stat-total').textContent=state.loaded?String(items.length):'—';
+    $('pdk-stat-editing').textContent=state.loaded?String(items.filter(i=>
+      ['in_progress','changes_requested'].includes(i.reviewStatus)).length):'—';
+    $('pdk-stat-review').textContent=state.loaded?String(items.filter(i=>i.reviewStatus==='submitted').length):'—';
+    $('pdk-first-run').hidden=!(state.loaded&&!items.length);
+    $('pdk-list-empty-filter').hidden=!(state.loaded&&items.length&&!visible.length);
+    $('pdk-count').textContent=state.loaded
+      ?visible.length+' dari '+items.length+' catatan terbaru ditampilkan (maks. 50).'
+      :state.busy?'Memuat penilaian…':'Daftar belum tersedia. Muat ulang untuk mencoba lagi.';
   }
   function render(){
     indicatorUI.sync();evidenceCoverageUI.sync();
@@ -214,31 +282,31 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
     $('pdk-export-csv').hidden=!state.detail;
     report.href=state.detail
       ?ENDPOINT+'/'+encodeURIComponent(state.detail.id)+'/workpaper.pdf':'#';
-    $('pdk-first-run').hidden=!(state.loaded&&state.items.length===0&&writable());
-    $('pdk-empty-start').disabled=state.busy;
-    $('pdk-create-toggle').hidden=!writable();
-    $('pdk-create-toggle').disabled=state.busy;
+    $('pdk-list-view').hidden=Boolean(state.detail);
+    $('pdk-create-toggle').hidden=!writable()||Boolean(state.detail);
+    $('pdk-create-toggle').disabled=state.busy||!state.loaded;
+    $('pdk-back-list').hidden=!state.detail;
+    $('pdk-back-list').disabled=state.busy;
+    $('pdk-refresh').disabled=state.busy;
+    for(const id of ['pdk-create-submit','pdk-create-cancel','pdk-create-close'])$(id).disabled=state.busy;
     $('pdk-detail').hidden=!state.detail;
     $('pdk-note-form').hidden=!state.detail;
     $('pdk-save').hidden=!owner();
     $('pdk-save').disabled=state.busy||!state.dirty;
     for(const id of ['pdk-notes','pdk-evidence-plan'])$(id).readOnly=!owner()||state.busy;
-    const sel=$('pdk-list');
-    const current=state.detail?.id??'';
-    sel.replaceChildren(new Option('Pilih persiapan…',''));
-    for(const item of state.items)sel.add(new Option(
-      item.title+' — Kategori '+item.category+' · '+item.periodStart,item.id));
-    // An older pending draft can lie outside the latest 50 preparations.
-    if(state.detail&&!state.items.some(i=>i.id===current))
-      sel.add(new Option(state.detail.title+' — Dibuka dari antrean review',current));
-    sel.value=current;
+    const status=$('pdk-detail-status');
+    status.textContent=LIST_STATUS[phase]??'Memuat status';
+    status.dataset.status=phase;
     if(state.detail){
-      $('pdk-summary').textContent=
-        state.detail.title+' · Kategori '+state.detail.category+
+      $('pdk-detail-heading').textContent=state.detail.title;
+      $('pdk-summary').textContent='Kategori '+state.detail.category+
         ' · '+state.detail.periodStart+' sampai '+state.detail.periodEnd+
         ' · Revisi '+state.detail.revision;
-    }else $('pdk-summary').textContent='Pilih catatan persiapan untuk melanjutkan.';
-    $('pdk-count').textContent=state.items.length+' persiapan terbaru ditampilkan (maks. 50).';
+    }else{
+      $('pdk-detail-heading').textContent='Penilaian keamanan siber';
+      $('pdk-summary').textContent='';
+      renderList();
+    }
   }
   function renderQueue(){
     const list=$('pdk-review-queue-list');
@@ -293,7 +361,8 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
       if(request!==state.request)return;
       if(!Array.isArray(data.preparations)||data.regulatoryPackReady!==false)
         throw new TypeError('Daftar persiapan PADK tidak valid.');
-      state.items=data.preparations.map(validatePreparationResponse);
+      if(data.preparations.length>50)throw new TypeError('Daftar penilaian melebihi batas.');
+      state.items=data.preparations.map(validatePreparationListItem);
       state.loaded=true;
       state.detail=null;state.workflow=null;state.dirty=false;
       indicatorUI.clear();previewUI.clear();evidenceCoverageUI.clear();$('pdk-note-form').reset();
@@ -487,7 +556,23 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
     if(!panel.hidden)panel.scrollIntoView({block:'start',behavior:'smooth'});
   });
   $('pdk-review-queue-refresh').addEventListener('click',()=>void refreshReviewQueue());
-  $('pdk-refresh').addEventListener('click',()=>{if(confirmLeave())void list();});
+  $('pdk-refresh').addEventListener('click',()=>{
+    if(state.busy||!confirmLeave())return;
+    if(state.detail)void open(state.detail.id,{focusWorkspace:true});
+    else void list();
+  });
+  $('pdk-back-list').addEventListener('click',async()=>{
+    if(state.busy||!confirmLeave())return;
+    await list();
+    if(!state.detail)$('pdk-list-heading').focus();
+  });
+  $('pdk-list').addEventListener('click',event=>{
+    const button=event.target.closest('button[data-open-preparation]');
+    if(!button||state.busy||!confirmLeave())return;
+    void open(button.dataset.openPreparation,{focusWorkspace:true});
+  });
+  $('pdk-list-search').addEventListener('input',renderList);
+  $('pdk-list-status').addEventListener('change',renderList);
   let suggestedTitle='';
   function updateCategoryDescription(){
     const value=$('pdk-category').value;
@@ -514,13 +599,15 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
     }
   }
   function openFirstPreparation(){
-    if(!writable()||state.busy)return;
-    $('pdk-create-form').hidden=false;
+    if(!writable()||state.busy||!state.loaded||state.detail)return;
+    const dialog=$('pdk-create-dialog');
+    if(dialog.open)return;
+    $('pdk-create-form').reset();suggestedTitle='';createMessage('');
     const suggested=suggestPadkAnnualPreparation();
     if(!$('pdk-period-start').value)$('pdk-period-start').value=suggested.periodStart;
     if(!$('pdk-period-end').value)$('pdk-period-end').value=suggested.periodEnd;
     updateSuggestedTitle();updateCategoryDescription();updatePeriodDescription();
-    $('pdk-category').focus();
+    dialog.showModal();$('pdk-category').focus();
   }
   $('pdk-category').addEventListener('change',updateCategoryDescription);
   $('pdk-title-suggest').addEventListener('click',()=>{
@@ -531,37 +618,43 @@ export function createPadkPreparationUI({api,getPermissions,getUserId,onAuthFail
       updatePeriodDescription();updateSuggestedTitle();
     });
   }
-  $('pdk-empty-start').addEventListener('click',openFirstPreparation);
-  $('pdk-create-toggle').addEventListener('click',()=>{
-    if(!writable())return;
-    if($('pdk-create-form').hidden)openFirstPreparation();
-    else $('pdk-create-form').hidden=true;
+  function closeCreate(){
+    if(state.busy)return;
+    $('pdk-create-dialog').close();
+    $('pdk-create-form').reset();suggestedTitle='';createMessage('');
+    $('pdk-create-toggle').focus();
+  }
+  $('pdk-create-toggle').addEventListener('click',openFirstPreparation);
+  $('pdk-create-cancel').addEventListener('click',closeCreate);
+  $('pdk-create-close').addEventListener('click',closeCreate);
+  $('pdk-create-dialog').addEventListener('cancel',event=>{
+    event.preventDefault();closeCreate();
   });
   $('pdk-create-form').addEventListener('submit',async event=>{
     event.preventDefault();
-    if(!writable()||state.busy)return;
+    if(!writable()||state.busy||!$('pdk-create-dialog').open)return;
     let data;
     try{
       data=validatePreparationInput({
         title:$('pdk-title').value.trim(),category:Number($('pdk-category').value),
         periodStart:$('pdk-period-start').value,periodEnd:$('pdk-period-end').value,
       });
-    }catch(error){message(error.message,'error');return;}
-    state.busy=true;render();
+    }catch(error){createMessage(error.message);return;}
+    state.busy=true;render();createMessage('');
+    const request=state.request;
     try{
       const created=validatePreparationResponse(await api(ENDPOINT,{method:'POST',body:data}));
-      $('pdk-create-form').reset();$('pdk-create-form').hidden=true;
+      if(request!==state.request)return;
+      $('pdk-create-dialog').close();$('pdk-create-form').reset();
       suggestedTitle='';updateCategoryDescription();updatePeriodDescription();
-      await list(created.id);
-      message('Draft dibuat. Kerjakan indikator pertama: baca kriteria, pilih peringkat sementara, dan tulis alasan pemeriksaan.','success');
-    }catch(error){fail(error,'Gagal membuat persiapan PADK.');}
-    finally{state.busy=false;render();}
-  });
-  $('pdk-list').addEventListener('change',event=>{
-    if(!confirmLeave()){event.target.value=state.detail?.id??'';return;}
-    if(event.target.value)void open(event.target.value);
-    else{state.detail=null;state.workflow=null;state.dirty=false;
-      indicatorUI.clear();previewUI.clear();evidenceCoverageUI.clear();render();}
+      await open(created.id,{focusWorkspace:true});
+      if(state.detail?.id===created.id)
+        message('Draft dibuat. Kerjakan indikator pertama.','success');
+    }catch(error){
+      if(request===state.request&&!onAuthFailure(error))
+        createMessage(error?.status===400?'Periksa kategori, nama, dan tanggal periode.':
+          'Gagal membuat penilaian. Periksa data dan coba kembali.');
+    }finally{if(request===state.request){state.busy=false;render();}}
   });
   for(const id of ['pdk-notes','pdk-evidence-plan']){
     $(id).addEventListener('input',()=>{

@@ -80,6 +80,12 @@ test('maker creates and saves a PADK preparation; viewer can read without scorin
         const listed=await (await send(ROOT,'GET',cookies.viewer)).json();
         assert.equal(listed.regulatoryPackReady,false);
         assert.equal(listed.preparations[0].id,id);
+        assert.equal(listed.preparations[0].reviewStatus,'in_progress');
+        assert.deepEqual(listed.preparations[0].indicatorProgress,{complete:0,total:80});
+        await db.query(
+          "INSERT INTO padk_preparation_indicator_notes(preparation_id,indicator_number,provisional_rank,justification) VALUES($1,1,2,'Alasan sintetis berdasarkan hasil pemeriksaan'),($1,2,NULL,'')",[id]);
+        const progress=await (await send(ROOT,'GET',cookies.viewer)).json();
+        assert.deepEqual(progress.preparations[0].indicatorProgress,{complete:1,total:80});
         assert.equal((await send(ROOT+'/'+id,'GET',cookies.viewer)).status,200);
         assert.equal((await send(ROOT+'/'+id,'PUT',cookies.viewer,{
           preparationNotes:'X',evidencePlan:'Y',expectedRevision:1,

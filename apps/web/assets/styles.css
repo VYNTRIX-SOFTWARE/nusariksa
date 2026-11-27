@@ -979,8 +979,6 @@ h1,h2,p{margin-top:0}h1,h2{letter-spacing:-.027em}
 @media(prefers-reduced-motion:reduce){.activation-step-track span{transition:none}}
 
 /* Guided first PADK assessment setup. No institution-specific category is assumed. */
-#pdk-create-form{max-width:720px}
-#pdk-create-form label{font-weight:700}
 .pdk-setup-explanation{font-size:12px;color:#586375;line-height:1.65;margin:6px 0 18px}
 .pdk-form-caption{font-size:13px;font-weight:700;color:#31384A;margin:16px 0 9px}
 .pdk-title-suggestion{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:start;gap:10px}
@@ -1416,3 +1414,76 @@ button.nr-work-metric[aria-pressed="true"]{border-color:#6D62A1;background:#F5F3
 .nr-work-return-bar[hidden]{display:none}
 @media(max-width:650px){.nr-work-return-bar{align-items:flex-start;flex-direction:column;
   gap:6px}.nr-work-return-bar .button{width:100%}}
+
+
+/* PADK assessment list and creation dialog */
+.pdk-page-intro{align-items:center}
+.pdk-page-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.pdk-page-actions .button,.pdk-dialog-actions .button{width:auto;justify-content:center;white-space:nowrap;padding:10px 15px}
+.pdk-list-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:0 0 18px}
+.pdk-list-stats .stat-card{padding:17px 19px;gap:8px}
+.pdk-list-stats .stat-card strong{font-size:26px}
+.pdk-list-panel{padding:20px 0 0;overflow:hidden}
+.pdk-list-panel>.panel-heading,.pdk-list-toolbar,.pdk-list-footnote,.pdk-list-panel>.empty-note{margin-inline:20px}
+.pdk-list-panel .panel-caption{margin:5px 0 0}
+.pdk-list-toolbar{display:flex;align-items:end;flex-wrap:wrap;gap:12px;margin-bottom:16px}
+.pdk-list-toolbar>div:first-child{flex:1 1 260px;max-width:420px}
+.pdk-list-toolbar>div:last-child{flex:0 1 240px}
+.pdk-list-toolbar label,.pdk-create-form label{display:block;font-size:12px;font-weight:650;color:#344054;margin:0 0 6px}
+.pdk-list-toolbar input,.pdk-list-toolbar select,.pdk-create-form input,.pdk-create-form select{font:inherit;font-size:13px;color:var(--text);width:100%;min-width:0;background:var(--surface);border:1px solid #D0D5DD;border-radius:8px;padding:10px 12px;min-height:42px}
+.pdk-list-toolbar select,.pdk-create-form select{padding-right:10px}
+.pdk-list-scroll{overflow-x:auto}
+.pdk-list-table{width:100%;min-width:790px;border-collapse:collapse;font-size:13px}
+.pdk-list-table th{font-size:11px;font-weight:650;letter-spacing:.02em;text-align:left;color:#667085;background:#F8FAFC;padding:12px 15px;border-block:1px solid var(--border);white-space:nowrap}
+.pdk-list-table td{padding:15px;border-bottom:1px solid var(--border);vertical-align:middle}
+.pdk-list-table th:first-child,.pdk-list-table td:first-child{padding-left:20px}
+.pdk-list-table th:last-child,.pdk-list-table td:last-child{padding-right:20px;text-align:right}
+.pdk-list-table td:first-child{width:30%;overflow-wrap:anywhere}
+.pdk-list-table td strong{font-weight:650;display:block;line-height:1.5}
+.pdk-list-table td small{display:block;color:var(--secondary);font-size:11px;margin-top:4px}
+.pdk-list-table td:nth-child(3){white-space:nowrap;font-size:12px;color:#475467}
+.pdk-list-table td:nth-child(4){min-width:125px}
+.pdk-list-table progress{display:block;width:100%;height:7px;accent-color:var(--primary);margin-top:6px}
+.pdk-list-table td .button{min-height:34px;padding:7px 12px}
+.pdk-list-table .status-chip{white-space:normal;line-height:1.4}
+.pdk-list-table .status-chip[data-status="draft_accepted"],#pdk-detail-status[data-status="draft_accepted"]{background:#ECFDF5;color:#047857}
+.pdk-empty-state{text-align:center;padding:34px 20px 30px;color:#344054}
+.pdk-empty-state strong{font-size:15px}
+.pdk-empty-state p{font-size:13px;color:var(--secondary);margin:7px 0 0}
+.pdk-list-panel .pdk-list-footnote{margin:0;padding:13px 20px;border-top:1px solid var(--border);font-size:11px}
+.pdk-create-dialog{width:min(620px,calc(100vw - 32px));max-width:620px;max-height:calc(100dvh - 32px);margin:auto;padding:0;border:1px solid #DDE5F0;border-radius:14px;background:#fff;color:var(--text);box-shadow:0 18px 70px #0B1B3233;overflow:auto}
+.pdk-create-dialog::backdrop{background:#0B1B3266}
+.pdk-dialog-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:20px 24px 14px;border-bottom:1px solid var(--border)}
+.pdk-dialog-heading h2{font-size:19px;font-weight:680;margin:0 0 5px;line-height:1.35}
+.pdk-dialog-heading p{margin:0}
+.pdk-dialog-heading .button{font-size:23px;min-height:34px;line-height:1;padding:4px 10px}
+.pdk-create-form{padding:20px 24px 24px}
+.pdk-create-form .workspace-help,.pdk-create-form .pdk-setup-explanation{font-size:12px;line-height:1.55;color:var(--secondary)}
+.pdk-create-form .pdk-setup-explanation{margin:7px 0 15px}
+.pdk-create-form .pdk-form-caption{margin:0 0 12px}
+.pdk-create-form .pdk-title-suggestion{align-items:center;grid-template-columns:minmax(0,1fr) auto}
+.pdk-create-form .workspace-date-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.pdk-dialog-actions{display:flex;justify-content:flex-end;gap:9px;padding-top:17px;margin-top:17px;border-top:1px solid var(--border)}
+#pdk-detail .pdk-user-journey{margin:16px 0 7px}
+#pdk-detail-heading{overflow-wrap:anywhere}
+@media(max-width:760px){
+  .pdk-page-intro{align-items:flex-start;flex-wrap:wrap}
+  .pdk-page-actions{justify-content:flex-start}
+  .pdk-list-stats{gap:8px}
+  .pdk-list-stats .stat-card{padding:12px;gap:5px}
+  .pdk-list-stats .stat-card>span{font-size:11px}
+  .pdk-list-stats .stat-card strong{font-size:22px}
+  .pdk-list-stats .stat-card small{font-size:10px}
+  .pdk-list-toolbar>div:last-child{flex:1 1 160px}
+  #pdk-detail>.panel-heading{flex-wrap:wrap}
+}
+@media(max-width:480px){
+  .pdk-list-stats{grid-template-columns:1fr}
+  .pdk-list-stats .stat-card{grid-template-columns:minmax(0,1fr) auto;align-items:center}
+  .pdk-list-stats .stat-card small{grid-column:1/-1}
+  .pdk-dialog-heading{padding:16px}
+  .pdk-create-form{padding:16px}
+  .pdk-create-form .workspace-date-grid,.pdk-create-form .pdk-title-suggestion{grid-template-columns:1fr}
+  .pdk-dialog-actions{flex-wrap:wrap}
+  .pdk-dialog-actions .button{flex:1 1 auto}
+}

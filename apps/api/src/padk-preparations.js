@@ -61,11 +61,20 @@ function record(row){
 export async function listPadkPreparations(db,{actorId}){
   await permitted(db,actorId,'assessments:read');
   const result=await db.query(
-    'SELECT p.* FROM padk_assessment_preparations p '+
+    'SELECT p.*,COALESCE(s.status,\'in_progress\') AS review_status,'+
+    'progress.complete FROM padk_assessment_preparations p '+
     'JOIN users u ON u.id=$1 AND u.institution_id=p.institution_id '+
+    'LEFT JOIN padk_draft_review_state s ON s.preparation_id=p.id '+
+    'CROSS JOIN LATERAL (SELECT count(*)::int AS complete '+
+    'FROM padk_preparation_indicator_notes n WHERE n.preparation_id=p.id '+
+    'AND n.provisional_rank BETWEEN 1 AND 5 AND length(btrim(n.justification))>=20 '+
+    'AND n.indicator_number BETWEEN 1 AND CASE WHEN p.category=1 THEN 80 ELSE 60 END) progress '+
     'ORDER BY p.created_at DESC,p.id DESC LIMIT 50',[actorId],
   );
-  return {preparations:result.rows.map(record),regulatoryPackReady:false};
+  return {preparations:result.rows.map(row=>({...record(row),
+    reviewStatus:row.review_status,
+    indicatorProgress:{complete:row.complete,total:row.category===1?80:60},
+  })),regulatoryPackReady:false};
 }
 export async function getPadkPreparation(db,{actorId,id}){
   if(!validId(id))fail(400,'Invalid preparation ID');
